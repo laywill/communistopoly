@@ -52,7 +52,7 @@ const Board = () => {
 
         {/* Bottom Row: GULAG (10) to STOY (0) - left to right order */}
         <div className={styles.bottomRow}>
-          {bottomRow.map(space => renderSpace(space))}
+          {[...bottomRow].reverse().map(space => renderSpace(space))}
         </div>
       </div>
     </div>
