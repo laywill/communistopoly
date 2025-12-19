@@ -145,3 +145,32 @@
     font-size: 24px;
   }
 }
+
+@media (min-width: 1600px) {
+  .center {
+    padding: 25px;
+  }
+
+  .russian {
+    font-size: 24px;
+  }
+
+  .english {
+    font-size: 20px;
+  }
+
+  .cardDeck {
+    width: 80px;
+    height: 105px;
+  }
+
+  .cardIcon {
+    font-size: 40px;
+  }
+
+  .diceBox {
+    width: 60px;
+    height: 60px;
+    font-size: 32px;
+  }
+}
