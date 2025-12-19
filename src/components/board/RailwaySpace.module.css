@@ -2,7 +2,7 @@
   width: 70px;
   height: 110px;
   background: linear-gradient(180deg, var(--color-group-railroad) 0%, #0A0A0A 100%);
-  border: 2px solid var(--color-soviet-red);
+  border: 2px solid var(--color-kremlin-gold);
   color: var(--color-aged-white);
   display: flex;
   flex-direction: column;
