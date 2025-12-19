@@ -147,28 +147,26 @@
 
 /* Top edge: horizontally centered, at top edge */
 .playersTop {
-  top: 4px;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
   flex-direction: row;
 }
 
 /* Left edge: vertically centered, at left edge */
-/* Need to counteract the 90deg rotation of the parent */
 .playersLeft {
   left: 4px;
   top: 50%;
-  transform: translateY(-50%) rotate(-90deg);
+  transform: translateY(-50%);
   flex-direction: row;
   transform-origin: left center;
 }
 
 /* Right edge: vertically centered, at right edge */
-/* Need to counteract the -90deg rotation of the parent */
 .playersRight {
   right: 4px;
   top: 50%;
-  transform: translateY(-50%) rotate(90deg);
+  transform: translateY(-50%);
   flex-direction: row;
   transform-origin: right center;
 }
