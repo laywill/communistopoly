@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import './WelcomeScreen.css';
 

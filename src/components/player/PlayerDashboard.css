@@ -152,6 +152,47 @@
   color: var(--color-aged-white);
 }
 
+.player-actions {
+  margin-top: 0.5rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--color-propaganda-black);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.action-button {
+  width: 100%;
+  background: linear-gradient(180deg, var(--color-gulag-grey) 0%, #2A2A2A 100%);
+  color: var(--color-aged-white);
+  border: 2px solid #666;
+  padding: 10px 16px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 0 #1A1A1A, 0 6px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  border-radius: 4px;
+}
+
+.action-button.primary {
+  background: linear-gradient(180deg, var(--color-soviet-red) 0%, #8B0000 100%);
+  border-color: var(--color-kremlin-gold);
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #1A1A1A, 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+
+.action-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #1A1A1A, 0 3px 5px rgba(0, 0, 0, 0.3);
+}
+
 @media (max-width: 768px) {
   .players-grid {
     grid-template-columns: 1fr;

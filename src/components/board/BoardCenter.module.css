@@ -84,23 +84,38 @@
   line-height: 1.2;
 }
 
-.dice {
+.diceArea {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
   justify-content: center;
 }
 
-.diceBox {
-  width: 50px;
-  height: 50px;
-  background: white;
-  border: 2px solid var(--color-propaganda-black);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+.rollButton {
+  background: linear-gradient(180deg, var(--color-soviet-red) 0%, #8B0000 100%);
+  color: var(--color-aged-white);
+  border: 2px solid var(--color-kremlin-gold);
+  padding: 10px 20px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 0 #5C0A1A, 0 6px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  border-radius: 4px;
+}
+
+.rollButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #5C0A1A, 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+
+.rollButton:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #5C0A1A, 0 3px 5px rgba(0, 0, 0, 0.3);
 }
 
 .turnInfo {
@@ -108,6 +123,12 @@
   background: var(--color-aged-white);
   border: 2px solid var(--color-kremlin-gold);
   border-radius: 4px;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .turnPlaceholder {
@@ -115,6 +136,27 @@
   font-size: 14px;
   color: var(--color-propaganda-black);
   font-style: italic;
+}
+
+.playerName {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-soviet-red);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.playerPiece {
+  font-size: 32px;
+}
+
+.turnPhase {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-gulag-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 @media (max-width: 1024px) {

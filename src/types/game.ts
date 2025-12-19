@@ -92,6 +92,25 @@ export interface Property {
 export type GamePhase = 'welcome' | 'setup' | 'playing' | 'ended';
 export type TurnPhase = 'pre-roll' | 'rolling' | 'moving' | 'resolving' | 'post-turn';
 
+// Game log
+export type LogEntryType = 'movement' | 'payment' | 'gulag' | 'rank' | 'property' | 'tribunal' | 'system' | 'dice';
+
+export interface LogEntry {
+  id: string;
+  timestamp: Date;
+  type: LogEntryType;
+  message: string;
+  playerId?: string;
+}
+
+// Pending actions
+export type PendingActionType = 'stoy-pilfer' | 'property-decision' | 'quota-payment' | 'tax-payment' | 'draw-card';
+
+export interface PendingAction {
+  type: PendingActionType;
+  data?: Record<string, unknown>;
+}
+
 // Game state
 export interface GameState {
   // Game flow
@@ -111,4 +130,15 @@ export interface GameState {
   // Turn management
   turnPhase: TurnPhase;
   doublesCount: number;
+  hasRolled: boolean;
+
+  // Dice
+  dice: [number, number];
+  isRolling: boolean;
+
+  // Game log
+  gameLog: LogEntry[];
+
+  // Pending actions
+  pendingAction: PendingAction | null;
 }
