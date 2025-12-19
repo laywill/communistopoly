@@ -1,6 +1,6 @@
 .corner {
-  width: 110px;
-  height: 110px;
+  width: 112px;
+  height: 112px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,8 +110,8 @@
 /* Responsive */
 @media (max-width: 1024px) {
   .corner {
-    width: 95px;
-    height: 95px;
+    width: 96px;
+    height: 96px;
   }
 
   .icon {
@@ -129,8 +129,8 @@
 
 @media (min-width: 1600px) {
   .corner {
-    width: 125px;
-    height: 125px;
+    width: 128px;
+    height: 128px;
   }
 
   .icon {

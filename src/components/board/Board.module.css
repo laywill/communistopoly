@@ -1,8 +1,10 @@
 .board {
   --space-width: 70px;
-  --space-height: 110px;
-  --corner-size: 110px;
-  --board-size: calc((var(--space-width) * 9) + (var(--corner-size) * 2) * 1.085);
+  --space-height: 112px;
+  --corner-size: 112px;
+  --space-padding: 2px;
+  --num-spaces-per-side: 9;
+  --board-size: calc((var(--space-width) * (var(--num-spaces-per-side))) + (var(--corner-size) * 2) + (var(--space-padding) * (var(--num-spaces-per-side) - 1 )));
 
   width: var(--board-size);
   height: var(--board-size);
@@ -105,15 +107,15 @@
 @media (max-width: 1024px) {
   .board {
     --space-width: 60px;
-    --space-height: 95px;
-    --corner-size: 95px;
+    --space-height: 96px;
+    --corner-size: 96px;
   }
 }
 
 @media (min-width: 1600px) {
   .board {
     --space-width: 80px;
-    --space-height: 125px;
-    --corner-size: 125px;
+    --space-height: 128px;
+    --corner-size: 128px;
   }
 }

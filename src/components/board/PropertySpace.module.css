@@ -1,6 +1,6 @@
 .propertySpace {
   width: 70px;
-  height: 110px;
+  height: 112px;
   background: var(--color-aged-white);
   border: 2px solid var(--color-propaganda-black);
   display: flex;
@@ -75,7 +75,7 @@
 @media (max-width: 1024px) {
   .propertySpace {
     width: 60px;
-    height: 95px;
+    height: 96px;
   }
 
   .colorBand {
@@ -98,7 +98,7 @@
 @media (min-width: 1600px) {
   .propertySpace {
     width: 80px;
-    height: 125px;
+    height: 128px;
   }
 
   .colorBand {
@@ -106,7 +106,7 @@
   }
 
   .name {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .quota {

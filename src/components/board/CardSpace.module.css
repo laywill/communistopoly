@@ -1,6 +1,6 @@
 .card {
   width: 70px;
-  height: 110px;
+  height: 112px;
   border: 2px solid var(--color-propaganda-black);
   display: flex;
   flex-direction: column;
@@ -61,7 +61,7 @@
 @media (max-width: 1024px) {
   .card {
     width: 60px;
-    height: 95px;
+    height: 96px;
   }
 
   .icon {
@@ -80,7 +80,7 @@
 @media (min-width: 1600px) {
   .card {
     width: 80px;
-    height: 125px;
+    height: 128px;
   }
 
   .icon {
