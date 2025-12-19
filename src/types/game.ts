@@ -57,3 +57,58 @@ export interface CornerSpace extends BoardSpace {
   type: 'corner';
   cornerType: 'stoy' | 'gulag' | 'breadline' | 'enemy-of-state';
 }
+
+// Player-related types
+export type PartyRank = 'proletariat' | 'partyMember' | 'commissar' | 'innerCircle';
+
+export type PieceType = 'hammer' | 'sickle' | 'redStar' | 'tank' | 'breadLoaf' | 'ironCurtain' | 'vodkaBottle' | 'statueOfLenin';
+
+export interface Player {
+  id: string;
+  name: string;
+  piece: PieceType | null;  // null for Stalin
+  rank: PartyRank;
+  rubles: number;
+  position: number;
+  properties: string[];     // property IDs
+  inGulag: boolean;
+  gulagTurns: number;
+  isEliminated: boolean;
+  isStalin: boolean;
+
+  // Tracking for rank progression
+  correctTestAnswers: number;
+  consecutiveFailedTests: number;
+  underSuspicion: boolean;
+}
+
+export interface Property {
+  spaceId: number;
+  custodianId: string | null;
+  collectivizationLevel: number; // 0-5
+}
+
+// Game phases
+export type GamePhase = 'welcome' | 'setup' | 'playing' | 'ended';
+export type TurnPhase = 'pre-roll' | 'rolling' | 'moving' | 'resolving' | 'post-turn';
+
+// Game state
+export interface GameState {
+  // Game flow
+  gamePhase: GamePhase;
+
+  // Players
+  players: Player[];
+  stalinPlayerId: string | null;
+  currentPlayerIndex: number;
+
+  // Board
+  properties: Property[];
+
+  // Treasury
+  stateTreasury: number;
+
+  // Turn management
+  turnPhase: TurnPhase;
+  doublesCount: number;
+}
