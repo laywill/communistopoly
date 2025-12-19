@@ -2,7 +2,7 @@
   --space-width: 70px;
   --space-height: 110px;
   --corner-size: 110px;
-  --board-size: calc((var(--space-width) * 9) + (var(--corner-size) * 2));
+  --board-size: calc((var(--space-width) * 9) + (var(--corner-size) * 2) * 1.085);
 
   width: var(--board-size);
   height: var(--board-size);
