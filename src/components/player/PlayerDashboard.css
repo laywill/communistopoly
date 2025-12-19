@@ -1,0 +1,159 @@
+.player-dashboard {
+  width: 100%;
+}
+
+.players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.player-card {
+  background: var(--color-aged-white);
+  border: 3px solid var(--color-propaganda-black);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.player-card.current-player {
+  border-color: var(--color-kremlin-gold);
+  border-width: 4px;
+  box-shadow: 0 0 12px rgba(212, 168, 75, 0.6), 0 4px 8px rgba(0, 0, 0, 0.3);
+  transform: scale(1.02);
+}
+
+.player-card.in-gulag {
+  background: var(--color-gulag-grey);
+  border-color: #666;
+}
+
+.player-card-header {
+  background: var(--color-propaganda-black);
+  color: var(--color-aged-white);
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.player-card.current-player .player-card-header {
+  background: var(--color-soviet-red);
+}
+
+.player-card.in-gulag .player-card-header {
+  background: var(--color-gulag-grey);
+}
+
+.player-piece-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.player-name {
+  flex: 1;
+  font-size: 1.1rem;
+}
+
+.current-badge {
+  background: var(--color-kremlin-gold);
+  color: var(--color-propaganda-black);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.player-card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.player-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player-stat label {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-propaganda-black);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-propaganda-black);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-value.rubles {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-kremlin-gold);
+}
+
+.rank-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.rank-star {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.rank-star.filled {
+  color: var(--color-kremlin-gold);
+}
+
+.rank-star.empty {
+  color: #ccc;
+}
+
+.rank-name {
+  font-size: 0.85rem;
+  color: var(--color-propaganda-black);
+}
+
+.status {
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-in-play {
+  background: var(--color-military-olive);
+  color: var(--color-aged-white);
+}
+
+.status-in-gulag {
+  background: var(--color-gulag-grey);
+  color: var(--color-aged-white);
+}
+
+.status-eliminated {
+  background: var(--color-blood-burgundy);
+  color: var(--color-aged-white);
+}
+
+@media (max-width: 768px) {
+  .players-grid {
+    grid-template-columns: 1fr;
+  }
+}

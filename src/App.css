@@ -1,28 +1,30 @@
 .app {
+  min-height: 100vh;
   width: 100%;
-  max-width: 1400px;
+}
+
+.end-screen {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-}
-
-.app-header {
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-propaganda-black) 0%, var(--color-gulag-grey) 100%);
+  color: var(--color-aged-white);
+  font-family: var(--font-display);
   text-align: center;
-  margin-bottom: 20px;
+  padding: 2rem;
 }
 
-.app-header h1 {
-  font-size: 48px;
-  font-weight: 700;
+.end-screen h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: var(--color-soviet-red);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.app-header .tagline {
-  font-size: 16px;
-  color: var(--color-kremlin-gold);
+.end-screen p {
+  font-family: var(--font-body);
+  font-size: 1.2rem;
   font-style: italic;
-  margin-top: 8px;
 }
