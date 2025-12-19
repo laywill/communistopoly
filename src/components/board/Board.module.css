@@ -1,0 +1,121 @@
+.board {
+  --space-width: 70px;
+  --space-height: 112px;
+  --corner-size: 112px;
+  --space-padding: 2px;
+  --num-spaces-per-side: 9;
+  --board-size: calc((var(--space-width) * (var(--num-spaces-per-side))) + (var(--corner-size) * 2) + (var(--space-padding) * (var(--num-spaces-per-side) - 1 )));
+
+  width: var(--board-size);
+  height: var(--board-size);
+  background: var(--color-parchment);
+  border: 8px solid var(--color-soviet-red);
+  box-shadow:
+    inset 0 0 0 3px var(--color-kremlin-gold),
+    0 10px 40px rgba(0, 0, 0, 0.5);
+  position: relative;
+  margin: 0 auto;
+}
+
+.boardRing {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+/* Top and Bottom Rows */
+.topRow,
+.bottomRow {
+  display: flex;
+  height: var(--corner-size);
+  flex-shrink: 0;
+}
+
+.topRow {
+  flex-direction: row;
+}
+
+.bottomRow {
+  flex-direction: row;
+}
+
+/* Middle Section */
+.middleSection {
+  display: flex;
+  flex: 1;
+  min-height: 0; /* Allow flex shrinking */
+}
+
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  width: var(--corner-size);
+  flex-shrink: 0;
+}
+
+.leftColumn {
+  /* Already reversed in component */
+}
+
+.rightColumn {
+  /* Normal order top to bottom */
+}
+
+/* Rotation for side spaces */
+.rotateLeft {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--corner-size);
+  height: var(--space-width);
+}
+
+.rotateLeft > * {
+  transform: rotate(90deg);
+  /* Space maintains its original dimensions (width x height) but rotated */
+  /* So a 70x110 space rotated becomes 110x70 in visual space */
+}
+
+.rotateRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--corner-size);
+  height: var(--space-width);
+}
+
+.rotateRight > * {
+  transform: rotate(-90deg);
+  /* Space maintains its original dimensions (width x height) but rotated */
+  /* So a 70x110 space rotated becomes 110x70 in visual space */
+}
+
+/* Center Area */
+.centerArea {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-aged-white);
+  border: 2px solid var(--color-propaganda-black);
+  margin: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .board {
+    --space-width: 60px;
+    --space-height: 96px;
+    --corner-size: 96px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .board {
+    --space-width: 80px;
+    --space-height: 128px;
+    --corner-size: 128px;
+  }
+}

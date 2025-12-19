@@ -1,0 +1,176 @@
+.center {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background: linear-gradient(135deg, var(--color-parchment) 0%, var(--color-aged-white) 100%);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--color-soviet-red);
+  padding-bottom: 10px;
+}
+
+.russian {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-soviet-red);
+  letter-spacing: 0.1em;
+}
+
+.english {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-propaganda-black);
+  letter-spacing: 0.05em;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: space-evenly;
+}
+
+.section {
+  text-align: center;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-gulag-grey);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.cards {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.cardDeck {
+  width: 70px;
+  height: 90px;
+  background: var(--color-soviet-red);
+  border: 2px solid var(--color-kremlin-gold);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.cardIcon {
+  font-size: 32px;
+  color: var(--color-kremlin-gold);
+  margin-bottom: 4px;
+}
+
+.cardLabel {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--color-aged-white);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.dice {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.diceBox {
+  width: 50px;
+  height: 50px;
+  background: white;
+  border: 2px solid var(--color-propaganda-black);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.turnInfo {
+  padding: 15px;
+  background: var(--color-aged-white);
+  border: 2px solid var(--color-kremlin-gold);
+  border-radius: 4px;
+}
+
+.turnPlaceholder {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-propaganda-black);
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .center {
+    padding: 15px;
+  }
+
+  .russian {
+    font-size: 16px;
+  }
+
+  .english {
+    font-size: 13px;
+  }
+
+  .cardDeck {
+    width: 60px;
+    height: 75px;
+  }
+
+  .cardIcon {
+    font-size: 24px;
+  }
+
+  .diceBox {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .center {
+    padding: 25px;
+  }
+
+  .russian {
+    font-size: 24px;
+  }
+
+  .english {
+    font-size: 20px;
+  }
+
+  .cardDeck {
+    width: 80px;
+    height: 105px;
+  }
+
+  .cardIcon {
+    font-size: 40px;
+  }
+
+  .diceBox {
+    width: 60px;
+    height: 60px;
+    font-size: 32px;
+  }
+}

@@ -1,0 +1,97 @@
+.card {
+  width: 70px;
+  height: 112px;
+  border: 2px solid var(--color-propaganda-black);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  text-align: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+}
+
+.instruction {
+  font-family: var(--font-body);
+  font-size: 8px;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* Party Directive styling */
+.partyDirective {
+  background: linear-gradient(135deg, var(--color-soviet-red) 0%, #8B0000 100%);
+  color: var(--color-aged-white);
+}
+
+.partyDirective .icon {
+  color: var(--color-kremlin-gold);
+}
+
+/* Communist Test styling */
+.communistTest {
+  background: linear-gradient(135deg, var(--color-kremlin-gold) 0%, #B8860B 100%);
+  color: var(--color-propaganda-black);
+}
+
+.communistTest .icon {
+  color: var(--color-soviet-red);
+}
+
+@media (max-width: 1024px) {
+  .card {
+    width: 60px;
+    height: 96px;
+  }
+
+  .icon {
+    font-size: 28px;
+  }
+
+  .name {
+    font-size: 8px;
+  }
+
+  .instruction {
+    font-size: 7px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .card {
+    width: 80px;
+    height: 128px;
+  }
+
+  .icon {
+    font-size: 36px;
+  }
+
+  .name {
+    font-size: 10px;
+  }
+
+  .instruction {
+    font-size: 9px;
+  }
+}
