@@ -1,0 +1,123 @@
+.utility {
+  width: 70px;
+  height: 110px;
+  background: var(--color-group-utility);
+  border: 2px solid var(--color-propaganda-black);
+  color: var(--color-propaganda-black);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px;
+  text-align: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.icon {
+  font-size: 20px;
+  margin-top: 2px;
+}
+
+.label {
+  font-family: var(--font-display);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--color-soviet-red);
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+}
+
+.name {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+.cost {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-kremlin-gold);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.requirements {
+  font-family: var(--font-display);
+  font-size: 7px;
+  font-weight: 700;
+  color: var(--color-soviet-red);
+  line-height: 1.1;
+  border: 1px solid var(--color-soviet-red);
+  padding: 2px 4px;
+  background: rgba(196, 30, 58, 0.1);
+}
+
+.rates {
+  font-size: 7px;
+  line-height: 1.2;
+  border-top: 1px solid var(--color-propaganda-black);
+  padding-top: 2px;
+  width: 100%;
+}
+
+.rates div {
+  margin: 1px 0;
+}
+
+@media (max-width: 1024px) {
+  .utility {
+    width: 60px;
+    height: 95px;
+  }
+
+  .icon {
+    font-size: 18px;
+  }
+
+  .name {
+    font-size: 8px;
+  }
+
+  .cost {
+    font-size: 11px;
+  }
+
+  .requirements {
+    font-size: 6px;
+  }
+
+  .rates {
+    font-size: 6px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .utility {
+    width: 80px;
+    height: 125px;
+  }
+
+  .icon {
+    font-size: 24px;
+  }
+
+  .name {
+    font-size: 10px;
+  }
+
+  .cost {
+    font-size: 14px;
+  }
+
+  .requirements {
+    font-size: 8px;
+  }
+
+  .rates {
+    font-size: 8px;
+  }
+}

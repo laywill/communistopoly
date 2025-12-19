@@ -1,0 +1,105 @@
+.railway {
+  width: 70px;
+  height: 110px;
+  background: linear-gradient(180deg, var(--color-group-railroad) 0%, #0A0A0A 100%);
+  border: 2px solid var(--color-soviet-red);
+  color: var(--color-aged-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px;
+  text-align: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.icon {
+  font-size: 20px;
+  margin-top: 2px;
+}
+
+.name {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  color: var(--color-aged-white);
+}
+
+.label {
+  font-family: var(--font-display);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--color-kremlin-gold);
+  letter-spacing: 0.1em;
+}
+
+.cost {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-kremlin-gold);
+  margin: 2px 0;
+}
+
+.rates {
+  font-size: 7px;
+  line-height: 1.2;
+  color: var(--color-aged-white);
+  border-top: 1px solid var(--color-soviet-red);
+  padding-top: 2px;
+  width: 100%;
+}
+
+.rates div {
+  margin: 1px 0;
+}
+
+@media (max-width: 1024px) {
+  .railway {
+    width: 60px;
+    height: 95px;
+  }
+
+  .icon {
+    font-size: 18px;
+  }
+
+  .name {
+    font-size: 9px;
+  }
+
+  .cost {
+    font-size: 11px;
+  }
+
+  .rates {
+    font-size: 6px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .railway {
+    width: 80px;
+    height: 125px;
+  }
+
+  .icon {
+    font-size: 24px;
+  }
+
+  .name {
+    font-size: 11px;
+  }
+
+  .cost {
+    font-size: 14px;
+  }
+
+  .rates {
+    font-size: 8px;
+  }
+}
