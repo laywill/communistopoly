@@ -1,0 +1,91 @@
+.diceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.diceWrapper {
+  display: flex;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--color-parchment);
+  border: 2px solid var(--color-propaganda-black);
+  transition: all 0.3s ease;
+}
+
+.diceWrapper.doubles {
+  border-color: var(--color-kremlin-gold);
+  box-shadow: 0 0 20px rgba(212, 168, 75, 0.5);
+}
+
+.die {
+  width: 64px;
+  height: 64px;
+  background: var(--color-aged-white);
+  border: 2px solid var(--color-propaganda-black);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s ease;
+}
+
+.die.rolling {
+  animation: tumble 0.1s infinite;
+  box-shadow: 0 0 15px var(--color-soviet-red);
+}
+
+@keyframes tumble {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+}
+
+.dieFace {
+  font-size: 48px;
+  color: var(--color-propaganda-black);
+  user-select: none;
+}
+
+.total {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-propaganda-black);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.doublesIndicator {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-kremlin-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 4px 12px;
+  background: var(--color-soviet-red);
+  border-radius: 4px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}

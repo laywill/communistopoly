@@ -5,6 +5,13 @@ import './PlayerDashboard.css';
 export default function PlayerDashboard() {
   const players = useGameStore((state) => state.players);
   const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex);
+  const turnPhase = useGameStore((state) => state.turnPhase);
+  const endTurn = useGameStore((state) => state.endTurn);
+  const finishMoving = useGameStore((state) => state.finishMoving);
+
+  const handleEndTurn = () => {
+    endTurn();
+  };
 
   // Render rank stars
   const renderRankStars = (rank: string) => {
@@ -93,6 +100,21 @@ export default function PlayerDashboard() {
                     {getPlayerStatus(player)}
                   </span>
                 </div>
+
+                {isCurrentPlayer && !player.inGulag && (
+                  <div className="player-actions">
+                    {turnPhase === 'moving' && (
+                      <button className="action-button" onClick={finishMoving}>
+                        FINISH MOVING
+                      </button>
+                    )}
+                    {turnPhase === 'post-turn' && (
+                      <button className="action-button primary" onClick={handleEndTurn}>
+                        END TURN
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           );
