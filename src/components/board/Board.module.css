@@ -72,8 +72,8 @@
 
 .rotateLeft > * {
   transform: rotate(90deg);
-  width: var(--space-height);
-  height: var(--space-width);
+  /* Space maintains its original dimensions (width x height) but rotated */
+  /* So a 70x110 space rotated becomes 110x70 in visual space */
 }
 
 .rotateRight {
@@ -86,8 +86,8 @@
 
 .rotateRight > * {
   transform: rotate(-90deg);
-  width: var(--space-height);
-  height: var(--space-width);
+  /* Space maintains its original dimensions (width x height) but rotated */
+  /* So a 70x110 space rotated becomes 110x70 in visual space */
 }
 
 /* Center Area */
