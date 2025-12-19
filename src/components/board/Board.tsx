@@ -12,11 +12,16 @@ const Board = () => {
   const topRow = BOARD_SPACES.slice(20, 31);        // 20-30: BREADLINE to ENEMY OF STATE
   const rightColumn = BOARD_SPACES.slice(31, 40);   // 31-39: After ENEMY to before STOY
 
-  const renderSpace = (space: BoardSpace) => {
+  const renderSpace = (space: BoardSpace, additionalClass?: string) => {
+    const className = additionalClass || '';
     if (space.type === 'corner') {
       return <CornerSpace key={space.id} space={space} />;
     }
-    return <BoardSpaceComponent key={space.id} space={space} />;
+    return (
+      <div key={space.id} className={className}>
+        <BoardSpaceComponent space={space} />
+      </div>
+    );
   };
 
   return (
@@ -24,14 +29,14 @@ const Board = () => {
       <div className={styles.boardRing}>
         {/* Top Row: BREADLINE (20) to ENEMY OF STATE (30) */}
         <div className={styles.topRow}>
-          {topRow.map(renderSpace)}
+          {topRow.map(space => renderSpace(space))}
         </div>
 
         {/* Middle Section: Left Column + Center + Right Column */}
         <div className={styles.middleSection}>
-          {/* Left Column: Spaces 11-19 (bottom to top, reversed) */}
+          {/* Left Column: Spaces 11-19 (bottom to top, reversed, rotated 90deg) */}
           <div className={styles.leftColumn}>
-            {[...leftColumn].reverse().map(renderSpace)}
+            {[...leftColumn].reverse().map(space => renderSpace(space, styles.rotateLeft))}
           </div>
 
           {/* Center Area */}
@@ -39,15 +44,15 @@ const Board = () => {
             <BoardCenter />
           </div>
 
-          {/* Right Column: Spaces 31-39 (top to bottom) */}
+          {/* Right Column: Spaces 31-39 (top to bottom, rotated -90deg) */}
           <div className={styles.rightColumn}>
-            {rightColumn.map(renderSpace)}
+            {rightColumn.map(space => renderSpace(space, styles.rotateRight))}
           </div>
         </div>
 
-        {/* Bottom Row: GULAG (10) to STOY (0) - reversed */}
+        {/* Bottom Row: GULAG (10) to STOY (0) - left to right order */}
         <div className={styles.bottomRow}>
-          {[...bottomRow].reverse().map(renderSpace)}
+          {bottomRow.map(space => renderSpace(space))}
         </div>
       </div>
     </div>

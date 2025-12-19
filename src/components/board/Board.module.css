@@ -35,7 +35,7 @@
 }
 
 .bottomRow {
-  flex-direction: row-reverse; /* Reverse to go right-to-left */
+  flex-direction: row;
 }
 
 /* Middle Section */
@@ -59,6 +59,35 @@
 
 .rightColumn {
   /* Normal order top to bottom */
+}
+
+/* Rotation for side spaces */
+.rotateLeft {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--corner-size);
+  height: var(--space-width);
+}
+
+.rotateLeft > * {
+  transform: rotate(90deg);
+  width: var(--space-height);
+  height: var(--space-width);
+}
+
+.rotateRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--corner-size);
+  height: var(--space-width);
+}
+
+.rotateRight > * {
+  transform: rotate(-90deg);
+  width: var(--space-height);
+  height: var(--space-width);
 }
 
 /* Center Area */
