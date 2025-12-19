@@ -1,0 +1,90 @@
+.board {
+  --space-width: 70px;
+  --space-height: 110px;
+  --corner-size: 110px;
+  --board-size: calc((var(--space-width) * 9) + (var(--corner-size) * 2));
+
+  width: var(--board-size);
+  height: var(--board-size);
+  background: var(--color-parchment);
+  border: 8px solid var(--color-soviet-red);
+  box-shadow:
+    inset 0 0 0 3px var(--color-kremlin-gold),
+    0 10px 40px rgba(0, 0, 0, 0.5);
+  position: relative;
+  margin: 0 auto;
+}
+
+.boardRing {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+/* Top and Bottom Rows */
+.topRow,
+.bottomRow {
+  display: flex;
+  height: var(--corner-size);
+  flex-shrink: 0;
+}
+
+.topRow {
+  flex-direction: row;
+}
+
+.bottomRow {
+  flex-direction: row-reverse; /* Reverse to go right-to-left */
+}
+
+/* Middle Section */
+.middleSection {
+  display: flex;
+  flex: 1;
+  min-height: 0; /* Allow flex shrinking */
+}
+
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  width: var(--corner-size);
+  flex-shrink: 0;
+}
+
+.leftColumn {
+  /* Already reversed in component */
+}
+
+.rightColumn {
+  /* Normal order top to bottom */
+}
+
+/* Center Area */
+.centerArea {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-aged-white);
+  border: 2px solid var(--color-propaganda-black);
+  margin: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .board {
+    --space-width: 60px;
+    --space-height: 95px;
+    --corner-size: 95px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .board {
+    --space-width: 80px;
+    --space-height: 125px;
+    --corner-size: 125px;
+  }
+}
