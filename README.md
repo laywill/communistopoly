@@ -149,13 +149,13 @@ For the complete rule set, see `Designs/communistopoly-rules.md`. Key mechanics 
 - [x] All space types implemented
 - [x] Soviet theme styling
 
-### Phase 2: Core Game ✓
+### Phase 2: Core Game Loop ✓
 - [x] Game state management
 - [x] Dice rolling and movement
 - [x] Turn management
 - [x] Basic space resolution
 
-### Phase 3: Property SystemLoop (Next)
+### Phase 3: Property System (Next)
 - [ ] Property ownership (custodianship)
 - [ ] Quota collection (rent)
 - [ ] Collectivization (improvements)
