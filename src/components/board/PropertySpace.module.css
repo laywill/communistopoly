@@ -27,7 +27,7 @@
 
 .name {
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 600;
   color: var(--color-propaganda-black);
   line-height: 1.1;
@@ -83,7 +83,7 @@
   }
 
   .name {
-    font-size: 9px;
+    font-size: 6px;
   }
 
   .quota {
@@ -106,7 +106,7 @@
   }
 
   .name {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .quota {

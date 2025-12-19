@@ -19,7 +19,7 @@
 
 .name {
   font-family: var(--font-display);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
   line-height: 1.1;
@@ -69,7 +69,7 @@
   }
 
   .name {
-    font-size: 9px;
+    font-size: 8px;
   }
 
   .instruction {
@@ -88,7 +88,7 @@
   }
 
   .name {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .instruction {

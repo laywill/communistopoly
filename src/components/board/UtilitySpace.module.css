@@ -16,7 +16,6 @@
 
 .icon {
   font-size: 20px;
-  margin-top: 2px;
 }
 
 .label {
@@ -30,7 +29,7 @@
 
 .name {
   font-family: var(--font-body);
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 600;
   text-transform: uppercase;
   line-height: 1.1;
@@ -79,11 +78,11 @@
   }
 
   .icon {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .name {
-    font-size: 8px;
+    font-size: 6px;
   }
 
   .cost {

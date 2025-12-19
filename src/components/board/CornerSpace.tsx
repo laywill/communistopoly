@@ -55,7 +55,7 @@ const CornerSpace = ({ space }: CornerSpaceProps) => {
           <>
             <div className={styles.icon}>☠️</div>
             <div className={styles.russian}>{space.russianName}</div>
-            <div className={styles.name}>Enemy of<br/>the State</div>
+            <div className={styles.name}>{space.name}</div>
             <div className={styles.danger}>TO GULAG</div>
           </>
         )}
