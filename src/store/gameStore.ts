@@ -7,6 +7,7 @@ interface GameActions {
   // Game phase management
   setGamePhase: (phase: GamePhase) => void;
   startNewGame: () => void;
+  resetGame: () => void;
 
   // Player management
   initializePlayers: (playerSetups: Array<{ name: string; piece: Player['piece']; isStalin: boolean }>) => void;
@@ -67,6 +68,17 @@ export const useGameStore = create<GameStore>()(
       setGamePhase: (phase) => set({ gamePhase: phase }),
 
       startNewGame: () => set({ ...initialState, gamePhase: 'setup' }),
+
+      resetGame: () => {
+        // Clear localStorage save
+        localStorage.removeItem('communistopoly-save');
+
+        // Reset all state to initial values
+        set({
+          ...initialState,
+          gamePhase: 'welcome',
+        });
+      },
 
       initializePlayers: (playerSetups) => {
         const players: Player[] = playerSetups.map((setup, index) => ({
