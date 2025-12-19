@@ -1,25 +1,63 @@
 import { BOARD_SPACES } from '../../data/spaces';
 import { BoardSpace } from '../../types/game';
+import { useGameStore } from '../../store/gameStore';
 import CornerSpace from './CornerSpace';
 import BoardSpaceComponent from './BoardSpace';
 import BoardCenter from './BoardCenter';
+import PlayerPiece from './PlayerPiece';
 import styles from './Board.module.css';
 
 const Board = () => {
+  const players = useGameStore((state) => state.players);
+  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex);
+
   // Split spaces into their respective positions
   const bottomRow = BOARD_SPACES.slice(0, 11);      // 0-10: STOY to GULAG
   const leftColumn = BOARD_SPACES.slice(11, 20);    // 11-19: After GULAG to before BREADLINE
   const topRow = BOARD_SPACES.slice(20, 31);        // 20-30: BREADLINE to ENEMY OF STATE
   const rightColumn = BOARD_SPACES.slice(31, 40);   // 31-39: After ENEMY to before STOY
 
+  // Get players at a specific position
+  const getPlayersAtPosition = (position: number) => {
+    return players.filter(player => !player.isStalin && player.position === position);
+  };
+
   const renderSpace = (space: BoardSpace, additionalClass?: string) => {
     const className = additionalClass || '';
+    const playersHere = getPlayersAtPosition(space.id);
+
     if (space.type === 'corner') {
-      return <CornerSpace key={space.id} space={space} />;
+      return (
+        <div key={space.id}>
+          <CornerSpace space={space} />
+          {playersHere.length > 0 && (
+            <div className={styles.playersOnSpace}>
+              {playersHere.map(player => (
+                <PlayerPiece
+                  key={player.id}
+                  player={player}
+                  isCurrentPlayer={players[currentPlayerIndex]?.id === player.id}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      );
     }
     return (
       <div key={space.id} className={className}>
         <BoardSpaceComponent space={space} />
+        {playersHere.length > 0 && (
+          <div className={styles.playersOnSpace}>
+            {playersHere.map(player => (
+              <PlayerPiece
+                key={player.id}
+                player={player}
+                isCurrentPlayer={players[currentPlayerIndex]?.id === player.id}
+              />
+            ))}
+          </div>
+        )}
       </div>
     );
   };
