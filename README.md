@@ -204,6 +204,24 @@ This is a personal/educational project. If you'd like to contribute or have sugg
 
 This project is a satirical parody and is not affiliated with Hasbro or Monopoly. All satirical content is protected as fair use for commentary and parody purposes.
 
+### Legal Disclaimers
+
+As the developer of this Monopoly game project, it is essential to clarify the following legal aspects:
+
+1. Game Mechanics and Rules: The game mechanics and rules of Monopoly have been widely known and played for many years. This project aims to offer a digital experience, incorporating some of the classic Monopoly experience with novel concepts, ideas, artwork, and mechanics, utilizing original concepts that have become common knowledge.
+
+2. Original Monopoly Intellectual Property: The Monopoly board game is a registered trademark and copyrighted property of Hasbro Inc. and its respective licensors. This project is not an official representation or product of Hasbro Inc., and no direct affiliation or endorsement is implied.
+
+3. License and Usage: This Monopoly style game project is developed with the intent of being a personal project with satirical intent.
+
+4. Fair Use and Transformative Work: This project falls under the category of "fair use" as it is a transformative work that provides a unique digital experience based on the original Monopoly game. It is not intended to compete with or harm the commercial interests of the original trademark owner.
+
+5. No Warranty or Liability: While efforts have been made to create an enjoyable and bug-free experience, this project is provided as-is without any warranty. The developer shall not be liable for any issues or damages arising from the use of this software.
+
+6. Attribution: This project may include third-party libraries or assets that are appropriately credited and licensed under their respective terms. Any attributions and licenses should be preserved as required by the respective authors.
+
+7. Personal Responsibility: As the developer, you are responsible for complying with all applicable laws, including intellectual property laws, and ensuring that your usage of this project is within legal boundaries.
+
 ---
 
 ## Testing the Board
