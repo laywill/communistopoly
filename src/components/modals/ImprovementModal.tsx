@@ -63,15 +63,15 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
       return { canImprove: false, reason: 'Maximum level reached' };
     }
 
+    // Must own complete group to improve any property
+    if (!ownsCompleteGroup(space.group)) {
+      return { canImprove: false, reason: 'Must own all properties in group' };
+    }
+
     // Check if can afford
     const cost = getNextCollectivizationCost(property.collectivizationLevel);
     if (player.rubles < cost) {
       return { canImprove: false, reason: `Insufficient rubles (need ₽${cost})` };
-    }
-
-    // Must own complete group for People's Palace
-    if (property.collectivizationLevel === 4 && !ownsCompleteGroup(space.group)) {
-      return { canImprove: false, reason: "Must own complete group for People's Palace" };
     }
 
     // Check even building within group
