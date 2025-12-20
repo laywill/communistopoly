@@ -102,6 +102,14 @@
   min-height: 300px;
   display: flex;
   flex-direction: column;
+  /* Limit height to board size in default view */
+  --space-width: 70px;
+  --space-height: 112px;
+  --corner-size: 112px;
+  --space-padding: 2px;
+  --num-spaces-per-side: 9;
+  --board-size: calc((var(--space-width) * (var(--num-spaces-per-side))) + (var(--corner-size) * 2) + (var(--space-padding) * (var(--num-spaces-per-side) - 1)));
+  max-height: var(--board-size);
 }
 
 .dashboards-section {
@@ -110,6 +118,23 @@
   padding: 1rem;
 }
 
+/* Adjust board size and game log height for medium screens */
+@media (max-width: 1024px) {
+  .game-log-section {
+    --space-width: 60px;
+    --corner-size: 96px;
+  }
+}
+
+/* High resolution screens */
+@media (min-width: 1600px) {
+  .game-log-section {
+    --space-width: 80px;
+    --corner-size: 128px;
+  }
+}
+
+/* Narrow layout - stack vertically then switch to horizontal */
 @media (max-width: 1280px) {
   .game-layout {
     flex-direction: column;
@@ -123,5 +148,10 @@
   .stalin-panel-placeholder,
   .game-log-section {
     flex: 1;
+  }
+
+  /* In narrow view, limit game log height to Stalin panel's natural height */
+  .game-log-section {
+    max-height: 400px;
   }
 }
