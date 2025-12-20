@@ -170,6 +170,12 @@
   gap: 0.5rem;
 }
 
+.property-actions {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
 .action-button {
   width: 100%;
   background: linear-gradient(180deg, var(--color-gulag-grey) 0%, #2A2A2A 100%);
@@ -190,6 +196,17 @@
 .action-button.primary {
   background: linear-gradient(180deg, var(--color-soviet-red) 0%, #8B0000 100%);
   border-color: var(--color-kremlin-gold);
+}
+
+.action-button.secondary {
+  background: linear-gradient(180deg, #4A6C8A 0%, #2A4A5E 100%);
+  border-color: #5A7C9A;
+}
+
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .action-button:hover {

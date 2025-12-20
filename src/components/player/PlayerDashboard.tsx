@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import { getPieceByType } from '../../data/pieces';
+import { PropertyManagementModal } from '../modals/PropertyManagementModal';
+import { ImprovementModal } from '../modals/ImprovementModal';
 import './PlayerDashboard.css';
 
 // Player colors for ownership indicators (matches PropertySpace.tsx)
@@ -18,6 +21,11 @@ export default function PlayerDashboard() {
   const turnPhase = useGameStore((state) => state.turnPhase);
   const endTurn = useGameStore((state) => state.endTurn);
   const finishMoving = useGameStore((state) => state.finishMoving);
+
+  // Modal state
+  const [showPropertyModal, setShowPropertyModal] = useState(false);
+  const [showImproveModal, setShowImproveModal] = useState(false);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
 
   const handleEndTurn = () => {
     endTurn();
@@ -68,6 +76,29 @@ export default function PlayerDashboard() {
     if (player.isEliminated) return 'Eliminated';
     if (player.inGulag) return 'In Gulag';
     return 'In Play';
+  };
+
+  // Check if player has any complete color groups
+  const hasCompleteColorGroup = (player: typeof players[0]): boolean => {
+    // Import PROPERTY_GROUPS to check complete sets
+    const groups: Record<string, number[]> = {
+      siberian: [1, 3],
+      collective: [6, 8, 9],
+      industrial: [11, 13, 14],
+      ministry: [16, 18, 19],
+      military: [21, 23, 24],
+      media: [26, 27, 29],
+      elite: [31, 32, 34],
+      kremlin: [37, 39],
+    };
+
+    for (const [, groupSpaces] of Object.entries(groups)) {
+      const ownsAll = groupSpaces.every((spaceId) =>
+        player.properties.includes(spaceId.toString())
+      );
+      if (ownsAll) return true;
+    }
+    return false;
   };
 
   // Filter out Stalin from display
@@ -124,6 +155,35 @@ export default function PlayerDashboard() {
 
                 {isCurrentPlayer && !player.inGulag && (
                   <div className="player-actions">
+                    {/* Property Management Actions - Available during pre-roll and post-turn */}
+                    {(turnPhase === 'pre-roll' || turnPhase === 'post-turn') && (
+                      <div className="property-actions">
+                        <button
+                          className="action-button secondary"
+                          onClick={() => {
+                            setSelectedPlayerId(player.id);
+                            setShowPropertyModal(true);
+                          }}
+                          disabled={player.properties.length === 0}
+                          title={player.properties.length === 0 ? 'No properties to manage' : 'Manage your properties'}
+                        >
+                          📋 MANAGE PROPERTIES
+                        </button>
+                        <button
+                          className="action-button secondary"
+                          onClick={() => {
+                            setSelectedPlayerId(player.id);
+                            setShowImproveModal(true);
+                          }}
+                          disabled={!hasCompleteColorGroup(player)}
+                          title={!hasCompleteColorGroup(player) ? 'Need complete color group to improve' : 'Improve your properties'}
+                        >
+                          🏭 IMPROVE
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Turn Control Actions */}
                     {turnPhase === 'moving' && (
                       <button className="action-button" onClick={finishMoving}>
                         FINISH MOVING
@@ -141,6 +201,27 @@ export default function PlayerDashboard() {
           );
         })}
       </div>
+
+      {/* Modals */}
+      {showPropertyModal && selectedPlayerId && (
+        <PropertyManagementModal
+          playerId={selectedPlayerId}
+          onClose={() => {
+            setShowPropertyModal(false);
+            setSelectedPlayerId(null);
+          }}
+        />
+      )}
+
+      {showImproveModal && selectedPlayerId && (
+        <ImprovementModal
+          playerId={selectedPlayerId}
+          onClose={() => {
+            setShowImproveModal(false);
+            setSelectedPlayerId(null);
+          }}
+        />
+      )}
     </div>
   );
 }
