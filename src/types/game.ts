@@ -80,12 +80,17 @@ export interface Player {
   correctTestAnswers: number;
   consecutiveFailedTests: number;
   underSuspicion: boolean;
+
+  // Property system
+  skipNextTurn: boolean;  // For Industrial Centers conscripted labor
+  usedRailwayGulagPower: boolean;  // All four railways special power
 }
 
 export interface Property {
   spaceId: number;
-  custodianId: string | null;
-  collectivizationLevel: number; // 0-5
+  custodianId: string | null;  // null = owned by State
+  collectivizationLevel: number; // 0-5 (0=none, 5=People's Palace)
+  mortgaged: boolean;
 }
 
 // Game phases
@@ -104,7 +109,15 @@ export interface LogEntry {
 }
 
 // Pending actions
-export type PendingActionType = 'stoy-pilfer' | 'property-decision' | 'quota-payment' | 'tax-payment' | 'draw-card';
+export type PendingActionType =
+  | 'stoy-pilfer'
+  | 'property-purchase'
+  | 'quota-payment'
+  | 'railway-fee'
+  | 'utility-fee'
+  | 'tax-payment'
+  | 'draw-card'
+  | 'collective-farm-announcement';
 
 export interface PendingAction {
   type: PendingActionType;
