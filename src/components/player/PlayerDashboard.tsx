@@ -2,6 +2,16 @@ import { useGameStore } from '../../store/gameStore';
 import { getPieceByType } from '../../data/pieces';
 import './PlayerDashboard.css';
 
+// Player colors for ownership indicators (matches PropertySpace.tsx)
+const PLAYER_COLORS = [
+  '#C41E3A', // Red
+  '#1C3A5F', // Blue
+  '#228B22', // Green
+  '#D4A84B', // Gold
+  '#DB7093', // Pink
+  '#87CEEB', // Light Blue
+];
+
 export default function PlayerDashboard() {
   const players = useGameStore((state) => state.players);
   const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex);
@@ -11,6 +21,12 @@ export default function PlayerDashboard() {
 
   const handleEndTurn = () => {
     endTurn();
+  };
+
+  // Get player color for ownership indicator
+  const getPlayerColor = (player: typeof players[0]) => {
+    const playerIndex = players.findIndex((p) => p.id === player.id);
+    return PLAYER_COLORS[playerIndex % PLAYER_COLORS.length];
   };
 
   // Render rank stars
@@ -70,6 +86,11 @@ export default function PlayerDashboard() {
               className={`player-card ${isCurrentPlayer ? 'current-player' : ''} ${player.inGulag ? 'in-gulag' : ''}`}
             >
               <div className="player-card-header">
+                <div
+                  className="player-ownership-indicator"
+                  style={{ backgroundColor: getPlayerColor(player) }}
+                  title={`${player.name}'s ownership color`}
+                />
                 <span className="player-piece-icon">{pieceData?.icon || '?'}</span>
                 <span className="player-name">{player.name}</span>
                 {isCurrentPlayer && <span className="current-badge">CURRENT</span>}
