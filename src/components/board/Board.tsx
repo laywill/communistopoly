@@ -22,16 +22,16 @@ const Board = () => {
     return players.filter(player => !player.isStalin && player.position === position);
   };
 
-  const renderSpace = (space: BoardSpace, additionalClass?: string) => {
+  const renderSpace = (space: BoardSpace, edgePosition: 'top' | 'bottom' | 'left' | 'right', additionalClass?: string) => {
     const className = additionalClass || '';
     const playersHere = getPlayersAtPosition(space.id);
 
     if (space.type === 'corner') {
       return (
-        <div key={space.id}>
+        <div key={space.id} className={styles.spaceWrapper}>
           <CornerSpace space={space} />
           {playersHere.length > 0 && (
-            <div className={styles.playersOnSpace}>
+            <div className={`${styles.playersOnSpace} ${styles[`players${edgePosition.charAt(0).toUpperCase()}${edgePosition.slice(1)}`]}`}>
               {playersHere.map(player => (
                 <PlayerPiece
                   key={player.id}
@@ -45,10 +45,10 @@ const Board = () => {
       );
     }
     return (
-      <div key={space.id} className={className}>
+      <div key={space.id} className={`${styles.spaceWrapper} ${className}`}>
         <BoardSpaceComponent space={space} />
         {playersHere.length > 0 && (
-          <div className={styles.playersOnSpace}>
+          <div className={`${styles.playersOnSpace} ${styles[`players${edgePosition.charAt(0).toUpperCase()}${edgePosition.slice(1)}`]}`}>
             {playersHere.map(player => (
               <PlayerPiece
                 key={player.id}
@@ -67,14 +67,14 @@ const Board = () => {
       <div className={styles.boardRing}>
         {/* Top Row: BREADLINE (20) to ENEMY OF STATE (30) */}
         <div className={styles.topRow}>
-          {topRow.map(space => renderSpace(space))}
+          {topRow.map(space => renderSpace(space, 'top'))}
         </div>
 
         {/* Middle Section: Left Column + Center + Right Column */}
         <div className={styles.middleSection}>
           {/* Left Column: Spaces 11-19 (bottom to top, reversed, rotated 90deg) */}
           <div className={styles.leftColumn}>
-            {[...leftColumn].reverse().map(space => renderSpace(space, styles.rotateLeft))}
+            {[...leftColumn].reverse().map(space => renderSpace(space, 'left', styles.rotateLeft))}
           </div>
 
           {/* Center Area */}
@@ -84,13 +84,13 @@ const Board = () => {
 
           {/* Right Column: Spaces 31-39 (top to bottom, rotated -90deg) */}
           <div className={styles.rightColumn}>
-            {rightColumn.map(space => renderSpace(space, styles.rotateRight))}
+            {rightColumn.map(space => renderSpace(space, 'right', styles.rotateRight))}
           </div>
         </div>
 
         {/* Bottom Row: GULAG (10) to STOY (0) - left to right order */}
         <div className={styles.bottomRow}>
-          {[...bottomRow].reverse().map(space => renderSpace(space))}
+          {[...bottomRow].reverse().map(space => renderSpace(space, 'bottom'))}
         </div>
       </div>
     </div>
