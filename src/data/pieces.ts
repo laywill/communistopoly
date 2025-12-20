@@ -21,7 +21,7 @@ export const PIECES: PieceData[] = [
   {
     type: 'sickle',
     name: 'The Sickle',
-    icon: '🌙',
+    icon: '🌾',
     description: "The farmer's blade, reaping the harvest",
     shortAbility: 'Half farm quotas, harvest ability',
     fullAbility: 'Collective Farm quotas against you are halved. Once per game, may "harvest" another player\'s property (steal custodianship of one property worth less than ₽150). Must announce "For the Motherland!" before each roll or pay ₽25 fine.',

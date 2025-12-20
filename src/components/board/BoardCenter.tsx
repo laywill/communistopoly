@@ -97,9 +97,9 @@ function getPieceEmoji(piece: string | null): string {
     hammer: '🔨',
     sickle: '🌾',
     redStar: '⭐',
-    tank: '🚜',
+    tank: '🚛',
     breadLoaf: '🍞',
-    ironCurtain: '🎭',
+    ironCurtain: '🚧',
     vodkaBottle: '🍾',
     statueOfLenin: '🗿',
   };

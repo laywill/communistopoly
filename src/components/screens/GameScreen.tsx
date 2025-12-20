@@ -46,15 +46,17 @@ export default function GameScreen() {
       </header>
 
       <div className="game-layout">
+        <div className="stalin-section">
+          <div className="stalin-panel-section">
+            <StalinPanel />
+          </div>
+        </div>
+
         <div className="board-section">
           <Board />
         </div>
 
         <div className="info-section">
-          <div className="stalin-panel-section">
-            <StalinPanel />
-          </div>
-
           <div className="game-log-section">
             <GameLog />
           </div>
