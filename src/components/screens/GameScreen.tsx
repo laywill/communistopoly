@@ -3,6 +3,7 @@ import { useGameStore } from '../../store/gameStore';
 import Board from '../board/Board';
 import PlayerDashboard from '../player/PlayerDashboard';
 import GameLog from '../game/GameLog';
+import StalinPanel from '../stalin/StalinPanel';
 import { PendingActionHandler } from '../modals/PendingActionHandler';
 import ExitConfirmModal from '../modals/ExitConfirmModal';
 import './GameScreen.css';
@@ -50,9 +51,8 @@ export default function GameScreen() {
         </div>
 
         <div className="info-section">
-          <div className="stalin-panel-placeholder">
-            <p>Stalin's Panel</p>
-            <p>(Coming in Milestone 6)</p>
+          <div className="stalin-panel-section">
+            <StalinPanel />
           </div>
 
           <div className="game-log-section">

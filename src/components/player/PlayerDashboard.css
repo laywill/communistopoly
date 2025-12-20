@@ -25,6 +25,7 @@
 .player-card.in-gulag {
   background: var(--color-gulag-grey);
   border-color: #666;
+  filter: saturate(0.5) brightness(0.9);
 }
 
 .player-card-header {
@@ -74,6 +75,16 @@
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 700;
+}
+
+.gulag-badge {
+  background: var(--color-blood-burgundy);
+  color: var(--color-aged-white);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid #333;
 }
 
 .player-card-body {

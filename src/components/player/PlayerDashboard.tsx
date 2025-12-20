@@ -122,9 +122,11 @@ export default function PlayerDashboard() {
                   style={{ backgroundColor: getPlayerColor(player) }}
                   title={`${player.name}'s ownership color`}
                 />
+                {player.inGulag && <span style={{ fontSize: '1.5rem' }}>⛓️</span>}
                 <span className="player-piece-icon">{pieceData?.icon || '?'}</span>
                 <span className="player-name">{player.name}</span>
                 {isCurrentPlayer && <span className="current-badge">CURRENT</span>}
+                {player.inGulag && <span className="gulag-badge">IMPRISONED</span>}
               </div>
 
               <div className="player-card-body">
@@ -152,6 +154,15 @@ export default function PlayerDashboard() {
                     {getPlayerStatus(player)}
                   </span>
                 </div>
+
+                {player.inGulag && (
+                  <div className="player-stat gulag-sentence">
+                    <label>SENTENCE:</label>
+                    <span className="stat-value" style={{ color: 'var(--color-blood-burgundy)', fontWeight: 'bold' }}>
+                      Day {player.gulagTurns + 1} of ???
+                    </span>
+                  </div>
+                )}
 
                 {isCurrentPlayer && !player.inGulag && (
                   <div className="player-actions">

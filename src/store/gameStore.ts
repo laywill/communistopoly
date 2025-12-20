@@ -444,16 +444,23 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
-        // Find next player (skip Stalin and players in Gulag)
+        // Find next player (skip Stalin and eliminated players, but include Gulag players)
         let nextIndex = (currentPlayerIndex + 1) % players.length;
         let attempts = 0;
 
         while (
-          (players[nextIndex].isStalin || players[nextIndex].inGulag || players[nextIndex].isEliminated) &&
+          (players[nextIndex].isStalin || players[nextIndex].isEliminated) &&
           attempts < players.length
         ) {
           nextIndex = (nextIndex + 1) % players.length;
           attempts++;
+        }
+
+        // Check if we've completed a round (cycling back to first non-Stalin player)
+        // First non-Stalin player is typically at index 1
+        const firstNonStalinIndex = players.findIndex((p) => !p.isStalin && !p.isEliminated);
+        if (nextIndex === firstNonStalinIndex && currentPlayerIndex !== firstNonStalinIndex) {
+          get().incrementRound();
         }
 
         set({

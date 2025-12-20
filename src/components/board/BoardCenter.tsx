@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import Dice from '../game/Dice';
 import styles from './BoardCenter.module.css';
@@ -11,10 +12,18 @@ const BoardCenter = () => {
   const hasRolled = useGameStore((state) => state.hasRolled);
   const rollDice = useGameStore((state) => state.rollDice);
   const finishRolling = useGameStore((state) => state.finishRolling);
+  const handleGulagTurn = useGameStore((state) => state.handleGulagTurn);
 
   const currentPlayer = players[currentPlayerIndex];
   const [die1, die2] = dice;
   const isDoubles = die1 === die2;
+
+  // Handle Gulag players' turns
+  useEffect(() => {
+    if (turnPhase === 'pre-roll' && !hasRolled && currentPlayer && currentPlayer.inGulag) {
+      handleGulagTurn(currentPlayer.id);
+    }
+  }, [turnPhase, hasRolled, currentPlayer, handleGulagTurn]);
 
   const handleRoll = () => {
     if (turnPhase === 'pre-roll' && !hasRolled && currentPlayer && !currentPlayer.inGulag) {
