@@ -8,6 +8,7 @@ import { TaxModal } from './TaxModal';
 import { GulagEscapeModal } from './GulagEscapeModal';
 import { VoucherRequestModal } from './VoucherRequestModal';
 import { BribeStalinModal } from './BribeStalinModal';
+import { InformOnPlayerModal } from './InformOnPlayerModal';
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -109,6 +110,12 @@ export function PendingActionHandler() {
             reason={pendingAction.data.reason as string}
           />
         );
+      }
+      return null;
+
+    case 'inform-on-player':
+      if (pendingAction.data?.informerId) {
+        return <InformOnPlayerModal informerId={pendingAction.data.informerId as string} />;
       }
       return null;
 
