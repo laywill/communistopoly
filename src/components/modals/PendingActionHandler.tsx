@@ -5,6 +5,9 @@ import { QuotaPaymentModal } from './QuotaPaymentModal';
 import { RailwayModal } from './RailwayModal';
 import { UtilityModal } from './UtilityModal';
 import { TaxModal } from './TaxModal';
+import { GulagEscapeModal } from './GulagEscapeModal';
+import { VoucherRequestModal } from './VoucherRequestModal';
+import { BribeStalinModal } from './BribeStalinModal';
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -81,6 +84,29 @@ export function PendingActionHandler() {
             spaceId={pendingAction.data.spaceId as number}
             playerId={pendingAction.data.playerId as string}
             onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'gulag-escape-choice':
+      if (pendingAction.data?.playerId) {
+        return <GulagEscapeModal playerId={pendingAction.data.playerId as string} />;
+      }
+      return null;
+
+    case 'voucher-request':
+      if (pendingAction.data?.prisonerId) {
+        return <VoucherRequestModal prisonerId={pendingAction.data.prisonerId as string} />;
+      }
+      return null;
+
+    case 'bribe-stalin':
+      if (pendingAction.data?.playerId && pendingAction.data?.reason) {
+        return (
+          <BribeStalinModal
+            playerId={pendingAction.data.playerId as string}
+            reason={pendingAction.data.reason as string}
           />
         );
       }
