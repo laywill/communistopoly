@@ -334,6 +334,14 @@ export const useGameStore = create<GameStore>()(
           }
 
           case 'tax':
+            set({
+              pendingAction: {
+                type: 'tax-payment',
+                data: { spaceId: space.id, playerId: currentPlayer.id },
+              },
+            });
+            break;
+
           case 'card':
             // Placeholder for future milestones
             get().addLogEntry({

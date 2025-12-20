@@ -2,6 +2,9 @@ import { useGameStore } from '../../store/gameStore';
 import StoyPilferModal from './StoyPilferModal';
 import { PropertyPurchaseModal } from './PropertyPurchaseModal';
 import { QuotaPaymentModal } from './QuotaPaymentModal';
+import { RailwayModal } from './RailwayModal';
+import { UtilityModal } from './UtilityModal';
+import { TaxModal } from './TaxModal';
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -47,61 +50,41 @@ export function PendingActionHandler() {
       return null;
 
     case 'railway-fee':
-      // TODO: Implement RailwayModal
-      return (
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: '#F5E6C8',
-          padding: '20px',
-          border: '4px solid #C41E3A',
-          borderRadius: '8px',
-          zIndex: 1000
-        }}>
-          <p>Railway Fee Modal - Coming soon!</p>
-          <button onClick={handleClose}>Close</button>
-        </div>
-      );
+      if (pendingAction.data?.spaceId && pendingAction.data?.payerId) {
+        return (
+          <RailwayModal
+            spaceId={pendingAction.data.spaceId as number}
+            payerId={pendingAction.data.payerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
 
     case 'utility-fee':
-      // TODO: Implement UtilityModal
-      return (
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: '#F5E6C8',
-          padding: '20px',
-          border: '4px solid #C41E3A',
-          borderRadius: '8px',
-          zIndex: 1000
-        }}>
-          <p>Utility Fee Modal - Coming soon!</p>
-          <button onClick={handleClose}>Close</button>
-        </div>
-      );
+      if (pendingAction.data?.spaceId && pendingAction.data?.payerId && pendingAction.data?.diceTotal) {
+        return (
+          <UtilityModal
+            spaceId={pendingAction.data.spaceId as number}
+            payerId={pendingAction.data.payerId as string}
+            diceTotal={pendingAction.data.diceTotal as number}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
 
     case 'tax-payment':
-      // TODO: Implement TaxModal
-      return (
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: '#F5E6C8',
-          padding: '20px',
-          border: '4px solid #C41E3A',
-          borderRadius: '8px',
-          zIndex: 1000
-        }}>
-          <p>Tax Payment Modal - Coming soon!</p>
-          <button onClick={handleClose}>Close</button>
-        </div>
-      );
+      if (pendingAction.data?.spaceId && pendingAction.data?.playerId) {
+        return (
+          <TaxModal
+            spaceId={pendingAction.data.spaceId as number}
+            playerId={pendingAction.data.playerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
 
     default:
       return null;

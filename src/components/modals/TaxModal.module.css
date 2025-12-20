@@ -1,0 +1,388 @@
+/* Tax Modal Styles */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #F5E6C8;
+  border: 4px solid #C41E3A;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  max-width: 650px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.header {
+  background: #B8860B;
+  color: #FAF6EF;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  border-bottom: 2px solid #D4A84B;
+}
+
+.icon {
+  font-size: 28px;
+}
+
+.title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-align: center;
+}
+
+.content {
+  padding: 30px;
+}
+
+.taxInfo {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.description {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 16px;
+  color: #1A1A1A;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.wealthCalculation {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: rgba(26, 26, 26, 0.05);
+  border-radius: 4px;
+}
+
+.calcTitle {
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #1A1A1A;
+  margin: 0 0 15px 0;
+}
+
+.wealthBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wealthItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 14px;
+  color: #4A4A4A;
+}
+
+.wealthItem span:last-child {
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.wealthDivider {
+  height: 2px;
+  background: #D4A84B;
+  margin: 10px 0;
+}
+
+.wealthTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.choiceButton {
+  padding: 20px;
+  background: linear-gradient(180deg, #FAF6EF 0%, #F5E6C8 100%);
+  border: 3px solid #D4A84B;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.choiceButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  border-color: #C41E3A;
+}
+
+.choiceTitle {
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #1A1A1A;
+}
+
+.choiceAmount {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  color: #D4A84B;
+}
+
+.orDivider {
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #4A4A4A;
+  padding: 5px 0;
+}
+
+.auditSection {
+  margin-bottom: 25px;
+}
+
+.choiceConfirm {
+  padding: 15px;
+  background: rgba(212, 168, 75, 0.2);
+  border: 2px solid #D4A84B;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 15px;
+  color: #1A1A1A;
+}
+
+.choiceConfirm strong {
+  display: block;
+  margin-bottom: 5px;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+}
+
+.stalinDecision {
+  padding: 25px;
+  background: rgba(44, 62, 80, 0.1);
+  border: 3px solid #2C3E50;
+  border-radius: 4px;
+}
+
+.auditTitle {
+  font-family: 'Oswald', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #2C3E50;
+  margin: 0 0 15px 0;
+  text-align: center;
+  letter-spacing: 0.1em;
+}
+
+.auditDescription {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 14px;
+  color: #1A1A1A;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.auditButtons {
+  display: flex;
+  gap: 15px;
+}
+
+.noAuditButton,
+.auditButton {
+  flex: 1;
+  padding: 15px;
+  border: 2px solid;
+  border-radius: 4px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.noAuditButton {
+  background: linear-gradient(180deg, #4A4A4A 0%, #2A2A2A 100%);
+  color: #FAF6EF;
+  border-color: #666;
+  box-shadow: 0 4px 0 #1A1A1A, 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+.noAuditButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #1A1A1A, 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+
+.noAuditButton:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #1A1A1A, 0 3px 5px rgba(0, 0, 0, 0.3);
+}
+
+.auditButton {
+  background: linear-gradient(180deg, #2C3E50 0%, #1A252F 100%);
+  color: #D4A84B;
+  border-color: #D4A84B;
+  box-shadow: 0 4px 0 #0D1218, 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+.auditButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #0D1218, 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+
+.auditButton:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #0D1218, 0 3px 5px rgba(0, 0, 0, 0.3);
+}
+
+.wealthiestWarning {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: rgba(196, 30, 58, 0.1);
+  border: 3px solid #C41E3A;
+  border-radius: 4px;
+  animation: warningPulse 2s infinite;
+}
+
+@keyframes warningPulse {
+  0%, 100% {
+    border-color: #C41E3A;
+  }
+  50% {
+    border-color: #722F37;
+  }
+}
+
+.wealthiestWarning strong {
+  display: block;
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  color: #C41E3A;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.wealthiestWarning p {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 14px;
+  color: #1A1A1A;
+  margin: 0;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.taxDue {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 20px;
+  background: rgba(212, 168, 75, 0.1);
+  border: 2px solid #D4A84B;
+  border-radius: 4px;
+}
+
+.taxLabel {
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #1A1A1A;
+}
+
+.taxValue {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: #D4A84B;
+}
+
+.playerBalance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(26, 26, 26, 0.05);
+  border-radius: 4px;
+}
+
+.balanceLabel {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4A4A4A;
+  text-transform: uppercase;
+}
+
+.balanceValue {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: #228B22;
+}
+
+.payButton {
+  width: 100%;
+  padding: 15px 30px;
+  background: linear-gradient(180deg, #B8860B 0%, #8B6914 100%);
+  color: #FAF6EF;
+  border: 2px solid #D4A84B;
+  border-radius: 4px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #5D4E37, 0 6px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s ease;
+}
+
+.payButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #5D4E37, 0 8px 15px rgba(0, 0, 0, 0.4);
+}
+
+.payButton:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #5D4E37, 0 3px 5px rgba(0, 0, 0, 0.3);
+}
