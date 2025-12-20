@@ -1,16 +1,9 @@
-import { useEffect, useRef } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import { LogEntry } from '../../types/game';
 import styles from './GameLog.module.css';
 
 const GameLog = () => {
   const gameLog = useGameStore((state) => state.gameLog);
-  const logEndRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to bottom when new entries are added
-  useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [gameLog]);
 
   const getLogEntryClass = (type: LogEntry['type']) => {
     switch (type) {
@@ -65,13 +58,12 @@ const GameLog = () => {
           </div>
         ) : (
           <>
-            {gameLog.map((entry) => (
+            {[...gameLog].reverse().map((entry) => (
               <div key={entry.id} className={`${styles.entry} ${getLogEntryClass(entry.type)}`}>
                 <div className={styles.entryTime}>{formatTime(entry.timestamp)}</div>
                 <div className={styles.entryMessage}>{entry.message}</div>
               </div>
             ))}
-            <div ref={logEndRef} />
           </>
         )}
       </div>
