@@ -77,21 +77,16 @@ const PropertySpace = ({ space }: PropertySpaceProps) => {
         )}
 
         {/* Collectivization indicators */}
-        {collectivizationLevel > 0 && (
-          <div className={styles.collectivization}>
-            {[...Array(4)].map((_, i) => (
-              <span
-                key={i}
-                className={i < collectivizationLevel ? styles.filled : styles.empty}
-              >
-                ☆
-              </span>
-            ))}
-            <span className={collectivizationLevel >= 5 ? styles.filled : styles.empty}>
-              ★
+        <div className={styles.collectivization}>
+          {[...Array(5)].map((_, i) => (
+            <span
+              key={i}
+              className={i < collectivizationLevel ? styles.filled : styles.empty}
+            >
+              {i < collectivizationLevel ? '★' : '☆'}
             </span>
-          </div>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );
