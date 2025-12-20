@@ -3,20 +3,13 @@ import { useGameStore } from '../../store/gameStore';
 import Board from '../board/Board';
 import PlayerDashboard from '../player/PlayerDashboard';
 import GameLog from '../game/GameLog';
-import StoyPilferModal from '../modals/StoyPilferModal';
+import { PendingActionHandler } from '../modals/PendingActionHandler';
 import ExitConfirmModal from '../modals/ExitConfirmModal';
 import './GameScreen.css';
 
 export default function GameScreen() {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const pendingAction = useGameStore((state) => state.pendingAction);
-  const currentPlayer = useGameStore((state) => state.players[state.currentPlayerIndex]);
-  const setTurnPhase = useGameStore((state) => state.setTurnPhase);
   const resetGame = useGameStore((state) => state.resetGame);
-
-  const handleCloseStoyPilfer = () => {
-    setTurnPhase('post-turn');
-  };
 
   const handleExitConfirm = () => {
     resetGame();
@@ -73,12 +66,7 @@ export default function GameScreen() {
       </div>
 
       {/* Modals */}
-      {pendingAction?.type === 'stoy-pilfer' && currentPlayer && (
-        <StoyPilferModal
-          playerId={currentPlayer.id}
-          onClose={handleCloseStoyPilfer}
-        />
-      )}
+      <PendingActionHandler />
 
       <ExitConfirmModal
         isOpen={showExitConfirm}

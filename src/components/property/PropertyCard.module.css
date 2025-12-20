@@ -1,0 +1,174 @@
+.card {
+  background: #F5E6C8;
+  border: 3px solid #1A1A1A;
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: 'Roboto Condensed', 'Arial Narrow', sans-serif;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.card.compact {
+  min-width: 120px;
+}
+
+.colorBand {
+  height: 30px;
+  width: 100%;
+}
+
+.content {
+  padding: 12px;
+  color: #1A1A1A;
+}
+
+.compact .content {
+  padding: 8px;
+}
+
+.name {
+  font-family: 'Oswald', 'Impact', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 0 0 8px 0;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+.compact .name {
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.group {
+  font-size: 11px;
+  text-transform: uppercase;
+  text-align: center;
+  color: #4A4A4A;
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+.custodian,
+.quota,
+.currentQuota {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+}
+
+.compact .custodian,
+.compact .quota {
+  font-size: 11px;
+  padding: 4px 0;
+}
+
+.label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #4A4A4A;
+  letter-spacing: 0.05em;
+}
+
+.compact .label {
+  font-size: 10px;
+}
+
+.value {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.compact .value {
+  font-size: 12px;
+}
+
+.currentQuota {
+  border-bottom: none;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 2px solid #C41E3A;
+}
+
+.currentQuota .label {
+  color: #C41E3A;
+  font-weight: 600;
+}
+
+.currentQuota .value {
+  color: #C41E3A;
+  font-size: 16px;
+}
+
+.collectivization {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(26, 26, 26, 0.1);
+  text-align: center;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.star {
+  color: #D4A84B;
+  font-size: 18px;
+}
+
+.compactStars {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.compactStars .star {
+  font-size: 14px;
+}
+
+.levelName {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #D4A84B;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.mortgaged {
+  margin-top: 8px;
+  padding: 6px;
+  background: repeating-linear-gradient(
+    45deg,
+    #4A4A4A,
+    #4A4A4A 10px,
+    #666666 10px,
+    #666666 20px
+  );
+  color: #FAF6EF;
+  text-align: center;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.specialRule {
+  margin-top: 8px;
+  padding: 6px;
+  background: rgba(196, 30, 58, 0.1);
+  border: 1px solid #C41E3A;
+  border-radius: 4px;
+  font-size: 11px;
+  text-align: center;
+  color: #C41E3A;
+  font-weight: 600;
+}

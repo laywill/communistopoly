@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry } from '../types/game';
+import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction } from '../types/game';
 import { BOARD_SPACES, getSpaceById } from '../data/spaces';
 
 interface GameActions {
@@ -18,6 +18,10 @@ interface GameActions {
   initializeProperties: () => void;
   setPropertyCustodian: (spaceId: number, custodianId: string | null) => void;
   updateCollectivizationLevel: (spaceId: number, level: number) => void;
+  purchaseProperty: (playerId: string, spaceId: number, price: number) => void;
+  payQuota: (payerId: string, custodianId: string, amount: number) => void;
+  mortgageProperty: (spaceId: number) => void;
+  unmortgageProperty: (spaceId: number, playerId: string) => void;
 
   // Turn management
   rollDice: () => void;
@@ -40,6 +44,9 @@ interface GameActions {
 
   // Treasury
   adjustTreasury: (amount: number) => void;
+
+  // Pending actions
+  setPendingAction: (action: PendingAction | null) => void;
 }
 
 type GameStore = GameState & GameActions;
@@ -96,6 +103,8 @@ export const useGameStore = create<GameStore>()(
           correctTestAnswers: 0,
           consecutiveFailedTests: 0,
           underSuspicion: false,
+          skipNextTurn: false,
+          usedRailwayGulagPower: false,
         }));
 
         const stalinPlayer = players.find(p => p.isStalin);
@@ -133,6 +142,7 @@ export const useGameStore = create<GameStore>()(
             spaceId: space.id,
             custodianId: null, // All start owned by the STATE
             collectivizationLevel: 0,
+            mortgaged: false,
           }));
 
         set({ properties });
@@ -269,17 +279,69 @@ export const useGameStore = create<GameStore>()(
 
           case 'property':
           case 'railway':
-          case 'utility':
-            // Will be handled in Milestone 4
-            get().addLogEntry({
-              type: 'system',
-              message: `${currentPlayer.name} landed on ${space.name} (property system coming in Milestone 4)`,
-              playerId: currentPlayer.id,
-            });
-            set({ turnPhase: 'post-turn' });
+          case 'utility': {
+            const property = state.properties.find((p) => p.spaceId === space.id);
+            if (!property) {
+              set({ turnPhase: 'post-turn' });
+              break;
+            }
+
+            // Check if property is owned by State (available for purchase)
+            if (property.custodianId === null) {
+              set({
+                pendingAction: {
+                  type: 'property-purchase',
+                  data: { spaceId: space.id, playerId: currentPlayer.id },
+                },
+              });
+            }
+            // Check if property is owned by another player (must pay quota)
+            else if (property.custodianId !== currentPlayer.id) {
+              if (space.type === 'railway') {
+                set({
+                  pendingAction: {
+                    type: 'railway-fee',
+                    data: { spaceId: space.id, payerId: currentPlayer.id },
+                  },
+                });
+              } else if (space.type === 'utility') {
+                const [die1, die2] = state.dice;
+                set({
+                  pendingAction: {
+                    type: 'utility-fee',
+                    data: { spaceId: space.id, payerId: currentPlayer.id, diceTotal: die1 + die2 },
+                  },
+                });
+              } else {
+                set({
+                  pendingAction: {
+                    type: 'quota-payment',
+                    data: { spaceId: space.id, payerId: currentPlayer.id },
+                  },
+                });
+              }
+            }
+            // Player owns this property - just visiting
+            else {
+              get().addLogEntry({
+                type: 'system',
+                message: `${currentPlayer.name} landed on their own property: ${space.name}`,
+                playerId: currentPlayer.id,
+              });
+              set({ turnPhase: 'post-turn' });
+            }
             break;
+          }
 
           case 'tax':
+            set({
+              pendingAction: {
+                type: 'tax-payment',
+                data: { spaceId: space.id, playerId: currentPlayer.id },
+              },
+            });
+            break;
+
           case 'card':
             // Placeholder for future milestones
             get().addLogEntry({
@@ -440,6 +502,110 @@ export const useGameStore = create<GameStore>()(
         set((state) => ({
           stateTreasury: Math.max(0, state.stateTreasury + amount),
         }));
+      },
+
+      // Property transactions
+      purchaseProperty: (playerId, spaceId, price) => {
+        const state = get();
+        const player = state.players.find((p) => p.id === playerId);
+        if (!player || player.rubles < price) return;
+
+        // Deduct rubles
+        get().updatePlayer(playerId, {
+          rubles: player.rubles - price,
+          properties: [...player.properties, spaceId.toString()],
+        });
+
+        // Set custodian
+        get().setPropertyCustodian(spaceId, playerId);
+
+        // Add to treasury
+        get().adjustTreasury(price);
+
+        const space = getSpaceById(spaceId);
+        get().addLogEntry({
+          type: 'property',
+          message: `${player.name} became Custodian of ${space?.name} for ₽${price}`,
+          playerId,
+        });
+      },
+
+      payQuota: (payerId, custodianId, amount) => {
+        const state = get();
+        const payer = state.players.find((p) => p.id === payerId);
+        const custodian = state.players.find((p) => p.id === custodianId);
+        if (!payer || !custodian) return;
+
+        // Transfer rubles
+        get().updatePlayer(payerId, { rubles: payer.rubles - amount });
+        get().updatePlayer(custodianId, { rubles: custodian.rubles + amount });
+
+        get().addLogEntry({
+          type: 'payment',
+          message: `${payer.name} paid ₽${amount} quota to ${custodian.name}`,
+          playerId: payerId,
+        });
+      },
+
+      mortgageProperty: (spaceId) => {
+        const state = get();
+        const property = state.properties.find((p) => p.spaceId === spaceId);
+        if (!property || !property.custodianId) return;
+
+        const space = getSpaceById(spaceId);
+        const mortgageValue = Math.floor((space?.baseCost || 0) * 0.5);
+
+        // Give player half the base cost
+        const player = state.players.find((p) => p.id === property.custodianId);
+        if (player) {
+          get().updatePlayer(player.id, { rubles: player.rubles + mortgageValue });
+        }
+
+        // Mark as mortgaged
+        set((state) => ({
+          properties: state.properties.map((prop) =>
+            prop.spaceId === spaceId ? { ...prop, mortgaged: true } : prop
+          ),
+        }));
+
+        get().addLogEntry({
+          type: 'property',
+          message: `${player?.name} mortgaged ${space?.name} for ₽${mortgageValue}`,
+          playerId: property.custodianId,
+        });
+      },
+
+      unmortgageProperty: (spaceId, playerId) => {
+        const state = get();
+        const property = state.properties.find((p) => p.spaceId === spaceId);
+        const player = state.players.find((p) => p.id === playerId);
+        if (!property || !player) return;
+
+        const space = getSpaceById(spaceId);
+        const unmortgageCost = Math.floor((space?.baseCost || 0) * 0.6);
+
+        if (player.rubles < unmortgageCost) return;
+
+        // Deduct cost
+        get().updatePlayer(playerId, { rubles: player.rubles - unmortgageCost });
+
+        // Unmark mortgaged
+        set((state) => ({
+          properties: state.properties.map((prop) =>
+            prop.spaceId === spaceId ? { ...prop, mortgaged: false } : prop
+          ),
+        }));
+
+        get().addLogEntry({
+          type: 'property',
+          message: `${player.name} unmortgaged ${space?.name} for ₽${unmortgageCost}`,
+          playerId,
+        });
+      },
+
+      // Pending actions
+      setPendingAction: (action) => {
+        set({ pendingAction: action });
       },
     }),
     {
