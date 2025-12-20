@@ -155,29 +155,32 @@ For the complete rule set, see `Designs/communistopoly-rules.md`. Key mechanics 
 - [x] Turn management
 - [x] Basic space resolution
 
-### Phase 3: Property System (Next)
-- [ ] Property ownership (custodianship)
-- [ ] Quota collection (rent)
-- [ ] Collectivization (improvements)
-- [ ] Trading system
+### Phase 3: Property System
+- [X] Property ownership (custodianship)
+- [X] Quota collection (rent)
+- [X] Collectivization (improvements)
+- [X] Trading system
 
-### Phase 4: Stalin & Special Mechanics
+### Phase 4: Gulag Mechanics (Next)
+- [ ] Gulag mechanics
+
+### Phase 5: Stalin & Special Mechanics
 - [ ] Stalin control panel
 - [ ] Denouncement system
 - [ ] Tribunal flow
 - [ ] Gulag mechanics
 
-### Phase 5: Cards & Tests
+### Phase 6: Cards & Tests
 - [ ] Party Directive cards
 - [ ] Communist Test system
 - [ ] Card deck management
 
-### Phase 6: Player Pieces
+### Phase 7: Player Pieces
 - [ ] Piece selection
 - [ ] Special abilities
 - [ ] Restrictions enforcement
 
-### Phase 7: Polish & Completion
+### Phase 8: Polish & Completion
 - [ ] Player elimination
 - [ ] Victory conditions
 - [ ] Game log
