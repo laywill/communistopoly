@@ -7,12 +7,45 @@
   flex-direction: column;
   position: relative;
   flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+/* Mortgaged property styling */
+.propertySpace.mortgaged {
+  opacity: 0.6;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--color-aged-white),
+    var(--color-aged-white) 5px,
+    #e0e0e0 5px,
+    #e0e0e0 10px
+  );
+}
+
+/* Complete group highlighting */
+.propertySpace.completeGroup {
+  border-color: var(--color-kremlin-gold);
+  border-width: 3px;
+  box-shadow: 0 0 8px rgba(212, 168, 75, 0.4);
 }
 
 .colorBand {
   width: 100%;
   height: 25px;
   flex-shrink: 0;
+  position: relative;
+}
+
+/* Ownership indicator */
+.ownerIndicator {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--color-propaganda-black);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .content {

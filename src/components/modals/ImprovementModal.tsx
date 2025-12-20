@@ -17,7 +17,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
   const updateCollectivizationLevel = useGameStore((state) => state.updateCollectivizationLevel);
   const addLogEntry = useGameStore((state) => state.addLogEntry);
 
-  const [selectedProperty, setSelectedProperty] = useState<number | null>(null);
+  const [, setSelectedProperty] = useState<number | null>(null);
 
   const player = players.find((p) => p.id === playerId);
 
