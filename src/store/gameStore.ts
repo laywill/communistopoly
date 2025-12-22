@@ -11,7 +11,7 @@ function getGulagReasonText(reason: GulagReason, justification?: string): string
     denouncementGuilty: 'Found guilty in tribunal',
     debtDefault: 'Failed to pay debt within one round',
     pilferingCaught: 'Caught stealing at STOY checkpoint',
-    stalinDecree: justification || 'Sent by Stalin',
+    stalinDecree: justification ?? 'Sent by Stalin',
     railwayCapture: 'Caught attempting to flee the motherland via railway',
     campLabor: 'Sent for forced labor by Siberian Camp custodian',
     voucherConsequence: 'Voucher consequence - vouchee committed an offense',
@@ -192,7 +192,7 @@ export const useGameStore = create<GameStore>()(
 
         set({
           players,
-          stalinPlayerId: stalinPlayer?.id || null,
+          stalinPlayerId: stalinPlayer?.id ?? null,
           currentPlayerIndex: 1, // Start with first non-Stalin player
           stateTreasury,
         });
@@ -636,7 +636,7 @@ export const useGameStore = create<GameStore>()(
         if (!property || !property.custodianId) return;
 
         const space = getSpaceById(spaceId);
-        const mortgageValue = Math.floor((space?.baseCost || 0) * 0.5);
+        const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5);
 
         // Give player half the base cost
         const player = state.players.find((p) => p.id === property.custodianId);
@@ -665,7 +665,7 @@ export const useGameStore = create<GameStore>()(
         if (!property || !player) return;
 
         const space = getSpaceById(spaceId);
-        const unmortgageCost = Math.floor((space?.baseCost || 0) * 0.6);
+        const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6);
 
         if (player.rubles < unmortgageCost) return;
 
