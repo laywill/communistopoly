@@ -367,7 +367,7 @@ Stalin gets a special elevated interface, styled as the "Kremlin Command Center.
 
 ---
 
-# 8. MODAL DIALOGS
+# 8. MODAL DIALOGUES
 
 ## General Modal Style
 

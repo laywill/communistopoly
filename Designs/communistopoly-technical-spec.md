@@ -1049,13 +1049,6 @@ Based on the design document, implement these CSS custom properties:
   },
   "customizations": {
     "vscode": {
-      "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "bradlc.vscode-tailwindcss",
-        "csstools.postcss",
-        "styled-components.vscode-styled-components"
-      ],
       "settings": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true
