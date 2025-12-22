@@ -23,7 +23,10 @@ const BoardCenter = () => {
     if (turnPhase === 'pre-roll' && !hasRolled && currentPlayer && currentPlayer.inGulag) {
       handleGulagTurn(currentPlayer.id);
     }
-  }, [turnPhase, hasRolled, currentPlayer, handleGulagTurn]);
+    // Only depend on turnPhase and currentPlayerIndex to prevent infinite loop
+    // when gulagTurns increments (which changes currentPlayer object)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [turnPhase, currentPlayerIndex]);
 
   const handleRoll = () => {
     if (turnPhase === 'pre-roll' && !hasRolled && currentPlayer && !currentPlayer.inGulag) {
