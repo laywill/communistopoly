@@ -368,9 +368,8 @@ export const useGameStore = create<GameStore>()(
                   data: { spaceId: space.id, playerId: currentPlayer.id },
                 },
               });
-            }
-            // Check if property is owned by another player (must pay quota)
-            else if (property.custodianId !== currentPlayer.id) {
+            } else if (property.custodianId !== currentPlayer.id) {
+              // Check if property is owned by another player (must pay quota)
               if (space.type === 'railway') {
                 set({
                   pendingAction: {
@@ -394,9 +393,8 @@ export const useGameStore = create<GameStore>()(
                   },
                 });
               }
-            }
-            // Player owns this property - just visiting
-            else {
+            } else {
+              // Player owns this property - just visiting
               get().addLogEntry({
                 type: 'system',
                 message: `${currentPlayer.name ?? 'Player'} landed on their own property: ${space.name ?? 'Unknown'}`,
