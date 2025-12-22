@@ -75,7 +75,7 @@
 
 .stoy .russian {
   color: var(--color-kremlin-gold);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 1px 1px 2px rgb(0 0 0 / 50%);
 }
 
 .gulag {
@@ -104,11 +104,11 @@
 
 .enemy .russian {
   color: var(--color-soviet-red);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 1px 1px 2px rgb(0 0 0 / 50%);
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .corner {
     width: 96px;
     height: 96px;
@@ -127,7 +127,7 @@
   }
 }
 
-@media (min-width: 1600px) {
+@media (width >= 1600px) {
   .corner {
     width: 128px;
     height: 128px;

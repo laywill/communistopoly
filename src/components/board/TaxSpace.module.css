@@ -34,7 +34,7 @@
   line-height: 1.1;
   letter-spacing: 0.02em;
   color: var(--color-soviet-red);
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
   max-width: 100%;
@@ -57,7 +57,7 @@
   margin-top: 3px;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .tax {
     width: 60px;
     height: 96px;
@@ -84,7 +84,7 @@
   }
 }
 
-@media (min-width: 1600px) {
+@media (width >= 1600px) {
   .tax {
     width: 80px;
     height: 128px;

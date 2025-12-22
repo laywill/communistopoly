@@ -1,4 +1,4 @@
-import { BoardSpace } from '../types/game';
+import { BoardSpace } from '../types/game'
 
 export const BOARD_SPACES: BoardSpace[] = [
   // Position 0 - Corner: STOY (GO)
@@ -7,7 +7,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'STOY',
     russianName: 'СТОЙ',
     type: 'corner',
-    specialRule: 'Pay ₽200 when passing. Land exactly: roll 4-6 to pilfer ₽100, 1-3 go to Gulag',
+    specialRule: 'Pay ₽200 when passing. Land exactly: roll 4-6 to pilfer ₽100, 1-3 go to Gulag'
   },
 
   // Position 1 - Brown Property
@@ -17,7 +17,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'siberian',
     baseQuota: 20,
-    baseCost: 60,
+    baseCost: 60
   },
 
   // Position 2 - Communist Test
@@ -25,7 +25,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     id: 2,
     name: 'Communist Test',
     type: 'card',
-    cardType: 'communist-test',
+    cardType: 'communist-test'
   },
 
   // Position 3 - Brown Property
@@ -36,7 +36,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     group: 'siberian',
     baseQuota: 40,
     baseCost: 60,
-    specialRule: 'Both Siberian camps: May send ONE player to Gulag per game (Stalin must approve)',
+    specialRule: 'Both Siberian camps: May send ONE player to Gulag per game (Stalin must approve)'
   },
 
   // Position 4 - Tax
@@ -44,7 +44,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     id: 4,
     name: 'Revolutionary Contribution',
     type: 'tax',
-    specialRule: 'Pay 15% of total wealth OR ₽200. Stalin may audit - pay difference + ₽50 penalty if chose lower',
+    specialRule: 'Pay 15% of total wealth OR ₽200. Stalin may audit - pay difference + ₽50 penalty if chose lower'
   },
 
   // Position 5 - Railway
@@ -53,7 +53,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Moscow Station',
     type: 'railway',
     group: 'railroad',
-    baseCost: 200,
+    baseCost: 200
   },
 
   // Position 6 - Light Blue Property
@@ -64,7 +64,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     group: 'collective',
     baseQuota: 60,
     baseCost: 100,
-    specialRule: 'Custodian must announce "The harvest is bountiful!" when collecting quota. Failure = halved quota',
+    specialRule: 'Custodian must announce "The harvest is bountiful!" when collecting quota. Failure = halved quota'
   },
 
   // Position 7 - Party Directive
@@ -72,7 +72,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     id: 7,
     name: 'Party Directive',
     type: 'card',
-    cardType: 'party-directive',
+    cardType: 'party-directive'
   },
 
   // Position 8 - Light Blue Property
@@ -82,7 +82,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'collective',
     baseQuota: 60,
-    baseCost: 100,
+    baseCost: 100
   },
 
   // Position 9 - Light Blue Property
@@ -92,7 +92,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'collective',
     baseQuota: 80,
-    baseCost: 120,
+    baseCost: 120
   },
 
   // Position 10 - Corner: THE GULAG
@@ -101,7 +101,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'The Gulag',
     russianName: 'ГУЛАГ',
     type: 'corner',
-    specialRule: 'Just visiting or serving sentence',
+    specialRule: 'Just visiting or serving sentence'
   },
 
   // Position 11 - Pink Property
@@ -112,7 +112,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     group: 'industrial',
     baseQuota: 100,
     baseCost: 140,
-    specialRule: 'If player cannot pay, they work off debt by missing next turn',
+    specialRule: 'If player cannot pay, they work off debt by missing next turn'
   },
 
   // Position 12 - Utility
@@ -122,7 +122,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'utility',
     group: 'utility',
     baseCost: 150,
-    specialRule: 'Payment: 4× dice if one utility, 10× dice if both. COMMISSAR+ rank only',
+    specialRule: 'Payment: 4× dice if one utility, 10× dice if both. COMMISSAR+ rank only'
   },
 
   // Position 13 - Pink Property
@@ -132,7 +132,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'industrial',
     baseQuota: 100,
-    baseCost: 140,
+    baseCost: 140
   },
 
   // Position 14 - Pink Property
@@ -142,7 +142,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'industrial',
     baseQuota: 120,
-    baseCost: 160,
+    baseCost: 160
   },
 
   // Position 15 - Railway
@@ -151,7 +151,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Novosibirsk Station',
     type: 'railway',
     group: 'railroad',
-    baseCost: 200,
+    baseCost: 200
   },
 
   // Position 16 - Orange Property
@@ -162,7 +162,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     group: 'ministry',
     baseQuota: 140,
     baseCost: 180,
-    specialRule: 'Custodian of all three: May rewrite ONE rule per game (Stalin has veto)',
+    specialRule: 'Custodian of all three: May rewrite ONE rule per game (Stalin has veto)'
   },
 
   // Position 17 - Communist Test
@@ -170,7 +170,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     id: 17,
     name: 'Communist Test',
     type: 'card',
-    cardType: 'communist-test',
+    cardType: 'communist-test'
   },
 
   // Position 18 - Orange Property
@@ -180,7 +180,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'ministry',
     baseQuota: 140,
-    baseCost: 180,
+    baseCost: 180
   },
 
   // Position 19 - Orange Property
@@ -190,7 +190,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'ministry',
     baseQuota: 160,
-    baseCost: 200,
+    baseCost: 200
   },
 
   // Position 20 - Corner: BREADLINE
@@ -199,7 +199,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Breadline',
     russianName: 'ОЧЕРЕДЬ',
     type: 'corner',
-    specialRule: 'All players must give you one item (₽50, property, or favor). Refusal = denouncement',
+    specialRule: 'All players must give you one item (₽50, property, or favor). Refusal = denouncement'
   },
 
   // Position 21 - Red Property
@@ -209,7 +209,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'military',
     baseQuota: 180,
-    baseCost: 220,
+    baseCost: 220
   },
 
   // Position 22 - Party Directive
@@ -217,7 +217,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     id: 22,
     name: 'Party Directive',
     type: 'card',
-    cardType: 'party-directive',
+    cardType: 'party-directive'
   },
 
   // Position 23 - Red Property
@@ -228,7 +228,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     group: 'military',
     baseQuota: 180,
     baseCost: 220,
-    specialRule: 'Custodian may look at one Communist Test card before anyone draws it, once per round',
+    specialRule: 'Custodian may look at one Communist Test card before anyone draws it, once per round'
   },
 
   // Position 24 - Red Property
@@ -238,7 +238,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'military',
     baseQuota: 200,
-    baseCost: 240,
+    baseCost: 240
   },
 
   // Position 25 - Railway
@@ -247,7 +247,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Irkutsk Station',
     type: 'railway',
     group: 'railroad',
-    baseCost: 200,
+    baseCost: 200
   },
 
   // Position 26 - Yellow Property
@@ -258,7 +258,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     group: 'media',
     baseQuota: 220,
     baseCost: 260,
-    specialRule: 'Custodian: Spread propaganda once per game - force re-vote on Stalin decision',
+    specialRule: 'Custodian: Spread propaganda once per game - force re-vote on Stalin decision'
   },
 
   // Position 27 - Yellow Property
@@ -268,7 +268,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'media',
     baseQuota: 220,
-    baseCost: 260,
+    baseCost: 260
   },
 
   // Position 28 - Utility
@@ -278,7 +278,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'utility',
     group: 'utility',
     baseCost: 150,
-    specialRule: 'Payment: 4× dice if one utility, 10× dice if both. COMMISSAR+ rank only',
+    specialRule: 'Payment: 4× dice if one utility, 10× dice if both. COMMISSAR+ rank only'
   },
 
   // Position 29 - Yellow Property
@@ -288,7 +288,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'media',
     baseQuota: 240,
-    baseCost: 280,
+    baseCost: 280
   },
 
   // Position 30 - Corner: ENEMY OF THE STATE
@@ -297,7 +297,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Enemy of the State',
     russianName: 'ВРАГ НАРОДА',
     type: 'corner',
-    specialRule: 'Go directly to Gulag. Do not pass Stoy. Lose one Party Rank',
+    specialRule: 'Go directly to Gulag. Do not pass Stoy. Lose one Party Rank'
   },
 
   // Position 31 - Green Property
@@ -308,7 +308,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     group: 'elite',
     baseQuota: 260,
     baseCost: 300,
-    specialRule: 'Only PARTY MEMBER+ rank may become Custodian. Lower ranks pay double + must salute',
+    specialRule: 'Only PARTY MEMBER+ rank may become Custodian. Lower ranks pay double + must salute'
   },
 
   // Position 32 - Green Property
@@ -318,7 +318,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'elite',
     baseQuota: 260,
-    baseCost: 300,
+    baseCost: 300
   },
 
   // Position 33 - Communist Test
@@ -326,7 +326,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     id: 33,
     name: 'Communist Test',
     type: 'card',
-    cardType: 'communist-test',
+    cardType: 'communist-test'
   },
 
   // Position 34 - Green Property
@@ -336,7 +336,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'property',
     group: 'elite',
     baseQuota: 280,
-    baseCost: 320,
+    baseCost: 320
   },
 
   // Position 35 - Railway
@@ -346,7 +346,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     type: 'railway',
     group: 'railroad',
     baseCost: 200,
-    specialRule: 'All four stations: Transport any player to Gulag once per game (attempting to flee)',
+    specialRule: 'All four stations: Transport any player to Gulag once per game (attempting to flee)'
   },
 
   // Position 36 - Party Directive
@@ -354,7 +354,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     id: 36,
     name: 'Party Directive',
     type: 'card',
-    cardType: 'party-directive',
+    cardType: 'party-directive'
   },
 
   // Position 37 - Dark Blue Property
@@ -365,7 +365,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     group: 'kremlin',
     baseQuota: 350,
     baseCost: 350,
-    specialRule: 'Only INNER CIRCLE rank. Immune to ONE denouncement per game (Lenin protects you)',
+    specialRule: 'Only INNER CIRCLE rank. Immune to ONE denouncement per game (Lenin protects you)'
   },
 
   // Position 38 - Tax
@@ -373,7 +373,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     id: 38,
     name: 'Bourgeois Decadence Tax',
     type: 'tax',
-    specialRule: 'Pay ₽100. If wealthiest player, pay ₽200 and lose one rank for capitalist tendencies',
+    specialRule: 'Pay ₽100. If wealthiest player, pay ₽200 and lose one rank for capitalist tendencies'
   },
 
   // Position 39 - Dark Blue Property
@@ -384,23 +384,23 @@ export const BOARD_SPACES: BoardSpace[] = [
     group: 'kremlin',
     baseQuota: 500,
     baseCost: 400,
-    specialRule: 'Only INNER CIRCLE rank. Custodian may whisper privately with Stalin once per round',
-  },
-];
+    specialRule: 'Only INNER CIRCLE rank. Custodian may whisper privately with Stalin once per round'
+  }
+]
 
 // Helper functions
-export function getSpaceById(id: number): BoardSpace | undefined {
-  return BOARD_SPACES.find(space => space.id === id);
+export function getSpaceById (id: number): BoardSpace | undefined {
+  return BOARD_SPACES.find(space => space.id === id)
 }
 
-export function getSpacesByType(type: BoardSpace['type']): BoardSpace[] {
-  return BOARD_SPACES.filter(space => space.type === type);
+export function getSpacesByType (type: BoardSpace['type']): BoardSpace[] {
+  return BOARD_SPACES.filter(space => space.type === type)
 }
 
-export function getSpacesByGroup(group: BoardSpace['group']): BoardSpace[] {
-  return BOARD_SPACES.filter(space => space.group === group);
+export function getSpacesByGroup (group: BoardSpace['group']): BoardSpace[] {
+  return BOARD_SPACES.filter(space => space.group === group)
 }
 
-export function getPropertiesByGroup(group: string): BoardSpace[] {
-  return BOARD_SPACES.filter(space => space.type === 'property' && space.group === group);
+export function getPropertiesByGroup (group: string): BoardSpace[] {
+  return BOARD_SPACES.filter(space => space.type === 'property' && space.group === group)
 }

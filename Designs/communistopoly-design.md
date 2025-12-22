@@ -19,38 +19,38 @@ The visual design draws from **Soviet Constructivist propaganda art** (1920s-195
 
 ## Primary Colors
 
-| Name | Hex | RGB | Usage |
-|------|-----|-----|-------|
-| **Soviet Red** | `#C41E3A` | 196, 30, 58 | Primary accent, headers, important buttons, board border |
-| **Kremlin Gold** | `#D4A84B` | 212, 168, 75 | Secondary accent, highlights, rank badges, currency |
-| **Propaganda Black** | `#1A1A1A` | 26, 26, 26 | Text, borders, shadows |
-| **Parchment Cream** | `#F5E6C8` | 245, 230, 200 | Backgrounds, card faces, paper elements |
-| **Aged White** | `#FAF6EF` | 250, 246, 239 | Lighter backgrounds, contrast areas |
+| Name                 | Hex       | RGB           | Usage                                                    |
+|----------------------|-----------|---------------|----------------------------------------------------------|
+| **Soviet Red**       | `#C41E3A` | 196, 30, 58   | Primary accent, headers, important buttons, board border |
+| **Kremlin Gold**     | `#D4A84B` | 212, 168, 75  | Secondary accent, highlights, rank badges, currency      |
+| **Propaganda Black** | `#1A1A1A` | 26, 26, 26    | Text, borders, shadows                                   |
+| **Parchment Cream**  | `#F5E6C8` | 245, 230, 200 | Backgrounds, card faces, paper elements                  |
+| **Aged White**       | `#FAF6EF` | 250, 246, 239 | Lighter backgrounds, contrast areas                      |
 
 ## Secondary Colors
 
-| Name | Hex | RGB | Usage |
-|------|-----|-----|-------|
-| **Gulag Grey** | `#4A4A4A` | 74, 74, 74 | Disabled states, Gulag UI, secondary text |
-| **Steel Blue** | `#2C3E50` | 44, 62, 80 | Stalin's interface, authority elements |
-| **Military Olive** | `#4A5D23` | 74, 93, 35 | Success states, positive feedback |
-| **Warning Amber** | `#B8860B` | 184, 134, 11 | Warnings, caution states |
-| **Blood Burgundy** | `#722F37` | 114, 47, 55 | Danger, elimination, negative states |
+| Name               | Hex       | RGB          | Usage                                     |
+|--------------------|-----------|--------------|-------------------------------------------|
+| **Gulag Grey**     | `#4A4A4A` | 74, 74, 74   | Disabled states, Gulag UI, secondary text |
+| **Steel Blue**     | `#2C3E50` | 44, 62, 80   | Stalin's interface, authority elements    |
+| **Military Olive** | `#4A5D23` | 74, 93, 35   | Success states, positive feedback         |
+| **Warning Amber**  | `#B8860B` | 184, 134, 11 | Warnings, caution states                  |
+| **Blood Burgundy** | `#722F37` | 114, 47, 55  | Danger, elimination, negative states      |
 
 ## Property Group Colors
 
-| Group | Background | Border/Accent | Text |
-|-------|------------|---------------|------|
-| Siberian Work Camps (Brown) | `#8B6914` | `#5D4E37` | `#FAF6EF` |
-| Collective Farms (Light Blue) | `#87CEEB` | `#5F9EA0` | `#1A1A1A` |
-| Industrial Centers (Pink) | `#DB7093` | `#C71585` | `#FAF6EF` |
-| Government Ministries (Orange) | `#E86D1F` | `#CC5500` | `#FAF6EF` |
-| Military Installations (Red) | `#C41E3A` | `#8B0000` | `#FAF6EF` |
-| State Media (Yellow) | `#F4D03F` | `#D4A84B` | `#1A1A1A` |
-| Party Elite District (Green) | `#228B22` | `#006400` | `#FAF6EF` |
-| Kremlin Complex (Dark Blue) | `#1C3A5F` | `#0D2137` | `#D4A84B` |
-| Railways | `#1A1A1A` | `#C41E3A` | `#FAF6EF` |
-| Utilities | `#F5E6C8` | `#1A1A1A` | `#1A1A1A` |
+| Group                          | Background | Border/Accent | Text      |
+|--------------------------------|------------|---------------|-----------|
+| Siberian Work Camps (Brown)    | `#8B6914`  | `#5D4E37`     | `#FAF6EF` |
+| Collective Farms (Light Blue)  | `#87CEEB`  | `#5F9EA0`     | `#1A1A1A` |
+| Industrial Centers (Pink)      | `#DB7093`  | `#C71585`     | `#FAF6EF` |
+| Government Ministries (Orange) | `#E86D1F`  | `#CC5500`     | `#FAF6EF` |
+| Military Installations (Red)   | `#C41E3A`  | `#8B0000`     | `#FAF6EF` |
+| State Media (Yellow)           | `#F4D03F`  | `#D4A84B`     | `#1A1A1A` |
+| Party Elite District (Green)   | `#228B22`  | `#006400`     | `#FAF6EF` |
+| Kremlin Complex (Dark Blue)    | `#1C3A5F`  | `#0D2137`     | `#D4A84B` |
+| Railways                       | `#1A1A1A`  | `#C41E3A`     | `#FAF6EF` |
+| Utilities                      | `#F5E6C8`  | `#1A1A1A`     | `#1A1A1A` |
 
 ---
 
@@ -86,16 +86,16 @@ font-family: 'Roboto Mono', 'Share Tech Mono', 'Courier New', monospace;
 
 ## Type Scale
 
-| Element | Size | Weight | Style |
-|---------|------|--------|-------|
-| Game Title | 48px | 700 | Uppercase, letter-spacing: 0.15em |
-| Section Header | 28px | 700 | Uppercase, letter-spacing: 0.1em |
-| Card Title | 22px | 600 | Uppercase |
-| Property Name | 16px | 600 | Uppercase |
-| Body Text | 15px | 400 | Normal |
-| Button Text | 14px | 600 | Uppercase, letter-spacing: 0.05em |
-| Caption/Small | 12px | 400 | Normal |
-| Currency Display | 24px | 700 | Monospace |
+| Element          | Size | Weight | Style                             |
+|------------------|------|--------|-----------------------------------|
+| Game Title       | 48px | 700    | Uppercase, letter-spacing: 0.15em |
+| Section Header   | 28px | 700    | Uppercase, letter-spacing: 0.1em  |
+| Card Title       | 22px | 600    | Uppercase                         |
+| Property Name    | 16px | 600    | Uppercase                         |
+| Body Text        | 15px | 400    | Normal                            |
+| Button Text      | 14px | 600    | Uppercase, letter-spacing: 0.05em |
+| Caption/Small    | 12px | 400    | Normal                            |
+| Currency Display | 24px | 700    | Monospace                         |
 
 ---
 
@@ -564,16 +564,16 @@ Stalin gets a special elevated interface, styled as the "Kremlin Command Center.
 
 Design simple, recognizable silhouette icons (32x32px base, scalable):
 
-| Piece | Icon Description |
-|-------|------------------|
-| Hammer | Classic claw hammer silhouette |
-| Sickle | Curved farming sickle |
-| Red Star | Five-pointed Soviet star |
-| Tank | T-34 tank profile silhouette |
-| Bread Loaf | Round bread loaf shape |
-| Iron Curtain | Curtain/drape with jagged edge |
-| Vodka Bottle | Classic bottle silhouette |
-| Statue of Lenin | Lenin bust/pointing pose |
+| Piece           | Icon Description               |
+|-----------------|--------------------------------|
+| Hammer          | Classic claw hammer silhouette |
+| Sickle          | Curved farming sickle          |
+| Red Star        | Five-pointed Soviet star       |
+| Tank            | T-34 tank profile silhouette   |
+| Bread Loaf      | Round bread loaf shape         |
+| Iron Curtain    | Curtain/drape with jagged edge |
+| Vodka Bottle    | Classic bottle silhouette      |
+| Statue of Lenin | Lenin bust/pointing pose       |
 
 ## UI Icons (16-24px)
 
@@ -634,18 +634,18 @@ Design simple, recognizable silhouette icons (32x32px base, scalable):
 
 If implementing audio, use these guidelines:
 
-| Event | Sound Description |
-|-------|-------------------|
-| Dice Roll | Wooden dice clatter |
-| Move | Footstep or piece sliding |
-| Purchase | Cash register / coin drop |
-| Denouncement | Dramatic chord / gavel |
-| Gulag | Heavy door slam, chains |
-| Tribunal Start | Soviet anthem snippet (2 sec) |
-| Correct Answer | Triumphant brass fanfare |
-| Wrong Answer | Sad trombone / buzzer |
-| Rank Up | Heroic orchestral swell |
-| Rank Down | Descending brass |
+| Event           | Sound Description             |
+|-----------------|-------------------------------|
+| Dice Roll       | Wooden dice clatter           |
+| Move            | Footstep or piece sliding     |
+| Purchase        | Cash register / coin drop     |
+| Denouncement    | Dramatic chord / gavel        |
+| Gulag           | Heavy door slam, chains       |
+| Tribunal Start  | Soviet anthem snippet (2 sec) |
+| Correct Answer  | Triumphant brass fanfare      |
+| Wrong Answer    | Sad trombone / buzzer         |
+| Rank Up         | Heroic orchestral swell       |
+| Rank Down       | Descending brass              |
 | Stalin Speaking | Deep echo effect on UI sounds |
 
 ---
@@ -656,12 +656,12 @@ If implementing audio, use these guidelines:
 
 ## Breakpoints
 
-| Size | Layout Adjustment |
-|------|-------------------|
-| < 1024px | Not supported - show "rotate device" message |
-| 1024-1279px | Compact mode - smaller board, stacked dashboards |
-| 1280-1599px | Standard mode - side-by-side layout |
-| 1600px+ | Enhanced mode - larger board, more visible detail |
+| Size        | Layout Adjustment                                 |
+|-------------|---------------------------------------------------|
+| < 1024px    | Not supported - show "rotate device" message      |
+| 1024-1279px | Compact mode - smaller board, stacked dashboards  |
+| 1280-1599px | Standard mode - side-by-side layout               |
+| 1600px+     | Enhanced mode - larger board, more visible detail |
 
 ## Touch Targets
 - Minimum 44x44px for all interactive elements

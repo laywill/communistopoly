@@ -11,14 +11,14 @@
 .player-card {
   background: var(--color-aged-white);
   border: 3px solid var(--color-propaganda-black);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
   transition: all 0.3s ease;
 }
 
 .player-card.current-player {
   border-color: var(--color-kremlin-gold);
   border-width: 4px;
-  box-shadow: 0 0 12px rgba(212, 168, 75, 0.6), 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 12px rgb(212 168 75 / 60%), 0 4px 8px rgb(0 0 0 / 30%);
   transform: scale(1.02);
 }
 
@@ -53,7 +53,7 @@
   height: 16px;
   border-radius: 50%;
   border: 2px solid var(--color-aged-white);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 40%);
   flex-shrink: 0;
 }
 
@@ -187,7 +187,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  box-shadow: 0 4px 0 #1A1A1A, 0 6px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 0 #1A1A1A, 0 6px 10px rgb(0 0 0 / 30%);
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
   border-radius: 4px;
@@ -211,15 +211,15 @@
 
 .action-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 #1A1A1A, 0 8px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 0 #1A1A1A, 0 8px 15px rgb(0 0 0 / 40%);
 }
 
 .action-button:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 #1A1A1A, 0 3px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 0 #1A1A1A, 0 3px 5px rgb(0 0 0 / 30%);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .players-grid {
     grid-template-columns: 1fr;
   }

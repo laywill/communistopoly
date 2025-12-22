@@ -56,7 +56,7 @@ This repository contains the web-based implementation built with React, TypeScri
    ```
 
 4. **Open your browser**
-   Navigate to http://localhost:5173
+   Navigate to <http://localhost:5173>
 
 5. **Build for production**
    ```bash
@@ -72,7 +72,7 @@ If you use Visual Studio Code with the Dev Containers extension:
 2. Press `F1` and select "Dev Containers: Reopen in Container"
 3. Wait for the container to build and dependencies to install
 4. Run `npm run dev` in the integrated terminal
-5. Access the app at http://localhost:5173
+5. Access the app at <http://localhost:5173>
 
 The devcontainer automatically:
 - Uses Node 20 LTS

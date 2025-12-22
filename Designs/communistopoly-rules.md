@@ -38,104 +38,112 @@ Before the game begins, players must select who will be Stalin. This can be done
 
 ## Corner Spaces
 
-| Original | Communistopoly | Function |
-|----------|----------------|----------|
-| GO | **STOY (СТОЙ)** "Checkpoint" | **Passing:** Pay 200₽ "travel tax" to the State. **Landing exactly:** You may attempt to pilfer—roll one die. On 4-6, steal 100₽ from the State coffers. On 1-3, you are caught and sent directly to the Gulag. |
-| Jail | **THE GULAG** | See Gulag Rules below |
-| Free Parking | **BREADLINE** | All players must give you one item (50₽, a property, or a favor owed). If any player refuses, you may denounce them. Stalin adjudicates. |
-| Go To Jail | **ENEMY OF THE STATE** | Go directly to the Gulag. Do not pass Stoy. Do not collect anything. Lose one Party Rank. |
+| Original     | Communistopoly               | Function                                                                                                                                                                                                        |
+|--------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GO           | **STOY (СТОЙ)** "Checkpoint" | **Passing:** Pay 200₽ "travel tax" to the State. **Landing exactly:** You may attempt to pilfer—roll one die. On 4-6, steal 100₽ from the State coffers. On 1-3, you are caught and sent directly to the Gulag. |
+| Jail         | **THE GULAG**                | See Gulag Rules below                                                                                                                                                                                           |
+| Free Parking | **BREADLINE**                | All players must give you one item (50₽, a property, or a favor owed). If any player refuses, you may denounce them. Stalin adjudicates.                                                                        |
+| Go To Jail   | **ENEMY OF THE STATE**       | Go directly to the Gulag. Do not pass Stoy. Do not collect anything. Lose one Party Rank.                                                                                                                       |
 
 ## Property Groups
 
 Properties cannot be "owned" in the capitalist sense. Instead, players become **Custodians** of State property, responsible for its maintenance and collectivization. Rent is replaced with **Productivity Quotas**—failure to meet them reflects poorly on YOU.
 
 ### Brown → SIBERIAN WORK CAMPS (Lowest value, highest misery)
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Mediterranean Ave | **Camp Vorkuta** | 20₽ |
-| Baltic Ave | **Camp Kolyma** | 40₽ |
+
+| Original          | Communistopoly   | Quota |
+|-------------------|------------------|-------|
+| Mediterranean Ave | **Camp Vorkuta** | 20₽   |
+| Baltic Ave        | **Camp Kolyma**  | 40₽   |
 
 *Special Rule: If you are Custodian of both camps, you may send ONE player to the Gulag per game by claiming they are "needed for labor." Stalin must approve.*
 
 ### Light Blue → COLLECTIVE FARMS
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Oriental Ave | **Kolkhoz Sunrise** | 60₽ |
-| Vermont Ave | **Kolkhoz Progress** | 60₽ |
-| Connecticut Ave | **Kolkhoz Victory** | 80₽ |
+
+| Original        | Communistopoly       | Quota |
+|-----------------|----------------------|-------|
+| Oriental Ave    | **Kolkhoz Sunrise**  | 60₽   |
+| Vermont Ave     | **Kolkhoz Progress** | 60₽   |
+| Connecticut Ave | **Kolkhoz Victory**  | 80₽   |
 
 *Special Rule: Custodian must announce "The harvest is bountiful!" when collecting quota. Failure to do so means quota is halved.*
 
 ### Pink → INDUSTRIAL CENTERS
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| St. Charles Place | **Tractor Factory #47** | 100₽ |
-| States Ave | **Steel Mill Molotov** | 100₽ |
-| Virginia Ave | **Munitions Plant Kalashnikov** | 120₽ |
+
+| Original          | Communistopoly                  | Quota |
+|-------------------|---------------------------------|-------|
+| St. Charles Place | **Tractor Factory #47**         | 100₽  |
+| States Ave        | **Steel Mill Molotov**          | 100₽  |
+| Virginia Ave      | **Munitions Plant Kalashnikov** | 120₽  |
 
 *Special Rule: If another player lands here and cannot pay, they must work off their debt by missing their next turn (conscripted labor).*
 
 ### Orange → GOVERNMENT MINISTRIES
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| St. James Place | **Ministry of Truth** | 140₽ |
-| Tennessee Ave | **Ministry of Plenty** | 140₽ |
-| New York Ave | **Ministry of Love** | 160₽ |
+
+| Original        | Communistopoly         | Quota |
+|-----------------|------------------------|-------|
+| St. James Place | **Ministry of Truth**  | 140₽  |
+| Tennessee Ave   | **Ministry of Plenty** | 140₽  |
+| New York Ave    | **Ministry of Love**   | 160₽  |
 
 *Special Rule: Custodian of all three may rewrite ONE rule per game. Stalin has veto power.*
 
 ### Red → MILITARY INSTALLATIONS
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Kentucky Ave | **Red Army Barracks** | 180₽ |
-| Indiana Ave | **KGB Headquarters** | 180₽ |
-| Illinois Ave | **Nuclear Bunker Arzamas-16** | 200₽ |
+
+| Original     | Communistopoly                | Quota |
+|--------------|-------------------------------|-------|
+| Kentucky Ave | **Red Army Barracks**         | 180₽  |
+| Indiana Ave  | **KGB Headquarters**          | 180₽  |
+| Illinois Ave | **Nuclear Bunker Arzamas-16** | 200₽  |
 
 *Special Rule: Custodian of KGB Headquarters may look at one Communist Test card before anyone draws it, once per round.*
 
 ### Yellow → STATE MEDIA
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Atlantic Ave | **Pravda Printing Press** | 220₽ |
-| Ventnor Ave | **Radio Moscow** | 220₽ |
-| Marvin Gardens | **State Television Center** | 240₽ |
+
+| Original       | Communistopoly              | Quota |
+|----------------|-----------------------------|-------|
+| Atlantic Ave   | **Pravda Printing Press**   | 220₽  |
+| Ventnor Ave    | **Radio Moscow**            | 220₽  |
+| Marvin Gardens | **State Television Center** | 240₽  |
 
 *Special Rule: Custodian may spread propaganda—once per game, force a re-vote on any Stalin decision by claiming "the people demand it."*
 
 ### Green → PARTY ELITE DISTRICT
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Pacific Ave | **Politburo Apartments** | 260₽ |
-| North Carolina Ave | **Dachas of the Nomenklatura** | 260₽ |
-| Pennsylvania Ave | **The Lubyanka** | 280₽ |
+
+| Original           | Communistopoly                 | Quota |
+|--------------------|--------------------------------|-------|
+| Pacific Ave        | **Politburo Apartments**       | 260₽  |
+| North Carolina Ave | **Dachas of the Nomenklatura** | 260₽  |
+| Pennsylvania Ave   | **The Lubyanka**               | 280₽  |
 
 *Special Rule: Only players of Rank PARTY MEMBER or higher may become Custodians. Lower ranks who land here pay double quota and must salute.*
 
 ### Dark Blue → THE KREMLIN COMPLEX (Highest value)
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Park Place | **Lenin's Mausoleum** | 350₽ |
-| Boardwalk | **Stalin's Private Office** | 500₽ |
+
+| Original   | Communistopoly              | Quota |
+|------------|-----------------------------|-------|
+| Park Place | **Lenin's Mausoleum**       | 350₽  |
+| Boardwalk  | **Stalin's Private Office** | 500₽  |
 
 *Special Rule: Only INNER CIRCLE rank may become Custodian. Custodian of Stalin's Private Office may whisper privately with Stalin once per round. Custodian of Lenin's Mausoleum is immune to ONE denouncement per game (Lenin protects you from beyond the grave).*
 
 ## Railroads → TRANS-SIBERIAN RAILWAY STATIONS
 
-| Original | Communistopoly | Function |
-|----------|----------------|----------|
-| Reading Railroad | **Moscow Station** | 50₽ per station controlled |
-| Pennsylvania Railroad | **Novosibirsk Station** | 100₽ for 2 stations |
-| B&O Railroad | **Irkutsk Station** | 150₽ for 3 stations |
-| Short Line | **Vladivostok Station** | 200₽ for all 4 stations |
+| Original              | Communistopoly          | Function                   |
+|-----------------------|-------------------------|----------------------------|
+| Reading Railroad      | **Moscow Station**      | 50₽ per station controlled |
+| Pennsylvania Railroad | **Novosibirsk Station** | 100₽ for 2 stations        |
+| B&O Railroad          | **Irkutsk Station**     | 150₽ for 3 stations        |
+| Short Line            | **Vladivostok Station** | 200₽ for all 4 stations    |
 
 *Special Rule: Controller of all four stations may transport any player directly to the Gulag once per game, claiming they were "attempting to flee the motherland."*
 
 ## Utilities → THE MEANS OF PRODUCTION
 
-| Original | Communistopoly | Function |
-|----------|----------------|----------|
-| Electric Company | **State Electricity Board** | See below |
-| Water Works | **People's Water Collective** | See below |
+| Original         | Communistopoly                | Function  |
+|------------------|-------------------------------|-----------|
+| Electric Company | **State Electricity Board**   | See below |
+| Water Works      | **People's Water Collective** | See below |
 
 **CRITICAL RULE:** The Means of Production may ONLY be controlled by players of rank **COMMISSAR** or higher. Any lower-ranked player who lands here and could afford custodianship must instead donate the cost to the State "for the good of the people."
 
@@ -145,10 +153,10 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 
 ## Tax Spaces
 
-| Original | Communistopoly | Function |
-|----------|----------------|----------|
+| Original   | Communistopoly                 | Function                                                                                                                                         |
+|------------|--------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | Income Tax | **REVOLUTIONARY CONTRIBUTION** | Pay 15% of total wealth OR 200₽ (player's choice). Then Stalin may audit you—if you chose the lower amount, pay the difference plus 50₽ penalty. |
-| Luxury Tax | **BOURGEOIS DECADENCE TAX** | Pay 100₽. If you are the wealthiest player, pay 200₽ and lose one Party Rank for "capitalist tendencies." |
+| Luxury Tax | **BOURGEOIS DECADENCE TAX**    | Pay 100₽. If you are the wealthiest player, pay 200₽ and lose one Party Rank for "capitalist tendencies."                                        |
 
 ## Chance → PARTY DIRECTIVE
 
