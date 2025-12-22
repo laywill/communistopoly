@@ -110,6 +110,20 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
       const difference = chosenAmount - actualAmount;
       const totalPayment = actualAmount + difference + penalty;
 
+      // Check if player can afford it
+      if (player.rubles < totalPayment) {
+        setPendingAction({
+          type: 'liquidation-required',
+          data: {
+            playerId: playerId,
+            amountOwed: totalPayment,
+            creditorId: 'state',
+            reason: `Revolutionary Contribution with audit penalty`,
+          },
+        });
+        return;
+      }
+
       updatePlayer(playerId, { rubles: player.rubles - totalPayment });
       adjustTreasury(totalPayment);
 
@@ -120,6 +134,20 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
       });
     } else {
       // No audit or player chose correctly
+      // Check if player can afford it
+      if (player.rubles < chosenAmount) {
+        setPendingAction({
+          type: 'liquidation-required',
+          data: {
+            playerId: playerId,
+            amountOwed: chosenAmount,
+            creditorId: 'state',
+            reason: `Revolutionary Contribution`,
+          },
+        });
+        return;
+      }
+
       updatePlayer(playerId, { rubles: player.rubles - chosenAmount });
       adjustTreasury(chosenAmount);
 
@@ -137,6 +165,20 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
 
   const handleBourgeoisDecadence = () => {
     const amount = isWealthiestPlayer ? 200 : 100;
+
+    // Check if player can afford it
+    if (player.rubles < amount) {
+      setPendingAction({
+        type: 'liquidation-required',
+        data: {
+          playerId: playerId,
+          amountOwed: amount,
+          creditorId: 'state',
+          reason: `Bourgeois Decadence Tax`,
+        },
+      });
+      return;
+    }
 
     updatePlayer(playerId, { rubles: player.rubles - amount });
     adjustTreasury(amount);

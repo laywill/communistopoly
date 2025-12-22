@@ -47,11 +47,17 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
 
   const handlePay = () => {
     if (!canAfford) {
-      addLogEntry({
-        type: 'system',
-        message: `${payer.name} cannot pay ₽${fee} utility fee to ${controller.name} (debt system coming in Milestone 5)`,
-        playerId: payerId,
+      // Trigger liquidation modal
+      setPendingAction({
+        type: 'liquidation-required',
+        data: {
+          playerId: payerId,
+          amountOwed: fee,
+          creditorId: controller.id,
+          reason: `Utility fee for ${space.name}`,
+        },
       });
+      return;
     } else {
       // Transfer rubles
       updatePlayer(payerId, { rubles: payer.rubles - fee });

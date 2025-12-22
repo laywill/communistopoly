@@ -9,6 +9,7 @@ import { GulagEscapeModal } from './GulagEscapeModal';
 import { VoucherRequestModal } from './VoucherRequestModal';
 import { BribeStalinModal } from './BribeStalinModal';
 import { InformOnPlayerModal } from './InformOnPlayerModal';
+import { LiquidationModal } from './LiquidationModal';
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -116,6 +117,19 @@ export function PendingActionHandler() {
     case 'inform-on-player':
       if (pendingAction.data?.informerId) {
         return <InformOnPlayerModal informerId={pendingAction.data.informerId as string} />;
+      }
+      return null;
+
+    case 'liquidation-required':
+      if (pendingAction.data?.playerId && pendingAction.data?.amountOwed && pendingAction.data?.creditorId && pendingAction.data?.reason) {
+        return (
+          <LiquidationModal
+            playerId={pendingAction.data.playerId as string}
+            amountOwed={pendingAction.data.amountOwed as number}
+            creditorId={pendingAction.data.creditorId as string | 'state'}
+            reason={pendingAction.data.reason as string}
+          />
+        );
       }
       return null;
 

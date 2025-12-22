@@ -44,10 +44,15 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
 
   const handlePay = () => {
     if (!canAfford) {
-      addLogEntry({
-        type: 'system',
-        message: `${payer.name} cannot pay ₽${fee} railway fee to ${controller.name} (debt system coming in Milestone 5)`,
-        playerId: payerId,
+      // Trigger liquidation modal
+      setPendingAction({
+        type: 'liquidation-required',
+        data: {
+          playerId: payerId,
+          amountOwed: fee,
+          creditorId: controller.id,
+          reason: `Railway fee for ${space.name}`,
+        },
       });
     } else {
       // Transfer rubles
@@ -59,11 +64,11 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
         message: `${payer.name} paid ₽${fee} railway fee to ${controller.name} (${controlledStations} station${controlledStations > 1 ? 's' : ''})`,
         playerId: payerId,
       });
-    }
 
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-    onClose();
+      setPendingAction(null);
+      setTurnPhase('post-turn');
+      onClose();
+    }
   };
 
   return (

@@ -65,21 +65,27 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
           message: `${payer.name} cannot pay ₽${quota} - conscripted for labor! Will miss next turn.`,
           playerId: payerId,
         });
+        setPendingAction(null);
+        setTurnPhase('post-turn');
+        onClose();
       } else {
-        // For now, just log that they can't pay (debt handling in Milestone 5)
-        addLogEntry({
-          type: 'system',
-          message: `${payer.name} cannot pay ₽${quota} to ${custodian.name} (debt system coming in Milestone 5)`,
-          playerId: payerId,
+        // Trigger liquidation modal
+        setPendingAction({
+          type: 'liquidation-required',
+          data: {
+            playerId: payerId,
+            amountOwed: quota,
+            creditorId: custodian.id,
+            reason: `Quota payment for ${space.name}`,
+          },
         });
       }
     } else {
       payQuota(payerId, custodian.id, quota);
+      setPendingAction(null);
+      setTurnPhase('post-turn');
+      onClose();
     }
-
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-    onClose();
   };
 
   return (
@@ -134,7 +140,7 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
                 <>
                   <strong>⚠ INSUFFICIENT FUNDS</strong>
                   <p>You do not have enough rubles to pay this quota.</p>
-                  <p>(Debt handling will be implemented in Milestone 5)</p>
+                  <p>You will need to liquidate assets or face a debt that must be paid within one round.</p>
                 </>
               )}
             </div>
