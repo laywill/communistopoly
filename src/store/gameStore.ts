@@ -116,7 +116,7 @@ export const useGameStore = create<GameStore>()(
 
         set({
           players,
-          stalinPlayerId: stalinPlayer?.id || null,
+          stalinPlayerId: stalinPlayer?.id ?? null,
           currentPlayerIndex: 1, // Start with first non-Stalin player
           stateTreasury
         })
@@ -230,7 +230,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'movement',
-          message: `${player.name} moved from ${getSpaceById(oldPosition)?.name} to ${getSpaceById(newPosition)?.name}`,
+          message: `${player.name} moved from ${getSpaceById(oldPosition)?.name ?? 'Unknown'} to ${getSpaceById(newPosition)?.name ?? 'Unknown'}`,
           playerId
         })
 
@@ -294,9 +294,8 @@ export const useGameStore = create<GameStore>()(
                   data: { spaceId: space.id, playerId: currentPlayer.id }
                 }
               })
-            }
-            // Check if property is owned by another player (must pay quota)
-            else if (property.custodianId !== currentPlayer.id) {
+            } else if (property.custodianId !== currentPlayer.id) {
+              // Check if property is owned by another player (must pay quota)
               if (space.type === 'railway') {
                 set({
                   pendingAction: {
@@ -320,9 +319,8 @@ export const useGameStore = create<GameStore>()(
                   }
                 })
               }
-            }
-            // Player owns this property - just visiting
-            else {
+            } else {
+              // Player owns this property - just visiting
               get().addLogEntry({
                 type: 'system',
                 message: `${currentPlayer.name} landed on their own property: ${space.name}`,
@@ -525,7 +523,7 @@ export const useGameStore = create<GameStore>()(
         const space = getSpaceById(spaceId)
         get().addLogEntry({
           type: 'property',
-          message: `${player.name} became Custodian of ${space?.name} for ₽${price}`,
+          message: `${player.name} became Custodian of ${space?.name ?? 'Unknown Property'} for ₽${price}`,
           playerId
         })
       },
@@ -550,10 +548,10 @@ export const useGameStore = create<GameStore>()(
       mortgageProperty: (spaceId) => {
         const state = get()
         const property = state.properties.find((p) => p.spaceId === spaceId)
-        if ((property == null) || !property.custodianId) return
+        if ((property == null) || (property.custodianId == null)) return
 
         const space = getSpaceById(spaceId)
-        const mortgageValue = Math.floor((space?.baseCost || 0) * 0.5)
+        const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5)
 
         // Give player half the base cost
         const player = state.players.find((p) => p.id === property.custodianId)
@@ -570,7 +568,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'property',
-          message: `${player?.name} mortgaged ${space?.name} for ₽${mortgageValue}`,
+          message: `${player?.name ?? 'Unknown Player'} mortgaged ${space?.name ?? 'Unknown Property'} for ₽${mortgageValue}`,
           playerId: property.custodianId
         })
       },
@@ -582,7 +580,7 @@ export const useGameStore = create<GameStore>()(
         if ((property == null) || (player == null)) return
 
         const space = getSpaceById(spaceId)
-        const unmortgageCost = Math.floor((space?.baseCost || 0) * 0.6)
+        const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6)
 
         if (player.rubles < unmortgageCost) return
 
@@ -598,7 +596,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'property',
-          message: `${player.name} unmortgaged ${space?.name} for ₽${unmortgageCost}`,
+          message: `${player.name} unmortgaged ${space?.name ?? 'Unknown Property'} for ₽${unmortgageCost}`,
           playerId
         })
       },
