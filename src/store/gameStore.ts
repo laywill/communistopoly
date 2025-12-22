@@ -288,7 +288,7 @@ export const useGameStore = create<GameStore>()(
       movePlayer: (playerId, spaces) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        if (player == null) return;
 
         const oldPosition = player.position;
         const newPosition = (oldPosition + spaces) % 40;
@@ -352,7 +352,7 @@ export const useGameStore = create<GameStore>()(
           case 'railway':
           case 'utility': {
             const property = state.properties.find((p) => p.spaceId === space.id);
-            if (!property) {
+            if (property == null) {
               set({ turnPhase: 'post-turn' });
               break;
             }
@@ -435,7 +435,7 @@ export const useGameStore = create<GameStore>()(
         const { currentPlayerIndex, players, doublesCount } = state;
 
         // If player rolled doubles and not in gulag, they get another turn
-        if (doublesCount > 0 && !players[currentPlayerIndex].inGulag) {
+        if (doublesCount > 0 && players[currentPlayerIndex].inGulag === false) {
           set({
             turnPhase: 'pre-roll',
             hasRolled: false,
@@ -449,7 +449,7 @@ export const useGameStore = create<GameStore>()(
         let attempts = 0;
 
         while (
-          (players[nextIndex].isStalin || players[nextIndex].isEliminated) &&
+          (players[nextIndex].isStalin === true || players[nextIndex].isEliminated === true) &&
           attempts < players.length
         ) {
           nextIndex = (nextIndex + 1) % players.length;
@@ -482,7 +482,7 @@ export const useGameStore = create<GameStore>()(
       sendToGulag: (playerId, reason, justification) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        if (player == null) return;
 
         const reasonText = getGulagReasonText(reason, justification);
 
@@ -511,7 +511,7 @@ export const useGameStore = create<GameStore>()(
       demotePlayer: (playerId) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        if (player == null) return;
 
         const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle'];
         const currentRankIndex = rankOrder.indexOf(player.rank);
@@ -531,7 +531,7 @@ export const useGameStore = create<GameStore>()(
       handleStoyPassing: (playerId) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        if (player == null) return;
 
         // Deduct 200₽ travel tax
         get().updatePlayer(playerId, { rubles: player.rubles - 200 });
@@ -547,7 +547,7 @@ export const useGameStore = create<GameStore>()(
       handleStoyPilfer: (playerId, diceRoll) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        if (player == null) return;
 
         if (diceRoll >= 4) {
           // Success! Steal 100₽ from State
@@ -591,7 +591,7 @@ export const useGameStore = create<GameStore>()(
       purchaseProperty: (playerId, spaceId, price) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player || player.rubles < price) return;
+        if (player == null || player.rubles < price) return;
 
         // Deduct rubles
         get().updatePlayer(playerId, {
@@ -617,7 +617,7 @@ export const useGameStore = create<GameStore>()(
         const state = get();
         const payer = state.players.find((p) => p.id === payerId);
         const custodian = state.players.find((p) => p.id === custodianId);
-        if (!payer || !custodian) return;
+        if (payer == null || custodian == null) return;
 
         // Transfer rubles
         get().updatePlayer(payerId, { rubles: payer.rubles - amount });
@@ -633,14 +633,14 @@ export const useGameStore = create<GameStore>()(
       mortgageProperty: (spaceId) => {
         const state = get();
         const property = state.properties.find((p) => p.spaceId === spaceId);
-        if (!property || !property.custodianId) return;
+        if (property == null || property.custodianId == null) return;
 
         const space = getSpaceById(spaceId);
         const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5);
 
         // Give player half the base cost
         const player = state.players.find((p) => p.id === property.custodianId);
-        if (player) {
+        if (player != null) {
           get().updatePlayer(player.id, { rubles: player.rubles + mortgageValue });
         }
 
@@ -662,7 +662,7 @@ export const useGameStore = create<GameStore>()(
         const state = get();
         const property = state.properties.find((p) => p.spaceId === spaceId);
         const player = state.players.find((p) => p.id === playerId);
-        if (!property || !player) return;
+        if (property == null || player == null) return;
 
         const space = getSpaceById(spaceId);
         const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6);
@@ -695,7 +695,7 @@ export const useGameStore = create<GameStore>()(
       handleGulagTurn: (playerId) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player || !player.inGulag) return;
+        if (player == null || player.inGulag === false) return;
 
         // Increment turn counter
         const newGulagTurns = player.gulagTurns + 1;
@@ -712,7 +712,7 @@ export const useGameStore = create<GameStore>()(
 
         // Show Gulag escape options if not eliminated
         const updatedPlayer = state.players.find((p) => p.id === playerId);
-        if (updatedPlayer && !updatedPlayer.isEliminated) {
+        if (updatedPlayer != null && updatedPlayer.isEliminated === false) {
           set({ pendingAction: { type: 'gulag-escape-choice', data: { playerId } } });
         }
       },
@@ -720,7 +720,7 @@ export const useGameStore = create<GameStore>()(
       checkFor10TurnElimination: (playerId) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player || !player.inGulag) return;
+        if (player == null || player.inGulag === false) return;
 
         if (player.gulagTurns >= 10) {
           get().eliminatePlayer(playerId, 'Died in Gulag after 10 turns');
@@ -730,7 +730,7 @@ export const useGameStore = create<GameStore>()(
       attemptGulagEscape: (playerId, method) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player || !player.inGulag) return;
+        if (player == null || player.inGulag === false) return;
 
         switch (method) {
           case 'roll': {
@@ -821,7 +821,7 @@ export const useGameStore = create<GameStore>()(
         const prisoner = state.players.find((p) => p.id === prisonerId);
         const voucherPlayer = state.players.find((p) => p.id === voucherId);
 
-        if (!prisoner || !voucherPlayer) return;
+        if (prisoner == null || voucherPlayer == null) return;
 
         // Release prisoner immediately
         get().updatePlayer(prisonerId, {
@@ -853,14 +853,14 @@ export const useGameStore = create<GameStore>()(
 
         // Find active voucher where this player is the prisoner
         const activeVoucher = state.activeVouchers.find(
-          (v) => v.prisonerId === playerId && v.isActive && state.roundNumber <= v.expiresAtRound
+          (v) => v.prisonerId === playerId && v.isActive === true && state.roundNumber <= v.expiresAtRound
         );
 
-        if (activeVoucher && shouldTriggerVoucherConsequence(reason)) {
+        if (activeVoucher != null && shouldTriggerVoucherConsequence(reason) === true) {
           const voucherPlayer = state.players.find((p) => p.id === activeVoucher.voucherId);
           const player = state.players.find((p) => p.id === playerId);
 
-          if (voucherPlayer && player) {
+          if (voucherPlayer != null && player != null) {
             // Voucher must also go to Gulag!
             get().sendToGulag(activeVoucher.voucherId, 'voucherConsequence');
 
@@ -882,12 +882,12 @@ export const useGameStore = create<GameStore>()(
       expireVouchers: () => {
         const state = get();
         const expiredVouchers = state.activeVouchers.filter(
-          (v) => v.isActive && state.roundNumber > v.expiresAtRound
+          (v) => v.isActive === true && state.roundNumber > v.expiresAtRound
         );
 
         expiredVouchers.forEach((voucher) => {
           const voucherPlayer = state.players.find((p) => p.id === voucher.voucherId);
-          if (voucherPlayer) {
+          if (voucherPlayer != null) {
             get().updatePlayer(voucher.voucherId, {
               vouchingFor: null,
               vouchedByRound: null,
@@ -907,7 +907,7 @@ export const useGameStore = create<GameStore>()(
       submitBribe: (playerId, amount, reason) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player || player.rubles < amount) return;
+        if (player == null || player.rubles < amount) return;
 
         const bribe: BribeRequest = {
           id: `bribe-${Date.now()}`,
@@ -931,18 +931,18 @@ export const useGameStore = create<GameStore>()(
       respondToBribe: (bribeId, accepted) => {
         const state = get();
         const bribe = state.pendingBribes.find((b) => b.id === bribeId);
-        if (!bribe) return;
+        if (bribe == null) return;
 
         const player = state.players.find((p) => p.id === bribe.playerId);
-        if (!player) return;
+        if (player == null) return;
 
         // Always take the money
         get().updatePlayer(bribe.playerId, { rubles: player.rubles - bribe.amount });
         get().adjustTreasury(bribe.amount);
 
-        if (accepted) {
+        if (accepted === true) {
           // Release from Gulag or grant favor
-          if (bribe.reason === 'gulag-escape' && player.inGulag) {
+          if (bribe.reason === 'gulag-escape' && player.inGulag === true) {
             get().updatePlayer(bribe.playerId, {
               inGulag: false,
               gulagTurns: 0,
@@ -974,7 +974,7 @@ export const useGameStore = create<GameStore>()(
       createDebt: (debtorId, creditorId, amount, reason) => {
         const state = get();
         const debtor = state.players.find((p) => p.id === debtorId);
-        if (!debtor) return;
+        if (debtor == null) return;
 
         const debt = {
           id: `debt-${Date.now()}`,
@@ -1002,7 +1002,7 @@ export const useGameStore = create<GameStore>()(
         const state = get();
 
         state.players.forEach((player) => {
-          if (player.debt && player.debtCreatedAtRound !== null) {
+          if (player.debt != null && player.debtCreatedAtRound !== null) {
             // Check if one full round has passed
             if (state.roundNumber > player.debtCreatedAtRound + 1) {
               // Debt default! Send to Gulag
@@ -1021,7 +1021,7 @@ export const useGameStore = create<GameStore>()(
       eliminatePlayer: (playerId, reason) => {
         const state = get();
         const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        if (player == null) return;
 
         get().updatePlayer(playerId, {
           isEliminated: true,
@@ -1042,7 +1042,7 @@ export const useGameStore = create<GameStore>()(
         });
 
         // Check if game should end
-        const remainingPlayers = state.players.filter((p) => !p.isStalin && !p.isEliminated);
+        const remainingPlayers = state.players.filter((p) => p.isStalin === false && p.isEliminated === false);
         if (remainingPlayers.length <= 1) {
           set({ gamePhase: 'ended' });
         }
