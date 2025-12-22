@@ -164,10 +164,10 @@ export default function PlayerDashboard() {
                   </div>
                 )}
 
-                {isCurrentPlayer && !player.inGulag && (
+                {isCurrentPlayer && (
                   <div className="player-actions">
-                    {/* Property Management Actions - Available during pre-roll and post-turn */}
-                    {(turnPhase === 'pre-roll' || turnPhase === 'post-turn') && (
+                    {/* Property Management Actions - Available during pre-roll and post-turn, but not in Gulag */}
+                    {!player.inGulag && (turnPhase === 'pre-roll' || turnPhase === 'post-turn') && (
                       <div className="property-actions">
                         <button
                           className="action-button secondary"
@@ -195,7 +195,7 @@ export default function PlayerDashboard() {
                     )}
 
                     {/* Turn Control Actions */}
-                    {turnPhase === 'moving' && (
+                    {!player.inGulag && turnPhase === 'moving' && (
                       <button className="action-button" onClick={finishMoving}>
                         FINISH MOVING
                       </button>
