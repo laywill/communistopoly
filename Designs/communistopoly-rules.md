@@ -42,7 +42,7 @@ Before the game begins, players must select who will be Stalin. This can be done
 |--------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | GO           | **STOY (СТОЙ)** "Checkpoint" | **Passing:** Pay 200₽ "travel tax" to the State. **Landing exactly:** You may attempt to pilfer—roll one die. On 4-6, steal 100₽ from the State coffers. On 1-3, you are caught and sent directly to the Gulag. |
 | Jail         | **THE GULAG**                | See Gulag Rules below                                                                                                                                                                                           |
-| Free Parking | **BREADLINE**                | All players must give you one item (50₽, a property, or a favour owed). If any player refuses, you may denounce them. Stalin adjudicates.                                                                        |
+| Free Parking | **BREADLINE**                | All players must give you one item (50₽, a property, or a favour owed). If any player refuses, you may denounce them. Stalin adjudicates.                                                                       |
 | Go To Jail   | **ENEMY OF THE STATE**       | Go directly to the Gulag. Do not pass Stoy. Do not collect anything. Lose one Party Rank.                                                                                                                       |
 
 ## Property Groups
