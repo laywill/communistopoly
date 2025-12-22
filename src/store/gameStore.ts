@@ -160,7 +160,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       initializePlayers: (playerSetups) => {
-        const players: Player[] = playerSetups.map((setup, index) => ({
+        const players: Player[] = playerSetups.map((setup, index: number) => ({
           id: `player-${index}`,
           name: setup.name,
           piece: setup.piece,
@@ -262,9 +262,10 @@ export const useGameStore = create<GameStore>()(
 
       finishRolling: () => {
         const { dice, doublesCount } = get();
-        const [die1, die2] = dice;
+        const die1: number = dice[0];
+        const die2: number = dice[1];
         const isDoubles = die1 === die2;
-        const newDoublesCount = isDoubles ? doublesCount + 1 : 0;
+        const newDoublesCount: number = isDoubles ? (doublesCount as number) + 1 : 0;
 
         // Check for three doubles (counter-revolutionary behavior)
         if (newDoublesCount >= 3) {
@@ -282,7 +283,7 @@ export const useGameStore = create<GameStore>()(
 
         // Move the player
         const currentPlayer = get().players[get().currentPlayerIndex];
-        const total = die1 + die2;
+        const total: number = die1 + die2;
         get().movePlayer(currentPlayer.id, total);
       },
 
@@ -291,11 +292,11 @@ export const useGameStore = create<GameStore>()(
         const player = state.players.find((p) => p.id === playerId);
         if (player == null) return;
 
-        const oldPosition = player.position;
-        const newPosition = (oldPosition + spaces) % 40;
+        const oldPosition: number = player.position;
+        const newPosition: number = (oldPosition + spaces) % 40;
 
         // Check if player passed STOY (position 0)
-        const passedStoy = oldPosition !== 0 && (oldPosition + spaces >= 40);
+        const passedStoy: boolean = oldPosition !== 0 && (oldPosition + spaces >= 40);
 
         // Update player position
         get().updatePlayer(playerId, { position: newPosition });
@@ -304,7 +305,7 @@ export const useGameStore = create<GameStore>()(
         const toSpace = getSpaceById(newPosition);
         get().addLogEntry({
           type: 'movement',
-          message: `${player.name} moved from ${fromSpace?.name ?? 'Unknown'} to ${toSpace?.name ?? 'Unknown'}`,
+          message: `${player.name as string} moved from ${fromSpace?.name ?? 'Unknown'} to ${toSpace?.name ?? 'Unknown'}`,
           playerId,
         });
 
@@ -333,7 +334,7 @@ export const useGameStore = create<GameStore>()(
               // The Gulag - just visiting
               get().addLogEntry({
                 type: 'movement',
-                message: `${currentPlayer.name ?? 'Player'} is just visiting the Gulag`,
+                message: `${(currentPlayer.name ?? 'Player') as string} is just visiting the Gulag`,
                 playerId: currentPlayer.id,
               });
               set({ turnPhase: 'post-turn' });
@@ -341,7 +342,7 @@ export const useGameStore = create<GameStore>()(
               // Breadline - placeholder for now
               get().addLogEntry({
                 type: 'system',
-                message: `${currentPlayer.name ?? 'Player'} landed on Breadline (implementation coming in later milestone)`,
+                message: `${(currentPlayer.name ?? 'Player') as string} landed on Breadline (implementation coming in later milestone)`,
                 playerId: currentPlayer.id,
               });
               set({ turnPhase: 'post-turn' });
@@ -378,7 +379,8 @@ export const useGameStore = create<GameStore>()(
                   },
                 });
               } else if (space.type === 'utility') {
-                const [die1, die2] = state.dice;
+                const die1: number = state.dice[0];
+                const die2: number = state.dice[1];
                 set({
                   pendingAction: {
                     type: 'utility-fee',
@@ -397,7 +399,7 @@ export const useGameStore = create<GameStore>()(
               // Player owns this property - just visiting
               get().addLogEntry({
                 type: 'system',
-                message: `${currentPlayer.name ?? 'Player'} landed on their own property: ${space.name ?? 'Unknown'}`,
+                message: `${(currentPlayer.name ?? 'Player') as string} landed on their own property: ${(space.name ?? 'Unknown') as string}`,
                 playerId: currentPlayer.id,
               });
               set({ turnPhase: 'post-turn' });
@@ -418,7 +420,7 @@ export const useGameStore = create<GameStore>()(
             // Placeholder for future milestones
             get().addLogEntry({
               type: 'system',
-              message: `${currentPlayer.name ?? 'Player'} landed on ${space.name ?? 'Unknown'} (implementation coming in later milestone)`,
+              message: `${(currentPlayer.name ?? 'Player') as string} landed on ${(space.name ?? 'Unknown') as string} (implementation coming in later milestone)`,
               playerId: currentPlayer.id,
             });
             set({ turnPhase: 'post-turn' });
@@ -446,8 +448,8 @@ export const useGameStore = create<GameStore>()(
         }
 
         // Find next player (skip Stalin and eliminated players, but include Gulag players)
-        let nextIndex = (currentPlayerIndex + 1) % players.length;
-        let attempts = 0;
+        let nextIndex: number = (currentPlayerIndex + 1) % players.length;
+        let attempts: number = 0;
 
         while (
           (players[nextIndex].isStalin === true || players[nextIndex].isEliminated === true) &&
@@ -459,7 +461,7 @@ export const useGameStore = create<GameStore>()(
 
         // Check if we've completed a round (cycling back to first non-Stalin player)
         // First non-Stalin player is typically at index 1
-        const firstNonStalinIndex = players.findIndex((p) => !p.isStalin && !p.isEliminated);
+        const firstNonStalinIndex: number = players.findIndex((p) => p.isStalin === false && p.isEliminated === false);
         if (nextIndex === firstNonStalinIndex && currentPlayerIndex !== firstNonStalinIndex) {
           get().incrementRound();
         }
@@ -475,7 +477,7 @@ export const useGameStore = create<GameStore>()(
         const nextPlayer = players[nextIndex];
         get().addLogEntry({
           type: 'system',
-          message: `${nextPlayer?.name ?? 'Player'}'s turn`,
+          message: `${(nextPlayer?.name ?? 'Player') as string}'s turn`,
           playerId: nextPlayer?.id ?? '',
         });
       },
@@ -499,7 +501,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'gulag',
-          message: `${player.name ?? 'Player'} sent to Gulag: ${reasonText ?? 'Unknown reason'}`,
+          message: `${(player.name ?? 'Player') as string} sent to Gulag: ${reasonText ?? 'Unknown reason'}`,
           playerId,
         });
 
@@ -523,7 +525,7 @@ export const useGameStore = create<GameStore>()(
           get().updatePlayer(playerId, { rank: newRank });
           get().addLogEntry({
             type: 'rank',
-            message: `${player.name ?? 'Player'} demoted to ${newRank ?? 'unknown rank'}`,
+            message: `${(player.name ?? 'Player') as string} demoted to ${newRank ?? 'unknown rank'}`,
             playerId,
           });
         }
@@ -541,7 +543,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'payment',
-          message: `${player.name ?? 'Player'} paid ₽200 travel tax at STOY`,
+          message: `${(player.name ?? 'Player') as string} paid ₽200 travel tax at STOY`,
           playerId,
         });
       },
@@ -553,12 +555,13 @@ export const useGameStore = create<GameStore>()(
 
         if (diceRoll >= 4) {
           // Success! Steal 100₽ from State
-          get().updatePlayer(playerId, { rubles: player.rubles + 100 });
+          const newRubles: number = (player.rubles as number) + 100;
+          get().updatePlayer(playerId, { rubles: newRubles });
           get().adjustTreasury(-100);
 
           get().addLogEntry({
             type: 'payment',
-            message: `${player.name ?? 'Player'} successfully pilfered ₽100 from the State Treasury!`,
+            message: `${(player.name ?? 'Player') as string} successfully pilfered ₽100 from the State Treasury!`,
             playerId,
           });
         } else {
@@ -585,7 +588,7 @@ export const useGameStore = create<GameStore>()(
       // Treasury
       adjustTreasury: (amount) => {
         set((state) => ({
-          stateTreasury: Math.max(0, state.stateTreasury + amount),
+          stateTreasury: Math.max(0, (state.stateTreasury as number) + (amount as number)),
         }));
       },
 
@@ -610,7 +613,7 @@ export const useGameStore = create<GameStore>()(
         const space = getSpaceById(spaceId);
         get().addLogEntry({
           type: 'property',
-          message: `${player.name ?? 'Player'} became Custodian of ${space?.name ?? 'Unknown'} for ₽${price}`,
+          message: `${(player.name ?? 'Player') as string} became Custodian of ${space?.name ?? 'Unknown'} for ₽${price as number}`,
           playerId,
         });
       },
@@ -622,12 +625,12 @@ export const useGameStore = create<GameStore>()(
         if (payer == null || custodian == null) return;
 
         // Transfer rubles
-        get().updatePlayer(payerId, { rubles: payer.rubles - amount });
-        get().updatePlayer(custodianId, { rubles: custodian.rubles + amount });
+        get().updatePlayer(payerId, { rubles: (payer.rubles as number) - (amount as number) });
+        get().updatePlayer(custodianId, { rubles: (custodian.rubles as number) + (amount as number) });
 
         get().addLogEntry({
           type: 'payment',
-          message: `${payer.name ?? 'Player'} paid ₽${amount} quota to ${custodian.name ?? 'Player'}`,
+          message: `${(payer.name ?? 'Player') as string} paid ₽${amount as number} quota to ${(custodian.name ?? 'Player') as string}`,
           playerId: payerId,
         });
       },
@@ -643,7 +646,8 @@ export const useGameStore = create<GameStore>()(
         // Give player half the base cost
         const player = state.players.find((p) => p.id === property.custodianId);
         if (player != null) {
-          get().updatePlayer(player.id, { rubles: player.rubles + mortgageValue });
+          const newRubles: number = (player.rubles as number) + mortgageValue;
+          get().updatePlayer(player.id, { rubles: newRubles });
         }
 
         // Mark as mortgaged
@@ -655,7 +659,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'property',
-          message: `${player?.name ?? 'Player'} mortgaged ${space?.name ?? 'Unknown'} for ₽${mortgageValue}`,
+          message: `${(player?.name ?? 'Player') as string} mortgaged ${space?.name ?? 'Unknown'} for ₽${mortgageValue as number}`,
           playerId: property.custodianId ?? '',
         });
       },
@@ -683,7 +687,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'property',
-          message: `${player.name ?? 'Player'} unmortgaged ${space?.name ?? 'Unknown'} for ₽${unmortgageCost}`,
+          message: `${(player.name ?? 'Player') as string} unmortgaged ${space?.name ?? 'Unknown'} for ₽${unmortgageCost as number}`,
           playerId,
         });
       },
@@ -700,12 +704,12 @@ export const useGameStore = create<GameStore>()(
         if (player == null || player.inGulag === false) return;
 
         // Increment turn counter
-        const newGulagTurns = player.gulagTurns + 1;
+        const newGulagTurns: number = (player.gulagTurns as number) + 1;
         get().updatePlayer(playerId, { gulagTurns: newGulagTurns });
 
         get().addLogEntry({
           type: 'gulag',
-          message: `${player.name ?? 'Player'} begins turn ${newGulagTurns} in the Gulag`,
+          message: `${(player.name ?? 'Player') as string} begins turn ${newGulagTurns as number} in the Gulag`,
           playerId,
         });
 
@@ -747,10 +751,10 @@ export const useGameStore = create<GameStore>()(
                 gulagTurns: 0,
               });
 
-              const diceValue = dice[0];
+              const diceValue: number = dice[0];
               get().addLogEntry({
                 type: 'gulag',
-                message: `${player.name ?? 'Player'} rolled double ${diceValue ?? 1}s and escaped the Gulag!`,
+                message: `${(player.name ?? 'Player') as string} rolled double ${diceValue as number}s and escaped the Gulag!`,
                 playerId,
               });
 
@@ -759,7 +763,7 @@ export const useGameStore = create<GameStore>()(
               // Failed escape
               get().addLogEntry({
                 type: 'gulag',
-                message: `${player.name ?? 'Player'} failed to escape the Gulag`,
+                message: `${(player.name ?? 'Player') as string} failed to escape the Gulag`,
                 playerId,
               });
 
@@ -782,7 +786,7 @@ export const useGameStore = create<GameStore>()(
 
               get().addLogEntry({
                 type: 'gulag',
-                message: `${player.name ?? 'Player'} paid ₽500 for rehabilitation and was released (with demotion)`,
+                message: `${(player.name ?? 'Player') as string} paid ₽500 for rehabilitation and was released (with demotion)`,
                 playerId,
               });
 
@@ -843,9 +847,11 @@ export const useGameStore = create<GameStore>()(
           pendingAction: null,
         }));
 
+        const voucherName = (voucherPlayer.name ?? 'Player') as string;
+        const prisonerName = (prisoner.name ?? 'Prisoner') as string;
         get().addLogEntry({
           type: 'gulag',
-          message: `${voucherPlayer.name ?? 'Player'} vouched for ${prisoner.name ?? 'Prisoner'}'s release. WARNING: If ${prisoner.name ?? 'Prisoner'} commits ANY offense in the next 3 rounds, ${voucherPlayer.name ?? 'Player'} goes to Gulag too!`,
+          message: `${voucherName} vouched for ${prisonerName}'s release. WARNING: If ${prisonerName} commits ANY offense in the next 3 rounds, ${voucherName} goes to Gulag too!`,
         });
 
         set({ turnPhase: 'post-turn' });
@@ -876,7 +882,7 @@ export const useGameStore = create<GameStore>()(
 
             get().addLogEntry({
               type: 'gulag',
-              message: `${voucherPlayer.name ?? 'Player'} sent to Gulag due to ${player.name ?? 'Player'}'s offense within voucher period!`,
+              message: `${(voucherPlayer.name ?? 'Player') as string} sent to Gulag due to ${(player.name ?? 'Player') as string}'s offense within voucher period!`,
             });
           }
         }
@@ -898,7 +904,7 @@ export const useGameStore = create<GameStore>()(
           }
         });
 
-        if (expiredVouchers.length > 0) {
+        if ((expiredVouchers.length as number) > 0) {
           set((state) => ({
             activeVouchers: state.activeVouchers.map((v) =>
               expiredVouchers.some((ev) => ev.id === v.id) ? { ...v, isActive: false } : v
@@ -926,7 +932,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'system',
-          message: `${player.name ?? 'Player'} has submitted a bribe of ₽${amount} to Stalin`,
+          message: `${(player.name ?? 'Player') as string} has submitted a bribe of ₽${amount as number} to Stalin`,
           playerId,
         });
       },
@@ -953,7 +959,7 @@ export const useGameStore = create<GameStore>()(
 
             get().addLogEntry({
               type: 'gulag',
-              message: `Stalin accepted ${player.name ?? 'Player'}'s bribe of ₽${bribe.amount} and released them from the Gulag`,
+              message: `Stalin accepted ${(player.name ?? 'Player') as string}'s bribe of ₽${bribe.amount as number} and released them from the Gulag`,
               playerId: bribe.playerId,
             });
 
@@ -963,7 +969,7 @@ export const useGameStore = create<GameStore>()(
           // Rejected - money confiscated anyway
           get().addLogEntry({
             type: 'payment',
-            message: `Stalin rejected ${player.name ?? 'Player'}'s bribe of ₽${bribe.amount} and confiscated it as contraband`,
+            message: `Stalin rejected ${(player.name ?? 'Player') as string}'s bribe of ₽${bribe.amount as number} and confiscated it as contraband`,
             playerId: bribe.playerId,
           });
         }
@@ -996,7 +1002,7 @@ export const useGameStore = create<GameStore>()(
         const creditorName = creditorId === 'state' ? 'the State' : state.players.find((p) => p.id === creditorId)?.name ?? 'Unknown';
         get().addLogEntry({
           type: 'payment',
-          message: `${debtor.name ?? 'Player'} owes ₽${amount} to ${creditorName} - ${reason}. Must pay within one round or face Gulag!`,
+          message: `${(debtor.name ?? 'Player') as string} owes ₽${amount as number} to ${creditorName as string} - ${reason as string}. Must pay within one round or face Gulag!`,
           playerId: debtorId,
         });
       },
@@ -1007,7 +1013,7 @@ export const useGameStore = create<GameStore>()(
         state.players.forEach((player) => {
           if (player.debt != null && player.debtCreatedAtRound !== null) {
             // Check if one full round has passed
-            if (state.roundNumber > player.debtCreatedAtRound + 1) {
+            if ((state.roundNumber as number) > (player.debtCreatedAtRound as number) + 1) {
               // Debt default! Send to Gulag
               get().sendToGulag(player.id, 'debtDefault');
 
@@ -1040,7 +1046,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'gulag',
-          message: `${player.name ?? 'Player'} has been eliminated: ${reason}. They are now a Ghost of the Revolution.`,
+          message: `${(player.name ?? 'Player') as string} has been eliminated: ${reason as string}. They are now a Ghost of the Revolution.`,
           playerId,
         });
 
@@ -1053,7 +1059,8 @@ export const useGameStore = create<GameStore>()(
 
       incrementRound: () => {
         const state = get();
-        set({ roundNumber: state.roundNumber + 1 });
+        const newRound: number = (state.roundNumber as number) + 1;
+        set({ roundNumber: newRound });
 
         // Expire vouchers
         get().expireVouchers();
@@ -1063,7 +1070,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'system',
-          message: `Round ${state.roundNumber + 1} begins`,
+          message: `Round ${newRound as number} begins`,
         });
       },
     }),
