@@ -1050,7 +1050,6 @@ Based on the design document, implement these CSS custom properties:
   "customizations": {
     "vscode": {
       "settings": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true
       }
     }
