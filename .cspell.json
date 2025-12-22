@@ -1,0 +1,34 @@
+{
+    "allowCompoundWords": true,
+    "dictionaries": [
+        "bash",
+        "companies",
+        "en_US",
+        "en-GB",
+        "filetypes",
+        "fonts",
+        "misc",
+        "powershell",
+        "html",
+        "css",
+        "node",
+        "npm",
+        "typescript",
+        "softwareTerms"
+    ],
+    "flagWords": [
+        "hte"
+    ],
+    "ignoreWords": [
+        "stefanzweifel"
+    ],
+    "language": "en-GB",
+    "version": "0.2",
+    "words": [
+        "devcontainers",
+        "isort",
+        "linters",
+        "pyupgrade",
+        "vite"
+    ]
+}
