@@ -141,7 +141,7 @@
   pointer-events: none;
 }
 
-/* Bottom edge: horizontally centered, at bottom edge */
+/* Bottom edge: horizontally centred, at bottom edge */
 .playersBottom {
   bottom: 4px;
   left: 50%;
@@ -149,7 +149,7 @@
   flex-direction: row;
 }
 
-/* Top edge: horizontally centered, at top edge */
+/* Top edge: horizontally centred, at top edge */
 .playersTop {
   bottom: 4px;
   left: 50%;
@@ -157,7 +157,7 @@
   flex-direction: row;
 }
 
-/* Left edge: vertically centered, at left edge */
+/* Left edge: vertically centred, at left edge */
 .playersLeft {
   left: 4px;
   top: 50%;
@@ -166,7 +166,7 @@
   transform-origin: left center;
 }
 
-/* Right edge: vertically centered, at right edge */
+/* Right edge: vertically centred, at right edge */
 .playersRight {
   right: 4px;
   top: 50%;

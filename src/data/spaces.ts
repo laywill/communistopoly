@@ -199,7 +199,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Breadline',
     russianName: 'ОЧЕРЕДЬ',
     type: 'corner',
-    specialRule: 'All players must give you one item (₽50, property, or favor). Refusal = denouncement'
+    specialRule: 'All players must give you one item (₽50, property, or favour). Refusal = denouncement'
   },
 
   // Position 21 - Red Property

@@ -150,7 +150,7 @@ font-family: 'Roboto Mono', 'Share Tech Mono', 'Courier New', monospace;
 ┌─────────────────┐
 │▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓│ ← Color band (property group color, 20% height)
 │                 │
-│  CAMP VORKUTA   │ ← Property name (centered, uppercase)
+│  CAMP VORKUTA   │ ← Property name (centred, uppercase)
 │                 │
 │     ₽20         │ ← Base quota (Kremlin Gold)
 │                 │
@@ -410,10 +410,10 @@ Stalin gets a special elevated interface, styled as the "Kremlin Command Center.
 ║ │                    ⏱️ 0:27                                │ ║
 ║ └───────────────────────────────────────────────────────────┘ ║
 ║                                                               ║
-║   [START DEFENSE]                                             ║
+║   [START DEFENCE]                                             ║
 ║                                                               ║
 ╠═══════════════════════════════════════════════════════════════╣
-║                      STALIN'S JUDGMENT                        ║
+║                      STALIN'S JUDGEMENT                        ║
 ║                                                               ║
 ║  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐ ║
 ║  │  GUILTY  │ │ INNOCENT │ │  BOTH    │ │  INSUFFICIENT    │ ║

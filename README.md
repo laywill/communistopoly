@@ -6,7 +6,7 @@ A satirical digital board game that transforms Monopoly's capitalist fantasy int
 
 ## Overview
 
-Communistopoly is a shared-screen/hot-seat digital board game for 3-6 players, where one player takes on the role of "Stalin" (the game master) and controls the fate of all other comrades. Victory is not achieved through wealth accumulation—it is survived through political maneuvering, strategic betrayal, and shameless flattery of Comrade Stalin.
+Communistopoly is a shared-screen/hot-seat digital board game for 3-6 players, where one player takes on the role of "Stalin" (the game master) and controls the fate of all other comrades. Victory is not achieved through wealth accumulation—it is survived through political manoeuvring, strategic betrayal, and shameless flattery of Comrade Stalin.
 
 This repository contains the web-based implementation built with React, TypeScript, and Vite, featuring authentic Soviet-era visual design inspired by Constructivist propaganda art.
 
@@ -240,7 +240,7 @@ After starting the dev server, you should see:
 - A center area with placeholder for dice, cards, and turn info
 
 The board should be:
-- Centered on screen
+- Centred on screen
 - Properly bordered with Soviet Red and Kremlin Gold
 - Responsive to window size
 - Visually complete and styled according to the Soviet theme

@@ -534,8 +534,8 @@ export interface TribunalState {
   accuserId: string;
   accusedId: string;
   crime: string;
-  phase: 'accusation' | 'defense' | 'witnesses' | 'judgment';
-  witnesses: { playerId: string; forDefense: boolean }[];
+  phase: 'accusation' | 'defence' | 'witnesses' | 'judgement';
+  witnesses: { playerId: string; forDefence: boolean }[];
   timerSeconds: number;
 }
 ```

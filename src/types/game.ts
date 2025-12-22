@@ -82,7 +82,7 @@ export interface Player {
   underSuspicion: boolean
 
   // Property system
-  skipNextTurn: boolean // For Industrial Centers conscripted labor
+  skipNextTurn: boolean // For Industrial Centers conscripted labour
   usedRailwayGulagPower: boolean // All four railways special power
 }
 

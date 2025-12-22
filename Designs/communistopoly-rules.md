@@ -6,7 +6,7 @@
 
 # OVERVIEW
 
-Communistopoly transforms the capitalist fantasy of Monopoly into a darkly comedic simulation of Soviet bureaucracy, paranoia, and ideological absurdity. Victory is not achieved through wealth accumulation—it is survived through political maneuvering, strategic betrayal, and shameless flattery of Comrade Stalin (the Banker).
+Communistopoly transforms the capitalist fantasy of Monopoly into a darkly comedic simulation of Soviet bureaucracy, paranoia, and ideological absurdity. Victory is not achieved through wealth accumulation—it is survived through political manoeuvring, strategic betrayal, and shameless flattery of Comrade Stalin (the Banker).
 
 **Players:** 3-6 (One must be Stalin)
 
@@ -42,7 +42,7 @@ Before the game begins, players must select who will be Stalin. This can be done
 |--------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | GO           | **STOY (СТОЙ)** "Checkpoint" | **Passing:** Pay 200₽ "travel tax" to the State. **Landing exactly:** You may attempt to pilfer—roll one die. On 4-6, steal 100₽ from the State coffers. On 1-3, you are caught and sent directly to the Gulag. |
 | Jail         | **THE GULAG**                | See Gulag Rules below                                                                                                                                                                                           |
-| Free Parking | **BREADLINE**                | All players must give you one item (50₽, a property, or a favor owed). If any player refuses, you may denounce them. Stalin adjudicates.                                                                        |
+| Free Parking | **BREADLINE**                | All players must give you one item (50₽, a property, or a favour owed). If any player refuses, you may denounce them. Stalin adjudicates.                                                                        |
 | Go To Jail   | **ENEMY OF THE STATE**       | Go directly to the Gulag. Do not pass Stoy. Do not collect anything. Lose one Party Rank.                                                                                                                       |
 
 ## Property Groups
@@ -56,7 +56,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 | Mediterranean Ave | **Camp Vorkuta** | 20₽   |
 | Baltic Ave        | **Camp Kolyma**  | 40₽   |
 
-*Special Rule: If you are Custodian of both camps, you may send ONE player to the Gulag per game by claiming they are "needed for labor." Stalin must approve.*
+*Special Rule: If you are Custodian of both camps, you may send ONE player to the Gulag per game by claiming they are "needed for labour." Stalin must approve.*
 
 ### Light Blue → COLLECTIVE FARMS
 
@@ -76,7 +76,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 | States Ave        | **Steel Mill Molotov**          | 100₽  |
 | Virginia Ave      | **Munitions Plant Kalashnikov** | 120₽  |
 
-*Special Rule: If another player lands here and cannot pay, they must work off their debt by missing their next turn (conscripted labor).*
+*Special Rule: If another player lands here and cannot pay, they must work off their debt by missing their next turn (conscripted labour).*
 
 ### Orange → GOVERNMENT MINISTRIES
 
@@ -239,14 +239,14 @@ You are sent to the Gulag when:
 - On your 4th turn, double 3, 4, 5, or 6s
 - On your 5th+ turn, any doubles
 
-**Option 2: Rehabilitation Through Labor**
+**Option 2: Rehabilitation Through labour**
 - Pay 500₽ to the State (your "rehabilitation fee")
 - You are released but lose one Party Rank
 
 **Option 3: Someone Vouches For You**
 - Another player may vouch for your release
 - If they do, you are released immediately
-- BUT: If you commit ANY offense in the next 3 rounds, your voucher goes to the Gulag too
+- BUT: If you commit ANY offence in the next 3 rounds, your voucher goes to the Gulag too
 - The voucher may not refuse this arrangement once offered
 
 **Option 4: Inform on Another Player**
@@ -290,9 +290,9 @@ Crimes include (but are not limited to):
 2. **The Accuser** presents their case (30 seconds max)
 3. **The Accused** defends themselves (30 seconds max)
 4. **Witnesses** may speak for either side (15 seconds each)
-5. **Stalin renders judgment**
+5. **Stalin renders judgement**
 
-Stalin's judgment options:
+Stalin's judgement options:
 - **GUILTY:** Accused goes to Gulag, loses one Rank, Accuser gains 100₽ "informant bonus"
 - **INNOCENT:** Accuser loses one Rank for "wasting the Party's time"
 - **BOTH GUILTY:** Both go to Gulag (Stalin loves this option)
@@ -329,7 +329,7 @@ When a player lands on Communist Test, another player (chosen by Stalin) draws a
 2. What was the name of Stalin's policy of rapid industrialization? *(Five-Year Plans)*
 3. What event from 1932-1933 killed millions of Ukrainians? *(Holodomor or Ukrainian Famine)*
 4. Who did Stalin have assassinated in Mexico in 1940? *(Leon Trotsky)*
-5. What was the name of the Soviet forced labor camp system? *(Gulag)*
+5. What was the name of the Soviet forced labour camp system? *(Gulag)*
 6. What 1939 pact did the USSR sign with Nazi Germany? *(Molotov-Ribbentrop Pact)*
 7. What was "perestroika"? *(Gorbachev's policy of restructuring/reform)*
 8. Who led the Soviet Union during the Cuban Missile Crisis? *(Nikita Khrushchev)*
@@ -339,7 +339,7 @@ When a player lands on Communist Test, another player (chosen by Stalin) draws a
 ## HARD QUESTIONS (400₽ reward, 200₽ penalty for wrong, +1 Party Rank for correct)
 
 1. What was Stalin's birth name? *(Ioseb Jughashvili)*
-2. Name the Soviet general who led the defense of Stalingrad. *(Vasily Chuikov or Georgy Zhukov)*
+2. Name the Soviet general who led the defence of Stalingrad. *(Vasily Chuikov or Georgy Zhukov)*
 3. What was the name of the 1956 speech in which Khrushchev denounced Stalin? *(The Secret Speech or "On the Cult of Personality")*
 4. In what year did the Soviet Union collapse? *(1991)*
 5. What was Operation Barbarossa? *(Nazi Germany's invasion of the Soviet Union)*
@@ -442,7 +442,7 @@ The player who is Stalin has absolute authority, limited only by the need to mai
 Players may attempt to bribe Stalin at any time. Bribes may be:
 - Money (slides across the table discreetly)
 - Flattery (genuinely creative compliments)
-- Favors (promises of future support)
+- Favours (promises of future support)
 - Actual snacks/drinks (highly effective)
 
 Stalin may accept or reject bribes without explanation. Rejected bribes are confiscated by the State.
