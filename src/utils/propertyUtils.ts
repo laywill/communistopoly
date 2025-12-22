@@ -27,7 +27,7 @@ export function calculateQuota (
   landingPlayer?: Player
 ): number {
   const space = getSpaceById(property.spaceId)
-  if ((space == null) || !space.baseQuota) return 0
+  if ((space == null) || (space.baseQuota == null) || (space.baseQuota === 0)) return 0
 
   let quota = space.baseQuota
 
@@ -35,7 +35,7 @@ export function calculateQuota (
   quota *= getCollectivizationMultiplier(property.collectivizationLevel)
 
   // Check for complete group ownership (doubles quota)
-  if (property.custodianId && space.group) {
+  if ((property.custodianId != null) && (space.group != null)) {
     const hasCompleteGroup = ownsCompleteGroup(property.custodianId, space.group, properties)
     if (hasCompleteGroup) {
       quota *= 2
@@ -63,7 +63,7 @@ export function calculateRailwayFee (controllerId: string, properties: Property[
   }).length
 
   const fees = [50, 100, 150, 200] // 1-4 stations
-  return fees[ownedCount - 1] || 0
+  return fees[ownedCount - 1] ?? 0
 }
 
 /**
@@ -139,7 +139,7 @@ export function calculateTotalWealth (
     const space = getSpaceById(spaceId)
     const property = properties.find((p) => p.spaceId === spaceId)
 
-    if ((space != null) && space.baseCost) {
+    if ((space?.baseCost != null) && (space.baseCost > 0)) {
       // Base cost
       wealth += space.baseCost
 
@@ -180,7 +180,7 @@ export function canImproveProperty (
   }
 
   const space = getSpaceById(spaceId)
-  if ((space == null) || !space.group) {
+  if ((space == null) || (space.group == null)) {
     return { canImprove: false, reason: 'Invalid property' }
   }
 
@@ -198,7 +198,7 @@ export function canImproveProperty (
     properties.find((p) => p.spaceId === id)
   ).filter((p) => (p != null) && p.custodianId === custodianId)
 
-  const minLevel = Math.min(...groupProperties.map((p) => p?.collectivizationLevel || 0))
+  const minLevel = Math.min(...groupProperties.map((p) => p?.collectivizationLevel ?? 0))
   if (property.collectivizationLevel > minLevel) {
     return { canImprove: false, reason: 'Must improve evenly across color group' }
   }
