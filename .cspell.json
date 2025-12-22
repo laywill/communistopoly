@@ -3,31 +3,32 @@
     "dictionaries": [
         "bash",
         "companies",
-        "en-GB",
         "en_US",
+        "en-GB",
         "filetypes",
         "fonts",
         "misc",
         "powershell",
-        "python",
+        "html",
+        "css",
+        "node",
+        "npm",
+        "typescript",
         "softwareTerms"
     ],
     "flagWords": [
         "hte"
     ],
+    "ignoreWords": [
+        "stefanzweifel"
+    ],
     "language": "en-GB",
     "version": "0.2",
     "words": [
         "devcontainers",
-        "gimmie",
         "isort",
-        "pylance",
-        "pypa",
+        "linters",
         "pyupgrade",
-        "Retriable",
-        "Retryable"
-    ],
-    "ignoreWords": [
-        "stefanzweifel"
+        "vite"
     ]
 }

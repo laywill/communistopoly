@@ -3,7 +3,7 @@
 # https://megalinter.github.io/
 
 # Core Configuration
-APPLY_FIXES: yes
+APPLY_FIXES: all
 DISABLE_ERRORS: false
 SHOW_ELAPSED_TIME: true
 PARALLEL: true
@@ -12,7 +12,6 @@ FILEIO_REPORTER: false
 DISABLE_LINTERS:
   - JSON_PRETTIER # Disable beautifying JSON with Prettier
   - YAML_PRETTIER # Disable beautifying YAML with Prettier
-  - PYTHON_PYRIGHT # Disable Python linting with Pyright (cannot get dependencies to be satisfied)
 
 # Not worried if Lychee finds dead links
 SPELL_LYCHEE_DISABLE_ERRORS: true
