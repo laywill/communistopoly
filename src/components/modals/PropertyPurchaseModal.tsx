@@ -187,9 +187,12 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
               </div>
 
               <div className={styles.actions}>
-                <button className={styles.declineButton} onClick={handleDecline}>
-                  DECLINE - Leave for the State
-                </button>
+                {/* Only show decline button if player can actually decline (not mandatory donation for utilities) */}
+                {(canPurchase || !isUtility) && (
+                  <button className={styles.declineButton} onClick={handleDecline}>
+                    DECLINE - Leave for the State
+                  </button>
+                )}
                 <button
                   className={styles.acceptButton}
                   onClick={handleAccept}
