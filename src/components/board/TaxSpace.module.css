@@ -35,7 +35,6 @@
   letter-spacing: 0.02em;
   color: var(--color-soviet-red);
   overflow-wrap: break-word;
-  overflow-wrap: break-word;
   hyphens: auto;
   max-width: 100%;
 }
