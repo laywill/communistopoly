@@ -196,7 +196,7 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
           <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
             <div className={styles.header}>
               <span className={styles.icon}>☭</span>
-              <h2 className={styles.title}>STALIN'S JUDGMENT</h2>
+              <h2 className={styles.title}>STALIN&apos;S JUDGMENT</h2>
               <span className={styles.icon}>☭</span>
             </div>
 
@@ -205,13 +205,13 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
                 <h3 className={styles.trickQuestion}>TRICK QUESTION</h3>
                 <p className={styles.trickInstruction}>
                   <strong>{stalin?.name ?? 'Stalin'}</strong>, you must judge{' '}
-                  <strong>{testedPlayer.name}</strong>'s answer.
+                  <strong>{testedPlayer.name}</strong>&apos;s answer.
                 </p>
 
                 <div className={styles.trickDecision}>
                   <p className={styles.questionRecap}>Question: <em>{question.question}</em></p>
                   <p className={styles.answerRecap}>
-                    {testedPlayer.name}'s answer: <em>(spoken aloud)</em>
+                    {testedPlayer.name}&apos;s answer: <em>(spoken aloud)</em>
                   </p>
                 </div>
 

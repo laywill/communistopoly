@@ -97,7 +97,7 @@ export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) 
                   border: '2px solid var(--color-kremlin-gold)'
                 }}
               >
-                ⭐ USE "GET OUT OF GULAG FREE" CARD
+                ⭐ USE &quot;GET OUT OF GULAG FREE&quot; CARD
               </button>
               <p style={{ fontSize: '12px', color: 'var(--color-propaganda-black)', marginTop: '4px', fontWeight: 'bold' }}>
                 Immediate release with no penalties!
