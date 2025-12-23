@@ -1,4 +1,33 @@
-import { Player } from '../types/game'
+import { Player, PartyRank } from '../types/game'
+
+/**
+ * Get rank hierarchy level (higher number = higher rank)
+ */
+function getRankLevel (rank: PartyRank): number {
+  const rankOrder: PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+  return rankOrder.indexOf(rank)
+}
+
+/**
+ * LENIN STATUE ABILITY: Check if player can be denounced
+ * Lenin cannot be denounced by players of lower rank
+ */
+export function canBeDenouncedBy (accused: Player, accuser: Player): { allowed: boolean, reason?: string } {
+  // Lenin Statue protection: Cannot be denounced by lower ranks
+  if (accused.piece === 'statueOfLenin') {
+    const accusedRankLevel = getRankLevel(accused.rank)
+    const accuserRankLevel = getRankLevel(accuser.rank)
+
+    if (accuserRankLevel < accusedRankLevel) {
+      return {
+        allowed: false,
+        reason: `${accused.name}'s Statue of Lenin protects from denouncement by lower ranks`
+      }
+    }
+  }
+
+  return { allowed: true }
+}
 
 /**
  * Check if Bread Loaf player is in "starving" state (<100₽)
