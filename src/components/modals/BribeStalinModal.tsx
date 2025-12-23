@@ -96,7 +96,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
               ⚠️ WARNING
             </p>
             <p style={{ margin: '4px 0 0 0', fontSize: '12px', lineHeight: '1.5' }}>
-              Stalin may accept or reject your bribe. If rejected, the money will be confiscated as "contraband"!
+              Stalin may accept or reject your bribe. If rejected, the money will be confiscated as &quot;contraband&quot;!
             </p>
           </div>
 
