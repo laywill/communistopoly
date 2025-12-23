@@ -205,7 +205,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <span className={styles.icon}>📋</span>
           <h2 className={styles.title}>{space.name}</h2>
@@ -245,7 +245,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
                 <div className={styles.choices}>
                   <button
                     className={styles.choiceButton}
-                    onClick={() => handleRevolutionaryChoice('percentage')}
+                    onClick={() => { handleRevolutionaryChoice('percentage'); }}
                   >
                     <div className={styles.choiceTitle}>15% of Total Wealth</div>
                     <div className={styles.choiceAmount}>₽{percentageAmount}</div>
@@ -255,7 +255,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
 
                   <button
                     className={styles.choiceButton}
-                    onClick={() => handleRevolutionaryChoice('flat')}
+                    onClick={() => { handleRevolutionaryChoice('flat'); }}
                   >
                     <div className={styles.choiceTitle}>Flat Rate</div>
                     <div className={styles.choiceAmount}>₽{flatAmount}</div>
@@ -279,13 +279,13 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
                     <div className={styles.auditButtons}>
                       <button
                         className={styles.noAuditButton}
-                        onClick={() => handleStalinAudit(false)}
+                        onClick={() => { handleStalinAudit(false); }}
                       >
                         NO AUDIT - Accept Payment
                       </button>
                       <button
                         className={styles.auditButton}
-                        onClick={() => handleStalinAudit(true)}
+                        onClick={() => { handleStalinAudit(true); }}
                       >
                         AUDIT - Verify Contribution
                       </button>

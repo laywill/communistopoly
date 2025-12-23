@@ -209,7 +209,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                   {eligibleTargets.map((target) => (
                     <div
                       key={target.id}
-                      onClick={() => handleSelectTarget(target.id)}
+                      onClick={() => { handleSelectTarget(target.id); }}
                       style={{
                         padding: '12px',
                         border:
@@ -257,7 +257,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                 <textarea
                   id="accusation"
                   value={accusation}
-                  onChange={(e) => setAccusation(e.target.value)}
+                  onChange={(e) => { setAccusation(e.target.value); }}
                   placeholder="Counter-revolutionary activities, hoarding resources, suspicious behavior, etc."
                   maxLength={200}
                   rows={3}

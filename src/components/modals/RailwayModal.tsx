@@ -73,7 +73,7 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <span className={styles.icon}>🚂</span>
           <h2 className={styles.title}>TRANS-SIBERIAN RAILWAY</h2>

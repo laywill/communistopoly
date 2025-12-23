@@ -107,7 +107,7 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <span className={styles.icon}>🏭</span>
           <h2 className={styles.title}>STATE PROPERTY TRANSFER</h2>

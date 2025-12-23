@@ -157,7 +157,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
                   {eligibleVouchers.map((voucher) => (
                     <div
                       key={voucher.id}
-                      onClick={() => handleSelectVoucher(voucher.id)}
+                      onClick={() => { handleSelectVoucher(voucher.id); }}
                       style={{
                         padding: '12px',
                         border:

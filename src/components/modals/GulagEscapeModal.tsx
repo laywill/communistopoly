@@ -11,7 +11,7 @@ export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) 
   const player = players.find((p) => p.id === playerId);
   const [isRolling, setIsRolling] = useState(false);
 
-  if (!player || !player.inGulag) return null;
+  if (!player?.inGulag) return null;
 
   const requiredDoubles = getRequiredDoublesText(player.gulagTurns);
 

@@ -35,7 +35,7 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
   player.properties.forEach((propId) => {
     const spaceId = parseInt(propId);
     const space = getSpaceById(spaceId);
-    if (space && space.group) {
+    if (space?.group) {
       groupedProperties[space.group].push(spaceId);
     }
   });
@@ -65,12 +65,12 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
   };
 
   if (showImprovements) {
-    return <ImprovementModal playerId={playerId} onClose={() => setShowImprovements(false)} />;
+    return <ImprovementModal playerId={playerId} onClose={() => { setShowImprovements(false); }} />;
   }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <span className={styles.icon}>🏛️</span>
           <h2 className={styles.title}>PROPERTY MANAGEMENT</h2>
@@ -89,7 +89,7 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
           <div className={styles.actions}>
             <button
               className={styles.improveButton}
-              onClick={() => setShowImprovements(true)}
+              onClick={() => { setShowImprovements(true); }}
             >
               COLLECTIVIZE PROPERTIES
             </button>
@@ -169,7 +169,7 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
                           {space.type === 'property' && (
                             <button
                               className={styles.mortgageButton}
-                              onClick={() => handleMortgage(spaceId)}
+                              onClick={() => { handleMortgage(spaceId); }}
                               disabled={property.collectivizationLevel > 0 && !property.mortgaged}
                               title={
                                 property.collectivizationLevel > 0 && !property.mortgaged

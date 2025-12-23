@@ -95,13 +95,13 @@ export default function StalinPanel() {
                     <div className="bribe-actions">
                       <button
                         className="bribe-button accept"
-                        onClick={() => handleBribeResponse(bribe.id, true)}
+                        onClick={() => { handleBribeResponse(bribe.id, true); }}
                       >
                         ✓ ACCEPT
                       </button>
                       <button
                         className="bribe-button reject"
-                        onClick={() => handleBribeResponse(bribe.id, false)}
+                        onClick={() => { handleBribeResponse(bribe.id, false); }}
                       >
                         ✗ REJECT
                       </button>
@@ -120,7 +120,7 @@ export default function StalinPanel() {
             <select
               className="player-select"
               value={selectedPlayer}
-              onChange={(e) => setSelectedPlayer(e.target.value)}
+              onChange={(e) => { setSelectedPlayer(e.target.value); }}
             >
               <option value="">Select a player...</option>
               {availablePlayers.map((player) => (
@@ -134,7 +134,7 @@ export default function StalinPanel() {
               className="justification-input"
               placeholder="Justification (required)"
               value={justification}
-              onChange={(e) => setJustification(e.target.value)}
+              onChange={(e) => { setJustification(e.target.value); }}
               rows={3}
             />
 

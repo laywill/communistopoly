@@ -11,7 +11,12 @@ export default defineConfig([
   },
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    languageOptions: { globals: globals.browser },
+    languageOptions: {
+      globals: globals.browser,
+      parserOptions: {
+        projectService: true,
+      },
+    },
     plugins: {
       'react-hooks': pluginReactHooks
     },
@@ -22,8 +27,8 @@ export default defineConfig([
     }
   },
   js.configs.recommended,
-  tseslint.configs.strict,
-  tseslint.configs.stylistic,
+  tseslint.configs.strictTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
   pluginReact.configs.flat.recommended,
   {
     rules: {

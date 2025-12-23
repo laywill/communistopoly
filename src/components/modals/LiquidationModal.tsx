@@ -256,7 +256,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
               <p style={{ fontSize: '18px', marginBottom: '16px', color: 'var(--color-military-olive)' }}>
                 You have sufficient rubles to pay this debt!
               </p>
-              <button onClick={() => handlePayDebt()} className={styles.primaryButton}>
+              <button onClick={() => { handlePayDebt(); }} className={styles.primaryButton}>
                 Pay ₽{remainingDebt}
               </button>
             </div>
@@ -346,7 +346,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
                           <div style={{ display: 'flex', gap: '8px' }}>
                             {canSellImprovement && (
                               <button
-                                onClick={() => handleSellImprovement(property.spaceId)}
+                                onClick={() => { handleSellImprovement(property.spaceId); }}
                                 className={styles.primaryButton}
                                 style={{ flex: 1, fontSize: '12px', padding: '8px 12px' }}
                               >
@@ -356,7 +356,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
                             {canMortgage && (
                               <button
-                                onClick={() => handleMortgageProperty(property.spaceId)}
+                                onClick={() => { handleMortgageProperty(property.spaceId); }}
                                 className={styles.dangerButton}
                                 style={{ flex: 1, fontSize: '12px', padding: '8px 12px' }}
                               >
@@ -389,7 +389,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
                 {player.rubles >= remainingDebt && (
                   <button
-                    onClick={() => handlePayDebt()}
+                    onClick={() => { handlePayDebt(); }}
                     className={styles.primaryButton}
                     style={{ flex: 1 }}
                   >

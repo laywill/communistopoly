@@ -49,7 +49,7 @@ const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps) => {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <div className={styles.icon}>🚧</div>
           <h2>STOY CHECKPOINT</h2>

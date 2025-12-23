@@ -122,7 +122,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
               max={maxBribe}
               step={50}
               value={bribeAmount}
-              onChange={(e) => setBribeAmount(parseInt(e.target.value))}
+              onChange={(e) => { setBribeAmount(parseInt(e.target.value)); }}
               style={{
                 width: '100%',
                 marginBottom: '8px',

@@ -30,7 +30,7 @@ export default function GameScreen() {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => { window.removeEventListener('keydown', handleKeyDown); };
   }, [resetGame]);
 
   return (
@@ -40,7 +40,7 @@ export default function GameScreen() {
           <h1 className="game-title">COMMUNISTOPOLY</h1>
           <p className="game-tagline">&quot;All players are equal, but some are more equal than others&quot;</p>
         </div>
-        <button className="menu-button" onClick={() => setShowExitConfirm(true)}>
+        <button className="menu-button" onClick={() => { setShowExitConfirm(true); }}>
           ☭ MENU
         </button>
       </header>
@@ -72,7 +72,7 @@ export default function GameScreen() {
 
       <ExitConfirmModal
         isOpen={showExitConfirm}
-        onClose={() => setShowExitConfirm(false)}
+        onClose={() => { setShowExitConfirm(false); }}
         onConfirm={handleExitConfirm}
       />
     </div>

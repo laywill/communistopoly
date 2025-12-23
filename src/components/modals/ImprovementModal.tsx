@@ -35,7 +35,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
   player.properties.forEach((propId) => {
     const spaceId = parseInt(propId);
     const space = getSpaceById(spaceId);
-    if (space && space.group && space.type === 'property') {
+    if (space?.group && space.type === 'property') {
       groupedProperties[space.group].push(spaceId);
     }
   });
@@ -54,7 +54,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
     const property = properties.find((p) => p.spaceId === spaceId);
     const space = getSpaceById(spaceId);
 
-    if (!property || !space || !space.group) {
+    if (!property || !space?.group) {
       return { canImprove: false, reason: 'Property not found' };
     }
 
@@ -129,7 +129,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <span className={styles.icon}>⚒️</span>
           <h2 className={styles.title}>PROPERTY COLLECTIVIZATION</h2>
@@ -209,7 +209,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
 
                                 <button
                                   className={styles.improveButton}
-                                  onClick={() => handleImprove(spaceId)}
+                                  onClick={() => { handleImprove(spaceId); }}
                                   disabled={!canImproveProperty}
                                   title={reason}
                                 >

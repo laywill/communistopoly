@@ -638,7 +638,7 @@ export const useGameStore = create<GameStore>()(
       mortgageProperty: (spaceId) => {
         const state = get()
         const property = state.properties.find((p) => p.spaceId === spaceId)
-        if (property == null || property.custodianId == null) return
+        if (property?.custodianId == null) return
 
         const space = getSpaceById(spaceId)
         const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5)
@@ -701,7 +701,7 @@ export const useGameStore = create<GameStore>()(
       handleGulagTurn: (playerId) => {
         const state = get()
         const player = state.players.find((p) => p.id === playerId)
-        if (player == null || !player.inGulag) return
+        if (!player?.inGulag) return
 
         // Increment turn counter
         const newGulagTurns: number = (player.gulagTurns) + 1
@@ -726,7 +726,7 @@ export const useGameStore = create<GameStore>()(
       checkFor10TurnElimination: (playerId) => {
         const state = get()
         const player = state.players.find((p) => p.id === playerId)
-        if (player == null || !player.inGulag) return
+        if (!player?.inGulag) return
 
         if (player.gulagTurns >= 10) {
           get().eliminatePlayer(playerId, 'Died in Gulag after 10 turns')
@@ -736,7 +736,7 @@ export const useGameStore = create<GameStore>()(
       attemptGulagEscape: (playerId, method) => {
         const state = get()
         const player = state.players.find((p) => p.id === playerId)
-        if (player == null || !player.inGulag) return
+        if (!player?.inGulag) return
 
         switch (method) {
           case 'roll': {

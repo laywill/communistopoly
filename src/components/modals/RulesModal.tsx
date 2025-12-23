@@ -7,7 +7,7 @@ interface RulesModalProps {
 export default function RulesModal({ onClose }: RulesModalProps) {
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-container rules-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-container rules-modal" onClick={(e) => { e.stopPropagation(); }}>
         <div className="modal-header">
           <h2>⚖️ HOW TO PLAY COMMUNISTOPOLY ⚖️</h2>
         </div>

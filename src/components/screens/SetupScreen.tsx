@@ -98,7 +98,7 @@ export default function SetupScreen() {
               <button
                 key={count}
                 className={`count-btn ${playerCount === count ? 'active' : ''}`}
-                onClick={() => handlePlayerCountChange(count)}
+                onClick={() => { handlePlayerCountChange(count); }}
               >
                 {count}
               </button>
@@ -128,7 +128,7 @@ export default function SetupScreen() {
                   <input
                     type="text"
                     value={player.name}
-                    onChange={(e) => handleNameChange(index, e.target.value)}
+                    onChange={(e) => { handleNameChange(index, e.target.value); }}
                     placeholder="Enter name..."
                     className="player-input"
                   />
@@ -139,7 +139,7 @@ export default function SetupScreen() {
                     <label>Piece:</label>
                     <select
                       value={player.piece || ''}
-                      onChange={(e) => handlePieceChange(index, e.target.value as PieceType)}
+                      onChange={(e) => { handlePieceChange(index, e.target.value as PieceType); }}
                       className="player-select"
                     >
                       <option value="">Select a piece...</option>
