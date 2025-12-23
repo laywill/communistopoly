@@ -30,7 +30,7 @@ export function PendingActionHandler() {
       return <StoyPilferModal playerId={currentPlayer.id} onClose={handleClose} />;
 
     case 'property-purchase':
-      if (pendingAction.data?.spaceId && pendingAction.data?.playerId) {
+      if (pendingAction.data?.spaceId && pendingAction.data.playerId) {
         return (
           <PropertyPurchaseModal
             spaceId={pendingAction.data.spaceId as number}
@@ -42,7 +42,7 @@ export function PendingActionHandler() {
       return null;
 
     case 'quota-payment':
-      if (pendingAction.data?.spaceId && pendingAction.data?.payerId) {
+      if (pendingAction.data?.spaceId && pendingAction.data.payerId) {
         return (
           <QuotaPaymentModal
             spaceId={pendingAction.data.spaceId as number}
@@ -54,7 +54,7 @@ export function PendingActionHandler() {
       return null;
 
     case 'railway-fee':
-      if (pendingAction.data?.spaceId && pendingAction.data?.payerId) {
+      if (pendingAction.data?.spaceId && pendingAction.data.payerId) {
         return (
           <RailwayModal
             spaceId={pendingAction.data.spaceId as number}
@@ -66,7 +66,7 @@ export function PendingActionHandler() {
       return null;
 
     case 'utility-fee':
-      if (pendingAction.data?.spaceId && pendingAction.data?.payerId && pendingAction.data?.diceTotal) {
+      if (pendingAction.data?.spaceId && pendingAction.data.payerId && pendingAction.data.diceTotal) {
         return (
           <UtilityModal
             spaceId={pendingAction.data.spaceId as number}
@@ -79,7 +79,7 @@ export function PendingActionHandler() {
       return null;
 
     case 'tax-payment':
-      if (pendingAction.data?.spaceId && pendingAction.data?.playerId) {
+      if (pendingAction.data?.spaceId && pendingAction.data.playerId) {
         return (
           <TaxModal
             spaceId={pendingAction.data.spaceId as number}
@@ -103,7 +103,7 @@ export function PendingActionHandler() {
       return null;
 
     case 'bribe-stalin':
-      if (pendingAction.data?.playerId && pendingAction.data?.reason) {
+      if (pendingAction.data?.playerId && pendingAction.data.reason) {
         return (
           <BribeStalinModal
             playerId={pendingAction.data.playerId as string}
@@ -120,7 +120,7 @@ export function PendingActionHandler() {
       return null;
 
     case 'liquidation-required':
-      if (pendingAction.data?.playerId && pendingAction.data?.amountOwed && pendingAction.data?.creditorId && pendingAction.data?.reason) {
+      if (pendingAction.data?.playerId && pendingAction.data.amountOwed && pendingAction.data.creditorId && pendingAction.data.reason) {
         return (
           <LiquidationModal
             playerId={pendingAction.data.playerId as string}
