@@ -401,7 +401,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
               {totalAvailable < remainingDebt && (
                 <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(114, 47, 55, 0.2)', border: '2px solid var(--color-blood-burgundy)', borderRadius: '4px' }}>
                   <p style={{ margin: 0, fontSize: '13px', fontWeight: 'bold', color: 'var(--color-blood-burgundy)' }}>
-                    ⚠️ WARNING: Even liquidating all assets won't cover this debt. You will face the Gulag if not paid within one round!
+                    ⚠️ WARNING: Even liquidating all assets won&apos;t cover this debt. You will face the Gulag if not paid within one round!
                   </p>
                 </div>
               )}
