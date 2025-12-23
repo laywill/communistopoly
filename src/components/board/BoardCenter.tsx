@@ -13,6 +13,8 @@ const BoardCenter = () => {
   const rollDice = useGameStore((state) => state.rollDice);
   const finishRolling = useGameStore((state) => state.finishRolling);
   const handleGulagTurn = useGameStore((state) => state.handleGulagTurn);
+  const partyDirectiveDeck = useGameStore((state) => state.partyDirectiveDeck);
+  const communistTestUsedQuestions = useGameStore((state) => state.communistTestUsedQuestions);
 
   const currentPlayer = players[currentPlayerIndex];
   const [die1, die2] = dice;
@@ -48,10 +50,12 @@ const BoardCenter = () => {
             <div className={styles.cardDeck}>
               <div className={styles.cardIcon}>☭</div>
               <div className={styles.cardLabel}>Party<br/>Directive</div>
+              <div className={styles.cardCount}>{partyDirectiveDeck.length} cards</div>
             </div>
             <div className={styles.cardDeck}>
               <div className={styles.cardIcon}>★</div>
               <div className={styles.cardLabel}>Communist<br/>Test</div>
+              <div className={styles.cardCount}>{communistTestUsedQuestions.size} used</div>
             </div>
           </div>
         </div>
