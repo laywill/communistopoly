@@ -194,6 +194,7 @@ export type GulagEscapeMethod =
   | 'vouch' // Request voucher
   | 'inform' // Inform on another
   | 'bribe' // Bribe Stalin
+  | 'card' // Use "Get out of Gulag free" card
 
 // Bribe request
 export interface BribeRequest {

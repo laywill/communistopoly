@@ -1030,6 +1030,26 @@ export const useGameStore = create<GameStore>()(
             set({ pendingAction: { type: 'bribe-stalin', data: { playerId, reason: 'gulag-escape' } } })
             break
           }
+
+          case 'card': {
+            // Use "Get out of Gulag free" card
+            if (player.hasFreeFromGulagCard) {
+              get().updatePlayer(playerId, {
+                inGulag: false,
+                gulagTurns: 0,
+                hasFreeFromGulagCard: false // Remove the card
+              })
+
+              get().addLogEntry({
+                type: 'gulag',
+                message: `${player.name} used "Get out of Gulag free" card and was immediately released!`,
+                playerId
+              })
+
+              set({ turnPhase: 'post-turn', pendingAction: null })
+            }
+            break
+          }
         }
       },
 
