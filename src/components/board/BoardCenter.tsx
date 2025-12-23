@@ -20,7 +20,7 @@ const BoardCenter = () => {
 
   // Handle Gulag players' turns
   useEffect(() => {
-    if (turnPhase === 'pre-roll' && !hasRolled && currentPlayer && currentPlayer.inGulag) {
+    if (turnPhase === 'pre-roll' && !hasRolled && currentPlayer.inGulag) {
       handleGulagTurn(currentPlayer.id);
     }
     // Only depend on turnPhase and currentPlayerIndex to prevent infinite loop
@@ -29,7 +29,7 @@ const BoardCenter = () => {
   }, [turnPhase, currentPlayerIndex]);
 
   const handleRoll = () => {
-    if (turnPhase === 'pre-roll' && !hasRolled && currentPlayer && !currentPlayer.inGulag) {
+    if (turnPhase === 'pre-roll' && !hasRolled && !currentPlayer.inGulag) {
       rollDice();
     }
   };
@@ -66,7 +66,7 @@ const BoardCenter = () => {
               isDoubles={isDoubles}
               onRollComplete={finishRolling}
             />
-            {turnPhase === 'pre-roll' && !hasRolled && currentPlayer && !currentPlayer.inGulag && (
+            {turnPhase === 'pre-roll' && !hasRolled && !currentPlayer.inGulag && (
               <button className={styles.rollButton} onClick={handleRoll}>
                 ROLL DICE
               </button>
@@ -77,17 +77,9 @@ const BoardCenter = () => {
         <div className={styles.section}>
           <div className={styles.sectionTitle}>CURRENT TURN</div>
           <div className={styles.turnInfo}>
-            {currentPlayer ? (
-              <>
-                <div className={styles.playerName}>{currentPlayer.name}</div>
-                <div className={styles.playerPiece}>{getPieceEmoji(currentPlayer.piece)}</div>
-                <div className={styles.turnPhase}>{getTurnPhaseText(turnPhase)}</div>
-              </>
-            ) : (
-              <div className={styles.turnPlaceholder}>
-                Game Not Started
-              </div>
-            )}
+            <div className={styles.playerName}>{currentPlayer.name}</div>
+            <div className={styles.playerPiece}>{getPieceEmoji(currentPlayer.piece)}</div>
+            <div className={styles.turnPhase}>{getTurnPhaseText(turnPhase)}</div>
           </div>
         </div>
       </div>
@@ -106,7 +98,7 @@ function getPieceEmoji(piece: string | null): string {
     vodkaBottle: '🍾',
     statueOfLenin: '🗿',
   };
-  return pieceEmojis[piece || ''] || '●';
+  return pieceEmojis[piece ?? ''] ?? '●';
 }
 
 function getTurnPhaseText(phase: string): string {

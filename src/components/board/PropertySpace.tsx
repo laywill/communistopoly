@@ -33,11 +33,11 @@ const PropertySpace = ({ space }: PropertySpaceProps) => {
 
   const colors = PROPERTY_COLORS[space.group];
 
-  const collectivizationLevel = property?.collectivizationLevel || 0;
-  const isMortgaged = property?.mortgaged || false;
+  const collectivizationLevel = property?.collectivizationLevel ?? 0;
+  const isMortgaged = property?.mortgaged ?? false;
 
   // Check if custodian owns complete group
-  const hasCompleteGroup = property?.custodianId && space.group
+  const hasCompleteGroup = property?.custodianId
     ? ownsCompleteGroup(property.custodianId, space.group, allProperties)
     : false;
 
@@ -80,7 +80,7 @@ const PropertySpace = ({ space }: PropertySpaceProps) => {
 
         {/* Collectivization indicators */}
         <div className={styles.collectivization}>
-          {[...Array(5)].map((_, i) => (
+          {Array.from({ length: 5 }, (_, i) => (
             <span
               key={i}
               className={i < collectivizationLevel ? styles.filled : styles.empty}

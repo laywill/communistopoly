@@ -123,7 +123,7 @@ export default function PlayerDashboard() {
                   title={`${player.name}'s ownership color`}
                 />
                 {player.inGulag && <span style={{ fontSize: '1.5rem' }}>⛓️</span>}
-                <span className="player-piece-icon">{pieceData?.icon || '?'}</span>
+                <span className="player-piece-icon">{pieceData?.icon ?? '?'}</span>
                 <span className="player-name">{player.name}</span>
                 {isCurrentPlayer && <span className="current-badge">CURRENT</span>}
                 {player.inGulag && <span className="gulag-badge">IMPRISONED</span>}

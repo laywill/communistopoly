@@ -126,7 +126,7 @@ export interface VoucherAgreement {
 export interface Debt {
   id: string
   debtorId: string
-  creditorId: string | 'state' // 'state' for taxes, property purchases
+  creditorId: string // Can be a player ID or 'state' for taxes, property purchases
   amount: number
   createdAtRound: number
   reason: string

@@ -32,7 +32,7 @@ export function StalinPriceSetter({
     }
 
     if (numValue < minPrice || numValue > maxPrice) {
-      setError(`Price must be between ₽${minPrice} and ₽${maxPrice}`);
+      setError(`Price must be between ₽${String(minPrice)} and ₽${String(maxPrice)}`);
     } else {
       setError(null);
     }

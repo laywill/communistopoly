@@ -138,7 +138,7 @@ export default function SetupScreen() {
                   <div className="input-group">
                     <label>Piece:</label>
                     <select
-                      value={player.piece || ''}
+                      value={player.piece ?? ''}
                       onChange={(e) => { handlePieceChange(index, e.target.value as PieceType); }}
                       className="player-select"
                     >

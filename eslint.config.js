@@ -7,7 +7,7 @@ import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
   {
-    ignores: ['dist/', '.vite/', 'node_modules/', 'megalinter-reports/']
+    ignores: ['dist/', '.vite/', 'node_modules/', 'megalinter-reports/', 'eslint.config.js']
   },
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
