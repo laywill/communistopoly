@@ -1,0 +1,4 @@
+# Build configuration files
+vite.config.ts
+*.config.js
+*.config.ts

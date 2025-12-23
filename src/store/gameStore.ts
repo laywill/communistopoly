@@ -1,55 +1,55 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction } from '../types/game';
-import { BOARD_SPACES, getSpaceById } from '../data/spaces';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction } from '../types/game'
+import { BOARD_SPACES, getSpaceById } from '../data/spaces'
 
 interface GameActions {
   // Game phase management
-  setGamePhase: (phase: GamePhase) => void;
-  startNewGame: () => void;
-  resetGame: () => void;
+  setGamePhase: (phase: GamePhase) => void
+  startNewGame: () => void
+  resetGame: () => void
 
   // Player management
-  initializePlayers: (playerSetups: Array<{ name: string; piece: Player['piece']; isStalin: boolean }>) => void;
-  setCurrentPlayer: (index: number) => void;
-  updatePlayer: (playerId: string, updates: Partial<Player>) => void;
+  initializePlayers: (playerSetups: Array<{ name: string, piece: Player['piece'], isStalin: boolean }>) => void
+  setCurrentPlayer: (index: number) => void
+  updatePlayer: (playerId: string, updates: Partial<Player>) => void
 
   // Property management
-  initializeProperties: () => void;
-  setPropertyCustodian: (spaceId: number, custodianId: string | null) => void;
-  updateCollectivizationLevel: (spaceId: number, level: number) => void;
-  purchaseProperty: (playerId: string, spaceId: number, price: number) => void;
-  payQuota: (payerId: string, custodianId: string, amount: number) => void;
-  mortgageProperty: (spaceId: number) => void;
-  unmortgageProperty: (spaceId: number, playerId: string) => void;
+  initializeProperties: () => void
+  setPropertyCustodian: (spaceId: number, custodianId: string | null) => void
+  updateCollectivizationLevel: (spaceId: number, level: number) => void
+  purchaseProperty: (playerId: string, spaceId: number, price: number) => void
+  payQuota: (payerId: string, custodianId: string, amount: number) => void
+  mortgageProperty: (spaceId: number) => void
+  unmortgageProperty: (spaceId: number, playerId: string) => void
 
   // Turn management
-  rollDice: () => void;
-  finishRolling: () => void;
-  movePlayer: (playerId: string, spaces: number) => void;
-  finishMoving: () => void;
-  endTurn: () => void;
-  setTurnPhase: (phase: TurnPhase) => void;
+  rollDice: () => void
+  finishRolling: () => void
+  movePlayer: (playerId: string, spaces: number) => void
+  finishMoving: () => void
+  endTurn: () => void
+  setTurnPhase: (phase: TurnPhase) => void
 
   // Gulag management
-  sendToGulag: (playerId: string, reason: string) => void;
-  demotePlayer: (playerId: string) => void;
+  sendToGulag: (playerId: string, reason: string) => void
+  demotePlayer: (playerId: string) => void
 
   // STOY handling
-  handleStoyPassing: (playerId: string) => void;
-  handleStoyPilfer: (playerId: string, diceRoll: number) => void;
+  handleStoyPassing: (playerId: string) => void
+  handleStoyPilfer: (playerId: string, diceRoll: number) => void
 
   // Game log
-  addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void;
+  addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void
 
   // Treasury
-  adjustTreasury: (amount: number) => void;
+  adjustTreasury: (amount: number) => void
 
   // Pending actions
-  setPendingAction: (action: PendingAction | null) => void;
+  setPendingAction: (action: PendingAction | null) => void
 }
 
-type GameStore = GameState & GameActions;
+type GameStore = GameState & GameActions
 
 const initialState: GameState = {
   gamePhase: 'welcome',
@@ -64,8 +64,8 @@ const initialState: GameState = {
   dice: [1, 1],
   isRolling: false,
   gameLog: [],
-  pendingAction: null,
-};
+  pendingAction: null
+}
 
 export const useGameStore = create<GameStore>()(
   persist(
@@ -78,13 +78,13 @@ export const useGameStore = create<GameStore>()(
 
       resetGame: () => {
         // Clear localStorage save
-        localStorage.removeItem('communistopoly-save');
+        localStorage.removeItem('communistopoly-save')
 
         // Reset all state to initial values
         set({
           ...initialState,
-          gamePhase: 'welcome',
-        });
+          gamePhase: 'welcome'
+        })
       },
 
       initializePlayers: (playerSetups) => {
@@ -104,25 +104,25 @@ export const useGameStore = create<GameStore>()(
           consecutiveFailedTests: 0,
           underSuspicion: false,
           skipNextTurn: false,
-          usedRailwayGulagPower: false,
-        }));
+          usedRailwayGulagPower: false
+        }))
 
-        const stalinPlayer = players.find(p => p.isStalin);
-        const nonStalinPlayers = players.filter(p => !p.isStalin);
+        const stalinPlayer = players.find(p => p.isStalin)
+        const nonStalinPlayers = players.filter(p => !p.isStalin)
 
         // Calculate state treasury based on player count
-        const playerCount = nonStalinPlayers.length;
-        const stateTreasury = playerCount * 1500; // Starting treasury
+        const playerCount = nonStalinPlayers.length
+        const stateTreasury = playerCount * 1500 // Starting treasury
 
         set({
           players,
-          stalinPlayerId: stalinPlayer?.id || null,
+          stalinPlayerId: stalinPlayer?.id ?? null,
           currentPlayerIndex: 1, // Start with first non-Stalin player
-          stateTreasury,
-        });
+          stateTreasury
+        })
 
         // Initialize properties
-        get().initializeProperties();
+        get().initializeProperties()
       },
 
       setCurrentPlayer: (index) => set({ currentPlayerIndex: index }),
@@ -131,8 +131,8 @@ export const useGameStore = create<GameStore>()(
         set((state) => ({
           players: state.players.map((player) =>
             player.id === playerId ? { ...player, ...updates } : player
-          ),
-        }));
+          )
+        }))
       },
 
       initializeProperties: () => {
@@ -142,148 +142,148 @@ export const useGameStore = create<GameStore>()(
             spaceId: space.id,
             custodianId: null, // All start owned by the STATE
             collectivizationLevel: 0,
-            mortgaged: false,
-          }));
+            mortgaged: false
+          }))
 
-        set({ properties });
+        set({ properties })
       },
 
       setPropertyCustodian: (spaceId, custodianId) => {
         set((state) => ({
           properties: state.properties.map((prop) =>
             prop.spaceId === spaceId ? { ...prop, custodianId } : prop
-          ),
-        }));
+          )
+        }))
       },
 
       updateCollectivizationLevel: (spaceId, level) => {
         set((state) => ({
           properties: state.properties.map((prop) =>
             prop.spaceId === spaceId ? { ...prop, collectivizationLevel: level } : prop
-          ),
-        }));
+          )
+        }))
       },
 
       // Turn management
       rollDice: () => {
-        const die1 = Math.floor(Math.random() * 6) + 1;
-        const die2 = Math.floor(Math.random() * 6) + 1;
+        const die1 = Math.floor(Math.random() * 6) + 1
+        const die2 = Math.floor(Math.random() * 6) + 1
 
         set({
           dice: [die1, die2],
           isRolling: true,
           hasRolled: true,
-          turnPhase: 'rolling',
-        });
+          turnPhase: 'rolling'
+        })
 
         get().addLogEntry({
           type: 'dice',
           message: `Rolled ${die1} + ${die2} = ${die1 + die2}`,
-          playerId: get().players[get().currentPlayerIndex].id,
-        });
+          playerId: get().players[get().currentPlayerIndex].id
+        })
       },
 
       finishRolling: () => {
-        const { dice, doublesCount } = get();
-        const [die1, die2] = dice;
-        const isDoubles = die1 === die2;
-        const newDoublesCount = isDoubles ? doublesCount + 1 : 0;
+        const { dice, doublesCount } = get()
+        const [die1, die2] = dice
+        const isDoubles = die1 === die2
+        const newDoublesCount = isDoubles ? doublesCount + 1 : 0
 
         // Check for three doubles (counter-revolutionary behavior)
         if (newDoublesCount >= 3) {
-          const currentPlayer = get().players[get().currentPlayerIndex];
+          const currentPlayer = get().players[get().currentPlayerIndex]
           get().addLogEntry({
             type: 'gulag',
             message: `${currentPlayer.name} rolled three doubles - counter-revolutionary dice behavior!`,
-            playerId: currentPlayer.id,
-          });
-          get().sendToGulag(currentPlayer.id, 'Three doubles - counter-revolutionary behavior');
-          set({ isRolling: false, doublesCount: 0 });
-          return;
+            playerId: currentPlayer.id
+          })
+          get().sendToGulag(currentPlayer.id, 'Three doubles - counter-revolutionary behavior')
+          set({ isRolling: false, doublesCount: 0 })
+          return
         }
 
         set({
           isRolling: false,
           doublesCount: newDoublesCount,
-          turnPhase: 'moving',
-        });
+          turnPhase: 'moving'
+        })
 
         // Move the player
-        const currentPlayer = get().players[get().currentPlayerIndex];
-        const total = die1 + die2;
-        get().movePlayer(currentPlayer.id, total);
+        const currentPlayer = get().players[get().currentPlayerIndex]
+        const total = die1 + die2
+        get().movePlayer(currentPlayer.id, total)
       },
 
       movePlayer: (playerId, spaces) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
-        const oldPosition = player.position;
-        const newPosition = (oldPosition + spaces) % 40;
+        const oldPosition = player.position
+        const newPosition = (oldPosition + spaces) % 40
 
         // Check if player passed STOY (position 0)
-        const passedStoy = oldPosition !== 0 && (oldPosition + spaces >= 40);
+        const passedStoy = oldPosition !== 0 && (oldPosition + spaces >= 40)
 
         // Update player position
-        get().updatePlayer(playerId, { position: newPosition });
+        get().updatePlayer(playerId, { position: newPosition })
 
         get().addLogEntry({
           type: 'movement',
-          message: `${player.name} moved from ${getSpaceById(oldPosition)?.name} to ${getSpaceById(newPosition)?.name}`,
-          playerId,
-        });
+          message: `${player.name} moved from ${getSpaceById(oldPosition)?.name ?? 'Unknown'} to ${getSpaceById(newPosition)?.name ?? 'Unknown'}`,
+          playerId
+        })
 
         // Handle passing STOY
         if (passedStoy && newPosition !== 0) {
-          get().handleStoyPassing(playerId);
+          get().handleStoyPassing(playerId)
         }
       },
 
       finishMoving: () => {
-        const state = get();
-        const currentPlayer = state.players[state.currentPlayerIndex];
-        const space = getSpaceById(currentPlayer.position);
+        const state = get()
+        const currentPlayer = state.players[state.currentPlayerIndex]
+        const space = getSpaceById(currentPlayer.position)
 
-        set({ turnPhase: 'resolving' });
+        set({ turnPhase: 'resolving' })
 
         // Handle landing on the space
-        if (!space) return;
+        if (space == null) return
 
         switch (space.type) {
           case 'corner':
             if (space.id === 0 && currentPlayer.position === 0) {
               // Landed exactly on STOY - pilfering opportunity
-              set({ pendingAction: { type: 'stoy-pilfer' } });
+              set({ pendingAction: { type: 'stoy-pilfer' } })
             } else if (space.id === 10) {
               // The Gulag - just visiting
               get().addLogEntry({
                 type: 'movement',
                 message: `${currentPlayer.name} is just visiting the Gulag`,
-                playerId: currentPlayer.id,
-              });
-              set({ turnPhase: 'post-turn' });
+                playerId: currentPlayer.id
+              })
+              set({ turnPhase: 'post-turn' })
             } else if (space.id === 20) {
               // Breadline - placeholder for now
               get().addLogEntry({
                 type: 'system',
                 message: `${currentPlayer.name} landed on Breadline (implementation coming in later milestone)`,
-                playerId: currentPlayer.id,
-              });
-              set({ turnPhase: 'post-turn' });
+                playerId: currentPlayer.id
+              })
+              set({ turnPhase: 'post-turn' })
             } else if (space.id === 30) {
               // Enemy of the State - go to Gulag
-              get().sendToGulag(currentPlayer.id, 'Landed on Enemy of the State');
+              get().sendToGulag(currentPlayer.id, 'Landed on Enemy of the State')
             }
-            break;
+            break
 
           case 'property':
           case 'railway':
           case 'utility': {
-            const property = state.properties.find((p) => p.spaceId === space.id);
-            if (!property) {
-              set({ turnPhase: 'post-turn' });
-              break;
+            const property = state.properties.find((p) => p.spaceId === space.id)
+            if (property == null) {
+              set({ turnPhase: 'post-turn' })
+              break
             }
 
             // Check if property is owned by State (available for purchase)
@@ -291,98 +291,96 @@ export const useGameStore = create<GameStore>()(
               set({
                 pendingAction: {
                   type: 'property-purchase',
-                  data: { spaceId: space.id, playerId: currentPlayer.id },
-                },
-              });
-            }
-            // Check if property is owned by another player (must pay quota)
-            else if (property.custodianId !== currentPlayer.id) {
+                  data: { spaceId: space.id, playerId: currentPlayer.id }
+                }
+              })
+            } else if (property.custodianId !== currentPlayer.id) {
+              // Check if property is owned by another player (must pay quota)
               if (space.type === 'railway') {
                 set({
                   pendingAction: {
                     type: 'railway-fee',
-                    data: { spaceId: space.id, payerId: currentPlayer.id },
-                  },
-                });
+                    data: { spaceId: space.id, payerId: currentPlayer.id }
+                  }
+                })
               } else if (space.type === 'utility') {
-                const [die1, die2] = state.dice;
+                const [die1, die2] = state.dice
                 set({
                   pendingAction: {
                     type: 'utility-fee',
-                    data: { spaceId: space.id, payerId: currentPlayer.id, diceTotal: die1 + die2 },
-                  },
-                });
+                    data: { spaceId: space.id, payerId: currentPlayer.id, diceTotal: die1 + die2 }
+                  }
+                })
               } else {
                 set({
                   pendingAction: {
                     type: 'quota-payment',
-                    data: { spaceId: space.id, payerId: currentPlayer.id },
-                  },
-                });
+                    data: { spaceId: space.id, payerId: currentPlayer.id }
+                  }
+                })
               }
-            }
-            // Player owns this property - just visiting
-            else {
+            } else {
+              // Player owns this property - just visiting
               get().addLogEntry({
                 type: 'system',
                 message: `${currentPlayer.name} landed on their own property: ${space.name}`,
-                playerId: currentPlayer.id,
-              });
-              set({ turnPhase: 'post-turn' });
+                playerId: currentPlayer.id
+              })
+              set({ turnPhase: 'post-turn' })
             }
-            break;
+            break
           }
 
           case 'tax':
             set({
               pendingAction: {
                 type: 'tax-payment',
-                data: { spaceId: space.id, playerId: currentPlayer.id },
-              },
-            });
-            break;
+                data: { spaceId: space.id, playerId: currentPlayer.id }
+              }
+            })
+            break
 
           case 'card':
             // Placeholder for future milestones
             get().addLogEntry({
               type: 'system',
               message: `${currentPlayer.name} landed on ${space.name} (implementation coming in later milestone)`,
-              playerId: currentPlayer.id,
-            });
-            set({ turnPhase: 'post-turn' });
-            break;
+              playerId: currentPlayer.id
+            })
+            set({ turnPhase: 'post-turn' })
+            break
 
           default:
-            set({ turnPhase: 'post-turn' });
+            set({ turnPhase: 'post-turn' })
         }
       },
 
       setTurnPhase: (phase) => set({ turnPhase: phase }),
 
       endTurn: () => {
-        const state = get();
-        const { currentPlayerIndex, players, doublesCount } = state;
+        const state = get()
+        const { currentPlayerIndex, players, doublesCount } = state
 
         // If player rolled doubles and not in gulag, they get another turn
         if (doublesCount > 0 && !players[currentPlayerIndex].inGulag) {
           set({
             turnPhase: 'pre-roll',
             hasRolled: false,
-            pendingAction: null,
-          });
-          return;
+            pendingAction: null
+          })
+          return
         }
 
         // Find next player (skip Stalin and players in Gulag)
-        let nextIndex = (currentPlayerIndex + 1) % players.length;
-        let attempts = 0;
+        let nextIndex = (currentPlayerIndex + 1) % players.length
+        let attempts = 0
 
         while (
           (players[nextIndex].isStalin || players[nextIndex].inGulag || players[nextIndex].isEliminated) &&
           attempts < players.length
         ) {
-          nextIndex = (nextIndex + 1) % players.length;
-          attempts++;
+          nextIndex = (nextIndex + 1) % players.length
+          attempts++
         }
 
         set({
@@ -390,98 +388,98 @@ export const useGameStore = create<GameStore>()(
           turnPhase: 'pre-roll',
           doublesCount: 0,
           hasRolled: false,
-          pendingAction: null,
-        });
+          pendingAction: null
+        })
 
         get().addLogEntry({
           type: 'system',
           message: `${players[nextIndex].name}'s turn`,
-          playerId: players[nextIndex].id,
-        });
+          playerId: players[nextIndex].id
+        })
       },
 
       // Gulag management
       sendToGulag: (playerId, reason) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
         get().updatePlayer(playerId, {
           inGulag: true,
           gulagTurns: 0,
-          position: 10, // Gulag position
-        });
+          position: 10 // Gulag position
+        })
 
         // Demote player
-        get().demotePlayer(playerId);
+        get().demotePlayer(playerId)
 
         get().addLogEntry({
           type: 'gulag',
           message: `${player.name} sent to Gulag: ${reason}`,
-          playerId,
-        });
+          playerId
+        })
 
         // End turn immediately
-        set({ turnPhase: 'post-turn' });
+        set({ turnPhase: 'post-turn' })
       },
 
       demotePlayer: (playerId) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
-        const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle'];
-        const currentRankIndex = rankOrder.indexOf(player.rank);
+        const rankOrder: Array<Player['rank']> = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+        const currentRankIndex = rankOrder.indexOf(player.rank)
 
         if (currentRankIndex > 0) {
-          const newRank = rankOrder[currentRankIndex - 1];
-          get().updatePlayer(playerId, { rank: newRank });
+          const newRank = rankOrder[currentRankIndex - 1]
+          get().updatePlayer(playerId, { rank: newRank })
           get().addLogEntry({
             type: 'rank',
             message: `${player.name} demoted to ${newRank}`,
-            playerId,
-          });
+            playerId
+          })
         }
       },
 
       // STOY handling
       handleStoyPassing: (playerId) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
         // Deduct 200₽ travel tax
-        get().updatePlayer(playerId, { rubles: player.rubles - 200 });
-        get().adjustTreasury(200);
+        get().updatePlayer(playerId, { rubles: player.rubles - 200 })
+        get().adjustTreasury(200)
 
         get().addLogEntry({
           type: 'payment',
           message: `${player.name} paid ₽200 travel tax at STOY`,
-          playerId,
-        });
+          playerId
+        })
       },
 
       handleStoyPilfer: (playerId, diceRoll) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (!player) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
         if (diceRoll >= 4) {
           // Success! Steal 100₽ from State
-          get().updatePlayer(playerId, { rubles: player.rubles + 100 });
-          get().adjustTreasury(-100);
+          get().updatePlayer(playerId, { rubles: player.rubles + 100 })
+          get().adjustTreasury(-100)
 
           get().addLogEntry({
             type: 'payment',
             message: `${player.name} successfully pilfered ₽100 from the State Treasury!`,
-            playerId,
-          });
+            playerId
+          })
         } else {
           // Caught! Go to Gulag
-          get().sendToGulag(playerId, 'Caught pilfering at STOY checkpoint');
+          get().sendToGulag(playerId, 'Caught pilfering at STOY checkpoint')
         }
 
-        set({ pendingAction: null, turnPhase: 'post-turn' });
+        set({ pendingAction: null, turnPhase: 'post-turn' })
       },
 
       // Game log
@@ -489,124 +487,124 @@ export const useGameStore = create<GameStore>()(
         const newEntry: LogEntry = {
           ...entry,
           id: `log-${Date.now()}-${Math.random()}`,
-          timestamp: new Date(),
-        };
+          timestamp: new Date()
+        }
 
         set((state) => ({
-          gameLog: [...state.gameLog, newEntry].slice(-50), // Keep last 50 entries
-        }));
+          gameLog: [...state.gameLog, newEntry].slice(-50) // Keep last 50 entries
+        }))
       },
 
       // Treasury
       adjustTreasury: (amount) => {
         set((state) => ({
-          stateTreasury: Math.max(0, state.stateTreasury + amount),
-        }));
+          stateTreasury: Math.max(0, state.stateTreasury + amount)
+        }))
       },
 
       // Property transactions
       purchaseProperty: (playerId, spaceId, price) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (!player || player.rubles < price) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if ((player == null) || player.rubles < price) return
 
         // Deduct rubles
         get().updatePlayer(playerId, {
           rubles: player.rubles - price,
-          properties: [...player.properties, spaceId.toString()],
-        });
+          properties: [...player.properties, spaceId.toString()]
+        })
 
         // Set custodian
-        get().setPropertyCustodian(spaceId, playerId);
+        get().setPropertyCustodian(spaceId, playerId)
 
         // Add to treasury
-        get().adjustTreasury(price);
+        get().adjustTreasury(price)
 
-        const space = getSpaceById(spaceId);
+        const space = getSpaceById(spaceId)
         get().addLogEntry({
           type: 'property',
-          message: `${player.name} became Custodian of ${space?.name} for ₽${price}`,
-          playerId,
-        });
+          message: `${player.name} became Custodian of ${space?.name ?? 'Unknown Property'} for ₽${price}`,
+          playerId
+        })
       },
 
       payQuota: (payerId, custodianId, amount) => {
-        const state = get();
-        const payer = state.players.find((p) => p.id === payerId);
-        const custodian = state.players.find((p) => p.id === custodianId);
-        if (!payer || !custodian) return;
+        const state = get()
+        const payer = state.players.find((p) => p.id === payerId)
+        const custodian = state.players.find((p) => p.id === custodianId)
+        if ((payer == null) || (custodian == null)) return
 
         // Transfer rubles
-        get().updatePlayer(payerId, { rubles: payer.rubles - amount });
-        get().updatePlayer(custodianId, { rubles: custodian.rubles + amount });
+        get().updatePlayer(payerId, { rubles: payer.rubles - amount })
+        get().updatePlayer(custodianId, { rubles: custodian.rubles + amount })
 
         get().addLogEntry({
           type: 'payment',
           message: `${payer.name} paid ₽${amount} quota to ${custodian.name}`,
-          playerId: payerId,
-        });
+          playerId: payerId
+        })
       },
 
       mortgageProperty: (spaceId) => {
-        const state = get();
-        const property = state.properties.find((p) => p.spaceId === spaceId);
-        if (!property || !property.custodianId) return;
+        const state = get()
+        const property = state.properties.find((p) => p.spaceId === spaceId)
+        if ((property == null) || (property.custodianId == null)) return
 
-        const space = getSpaceById(spaceId);
-        const mortgageValue = Math.floor((space?.baseCost || 0) * 0.5);
+        const space = getSpaceById(spaceId)
+        const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5)
 
         // Give player half the base cost
-        const player = state.players.find((p) => p.id === property.custodianId);
-        if (player) {
-          get().updatePlayer(player.id, { rubles: player.rubles + mortgageValue });
+        const player = state.players.find((p) => p.id === property.custodianId)
+        if (player != null) {
+          get().updatePlayer(player.id, { rubles: player.rubles + mortgageValue })
         }
 
         // Mark as mortgaged
         set((state) => ({
           properties: state.properties.map((prop) =>
             prop.spaceId === spaceId ? { ...prop, mortgaged: true } : prop
-          ),
-        }));
+          )
+        }))
 
         get().addLogEntry({
           type: 'property',
-          message: `${player?.name} mortgaged ${space?.name} for ₽${mortgageValue}`,
-          playerId: property.custodianId,
-        });
+          message: `${player?.name ?? 'Unknown Player'} mortgaged ${space?.name ?? 'Unknown Property'} for ₽${mortgageValue}`,
+          playerId: property.custodianId
+        })
       },
 
       unmortgageProperty: (spaceId, playerId) => {
-        const state = get();
-        const property = state.properties.find((p) => p.spaceId === spaceId);
-        const player = state.players.find((p) => p.id === playerId);
-        if (!property || !player) return;
+        const state = get()
+        const property = state.properties.find((p) => p.spaceId === spaceId)
+        const player = state.players.find((p) => p.id === playerId)
+        if ((property == null) || (player == null)) return
 
-        const space = getSpaceById(spaceId);
-        const unmortgageCost = Math.floor((space?.baseCost || 0) * 0.6);
+        const space = getSpaceById(spaceId)
+        const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6)
 
-        if (player.rubles < unmortgageCost) return;
+        if (player.rubles < unmortgageCost) return
 
         // Deduct cost
-        get().updatePlayer(playerId, { rubles: player.rubles - unmortgageCost });
+        get().updatePlayer(playerId, { rubles: player.rubles - unmortgageCost })
 
         // Unmark mortgaged
         set((state) => ({
           properties: state.properties.map((prop) =>
             prop.spaceId === spaceId ? { ...prop, mortgaged: false } : prop
-          ),
-        }));
+          )
+        }))
 
         get().addLogEntry({
           type: 'property',
-          message: `${player.name} unmortgaged ${space?.name} for ₽${unmortgageCost}`,
-          playerId,
-        });
+          message: `${player.name} unmortgaged ${space?.name ?? 'Unknown Property'} for ₽${unmortgageCost}`,
+          playerId
+        })
       },
 
       // Pending actions
       setPendingAction: (action) => {
-        set({ pendingAction: action });
-      },
+        set({ pendingAction: action })
+      }
     }),
     {
       name: 'communistopoly-save',
@@ -621,8 +619,8 @@ export const useGameStore = create<GameStore>()(
         doublesCount: state.doublesCount,
         hasRolled: state.hasRolled,
         dice: state.dice,
-        gameLog: state.gameLog,
-      }),
+        gameLog: state.gameLog
+      })
     }
   )
-);
+)

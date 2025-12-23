@@ -58,7 +58,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             <h3>DENOUNCEMENTS</h3>
             <p>
               Any player may denounce another at any time by accusing them of a crime (real or invented). Stalin
-              presides over a tribunal where both sides present their case, and Stalin renders judgment.
+              presides over a tribunal where both sides present their case, and Stalin renders judgement.
             </p>
             <p><strong>Outcomes:</strong> Guilty (Gulag), Innocent (accuser loses rank), Both Guilty, or Insufficient Evidence.</p>
           </section>

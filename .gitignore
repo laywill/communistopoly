@@ -1,5 +1,8 @@
 # Additional Safeguards
 
+# Megalinter
+megalinter-reports/
+
 # Vite files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*

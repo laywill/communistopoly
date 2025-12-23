@@ -121,7 +121,7 @@
 
 .entry.payment {
   border-left-color: var(--color-kremlin-gold);
-  background: rgba(212, 168, 75, 0.05);
+  background: rgb(212 168 75 / 5%);
 }
 
 .entry.payment .entryMessage {
@@ -131,7 +131,7 @@
 
 .entry.gulag {
   border-left-color: var(--color-blood-burgundy);
-  background: rgba(114, 47, 55, 0.05);
+  background: rgb(114 47 55 / 5%);
 }
 
 .entry.gulag .entryMessage {
@@ -141,7 +141,7 @@
 
 .entry.rank {
   border-left-color: var(--color-military-olive);
-  background: rgba(74, 93, 35, 0.05);
+  background: rgb(74 93 35 / 5%);
 }
 
 .entry.rank .entryMessage {
@@ -155,7 +155,7 @@
 
 .entry.tribunal {
   border-left-color: var(--color-warning-amber);
-  background: rgba(184, 134, 11, 0.05);
+  background: rgb(184 134 11 / 5%);
 }
 
 .entry.dice {
@@ -164,7 +164,7 @@
 
 .entry.system {
   border-left-color: var(--color-gulag-grey);
-  background: rgba(74, 74, 74, 0.03);
+  background: rgb(74 74 74 / 3%);
 }
 
 .entry.system .entryMessage {
