@@ -29,7 +29,8 @@ export default defineConfig([
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
-  pluginReact.configs.flat.recommended,
+  pluginReact.configs.flat.recommended, // This is not a plugin object, but a shareable config object
+  pluginReact.configs.flat['jsx-runtime'], // Add this if you are using React 17+
   {
     rules: {
       'react/react-in-jsx-scope': 'off',

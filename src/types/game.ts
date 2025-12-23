@@ -109,6 +109,13 @@ export interface Player {
   hasUsedTankGulagImmunity: boolean // Tank: First Gulag immunity used
   tankRequisitionUsedThisLap: boolean // Tank: Requisition used this lap
   lapsCompleted: number // Track laps around board (for Tank requisition)
+  hasUsedSickleHarvest: boolean // Sickle: Harvest ability used
+  sickleMotherlandForgotten: boolean // Sickle: Forgot to say "For the Motherland!"
+  hasUsedLeninSpeech: boolean // Lenin: Inspiring speech used
+  hasUsedIronCurtainDisappear: boolean // Iron Curtain: Disappear property used
+  hasFreeFromGulagCard: boolean // Owns a "Get out of Gulag free" card
+  vodkaUseCount: number // Vodka: Track sobriety level
+  ironCurtainClaimedRubles: number // Iron Curtain: Last claimed amount (for audits)
 }
 
 export interface Property {
@@ -160,13 +167,20 @@ export type PendingActionType =
   | 'railway-fee'
   | 'utility-fee'
   | 'tax-payment'
-  | 'draw-card'
+  | 'draw-party-directive'
+  | 'draw-communist-test'
+  | 'party-directive-effect'
+  | 'communist-test-answer'
   | 'collective-farm-announcement'
   | 'gulag-escape-choice'
   | 'voucher-request'
   | 'inform-on-player'
   | 'bribe-stalin'
   | 'liquidation-required'
+  | 'sickle-harvest'
+  | 'iron-curtain-disappear'
+  | 'lenin-speech'
+  | 'vodka-roll'
 
 export interface PendingAction {
   type: PendingActionType
@@ -225,4 +239,9 @@ export interface GameState {
   // Gulag system
   activeVouchers: VoucherAgreement[]
   pendingBribes: BribeRequest[]
+
+  // Card decks
+  partyDirectiveDeck: string[] // Card IDs (shuffled)
+  partyDirectiveDiscard: string[] // Used cards
+  communistTestUsedQuestions: Set<string> // Question IDs already used
 }

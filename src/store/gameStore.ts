@@ -2,6 +2,8 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
+import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck, type DirectiveCard } from '../data/partyDirectiveCards'
+import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
 
 // Helper functions
 function getGulagReasonText (reason: GulagReason, justification?: string): string {
@@ -108,8 +110,18 @@ interface GameActions {
   handleStoyPassing: (playerId: string) => void
   handleStoyPilfer: (playerId: string, diceRoll: number) => void
 
+  // Card system
+  drawPartyDirective: () => DirectiveCard
+  drawCommunistTest: (difficulty?: 'easy' | 'medium' | 'hard' | 'trick') => TestQuestion
+  applyDirectiveEffect: (card: DirectiveCard, playerId: string) => void
+  answerCommunistTest: (question: TestQuestion, answer: string, readerId: string) => void
+
   // Piece abilities
   tankRequisition: (tankPlayerId: string, targetPlayerId: string) => void
+  sickleHarvest: (sicklePlayerId: string, targetPropertyId: number) => void
+  ironCurtainDisappear: (ironCurtainPlayerId: string, targetPropertyId: number) => void
+  leninSpeech: (leninPlayerId: string, applauders: string[]) => void
+  promotePlayer: (playerId: string) => void
 
   // Game log
   addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void
@@ -139,7 +151,10 @@ const initialState: GameState = {
   gameLog: [],
   pendingAction: null,
   activeVouchers: [],
-  pendingBribes: []
+  pendingBribes: [],
+  partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
+  partyDirectiveDiscard: [],
+  communistTestUsedQuestions: new Set()
 }
 
 export const useGameStore = create<GameStore>()(
@@ -186,7 +201,14 @@ export const useGameStore = create<GameStore>()(
           debtCreatedAtRound: null,
           hasUsedTankGulagImmunity: false,
           tankRequisitionUsedThisLap: false,
-          lapsCompleted: 0
+          lapsCompleted: 0,
+          hasUsedSickleHarvest: false,
+          sickleMotherlandForgotten: false,
+          hasUsedLeninSpeech: false,
+          hasUsedIronCurtainDisappear: false,
+          hasFreeFromGulagCard: false,
+          vodkaUseCount: 0,
+          ironCurtainClaimedRubles: 1500 // Start with initial amount claimed
         }))
 
         const stalinPlayer = players.find(p => p.isStalin)
@@ -200,7 +222,10 @@ export const useGameStore = create<GameStore>()(
           players,
           stalinPlayerId: stalinPlayer?.id ?? null,
           currentPlayerIndex: 1, // Start with first non-Stalin player
-          stateTreasury
+          stateTreasury,
+          partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
+          partyDirectiveDiscard: [],
+          communistTestUsedQuestions: new Set()
         })
 
         // Initialize properties
