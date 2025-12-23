@@ -235,11 +235,31 @@ export const useGameStore = create<GameStore>()(
       setCurrentPlayer: (index) => set({ currentPlayerIndex: index }),
 
       updatePlayer: (playerId, updates) => {
-        set((state) => ({
-          players: state.players.map((player) =>
-            player.id === playerId ? { ...player, ...updates } : player
-          )
-        }))
+        set((state) => {
+          const player = state.players.find(p => p.id === playerId)
+
+          // BREAD LOAF ABILITY: Enforce 1000₽ wealth cap
+          if (player?.piece === 'breadLoaf' && updates.rubles !== undefined) {
+            if (updates.rubles > 1000) {
+              const excess = updates.rubles - 1000
+              updates.rubles = 1000
+
+              // Donate excess to State
+              get().adjustTreasury(excess)
+              get().addLogEntry({
+                type: 'payment',
+                message: `${player.name}'s Bread Loaf forces donation of ₽${excess} to the State (max 1000₽)`,
+                playerId
+              })
+            }
+          }
+
+          return {
+            players: state.players.map((p) =>
+              p.id === playerId ? { ...p, ...updates } : p
+            )
+          }
+        })
       },
 
       initializeProperties: () => {
