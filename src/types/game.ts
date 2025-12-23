@@ -104,6 +104,11 @@ export interface Player {
   // Debt system
   debt: Debt | null
   debtCreatedAtRound: number | null
+
+  // Piece abilities
+  hasUsedTankGulagImmunity: boolean // Tank: First Gulag immunity used
+  tankRequisitionUsedThisLap: boolean // Tank: Requisition used this lap
+  lapsCompleted: number // Track laps around board (for Tank requisition)
 }
 
 export interface Property {

@@ -21,11 +21,13 @@ export default function PlayerDashboard() {
   const turnPhase = useGameStore((state) => state.turnPhase);
   const endTurn = useGameStore((state) => state.endTurn);
   const finishMoving = useGameStore((state) => state.finishMoving);
+  const tankRequisition = useGameStore((state) => state.tankRequisition);
 
   // Modal state
   const [showPropertyModal, setShowPropertyModal] = useState(false);
   const [showImproveModal, setShowImproveModal] = useState(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [showTankRequisition, setShowTankRequisition] = useState(false);
 
   const handleEndTurn = () => {
     endTurn();
@@ -191,6 +193,20 @@ export default function PlayerDashboard() {
                         >
                           🏭 IMPROVE
                         </button>
+
+                        {/* Tank Requisition Ability */}
+                        {player.piece === 'tank' && !player.tankRequisitionUsedThisLap && (
+                          <button
+                            className="action-button secondary"
+                            onClick={() => {
+                              setSelectedPlayerId(player.id);
+                              setShowTankRequisition(true);
+                            }}
+                            title="Requisition ₽50 from another player (once per lap)"
+                          >
+                            🚛 REQUISITION ₽50
+                          </button>
+                        )}
                       </div>
                     )}
 
@@ -232,6 +248,44 @@ export default function PlayerDashboard() {
             setSelectedPlayerId(null);
           }}
         />
+      )}
+
+      {/* Tank Requisition Modal */}
+      {showTankRequisition && selectedPlayerId && (
+        <div className="modal-overlay" onClick={() => { setShowTankRequisition(false); }}>
+          <div className="modal-content" onClick={(e) => { e.stopPropagation(); }} style={{ maxWidth: '400px' }}>
+            <h2>🚛 TANK REQUISITION</h2>
+            <p>Select a player to requisition ₽50 from:</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+              {players
+                .filter((p) => p.id !== selectedPlayerId && !p.isStalin && !p.isEliminated)
+                .map((targetPlayer) => (
+                  <button
+                    key={targetPlayer.id}
+                    className="action-button secondary"
+                    onClick={() => {
+                      tankRequisition(selectedPlayerId, targetPlayer.id);
+                      setShowTankRequisition(false);
+                      setSelectedPlayerId(null);
+                    }}
+                    style={{ width: '100%', textAlign: 'left', padding: '0.8rem' }}
+                  >
+                    {targetPlayer.name} - ₽{targetPlayer.rubles}
+                  </button>
+                ))}
+            </div>
+            <button
+              className="action-button"
+              onClick={() => {
+                setShowTankRequisition(false);
+                setSelectedPlayerId(null);
+              }}
+              style={{ marginTop: '1rem', width: '100%' }}
+            >
+              CANCEL
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -108,6 +108,9 @@ interface GameActions {
   handleStoyPassing: (playerId: string) => void
   handleStoyPilfer: (playerId: string, diceRoll: number) => void
 
+  // Piece abilities
+  tankRequisition: (tankPlayerId: string, targetPlayerId: string) => void
+
   // Game log
   addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void
 
@@ -180,7 +183,10 @@ export const useGameStore = create<GameStore>()(
           vouchingFor: null,
           vouchedByRound: null,
           debt: null,
-          debtCreatedAtRound: null
+          debtCreatedAtRound: null,
+          hasUsedTankGulagImmunity: false,
+          tankRequisitionUsedThisLap: false,
+          lapsCompleted: 0
         }))
 
         const stalinPlayer = players.find(p => p.isStalin)
@@ -298,8 +304,13 @@ export const useGameStore = create<GameStore>()(
         // Check if player passed STOY (position 0)
         const passedStoy = oldPosition !== 0 && (oldPosition + spaces >= 40)
 
-        // Update player position
-        get().updatePlayer(playerId, { position: newPosition })
+        // Update player position and track laps
+        const updates: Partial<Player> = { position: newPosition }
+        if (passedStoy) {
+          updates.lapsCompleted = (player.lapsCompleted) + 1
+          updates.tankRequisitionUsedThisLap = false // Reset Tank requisition for new lap
+        }
+        get().updatePlayer(playerId, updates)
 
         const fromSpace = getSpaceById(oldPosition)
         const toSpace = getSpaceById(newPosition)
@@ -488,6 +499,53 @@ export const useGameStore = create<GameStore>()(
         const player = state.players.find((p) => p.id === playerId)
         if (player == null) return
 
+        // HAMMER ABILITY: Cannot be sent to Gulag by other players
+        // Blocked reasons: denouncementGuilty, threeDoubles
+        if (player.piece === 'hammer' && (reason === 'denouncementGuilty' || reason === 'threeDoubles')) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${player.name}'s Hammer protects them from Gulag! (Player-initiated imprisonment blocked)`,
+            playerId
+          })
+          set({ turnPhase: 'post-turn' })
+          return
+        }
+
+        // TANK ABILITY: Immune to first Gulag sentence (return to nearest Railway Station instead)
+        if (player.piece === 'tank' && !player.hasUsedTankGulagImmunity) {
+          const railwayPositions = [5, 15, 25, 35]
+          const currentPos = player.position
+
+          // Find nearest railway station
+          let nearestRailway = railwayPositions[0]
+          let minDistance = Math.abs(currentPos - railwayPositions[0])
+
+          railwayPositions.forEach(railPos => {
+            const distance = Math.abs(currentPos - railPos)
+            if (distance < minDistance) {
+              minDistance = distance
+              nearestRailway = railPos
+            }
+          })
+
+          get().updatePlayer(playerId, {
+            position: nearestRailway,
+            hasUsedTankGulagImmunity: true
+          })
+
+          get().addLogEntry({
+            type: 'system',
+            message: `${player.name}'s Tank evades Gulag! Redirected to nearest Railway Station (immunity used)`,
+            playerId
+          })
+
+          // Still demote player (loses rank but avoids Gulag)
+          get().demotePlayer(playerId)
+
+          set({ turnPhase: 'post-turn' })
+          return
+        }
+
         const reasonText = getGulagReasonText(reason, justification)
 
         get().updatePlayer(playerId, {
@@ -528,6 +586,16 @@ export const useGameStore = create<GameStore>()(
             message: `${player.name} demoted to ${newRank}`,
             playerId
           })
+
+          // RED STAR ABILITY: If demoted to Proletariat, immediate execution
+          if (player.piece === 'redStar' && newRank === 'proletariat') {
+            get().addLogEntry({
+              type: 'system',
+              message: `${player.name}'s Red Star has fallen to Proletariat - IMMEDIATE EXECUTION!`,
+              playerId
+            })
+            get().eliminatePlayer(playerId, 'Red Star fallen to Proletariat - executed by the Party')
+          }
         }
       },
 
@@ -546,6 +614,16 @@ export const useGameStore = create<GameStore>()(
           message: `${player.name} paid ₽200 travel tax at STOY`,
           playerId
         })
+
+        // HAMMER ABILITY: +50₽ bonus when passing STOY
+        if (player.piece === 'hammer') {
+          get().updatePlayer(playerId, { rubles: player.rubles - 200 + 50 }) // Net: -150₽
+          get().addLogEntry({
+            type: 'payment',
+            message: `${player.name}'s Hammer earns +₽50 bonus at STOY!`,
+            playerId
+          })
+        }
       },
 
       handleStoyPilfer: (playerId, diceRoll) => {
@@ -570,6 +648,32 @@ export const useGameStore = create<GameStore>()(
         }
 
         set({ pendingAction: null, turnPhase: 'post-turn' })
+      },
+
+      // Piece abilities
+      tankRequisition: (tankPlayerId, targetPlayerId) => {
+        const state = get()
+        const tankPlayer = state.players.find((p) => p.id === tankPlayerId)
+        const targetPlayer = state.players.find((p) => p.id === targetPlayerId)
+
+        if (tankPlayer == null || targetPlayer == null) return
+        if (tankPlayer.piece !== 'tank') return
+        if (tankPlayer.tankRequisitionUsedThisLap) return
+
+        // Requisition ₽50 from target (or all their money if they have less)
+        const requisitionAmount = Math.min(50, targetPlayer.rubles)
+
+        get().updatePlayer(targetPlayerId, { rubles: targetPlayer.rubles - requisitionAmount })
+        get().updatePlayer(tankPlayerId, {
+          rubles: tankPlayer.rubles + requisitionAmount,
+          tankRequisitionUsedThisLap: true
+        })
+
+        get().addLogEntry({
+          type: 'payment',
+          message: `${tankPlayer.name}'s Tank requisitioned ₽${String(requisitionAmount)} from ${targetPlayer.name}!`,
+          playerId: tankPlayerId
+        })
       },
 
       // Game log
@@ -597,6 +701,19 @@ export const useGameStore = create<GameStore>()(
         const state = get()
         const player = state.players.find((p) => p.id === playerId)
         if (player == null || player.rubles < price) return
+
+        // TANK ABILITY: Cannot control any Collective Farm properties
+        const collectiveFarmSpaces = [6, 8, 9]
+        if (player.piece === 'tank' && collectiveFarmSpaces.includes(spaceId)) {
+          const space = getSpaceById(spaceId)
+          get().addLogEntry({
+            type: 'system',
+            message: `${player.name}'s Tank cannot control Collective Farm properties! ${space?.name ?? 'Property'} purchase blocked.`,
+            playerId
+          })
+          set({ pendingAction: null, turnPhase: 'post-turn' })
+          return
+        }
 
         // Deduct rubles
         get().updatePlayer(playerId, {
