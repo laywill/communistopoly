@@ -19,17 +19,19 @@ const PLAYER_COLORS = [
 ];
 
 const PropertySpace = ({ space }: PropertySpaceProps) => {
-  if (!space.group) return null;
-
-  const colors = PROPERTY_COLORS[space.group];
+  // Hooks must be called before any early returns
   const property = useGameStore((state) =>
     state.properties.find((p) => p.spaceId === space.id)
   );
-  const custodian = property?.custodianId
-    ? useGameStore((state) => state.players.find((p) => p.id === property.custodianId))
-    : null;
   const players = useGameStore((state) => state.players);
   const allProperties = useGameStore((state) => state.properties);
+  const custodian = property?.custodianId
+    ? players.find((p) => p.id === property.custodianId)
+    : null;
+
+  if (!space.group) return null;
+
+  const colors = PROPERTY_COLORS[space.group];
 
   const collectivizationLevel = property?.collectivizationLevel || 0;
   const isMortgaged = property?.mortgaged || false;
