@@ -45,6 +45,10 @@ export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) 
     attemptGulagEscape(playerId, 'bribe');
   };
 
+  const handleUseGulagCard = () => {
+    attemptGulagEscape(playerId, 'card');
+  };
+
   const canAffordRehabilitation = player.rubles >= 500;
 
   return (
@@ -74,6 +78,32 @@ export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) 
               Required to escape: <strong>{requiredDoubles}</strong>
             </p>
           </div>
+
+          {/* Special Option: Use "Get out of Gulag free" Card */}
+          {player.hasFreeFromGulagCard && (
+            <div style={{ marginBottom: '16px', border: '3px solid var(--color-kremlin-gold)', padding: '12px', background: 'rgba(212, 168, 75, 0.1)' }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '16px', marginBottom: '8px', textTransform: 'uppercase', color: 'var(--color-kremlin-gold)' }}>
+                ⭐ Special: Use Rehabilitation Card
+              </h3>
+              <button
+                onClick={handleUseGulagCard}
+                className={styles.primaryButton}
+                style={{
+                  width: '100%',
+                  padding: '16px',
+                  fontSize: '16px',
+                  background: 'linear-gradient(180deg, var(--color-kremlin-gold) 0%, #B8860B 100%)',
+                  color: 'var(--color-propaganda-black)',
+                  border: '2px solid var(--color-kremlin-gold)'
+                }}
+              >
+                ⭐ USE "GET OUT OF GULAG FREE" CARD
+              </button>
+              <p style={{ fontSize: '12px', color: 'var(--color-propaganda-black)', marginTop: '4px', fontWeight: 'bold' }}>
+                Immediate release with no penalties!
+              </p>
+            </div>
+          )}
 
           {/* Option 1: Roll for Escape */}
           <div style={{ marginBottom: '16px' }}>
