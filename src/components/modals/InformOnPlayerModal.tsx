@@ -307,7 +307,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                 >
                   <p style={{ margin: 0, fontSize: '13px', fontWeight: 'bold' }}>Preview:</p>
                   <p style={{ margin: '8px 0 0 0', fontSize: '14px', fontStyle: 'italic' }}>
-                    "{accusation}"
+                    &quot;{accusation}&quot;
                   </p>
                   <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: 'var(--color-gulag-grey)' }}>
                     Accused: {players.find((p) => p.id === selectedTargetId)?.name}
