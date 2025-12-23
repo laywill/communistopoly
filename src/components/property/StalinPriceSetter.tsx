@@ -92,7 +92,7 @@ export function StalinPriceSetter({
       </button>
 
       <div className={styles.note}>
-        "The State generously offers this property to the workers..."
+        &quot;The State generously offers this property to the workers...&quot;
       </div>
     </div>
   );
