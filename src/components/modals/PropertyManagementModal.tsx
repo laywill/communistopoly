@@ -43,7 +43,6 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
   // Check if player owns complete group
   const ownsCompleteGroup = (group: PropertyGroup): boolean => {
     const groupInfo = PROPERTY_GROUPS[group];
-    if (!groupInfo) return false;
 
     const ownedInGroup = groupedProperties[group];
     return ownedInGroup.length === groupInfo.properties.length;
@@ -58,7 +57,7 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
     if (property.mortgaged) {
       unmortgageProperty(spaceId, playerId);
     } else {
-      if (confirm(`Mortgage ${space.name} for ₽${Math.floor((space.baseCost || 0) * 0.5)}?`)) {
+      if (confirm(`Mortgage ${space.name} for ₽${String(Math.floor((space.baseCost ?? 0) * 0.5))}?`)) {
         mortgageProperty(spaceId);
       }
     }
@@ -123,8 +122,8 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
                       if (!space || !property) return null;
 
                       const levelInfo = COLLECTIVIZATION_LEVELS[property.collectivizationLevel];
-                      const mortgageValue = Math.floor((space.baseCost || 0) * 0.5);
-                      const unmortgageCost = Math.floor((space.baseCost || 0) * 0.6);
+                      const mortgageValue = Math.floor((space.baseCost ?? 0) * 0.5);
+                      const unmortgageCost = Math.floor((space.baseCost ?? 0) * 0.6);
 
                       return (
                         <div
@@ -178,8 +177,8 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
                               }
                             >
                               {property.mortgaged
-                                ? `UNMORTGAGE (₽${unmortgageCost})`
-                                : `MORTGAGE (₽${mortgageValue})`}
+                                ? `UNMORTGAGE (₽${String(unmortgageCost)})`
+                                : `MORTGAGE (₽${String(mortgageValue)})`}
                             </button>
                           )}
                         </div>

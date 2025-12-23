@@ -90,7 +90,7 @@ const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps) => {
               </div>
 
               {!isRolling && diceResult !== null && (
-                <div className={`${styles.outcome} ${styles[getOutcome() || '']}`}>
+                <div className={`${styles.outcome} ${styles[getOutcome() ?? '']}`}>
                   {getOutcome() === 'success' ? (
                     <>
                       <div className={styles.outcomeIcon}>✓</div>

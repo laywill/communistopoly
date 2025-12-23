@@ -50,8 +50,8 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
     setHasAnnounced(true);
     addLogEntry({
       type: 'system',
-      message: `${custodian?.name} announces: "The harvest is bountiful!"`,
-      playerId: custodian?.id,
+      message: `${custodian.name} announces: "The harvest is bountiful!"`,
+      playerId: custodian.id,
     });
   };
 
@@ -62,7 +62,7 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
         updatePlayer(payerId, { skipNextTurn: true });
         addLogEntry({
           type: 'system',
-          message: `${payer.name} cannot pay ₽${quota} - conscripted for labour! Will miss next turn.`,
+          message: `${payer.name} cannot pay ₽${String(quota)} - conscripted for labour! Will miss next turn.`,
           playerId: payerId,
         });
         setPendingAction(null);
@@ -159,7 +159,7 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
             className={styles.payButton}
             onClick={handlePay}
           >
-            {canAfford ? `PAY ₽${quota}` : 'ACKNOWLEDGE DEBT'}
+            {canAfford ? `PAY ₽${String(quota)}` : 'ACKNOWLEDGE DEBT'}
           </button>
         </div>
       </div>

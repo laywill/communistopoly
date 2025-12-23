@@ -54,7 +54,7 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
           useGameStore.getState().adjustTreasury(stalinPrice);
           addLogEntry({
             type: 'payment',
-            message: `${player.name} donated ₽${stalinPrice} to the State Treasury (utilities require Commissar+ rank)`,
+            message: `${player.name} donated ₽${String(stalinPrice)} to the State Treasury (utilities require Commissar+ rank)`,
             playerId,
           });
         }
@@ -103,7 +103,7 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
   };
 
   const rankRestriction = getRankRestrictionMessage();
-  const canAfford = player.rubles >= (stalinPrice || space.baseCost);
+  const canAfford = player.rubles >= (stalinPrice ?? space.baseCost);
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -120,15 +120,11 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
             <div
               className={styles.colorBand}
               style={{
-                backgroundColor: space.group
-                  ? useGameStore.getState().properties.find((p) => p.spaceId === spaceId)
-                    ? '#1A1A1A'
-                    : '#1A1A1A'
-                  : '#1A1A1A',
+                backgroundColor: '#1A1A1A',
               }}
             />
             <h3 className={styles.propertyName}>{space.name}</h3>
-            <div className={styles.baseQuota}>Base Quota: ₽{space.baseQuota || 'N/A'}</div>
+            <div className={styles.baseQuota}>Base Quota: ₽{space.baseQuota ?? 'N/A'}</div>
 
             {/* Collectivization Levels */}
             <div className={styles.improvements}>

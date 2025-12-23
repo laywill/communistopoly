@@ -61,7 +61,7 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
 
       addLogEntry({
         type: 'payment',
-        message: `${payer.name} paid ₽${fee} railway fee to ${controller.name} (${controlledStations} station${controlledStations > 1 ? 's' : ''})`,
+        message: `${payer.name} paid ₽${String(fee)} railway fee to ${controller.name} (${String(controlledStations)} station${controlledStations > 1 ? 's' : ''})`,
         playerId: payerId,
       });
 
@@ -151,7 +151,7 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
             className={styles.payButton}
             onClick={handlePay}
           >
-            {canAfford ? `PAY ₽${fee}` : 'ACKNOWLEDGE DEBT'}
+            {canAfford ? `PAY ₽${String(fee)}` : 'ACKNOWLEDGE DEBT'}
           </button>
         </div>
       </div>

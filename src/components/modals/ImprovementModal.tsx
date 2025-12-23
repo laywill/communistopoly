@@ -43,7 +43,6 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
   // Check if player owns complete group
   const ownsCompleteGroup = (group: PropertyGroup): boolean => {
     const groupInfo = PROPERTY_GROUPS[group];
-    if (!groupInfo) return false;
 
     const ownedInGroup = groupedProperties[group];
     return ownedInGroup.length === groupInfo.properties.length;
@@ -71,7 +70,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
     // Check if can afford
     const cost = getNextCollectivizationCost(property.collectivizationLevel);
     if (player.rubles < cost) {
-      return { canImprove: false, reason: `Insufficient rubles (need ₽${cost})` };
+      return { canImprove: false, reason: `Insufficient rubles (need ₽${String(cost)})` };
     }
 
     // Check even building within group
@@ -120,7 +119,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
 
     addLogEntry({
       type: 'property',
-      message: `${player.name} improved ${space.name} to ${levelInfo.name} for ₽${cost}`,
+      message: `${player.name} improved ${space.name} to ${levelInfo.name} for ₽${String(cost)}`,
       playerId,
     });
 
@@ -203,7 +202,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
                                 <div className={styles.nextLevel}>
                                   <span className={styles.levelLabel}>Next:</span>
                                   <span className={styles.nextLevelValue}>
-                                    {nextLevelInfo.name} (₽{nextCost})
+                                    {nextLevelInfo.name} (₽{String(nextCost)})
                                   </span>
                                 </div>
 
@@ -213,7 +212,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
                                   disabled={!canImproveProperty}
                                   title={reason}
                                 >
-                                  {canImproveProperty ? `IMPROVE (₽${nextCost})` : reason}
+                                  {canImproveProperty ? `IMPROVE (₽${String(nextCost)})` : reason}
                                 </button>
                               </>
                             )}

@@ -7,7 +7,7 @@ import styles from './Modal.module.css';
 interface LiquidationModalProps {
   playerId: string;
   amountOwed: number;
-  creditorId: string | 'state';
+  creditorId: string;
   reason: string;
 }
 
@@ -107,7 +107,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
     addLogEntry({
       type: 'property',
-      message: `${player.name} sold improvements on ${space.name} for ₽${sellValue}`,
+      message: `${player.name} sold improvements on ${space.name} for ₽${String(sellValue)}`,
       playerId,
     });
 
@@ -138,7 +138,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
     addLogEntry({
       type: 'property',
-      message: `${player.name} mortgaged ${space.name} for ₽${mortgageValue}`,
+      message: `${player.name} mortgaged ${space.name} for ₽${String(mortgageValue)}`,
       playerId,
     });
 
@@ -171,11 +171,11 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
       adjustTreasury(remainingDebt);
     }
 
-    const creditorName = creditorId === 'state' ? 'the State' : players.find((p) => p.id === creditorId)?.name;
+    const creditorName = creditorId === 'state' ? 'the State' : players.find((p) => p.id === creditorId)?.name ?? 'unknown';
 
     addLogEntry({
       type: 'payment',
-      message: `${player.name} paid ₽${remainingDebt} to ${creditorName} by liquidating assets`,
+      message: `${player.name} paid ₽${String(remainingDebt)} to ${creditorName} by liquidating assets`,
       playerId,
     });
 
@@ -190,7 +190,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
       addLogEntry({
         type: 'payment',
-        message: `${player.name} chose not to liquidate assets. Debt of ₽${remainingDebt} created. Must pay within one round!`,
+        message: `${player.name} chose not to liquidate assets. Debt of ₽${String(remainingDebt)} created. Must pay within one round!`,
         playerId,
       });
     } else {
@@ -199,7 +199,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
       addLogEntry({
         type: 'payment',
-        message: `${player.name} has insufficient assets to pay ₽${remainingDebt}. Debt created - face Gulag if not paid within one round!`,
+        message: `${player.name} has insufficient assets to pay ₽${String(remainingDebt)}. Debt created - face Gulag if not paid within one round!`,
         playerId,
       });
     }

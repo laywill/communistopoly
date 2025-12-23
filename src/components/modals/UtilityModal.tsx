@@ -65,7 +65,7 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
 
       addLogEntry({
         type: 'payment',
-        message: `${payer.name} paid ₽${fee} to ${controller.name} for use of ${space.name} (${diceTotal} × ${multiplier})`,
+        message: `${payer.name} paid ₽${String(fee)} to ${controller.name} for use of ${space.name} (${String(diceTotal)} × ${String(multiplier)})`,
         playerId: payerId,
       });
     }
@@ -168,7 +168,7 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
             className={styles.payButton}
             onClick={handlePay}
           >
-            {canAfford ? `PAY ₽${fee}` : 'ACKNOWLEDGE DEBT'}
+            {canAfford ? `PAY ₽${String(fee)}` : 'ACKNOWLEDGE DEBT'}
           </button>
         </div>
       </div>

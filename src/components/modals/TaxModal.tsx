@@ -129,7 +129,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
 
       addLogEntry({
         type: 'payment',
-        message: `${player.name} paid ₽${totalPayment} Revolutionary Contribution (₽${actualAmount} + ₽${difference} difference + ₽${penalty} audit penalty)`,
+        message: `${player.name} paid ₽${String(totalPayment)} Revolutionary Contribution (₽${String(actualAmount)} + ₽${String(difference)} difference + ₽${String(penalty)} audit penalty)`,
         playerId,
       });
     } else {
@@ -153,7 +153,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
 
       addLogEntry({
         type: 'payment',
-        message: `${player.name} paid ₽${chosenAmount} Revolutionary Contribution${shouldAudit ? ' (audited - no penalty)' : ''}`,
+        message: `${player.name} paid ₽${String(chosenAmount)} Revolutionary Contribution${shouldAudit ? ' (audited - no penalty)' : ''}`,
         playerId,
       });
     }
@@ -187,13 +187,13 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
       demotePlayer(playerId);
       addLogEntry({
         type: 'payment',
-        message: `${player.name} paid ₽${amount} Bourgeois Decadence Tax as the wealthiest comrade - demoted for capitalist tendencies!`,
+        message: `${player.name} paid ₽${String(amount)} Bourgeois Decadence Tax as the wealthiest comrade - demoted for capitalist tendencies!`,
         playerId,
       });
     } else {
       addLogEntry({
         type: 'payment',
-        message: `${player.name} paid ₽${amount} Bourgeois Decadence Tax`,
+        message: `${player.name} paid ₽${String(amount)} Bourgeois Decadence Tax`,
         playerId,
       });
     }
@@ -266,7 +266,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
               {showStalinAudit && (
                 <div className={styles.auditSection}>
                   <div className={styles.choiceConfirm}>
-                    <strong>Choice Made:</strong> {playerChoice === 'percentage' ? `15% (₽${percentageAmount})` : `Flat Rate (₽${flatAmount})`}
+                    <strong>Choice Made:</strong> {playerChoice === 'percentage' ? `15% (₽${String(percentageAmount)})` : `Flat Rate (₽${String(flatAmount)})`}
                   </div>
 
                   <div className={styles.stalinDecision}>
