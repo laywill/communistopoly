@@ -1197,6 +1197,365 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
+      // Card system
+      drawPartyDirective: () => {
+        const state = get()
+        let { partyDirectiveDeck, partyDirectiveDiscard } = state
+
+        // If deck is empty, reshuffle discard pile
+        if (partyDirectiveDeck.length === 0) {
+          partyDirectiveDeck = [...partyDirectiveDiscard].sort(() => Math.random() - 0.5)
+          partyDirectiveDiscard = []
+          get().addLogEntry({
+            type: 'system',
+            message: 'Party Directive deck reshuffled'
+          })
+        }
+
+        const cardId = partyDirectiveDeck[0]
+        const card = PARTY_DIRECTIVE_CARDS.find(c => c.id === cardId)
+
+        if (!card) {
+          // Fallback if card not found
+          return PARTY_DIRECTIVE_CARDS[0]
+        }
+
+        // Update deck state
+        set({
+          partyDirectiveDeck: partyDirectiveDeck.slice(1),
+          partyDirectiveDiscard: [...partyDirectiveDiscard, cardId]
+        })
+
+        return card
+      },
+
+      drawCommunistTest: (difficulty) => {
+        const state = get()
+        const selectedDifficulty = difficulty ?? getRandomDifficulty()
+        const question = getRandomQuestionByDifficulty(selectedDifficulty)
+
+        // Mark question as used
+        const newUsedQuestions = new Set(state.communistTestUsedQuestions)
+        newUsedQuestions.add(question.id)
+
+        set({ communistTestUsedQuestions: newUsedQuestions })
+
+        return question
+      },
+
+      applyDirectiveEffect: (card, playerId) => {
+        const state = get()
+        const player = state.players.find(p => p.id === playerId)
+        if (!player) return
+
+        get().addLogEntry({
+          type: 'system',
+          message: `${player.name} drew: ${card.title} - ${card.description}`
+        })
+
+        switch (card.effect.type) {
+          case 'move':
+            if (card.effect.destination !== undefined) {
+              get().updatePlayer(playerId, { position: card.effect.destination })
+              // Check if passed STOY
+              if (player.position < card.effect.destination && card.effect.destination !== 0) {
+                get().handleStoyPassing(playerId)
+              }
+            }
+            break
+
+          case 'moveRelative':
+            if (card.effect.spaces !== undefined) {
+              get().movePlayer(playerId, card.effect.spaces)
+            }
+            break
+
+          case 'money':
+            if (card.effect.amount !== undefined) {
+              get().updatePlayer(playerId, { rubles: player.rubles + card.effect.amount })
+              if (card.effect.amount > 0) {
+                get().adjustTreasury(-card.effect.amount)
+              } else {
+                get().adjustTreasury(Math.abs(card.effect.amount))
+              }
+            }
+            break
+
+          case 'gulag':
+            get().sendToGulag(playerId, 'stalinDecree', 'Party Directive card')
+            break
+
+          case 'freeFromGulag':
+            get().updatePlayer(playerId, { hasFreeFromGulagCard: true })
+            get().addLogEntry({
+              type: 'system',
+              message: `${player.name} received a "Get out of Gulag free" card!`,
+              playerId
+            })
+            break
+
+          case 'rankChange':
+            if (card.effect.direction === 'up') {
+              get().promotePlayer(playerId)
+            } else {
+              get().demotePlayer(playerId)
+            }
+            break
+
+          case 'collectFromAll':
+            if (card.effect.amount !== undefined) {
+              state.players.forEach(p => {
+                if (!p.isStalin && p.id !== playerId && !p.isEliminated) {
+                  const amount = Math.min(card.effect.amount!, p.rubles)
+                  get().updatePlayer(p.id, { rubles: p.rubles - amount })
+                  get().updatePlayer(playerId, { rubles: player.rubles + amount })
+                }
+              })
+            }
+            break
+
+          case 'payToAll':
+            if (card.effect.amount !== undefined) {
+              state.players.forEach(p => {
+                if (!p.isStalin && p.id !== playerId && !p.isEliminated) {
+                  const amount = Math.min(card.effect.amount!, player.rubles)
+                  get().updatePlayer(playerId, { rubles: player.rubles - amount })
+                  get().updatePlayer(p.id, { rubles: p.rubles + amount })
+                }
+              })
+            }
+            break
+
+          case 'propertyTax': {
+            const properties = state.properties.filter(p => p.custodianId === playerId)
+            let totalTax = 0
+            if (card.effect.perProperty) {
+              totalTax += properties.length * card.effect.perProperty
+            }
+            if (card.effect.perImprovement) {
+              const totalImprovements = properties.reduce((sum, p) => sum + p.collectivizationLevel, 0)
+              totalTax += totalImprovements * card.effect.perImprovement
+            }
+            get().updatePlayer(playerId, { rubles: player.rubles - totalTax })
+            get().adjustTreasury(totalTax)
+            get().addLogEntry({
+              type: 'payment',
+              message: `${player.name} paid ₽${totalTax} in property taxes`,
+              playerId
+            })
+            break
+          }
+
+          case 'custom':
+            // Handle custom effects in modal
+            get().addLogEntry({
+              type: 'system',
+              message: `Custom effect: ${card.effect.handler ?? 'unknown'} - requires special handling`,
+              playerId
+            })
+            break
+        }
+
+        set({ pendingAction: null, turnPhase: 'post-turn' })
+      },
+
+      answerCommunistTest: (question, answer, readerId) => {
+        const state = get()
+        const currentPlayer = state.players[state.currentPlayerIndex]
+        const reader = state.players.find(p => p.id === readerId)
+        if (!currentPlayer || !reader) return
+
+        // Check if Vodka Bottle is immune to trick questions
+        const isCorrect = isAnswerCorrect(question, answer)
+
+        if (question.difficulty === 'trick' && currentPlayer.piece === 'vodkaBottle') {
+          get().addLogEntry({
+            type: 'system',
+            message: `${currentPlayer.name}'s Vodka Bottle makes them immune to trick questions!`,
+            playerId: currentPlayer.id
+          })
+          set({ pendingAction: null, turnPhase: 'post-turn' })
+          return
+        }
+
+        if (isCorrect) {
+          // Correct answer
+          get().updatePlayer(currentPlayer.id, {
+            correctTestAnswers: currentPlayer.correctTestAnswers + 1,
+            consecutiveFailedTests: 0
+          })
+
+          // Apply reward (doubled for Red Star penalty)
+          const reward = currentPlayer.piece === 'redStar' ? question.reward * 2 : question.reward
+          if (reward > 0) {
+            get().updatePlayer(currentPlayer.id, { rubles: currentPlayer.rubles + reward })
+            get().adjustTreasury(-reward)
+          }
+
+          // Hard questions grant rank up
+          if (question.grantsRankUp) {
+            get().promotePlayer(currentPlayer.id)
+          }
+
+          // Check for Party Member eligibility (2 correct answers)
+          if (currentPlayer.correctTestAnswers >= 2 && currentPlayer.rank === 'proletariat') {
+            get().promotePlayer(currentPlayer.id)
+          }
+
+          get().addLogEntry({
+            type: 'system',
+            message: `${currentPlayer.name} answered correctly! Reward: ₽${reward}`,
+            playerId: currentPlayer.id
+          })
+        } else {
+          // Wrong answer
+          get().updatePlayer(currentPlayer.id, {
+            consecutiveFailedTests: currentPlayer.consecutiveFailedTests + 1
+          })
+
+          // Apply penalty (doubled for Red Star)
+          const penalty = currentPlayer.piece === 'redStar' ? question.penalty * 2 : question.penalty
+          if (penalty > 0) {
+            get().updatePlayer(currentPlayer.id, { rubles: currentPlayer.rubles - penalty })
+            get().adjustTreasury(penalty)
+          }
+
+          // 2 consecutive failures = rank loss
+          if (currentPlayer.consecutiveFailedTests >= 2) {
+            get().demotePlayer(currentPlayer.id)
+            get().updatePlayer(currentPlayer.id, { consecutiveFailedTests: 0 })
+          }
+
+          get().addLogEntry({
+            type: 'system',
+            message: `${currentPlayer.name} answered incorrectly. Penalty: ₽${penalty}`,
+            playerId: currentPlayer.id
+          })
+        }
+
+        set({ pendingAction: null, turnPhase: 'post-turn' })
+      },
+
+      // Piece abilities
+      sickleHarvest: (sicklePlayerId, targetPropertyId) => {
+        const state = get()
+        const sicklePlayer = state.players.find(p => p.id === sicklePlayerId)
+        const property = state.properties.find(p => p.spaceId === targetPropertyId)
+        const space = getSpaceById(targetPropertyId)
+
+        if (!sicklePlayer || !property || !space) return
+        if (sicklePlayer.piece !== 'sickle') return
+        if (sicklePlayer.hasUsedSickleHarvest) return
+
+        // Check property value < ₽150
+        if ((space.baseCost ?? 0) >= 150) {
+          get().addLogEntry({
+            type: 'system',
+            message: `Cannot harvest ${space.name} - value must be less than ₽150!`,
+            playerId: sicklePlayerId
+          })
+          return
+        }
+
+        // Transfer property
+        const oldCustodian = state.players.find(p => p.id === property.custodianId)
+        get().setPropertyCustodian(targetPropertyId, sicklePlayerId)
+
+        get().updatePlayer(sicklePlayerId, { hasUsedSickleHarvest: true })
+
+        get().addLogEntry({
+          type: 'property',
+          message: `${sicklePlayer.name}'s Sickle harvested ${space.name} from ${oldCustodian?.name ?? 'the State'}!`,
+          playerId: sicklePlayerId
+        })
+
+        set({ pendingAction: null })
+      },
+
+      ironCurtainDisappear: (ironCurtainPlayerId, targetPropertyId) => {
+        const state = get()
+        const ironCurtainPlayer = state.players.find(p => p.id === ironCurtainPlayerId)
+        const property = state.properties.find(p => p.spaceId === targetPropertyId)
+        const space = getSpaceById(targetPropertyId)
+
+        if (!ironCurtainPlayer || !property || !space) return
+        if (ironCurtainPlayer.piece !== 'ironCurtain') return
+        if (ironCurtainPlayer.hasUsedIronCurtainDisappear) return
+
+        const victimPlayer = state.players.find(p => p.id === property.custodianId)
+
+        // Return property to State
+        get().setPropertyCustodian(targetPropertyId, null)
+
+        get().updatePlayer(ironCurtainPlayer.id, { hasUsedIronCurtainDisappear: true })
+
+        get().addLogEntry({
+          type: 'property',
+          message: `${ironCurtainPlayer.name}'s Iron Curtain made ${space.name} disappear from ${victimPlayer?.name ?? 'the State'}!`,
+          playerId: ironCurtainPlayer.id
+        })
+
+        set({ pendingAction: null })
+      },
+
+      leninSpeech: (leninPlayerId, applauders) => {
+        const state = get()
+        const leninPlayer = state.players.find(p => p.id === leninPlayerId)
+
+        if (!leninPlayer) return
+        if (leninPlayer.piece !== 'statueOfLenin') return
+        if (leninPlayer.hasUsedLeninSpeech) return
+
+        // Collect ₽100 from each applauder
+        let totalCollected = 0
+        applauders.forEach(applauderId => {
+          const applauder = state.players.find(p => p.id === applauderId)
+          if (applauder && !applauder.isEliminated) {
+            const amount = Math.min(100, applauder.rubles)
+            get().updatePlayer(applauderId, { rubles: applauder.rubles - amount })
+            totalCollected += amount
+          }
+        })
+
+        get().updatePlayer(leninPlayerId, {
+          rubles: leninPlayer.rubles + totalCollected,
+          hasUsedLeninSpeech: true
+        })
+
+        get().addLogEntry({
+          type: 'payment',
+          message: `${leninPlayer.name}'s inspiring speech collected ₽${totalCollected} from ${applauders.length} applauders!`,
+          playerId: leninPlayerId
+        })
+
+        set({ pendingAction: null })
+      },
+
+      promotePlayer: (playerId) => {
+        const state = get()
+        const player = state.players.find(p => p.id === playerId)
+        if (!player) return
+
+        const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+        const currentRankIndex = rankOrder.indexOf(player.rank)
+
+        if (currentRankIndex < rankOrder.length - 1) {
+          const newRank = rankOrder[currentRankIndex + 1]
+          get().updatePlayer(playerId, { rank: newRank })
+          get().addLogEntry({
+            type: 'rank',
+            message: `${player.name} promoted to ${newRank}!`,
+            playerId
+          })
+        } else {
+          get().addLogEntry({
+            type: 'system',
+            message: `${player.name} is already at the highest rank (Inner Circle)`,
+            playerId
+          })
+        }
+      },
+
       incrementRound: () => {
         const state = get()
         const newRound: number = (state.roundNumber) + 1
@@ -1230,7 +1589,10 @@ export const useGameStore = create<GameStore>()(
         dice: state.dice,
         gameLog: state.gameLog,
         activeVouchers: state.activeVouchers,
-        pendingBribes: state.pendingBribes
+        pendingBribes: state.pendingBribes,
+        partyDirectiveDeck: state.partyDirectiveDeck,
+        partyDirectiveDiscard: state.partyDirectiveDiscard,
+        communistTestUsedQuestions: state.communistTestUsedQuestions
       })
     }
   )
