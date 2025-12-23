@@ -85,7 +85,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
     // Sell one level of improvement
     let sellValue = 0;
-    let newLevel = property.collectivizationLevel - 1;
+    const newLevel = property.collectivizationLevel - 1;
 
     if (property.collectivizationLevel === 5) {
       // Selling palace gives 100₽
