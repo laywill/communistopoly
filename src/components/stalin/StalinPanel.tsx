@@ -37,7 +37,7 @@ export default function StalinPanel() {
     <div className="stalin-panel">
       <div className="stalin-header">
         <span className="stalin-icon">☭</span>
-        <h2>STALIN'S CONTROL PANEL</h2>
+        <h2>STALIN&apos;S CONTROL PANEL</h2>
       </div>
 
       <div className="stalin-content">
