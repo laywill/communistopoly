@@ -270,7 +270,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
                   </div>
 
                   <div className={styles.stalinDecision}>
-                    <h4 className={styles.auditTitle}>⚖ STALIN'S AUDIT DECISION ⚖</h4>
+                    <h4 className={styles.auditTitle}>⚖ STALIN&apos;S AUDIT DECISION ⚖</h4>
                     <p className={styles.auditDescription}>
                       Stalin may audit this contribution. If the player chose the higher amount,
                       they must pay the difference plus a ₽50 penalty!
