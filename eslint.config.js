@@ -22,7 +22,8 @@ export default defineConfig([
     }
   },
   js.configs.recommended,
-  ...tseslint.configs.recommended,
+  tseslint.configs.strict,
+  tseslint.configs.stylistic,
   pluginReact.configs.flat.recommended,
   {
     rules: {

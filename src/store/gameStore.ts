@@ -57,7 +57,7 @@ interface GameActions {
   resetGame: () => void
 
   // Player management
-  initializePlayers: (playerSetups: Array<{ name: string, piece: Player['piece'], isStalin: boolean }>) => void
+  initializePlayers: (playerSetups: { name: string, piece: Player['piece'], isStalin: boolean }[]) => void
   setCurrentPlayer: (index: number) => void
   updatePlayer: (playerId: string, updates: Partial<Player>) => void
 
@@ -449,7 +449,7 @@ export const useGameStore = create<GameStore>()(
 
         // Find next player (skip Stalin and eliminated players, but include Gulag players)
         let nextIndex: number = (currentPlayerIndex + 1) % players.length
-        let attempts: number = 0
+        let attempts = 0
 
         while (
           (Boolean(players[nextIndex]?.isStalin) || Boolean(players[nextIndex]?.isEliminated)) &&
@@ -517,7 +517,7 @@ export const useGameStore = create<GameStore>()(
         const player = state.players.find((p) => p.id === playerId)
         if (player == null) return
 
-        const rankOrder: Array<Player['rank']> = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+        const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
         const currentRankIndex = rankOrder.indexOf(player.rank)
 
         if (currentRankIndex > 0) {
