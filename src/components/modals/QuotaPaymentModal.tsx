@@ -106,13 +106,13 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
           {isCollectiveFarm && !hasAnnounced && (
             <div className={styles.collectiveFarmNotice}>
               <p className={styles.noticeText}>
-                ⚠ Collective Farm Rule: The custodian must announce "The harvest is bountiful!" to collect full quota.
+                ⚠ Collective Farm Rule: The custodian must announce &quot;The harvest is bountiful!&quot; to collect full quota.
               </p>
               <p className={styles.noticeText}>
                 Without announcement, quota is halved.
               </p>
               <button className={styles.announceButton} onClick={handleAnnouncement}>
-                {custodian.name}: "THE HARVEST IS BOUNTIFUL!"
+                {custodian.name}: &quot;THE HARVEST IS BOUNTIFUL!&quot;
               </button>
             </div>
           )}
