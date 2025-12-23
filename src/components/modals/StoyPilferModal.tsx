@@ -62,7 +62,7 @@ const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps) => {
               Comrade {player?.name}, you have landed exactly on the STOY checkpoint!
             </p>
             <p className={styles.description}>
-              You may attempt to pilfer from the State Treasury while the guards aren't watching.
+              You may attempt to pilfer from the State Treasury while the guards aren&apos;t watching.
             </p>
           </div>
 
