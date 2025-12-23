@@ -21,7 +21,7 @@
 }
 
 .title {
-  font-family: 'Oswald', 'Impact', sans-serif;
+  font-family: Oswald, Impact, sans-serif;
   font-size: 20px;
   font-weight: 700;
   text-transform: uppercase;
@@ -36,7 +36,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgb(0 0 0 / 20%);
   border-radius: 4px;
   margin-bottom: 8px;
 }
@@ -74,7 +74,7 @@
   font-family: 'Roboto Mono', 'Courier New', monospace;
   font-size: 18px;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgb(255 255 255 / 10%);
   border: 2px solid #D4A84B;
   border-radius: 4px;
   color: #FAF6EF;
@@ -84,7 +84,7 @@
 .input:focus {
   outline: none;
   border-color: #F4D03F;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgb(255 255 255 / 15%);
 }
 
 .input:disabled {
@@ -93,7 +93,7 @@
 }
 
 .error {
-  background: rgba(196, 30, 58, 0.2);
+  background: rgb(196 30 58 / 20%);
   border: 1px solid #C41E3A;
   border-radius: 4px;
   padding: 8px 12px;
@@ -110,24 +110,24 @@
   color: #1A1A1A;
   border: 2px solid #F4D03F;
   border-radius: 4px;
-  font-family: 'Oswald', 'Impact', sans-serif;
+  font-family: Oswald, Impact, sans-serif;
   font-size: 16px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 0 #8B6914, 0 6px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 0 #8B6914, 0 6px 10px rgb(0 0 0 / 30%);
 }
 
 .confirmButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 #8B6914, 0 8px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 0 #8B6914, 0 8px 15px rgb(0 0 0 / 40%);
 }
 
 .confirmButton:active:not(:disabled) {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 #8B6914, 0 3px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 0 #8B6914, 0 3px 5px rgb(0 0 0 / 30%);
 }
 
 .confirmButton:disabled {
@@ -141,5 +141,5 @@
   font-size: 12px;
   font-style: italic;
   text-align: center;
-  color: rgba(250, 246, 239, 0.7);
+  color: rgb(250 246 239 / 70%);
 }

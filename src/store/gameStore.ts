@@ -52,31 +52,31 @@ function shouldTriggerVoucherConsequence(reason: GulagReason): boolean {
 
 interface GameActions {
   // Game phase management
-  setGamePhase: (phase: GamePhase) => void;
-  startNewGame: () => void;
-  resetGame: () => void;
+  setGamePhase: (phase: GamePhase) => void
+  startNewGame: () => void
+  resetGame: () => void
 
   // Player management
-  initializePlayers: (playerSetups: Array<{ name: string; piece: Player['piece']; isStalin: boolean }>) => void;
-  setCurrentPlayer: (index: number) => void;
-  updatePlayer: (playerId: string, updates: Partial<Player>) => void;
+  initializePlayers: (playerSetups: Array<{ name: string, piece: Player['piece'], isStalin: boolean }>) => void
+  setCurrentPlayer: (index: number) => void
+  updatePlayer: (playerId: string, updates: Partial<Player>) => void
 
   // Property management
-  initializeProperties: () => void;
-  setPropertyCustodian: (spaceId: number, custodianId: string | null) => void;
-  updateCollectivizationLevel: (spaceId: number, level: number) => void;
-  purchaseProperty: (playerId: string, spaceId: number, price: number) => void;
-  payQuota: (payerId: string, custodianId: string, amount: number) => void;
-  mortgageProperty: (spaceId: number) => void;
-  unmortgageProperty: (spaceId: number, playerId: string) => void;
+  initializeProperties: () => void
+  setPropertyCustodian: (spaceId: number, custodianId: string | null) => void
+  updateCollectivizationLevel: (spaceId: number, level: number) => void
+  purchaseProperty: (playerId: string, spaceId: number, price: number) => void
+  payQuota: (payerId: string, custodianId: string, amount: number) => void
+  mortgageProperty: (spaceId: number) => void
+  unmortgageProperty: (spaceId: number, playerId: string) => void
 
   // Turn management
-  rollDice: () => void;
-  finishRolling: () => void;
-  movePlayer: (playerId: string, spaces: number) => void;
-  finishMoving: () => void;
-  endTurn: () => void;
-  setTurnPhase: (phase: TurnPhase) => void;
+  rollDice: () => void
+  finishRolling: () => void
+  movePlayer: (playerId: string, spaces: number) => void
+  finishMoving: () => void
+  endTurn: () => void
+  setTurnPhase: (phase: TurnPhase) => void
 
   // Gulag management
   sendToGulag: (playerId: string, reason: GulagReason, justification?: string) => void;
@@ -105,20 +105,20 @@ interface GameActions {
   incrementRound: () => void;
 
   // STOY handling
-  handleStoyPassing: (playerId: string) => void;
-  handleStoyPilfer: (playerId: string, diceRoll: number) => void;
+  handleStoyPassing: (playerId: string) => void
+  handleStoyPilfer: (playerId: string, diceRoll: number) => void
 
   // Game log
-  addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void;
+  addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void
 
   // Treasury
-  adjustTreasury: (amount: number) => void;
+  adjustTreasury: (amount: number) => void
 
   // Pending actions
-  setPendingAction: (action: PendingAction | null) => void;
+  setPendingAction: (action: PendingAction | null) => void
 }
 
-type GameStore = GameState & GameActions;
+type GameStore = GameState & GameActions
 
 const initialState: GameState = {
   gamePhase: 'welcome',
@@ -150,13 +150,13 @@ export const useGameStore = create<GameStore>()(
 
       resetGame: () => {
         // Clear localStorage save
-        localStorage.removeItem('communistopoly-save');
+        localStorage.removeItem('communistopoly-save')
 
         // Reset all state to initial values
         set({
           ...initialState,
-          gamePhase: 'welcome',
-        });
+          gamePhase: 'welcome'
+        })
       },
 
       initializePlayers: (playerSetups) => {
@@ -183,22 +183,22 @@ export const useGameStore = create<GameStore>()(
           debtCreatedAtRound: null,
         }));
 
-        const stalinPlayer = players.find(p => p.isStalin);
-        const nonStalinPlayers = players.filter(p => !p.isStalin);
+        const stalinPlayer = players.find(p => p.isStalin)
+        const nonStalinPlayers = players.filter(p => !p.isStalin)
 
         // Calculate state treasury based on player count
-        const playerCount = nonStalinPlayers.length;
-        const stateTreasury = playerCount * 1500; // Starting treasury
+        const playerCount = nonStalinPlayers.length
+        const stateTreasury = playerCount * 1500 // Starting treasury
 
         set({
           players,
           stalinPlayerId: stalinPlayer?.id ?? null,
           currentPlayerIndex: 1, // Start with first non-Stalin player
-          stateTreasury,
-        });
+          stateTreasury
+        })
 
         // Initialize properties
-        get().initializeProperties();
+        get().initializeProperties()
       },
 
       setCurrentPlayer: (index) => set({ currentPlayerIndex: index }),
@@ -207,8 +207,8 @@ export const useGameStore = create<GameStore>()(
         set((state) => ({
           players: state.players.map((player) =>
             player.id === playerId ? { ...player, ...updates } : player
-          ),
-        }));
+          )
+        }))
       },
 
       initializeProperties: () => {
@@ -218,39 +218,39 @@ export const useGameStore = create<GameStore>()(
             spaceId: space.id,
             custodianId: null, // All start owned by the STATE
             collectivizationLevel: 0,
-            mortgaged: false,
-          }));
+            mortgaged: false
+          }))
 
-        set({ properties });
+        set({ properties })
       },
 
       setPropertyCustodian: (spaceId, custodianId) => {
         set((state) => ({
           properties: state.properties.map((prop) =>
             prop.spaceId === spaceId ? { ...prop, custodianId } : prop
-          ),
-        }));
+          )
+        }))
       },
 
       updateCollectivizationLevel: (spaceId, level) => {
         set((state) => ({
           properties: state.properties.map((prop) =>
             prop.spaceId === spaceId ? { ...prop, collectivizationLevel: level } : prop
-          ),
-        }));
+          )
+        }))
       },
 
       // Turn management
       rollDice: () => {
-        const die1 = Math.floor(Math.random() * 6) + 1;
-        const die2 = Math.floor(Math.random() * 6) + 1;
+        const die1 = Math.floor(Math.random() * 6) + 1
+        const die2 = Math.floor(Math.random() * 6) + 1
 
         set({
           dice: [die1, die2],
           isRolling: true,
           hasRolled: true,
-          turnPhase: 'rolling',
-        });
+          turnPhase: 'rolling'
+        })
 
         const currentPlayer = get().players[get().currentPlayerIndex];
         get().addLogEntry({
@@ -278,28 +278,28 @@ export const useGameStore = create<GameStore>()(
         set({
           isRolling: false,
           doublesCount: newDoublesCount,
-          turnPhase: 'moving',
-        });
+          turnPhase: 'moving'
+        })
 
         // Move the player
-        const currentPlayer = get().players[get().currentPlayerIndex];
-        const total: number = die1 + die2;
-        get().movePlayer(currentPlayer.id, total);
+        const currentPlayer = get().players[get().currentPlayerIndex]
+        const total = die1 + die2
+        get().movePlayer(currentPlayer.id, total)
       },
 
       movePlayer: (playerId, spaces) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
-        const oldPosition: number = player.position;
-        const newPosition: number = (oldPosition + spaces) % 40;
+        const oldPosition = player.position
+        const newPosition = (oldPosition + spaces) % 40
 
         // Check if player passed STOY (position 0)
-        const passedStoy: boolean = oldPosition !== 0 && (oldPosition + spaces >= 40);
+        const passedStoy = oldPosition !== 0 && (oldPosition + spaces >= 40)
 
         // Update player position
-        get().updatePlayer(playerId, { position: newPosition });
+        get().updatePlayer(playerId, { position: newPosition })
 
         const fromSpace = getSpaceById(oldPosition);
         const toSpace = getSpaceById(newPosition);
@@ -311,25 +311,25 @@ export const useGameStore = create<GameStore>()(
 
         // Handle passing STOY
         if (passedStoy && newPosition !== 0) {
-          get().handleStoyPassing(playerId);
+          get().handleStoyPassing(playerId)
         }
       },
 
       finishMoving: () => {
-        const state = get();
-        const currentPlayer = state.players[state.currentPlayerIndex];
-        const space = getSpaceById(currentPlayer.position);
+        const state = get()
+        const currentPlayer = state.players[state.currentPlayerIndex]
+        const space = getSpaceById(currentPlayer.position)
 
-        set({ turnPhase: 'resolving' });
+        set({ turnPhase: 'resolving' })
 
         // Handle landing on the space
-        if (!space) return;
+        if (space == null) return
 
         switch (space.type) {
           case 'corner':
             if (space.id === 0 && currentPlayer.position === 0) {
               // Landed exactly on STOY - pilfering opportunity
-              set({ pendingAction: { type: 'stoy-pilfer' } });
+              set({ pendingAction: { type: 'stoy-pilfer' } })
             } else if (space.id === 10) {
               // The Gulag - just visiting
               get().addLogEntry({
@@ -350,7 +350,7 @@ export const useGameStore = create<GameStore>()(
               // Enemy of the State - go to Gulag
               get().sendToGulag(currentPlayer.id, 'enemyOfState');
             }
-            break;
+            break
 
           case 'property':
           case 'railway':
@@ -375,25 +375,25 @@ export const useGameStore = create<GameStore>()(
                 set({
                   pendingAction: {
                     type: 'railway-fee',
-                    data: { spaceId: space.id, payerId: currentPlayer.id },
-                  },
-                });
+                    data: { spaceId: space.id, payerId: currentPlayer.id }
+                  }
+                })
               } else if (space.type === 'utility') {
                 const die1: number = state.dice[0];
                 const die2: number = state.dice[1];
                 set({
                   pendingAction: {
                     type: 'utility-fee',
-                    data: { spaceId: space.id, payerId: currentPlayer.id, diceTotal: die1 + die2 },
-                  },
-                });
+                    data: { spaceId: space.id, payerId: currentPlayer.id, diceTotal: die1 + die2 }
+                  }
+                })
               } else {
                 set({
                   pendingAction: {
                     type: 'quota-payment',
-                    data: { spaceId: space.id, payerId: currentPlayer.id },
-                  },
-                });
+                    data: { spaceId: space.id, payerId: currentPlayer.id }
+                  }
+                })
               }
             } else {
               // Player owns this property - just visiting
@@ -404,17 +404,17 @@ export const useGameStore = create<GameStore>()(
               });
               set({ turnPhase: 'post-turn' });
             }
-            break;
+            break
           }
 
           case 'tax':
             set({
               pendingAction: {
                 type: 'tax-payment',
-                data: { spaceId: space.id, playerId: currentPlayer.id },
-              },
-            });
-            break;
+                data: { spaceId: space.id, playerId: currentPlayer.id }
+              }
+            })
+            break
 
           case 'card':
             // Placeholder for future milestones
@@ -427,24 +427,24 @@ export const useGameStore = create<GameStore>()(
             break;
 
           default:
-            set({ turnPhase: 'post-turn' });
+            set({ turnPhase: 'post-turn' })
         }
       },
 
       setTurnPhase: (phase) => set({ turnPhase: phase }),
 
       endTurn: () => {
-        const state = get();
-        const { currentPlayerIndex, players, doublesCount } = state;
+        const state = get()
+        const { currentPlayerIndex, players, doublesCount } = state
 
         // If player rolled doubles and not in gulag, they get another turn
         if (doublesCount > 0 && players[currentPlayerIndex].inGulag === false) {
           set({
             turnPhase: 'pre-roll',
             hasRolled: false,
-            pendingAction: null,
-          });
-          return;
+            pendingAction: null
+          })
+          return
         }
 
         // Find next player (skip Stalin and eliminated players, but include Gulag players)
@@ -455,8 +455,8 @@ export const useGameStore = create<GameStore>()(
           (players[nextIndex].isStalin === true || players[nextIndex].isEliminated === true) &&
           attempts < players.length
         ) {
-          nextIndex = (nextIndex + 1) % players.length;
-          attempts++;
+          nextIndex = (nextIndex + 1) % players.length
+          attempts++
         }
 
         // Check if we've completed a round (cycling back to first non-Stalin player)
@@ -471,8 +471,8 @@ export const useGameStore = create<GameStore>()(
           turnPhase: 'pre-roll',
           doublesCount: 0,
           hasRolled: false,
-          pendingAction: null,
-        });
+          pendingAction: null
+        })
 
         const nextPlayer = players[nextIndex];
         get().addLogEntry({
@@ -493,11 +493,11 @@ export const useGameStore = create<GameStore>()(
         get().updatePlayer(playerId, {
           inGulag: true,
           gulagTurns: 0,
-          position: 10, // Gulag position
-        });
+          position: 10 // Gulag position
+        })
 
         // Demote player
-        get().demotePlayer(playerId);
+        get().demotePlayer(playerId)
 
         get().addLogEntry({
           type: 'gulag',
@@ -509,7 +509,7 @@ export const useGameStore = create<GameStore>()(
         get().checkVoucherConsequences(playerId, reason);
 
         // End turn immediately
-        set({ turnPhase: 'post-turn' });
+        set({ turnPhase: 'post-turn' })
       },
 
       demotePlayer: (playerId) => {
@@ -517,12 +517,12 @@ export const useGameStore = create<GameStore>()(
         const player = state.players.find((p) => p.id === playerId);
         if (player == null) return;
 
-        const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle'];
-        const currentRankIndex = rankOrder.indexOf(player.rank);
+        const rankOrder: Array<Player['rank']> = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+        const currentRankIndex = rankOrder.indexOf(player.rank)
 
         if (currentRankIndex > 0) {
-          const newRank = rankOrder[currentRankIndex - 1];
-          get().updatePlayer(playerId, { rank: newRank });
+          const newRank = rankOrder[currentRankIndex - 1]
+          get().updatePlayer(playerId, { rank: newRank })
           get().addLogEntry({
             type: 'rank',
             message: `${(player.name ?? 'Player') as string} demoted to ${newRank ?? 'unknown rank'}`,
@@ -538,8 +538,8 @@ export const useGameStore = create<GameStore>()(
         if (player == null) return;
 
         // Deduct 200₽ travel tax
-        get().updatePlayer(playerId, { rubles: player.rubles - 200 });
-        get().adjustTreasury(200);
+        get().updatePlayer(playerId, { rubles: player.rubles - 200 })
+        get().adjustTreasury(200)
 
         get().addLogEntry({
           type: 'payment',
@@ -569,7 +569,7 @@ export const useGameStore = create<GameStore>()(
           get().sendToGulag(playerId, 'pilferingCaught');
         }
 
-        set({ pendingAction: null, turnPhase: 'post-turn' });
+        set({ pendingAction: null, turnPhase: 'post-turn' })
       },
 
       // Game log
@@ -577,12 +577,12 @@ export const useGameStore = create<GameStore>()(
         const newEntry: LogEntry = {
           ...entry,
           id: `log-${Date.now()}-${Math.random()}`,
-          timestamp: new Date(),
-        };
+          timestamp: new Date()
+        }
 
         set((state) => ({
-          gameLog: [...state.gameLog, newEntry].slice(-50), // Keep last 50 entries
-        }));
+          gameLog: [...state.gameLog, newEntry].slice(-50) // Keep last 50 entries
+        }))
       },
 
       // Treasury
@@ -601,16 +601,16 @@ export const useGameStore = create<GameStore>()(
         // Deduct rubles
         get().updatePlayer(playerId, {
           rubles: player.rubles - price,
-          properties: [...player.properties, spaceId.toString()],
-        });
+          properties: [...player.properties, spaceId.toString()]
+        })
 
         // Set custodian
-        get().setPropertyCustodian(spaceId, playerId);
+        get().setPropertyCustodian(spaceId, playerId)
 
         // Add to treasury
-        get().adjustTreasury(price);
+        get().adjustTreasury(price)
 
-        const space = getSpaceById(spaceId);
+        const space = getSpaceById(spaceId)
         get().addLogEntry({
           type: 'property',
           message: `${(player.name ?? 'Player') as string} became Custodian of ${space?.name ?? 'Unknown'} for ₽${price as number}`,
@@ -654,8 +654,8 @@ export const useGameStore = create<GameStore>()(
         set((state) => ({
           properties: state.properties.map((prop) =>
             prop.spaceId === spaceId ? { ...prop, mortgaged: true } : prop
-          ),
-        }));
+          )
+        }))
 
         get().addLogEntry({
           type: 'property',
@@ -673,17 +673,17 @@ export const useGameStore = create<GameStore>()(
         const space = getSpaceById(spaceId);
         const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6);
 
-        if (player.rubles < unmortgageCost) return;
+        if (player.rubles < unmortgageCost) return
 
         // Deduct cost
-        get().updatePlayer(playerId, { rubles: player.rubles - unmortgageCost });
+        get().updatePlayer(playerId, { rubles: player.rubles - unmortgageCost })
 
         // Unmark mortgaged
         set((state) => ({
           properties: state.properties.map((prop) =>
             prop.spaceId === spaceId ? { ...prop, mortgaged: false } : prop
-          ),
-        }));
+          )
+        }))
 
         get().addLogEntry({
           type: 'property',
@@ -1094,4 +1094,4 @@ export const useGameStore = create<GameStore>()(
       }),
     }
   )
-);
+)

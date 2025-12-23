@@ -23,7 +23,7 @@
   height: 12px;
   border-radius: 50%;
   border: 1.5px solid var(--color-kremlin-gold);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 50%);
   z-index: 1;
 }
 
@@ -39,7 +39,6 @@
   line-height: 1.1;
   letter-spacing: 0.02em;
   color: var(--color-aged-white);
-  word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
 }
@@ -60,7 +59,7 @@
   color: var(--color-kremlin-gold);
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .railway {
     width: 60px;
     height: 96px;
@@ -83,7 +82,7 @@
   }
 }
 
-@media (min-width: 1600px) {
+@media (width >= 1600px) {
   .railway {
     width: 80px;
     height: 128px;

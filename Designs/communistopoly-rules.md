@@ -6,7 +6,7 @@
 
 # OVERVIEW
 
-Communistopoly transforms the capitalist fantasy of Monopoly into a darkly comedic simulation of Soviet bureaucracy, paranoia, and ideological absurdity. Victory is not achieved through wealth accumulation—it is survived through political maneuvering, strategic betrayal, and shameless flattery of Comrade Stalin (the Banker).
+Communistopoly transforms the capitalist fantasy of Monopoly into a darkly comedic simulation of Soviet bureaucracy, paranoia, and ideological absurdity. Victory is not achieved through wealth accumulation—it is survived through political manoeuvring, strategic betrayal, and shameless flattery of Comrade Stalin (the Banker).
 
 **Players:** 3-6 (One must be Stalin)
 
@@ -38,104 +38,112 @@ Before the game begins, players must select who will be Stalin. This can be done
 
 ## Corner Spaces
 
-| Original | Communistopoly | Function |
-|----------|----------------|----------|
-| GO | **STOY (СТОЙ)** "Checkpoint" | **Passing:** Pay 200₽ "travel tax" to the State. **Landing exactly:** You may attempt to pilfer—roll one die. On 4-6, steal 100₽ from the State coffers. On 1-3, you are caught and sent directly to the Gulag. |
-| Jail | **THE GULAG** | See Gulag Rules below |
-| Free Parking | **BREADLINE** | All players must give you one item (50₽, a property, or a favor owed). If any player refuses, you may denounce them. Stalin adjudicates. |
-| Go To Jail | **ENEMY OF THE STATE** | Go directly to the Gulag. Do not pass Stoy. Do not collect anything. Lose one Party Rank. |
+| Original     | Communistopoly               | Function                                                                                                                                                                                                        |
+|--------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GO           | **STOY (СТОЙ)** "Checkpoint" | **Passing:** Pay 200₽ "travel tax" to the State. **Landing exactly:** You may attempt to pilfer—roll one die. On 4-6, steal 100₽ from the State coffers. On 1-3, you are caught and sent directly to the Gulag. |
+| Jail         | **THE GULAG**                | See Gulag Rules below                                                                                                                                                                                           |
+| Free Parking | **BREADLINE**                | All players must give you one item (50₽, a property, or a favour owed). If any player refuses, you may denounce them. Stalin adjudicates.                                                                       |
+| Go To Jail   | **ENEMY OF THE STATE**       | Go directly to the Gulag. Do not pass Stoy. Do not collect anything. Lose one Party Rank.                                                                                                                       |
 
 ## Property Groups
 
 Properties cannot be "owned" in the capitalist sense. Instead, players become **Custodians** of State property, responsible for its maintenance and collectivization. Rent is replaced with **Productivity Quotas**—failure to meet them reflects poorly on YOU.
 
 ### Brown → SIBERIAN WORK CAMPS (Lowest value, highest misery)
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Mediterranean Ave | **Camp Vorkuta** | 20₽ |
-| Baltic Ave | **Camp Kolyma** | 40₽ |
 
-*Special Rule: If you are Custodian of both camps, you may send ONE player to the Gulag per game by claiming they are "needed for labor." Stalin must approve.*
+| Original          | Communistopoly   | Quota |
+|-------------------|------------------|-------|
+| Mediterranean Ave | **Camp Vorkuta** | 20₽   |
+| Baltic Ave        | **Camp Kolyma**  | 40₽   |
+
+*Special Rule: If you are Custodian of both camps, you may send ONE player to the Gulag per game by claiming they are "needed for labour." Stalin must approve.*
 
 ### Light Blue → COLLECTIVE FARMS
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Oriental Ave | **Kolkhoz Sunrise** | 60₽ |
-| Vermont Ave | **Kolkhoz Progress** | 60₽ |
-| Connecticut Ave | **Kolkhoz Victory** | 80₽ |
+
+| Original        | Communistopoly       | Quota |
+|-----------------|----------------------|-------|
+| Oriental Ave    | **Kolkhoz Sunrise**  | 60₽   |
+| Vermont Ave     | **Kolkhoz Progress** | 60₽   |
+| Connecticut Ave | **Kolkhoz Victory**  | 80₽   |
 
 *Special Rule: Custodian must announce "The harvest is bountiful!" when collecting quota. Failure to do so means quota is halved.*
 
 ### Pink → INDUSTRIAL CENTERS
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| St. Charles Place | **Tractor Factory #47** | 100₽ |
-| States Ave | **Steel Mill Molotov** | 100₽ |
-| Virginia Ave | **Munitions Plant Kalashnikov** | 120₽ |
 
-*Special Rule: If another player lands here and cannot pay, they must work off their debt by missing their next turn (conscripted labor).*
+| Original          | Communistopoly                  | Quota |
+|-------------------|---------------------------------|-------|
+| St. Charles Place | **Tractor Factory #47**         | 100₽  |
+| States Ave        | **Steel Mill Molotov**          | 100₽  |
+| Virginia Ave      | **Munitions Plant Kalashnikov** | 120₽  |
+
+*Special Rule: If another player lands here and cannot pay, they must work off their debt by missing their next turn (conscripted labour).*
 
 ### Orange → GOVERNMENT MINISTRIES
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| St. James Place | **Ministry of Truth** | 140₽ |
-| Tennessee Ave | **Ministry of Plenty** | 140₽ |
-| New York Ave | **Ministry of Love** | 160₽ |
+
+| Original        | Communistopoly         | Quota |
+|-----------------|------------------------|-------|
+| St. James Place | **Ministry of Truth**  | 140₽  |
+| Tennessee Ave   | **Ministry of Plenty** | 140₽  |
+| New York Ave    | **Ministry of Love**   | 160₽  |
 
 *Special Rule: Custodian of all three may rewrite ONE rule per game. Stalin has veto power.*
 
 ### Red → MILITARY INSTALLATIONS
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Kentucky Ave | **Red Army Barracks** | 180₽ |
-| Indiana Ave | **KGB Headquarters** | 180₽ |
-| Illinois Ave | **Nuclear Bunker Arzamas-16** | 200₽ |
+
+| Original     | Communistopoly                | Quota |
+|--------------|-------------------------------|-------|
+| Kentucky Ave | **Red Army Barracks**         | 180₽  |
+| Indiana Ave  | **KGB Headquarters**          | 180₽  |
+| Illinois Ave | **Nuclear Bunker Arzamas-16** | 200₽  |
 
 *Special Rule: Custodian of KGB Headquarters may look at one Communist Test card before anyone draws it, once per round.*
 
 ### Yellow → STATE MEDIA
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Atlantic Ave | **Pravda Printing Press** | 220₽ |
-| Ventnor Ave | **Radio Moscow** | 220₽ |
-| Marvin Gardens | **State Television Center** | 240₽ |
+
+| Original       | Communistopoly              | Quota |
+|----------------|-----------------------------|-------|
+| Atlantic Ave   | **Pravda Printing Press**   | 220₽  |
+| Ventnor Ave    | **Radio Moscow**            | 220₽  |
+| Marvin Gardens | **State Television Center** | 240₽  |
 
 *Special Rule: Custodian may spread propaganda—once per game, force a re-vote on any Stalin decision by claiming "the people demand it."*
 
 ### Green → PARTY ELITE DISTRICT
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Pacific Ave | **Politburo Apartments** | 260₽ |
-| North Carolina Ave | **Dachas of the Nomenklatura** | 260₽ |
-| Pennsylvania Ave | **The Lubyanka** | 280₽ |
+
+| Original           | Communistopoly                 | Quota |
+|--------------------|--------------------------------|-------|
+| Pacific Ave        | **Politburo Apartments**       | 260₽  |
+| North Carolina Ave | **Dachas of the Nomenklatura** | 260₽  |
+| Pennsylvania Ave   | **The Lubyanka**               | 280₽  |
 
 *Special Rule: Only players of Rank PARTY MEMBER or higher may become Custodians. Lower ranks who land here pay double quota and must salute.*
 
 ### Dark Blue → THE KREMLIN COMPLEX (Highest value)
-| Original | Communistopoly | Quota |
-|----------|----------------|-------|
-| Park Place | **Lenin's Mausoleum** | 350₽ |
-| Boardwalk | **Stalin's Private Office** | 500₽ |
+
+| Original   | Communistopoly              | Quota |
+|------------|-----------------------------|-------|
+| Park Place | **Lenin's Mausoleum**       | 350₽  |
+| Boardwalk  | **Stalin's Private Office** | 500₽  |
 
 *Special Rule: Only INNER CIRCLE rank may become Custodian. Custodian of Stalin's Private Office may whisper privately with Stalin once per round. Custodian of Lenin's Mausoleum is immune to ONE denouncement per game (Lenin protects you from beyond the grave).*
 
 ## Railroads → TRANS-SIBERIAN RAILWAY STATIONS
 
-| Original | Communistopoly | Function |
-|----------|----------------|----------|
-| Reading Railroad | **Moscow Station** | 50₽ per station controlled |
-| Pennsylvania Railroad | **Novosibirsk Station** | 100₽ for 2 stations |
-| B&O Railroad | **Irkutsk Station** | 150₽ for 3 stations |
-| Short Line | **Vladivostok Station** | 200₽ for all 4 stations |
+| Original              | Communistopoly          | Function                   |
+|-----------------------|-------------------------|----------------------------|
+| Reading Railroad      | **Moscow Station**      | 50₽ per station controlled |
+| Pennsylvania Railroad | **Novosibirsk Station** | 100₽ for 2 stations        |
+| B&O Railroad          | **Irkutsk Station**     | 150₽ for 3 stations        |
+| Short Line            | **Vladivostok Station** | 200₽ for all 4 stations    |
 
 *Special Rule: Controller of all four stations may transport any player directly to the Gulag once per game, claiming they were "attempting to flee the motherland."*
 
 ## Utilities → THE MEANS OF PRODUCTION
 
-| Original | Communistopoly | Function |
-|----------|----------------|----------|
-| Electric Company | **State Electricity Board** | See below |
-| Water Works | **People's Water Collective** | See below |
+| Original         | Communistopoly                | Function  |
+|------------------|-------------------------------|-----------|
+| Electric Company | **State Electricity Board**   | See below |
+| Water Works      | **People's Water Collective** | See below |
 
 **CRITICAL RULE:** The Means of Production may ONLY be controlled by players of rank **COMMISSAR** or higher. Any lower-ranked player who lands here and could afford custodianship must instead donate the cost to the State "for the good of the people."
 
@@ -145,10 +153,10 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 
 ## Tax Spaces
 
-| Original | Communistopoly | Function |
-|----------|----------------|----------|
+| Original   | Communistopoly                 | Function                                                                                                                                         |
+|------------|--------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | Income Tax | **REVOLUTIONARY CONTRIBUTION** | Pay 15% of total wealth OR 200₽ (player's choice). Then Stalin may audit you—if you chose the lower amount, pay the difference plus 50₽ penalty. |
-| Luxury Tax | **BOURGEOIS DECADENCE TAX** | Pay 100₽. If you are the wealthiest player, pay 200₽ and lose one Party Rank for "capitalist tendencies." |
+| Luxury Tax | **BOURGEOIS DECADENCE TAX**    | Pay 100₽. If you are the wealthiest player, pay 200₽ and lose one Party Rank for "capitalist tendencies."                                        |
 
 ## Chance → PARTY DIRECTIVE
 
@@ -231,14 +239,14 @@ You are sent to the Gulag when:
 - On your 4th turn, double 3, 4, 5, or 6s
 - On your 5th+ turn, any doubles
 
-**Option 2: Rehabilitation Through Labor**
+**Option 2: Rehabilitation Through labour**
 - Pay 500₽ to the State (your "rehabilitation fee")
 - You are released but lose one Party Rank
 
 **Option 3: Someone Vouches For You**
 - Another player may vouch for your release
 - If they do, you are released immediately
-- BUT: If you commit ANY offense in the next 3 rounds, your voucher goes to the Gulag too
+- BUT: If you commit ANY offence in the next 3 rounds, your voucher goes to the Gulag too
 - The voucher may not refuse this arrangement once offered
 
 **Option 4: Inform on Another Player**
@@ -282,9 +290,9 @@ Crimes include (but are not limited to):
 2. **The Accuser** presents their case (30 seconds max)
 3. **The Accused** defends themselves (30 seconds max)
 4. **Witnesses** may speak for either side (15 seconds each)
-5. **Stalin renders judgment**
+5. **Stalin renders judgement**
 
-Stalin's judgment options:
+Stalin's judgement options:
 - **GUILTY:** Accused goes to Gulag, loses one Rank, Accuser gains 100₽ "informant bonus"
 - **INNOCENT:** Accuser loses one Rank for "wasting the Party's time"
 - **BOTH GUILTY:** Both go to Gulag (Stalin loves this option)
@@ -321,7 +329,7 @@ When a player lands on Communist Test, another player (chosen by Stalin) draws a
 2. What was the name of Stalin's policy of rapid industrialization? *(Five-Year Plans)*
 3. What event from 1932-1933 killed millions of Ukrainians? *(Holodomor or Ukrainian Famine)*
 4. Who did Stalin have assassinated in Mexico in 1940? *(Leon Trotsky)*
-5. What was the name of the Soviet forced labor camp system? *(Gulag)*
+5. What was the name of the Soviet forced labour camp system? *(Gulag)*
 6. What 1939 pact did the USSR sign with Nazi Germany? *(Molotov-Ribbentrop Pact)*
 7. What was "perestroika"? *(Gorbachev's policy of restructuring/reform)*
 8. Who led the Soviet Union during the Cuban Missile Crisis? *(Nikita Khrushchev)*
@@ -331,7 +339,7 @@ When a player lands on Communist Test, another player (chosen by Stalin) draws a
 ## HARD QUESTIONS (400₽ reward, 200₽ penalty for wrong, +1 Party Rank for correct)
 
 1. What was Stalin's birth name? *(Ioseb Jughashvili)*
-2. Name the Soviet general who led the defense of Stalingrad. *(Vasily Chuikov or Georgy Zhukov)*
+2. Name the Soviet general who led the defence of Stalingrad. *(Vasily Chuikov or Georgy Zhukov)*
 3. What was the name of the 1956 speech in which Khrushchev denounced Stalin? *(The Secret Speech or "On the Cult of Personality")*
 4. In what year did the Soviet Union collapse? *(1991)*
 5. What was Operation Barbarossa? *(Nazi Germany's invasion of the Soviet Union)*
@@ -434,7 +442,7 @@ The player who is Stalin has absolute authority, limited only by the need to mai
 Players may attempt to bribe Stalin at any time. Bribes may be:
 - Money (slides across the table discreetly)
 - Flattery (genuinely creative compliments)
-- Favors (promises of future support)
+- Favours (promises of future support)
 - Actual snacks/drinks (highly effective)
 
 Stalin may accept or reject bribes without explanation. Rejected bribes are confiscated by the State.

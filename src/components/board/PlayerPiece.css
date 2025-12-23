@@ -8,7 +8,7 @@
   border: 2px solid var(--color-propaganda-black);
   border-radius: 50%;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
   flex-shrink: 0;
   pointer-events: auto;
 }
@@ -16,7 +16,7 @@
 .player-piece.current-player {
   border-color: var(--color-kremlin-gold);
   border-width: 3px;
-  box-shadow: 0 0 8px rgba(212, 168, 75, 0.6), 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 8px rgb(212 168 75 / 60%), 0 2px 4px rgb(0 0 0 / 20%);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -29,6 +29,7 @@
   0%, 100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }

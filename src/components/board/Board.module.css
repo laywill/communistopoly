@@ -12,7 +12,7 @@
   border: 8px solid var(--color-soviet-red);
   box-shadow:
     inset 0 0 0 3px var(--color-kremlin-gold),
-    0 10px 40px rgba(0, 0, 0, 0.5);
+    0 10px 40px rgb(0 0 0 / 50%);
   position: relative;
   margin: 0 auto;
 }
@@ -74,7 +74,9 @@
 
 .rotateLeft > * {
   transform: rotate(90deg);
+
   /* Space maintains its original dimensions (width x height) but rotated */
+
   /* So a 70x110 space rotated becomes 110x70 in visual space */
 }
 
@@ -88,7 +90,9 @@
 
 .rotateRight > * {
   transform: rotate(-90deg);
+
   /* Space maintains its original dimensions (width x height) but rotated */
+
   /* So a 70x110 space rotated becomes 110x70 in visual space */
 }
 
@@ -104,7 +108,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .board {
     --space-width: 60px;
     --space-height: 96px;
@@ -112,7 +116,7 @@
   }
 }
 
-@media (min-width: 1600px) {
+@media (width >= 1600px) {
   .board {
     --space-width: 80px;
     --space-height: 128px;
@@ -137,7 +141,7 @@
   pointer-events: none;
 }
 
-/* Bottom edge: horizontally centered, at bottom edge */
+/* Bottom edge: horizontally centred, at bottom edge */
 .playersBottom {
   bottom: 4px;
   left: 50%;
@@ -145,7 +149,7 @@
   flex-direction: row;
 }
 
-/* Top edge: horizontally centered, at top edge */
+/* Top edge: horizontally centred, at top edge */
 .playersTop {
   bottom: 4px;
   left: 50%;
@@ -153,7 +157,7 @@
   flex-direction: row;
 }
 
-/* Left edge: vertically centered, at left edge */
+/* Left edge: vertically centred, at left edge */
 .playersLeft {
   left: 4px;
   top: 50%;
@@ -162,7 +166,7 @@
   transform-origin: left center;
 }
 
-/* Right edge: vertically centered, at right edge */
+/* Right edge: vertically centred, at right edge */
 .playersRight {
   right: 4px;
   top: 50%;

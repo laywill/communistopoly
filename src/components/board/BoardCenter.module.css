@@ -67,7 +67,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 30%);
 }
 
 .cardIcon {
@@ -102,7 +102,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  box-shadow: 0 4px 0 #5C0A1A, 0 6px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 0 #5C0A1A, 0 6px 10px rgb(0 0 0 / 30%);
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
   border-radius: 4px;
@@ -110,12 +110,12 @@
 
 .rollButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 #5C0A1A, 0 8px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 0 #5C0A1A, 0 8px 15px rgb(0 0 0 / 40%);
 }
 
 .rollButton:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 #5C0A1A, 0 3px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 0 #5C0A1A, 0 3px 5px rgb(0 0 0 / 30%);
 }
 
 .turnInfo {
@@ -159,7 +159,7 @@
   letter-spacing: 0.05em;
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .center {
     padding: 15px;
   }
@@ -188,7 +188,7 @@
   }
 }
 
-@media (min-width: 1600px) {
+@media (width >= 1600px) {
   .center {
     padding: 25px;
   }

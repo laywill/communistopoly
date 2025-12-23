@@ -57,12 +57,12 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
 
   const handlePay = () => {
     if (!canAfford) {
-      // Check if Industrial Centers - conscript labor (skip next turn)
+      // Check if Industrial Centers - conscript labour (skip next turn)
       if (space.group === 'industrial') {
         updatePlayer(payerId, { skipNextTurn: true });
         addLogEntry({
           type: 'system',
-          message: `${payer.name} cannot pay ₽${quota} - conscripted for labor! Will miss next turn.`,
+          message: `${payer.name} cannot pay ₽${quota} - conscripted for labour! Will miss next turn.`,
           playerId: payerId,
         });
         setPendingAction(null);
@@ -134,7 +134,7 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
               {space.group === 'industrial' ? (
                 <>
                   <strong>⚠ INSUFFICIENT FUNDS</strong>
-                  <p>Industrial Centers: You will be conscripted for labor and miss your next turn!</p>
+                  <p>Industrial Centers: You will be conscripted for labour and miss your next turn!</p>
                 </>
               ) : (
                 <>

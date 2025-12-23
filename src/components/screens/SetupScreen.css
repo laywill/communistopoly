@@ -10,7 +10,7 @@
   margin: 0 auto;
   background: var(--color-parchment);
   border: 8px solid var(--color-soviet-red);
-  box-shadow: inset 0 0 0 2px var(--color-kremlin-gold), 0 10px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 0 2px var(--color-kremlin-gold), 0 10px 40px rgb(0 0 0 / 50%);
   padding: 3rem;
 }
 
@@ -21,7 +21,7 @@
   letter-spacing: 0.1em;
   color: var(--color-propaganda-black);
   text-align: center;
-  margin: 0 0 2rem 0;
+  margin: 0 0 2rem;
   text-transform: uppercase;
   border-bottom: 3px solid var(--color-soviet-red);
   padding-bottom: 1rem;
@@ -59,12 +59,12 @@
   color: var(--color-propaganda-black);
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
 }
 
 .count-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
 }
 
 .count-btn.active {
@@ -84,7 +84,7 @@
 .player-card {
   background: var(--color-aged-white);
   border: 3px solid var(--color-propaganda-black);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   overflow: hidden;
 }
 
@@ -179,17 +179,17 @@
   border: 3px solid var(--color-kremlin-gold);
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 0 #5C0A1A, 0 6px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 0 #5C0A1A, 0 6px 10px rgb(0 0 0 / 30%);
 }
 
 .begin-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 #5C0A1A, 0 8px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 0 #5C0A1A, 0 8px 15px rgb(0 0 0 / 40%);
 }
 
 .begin-btn:active:not(:disabled) {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 #5C0A1A, 0 3px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 0 #5C0A1A, 0 3px 5px rgb(0 0 0 / 30%);
 }
 
 .begin-btn:disabled {
@@ -198,7 +198,7 @@
   transform: none;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .setup-container {
     padding: 1.5rem;
   }

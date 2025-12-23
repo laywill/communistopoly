@@ -12,7 +12,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
   position: relative;
 }
 
@@ -33,7 +33,7 @@
 .game-tagline {
   font-family: var(--font-body);
   font-size: 1rem;
-  margin: 0.5rem 0 0 0;
+  margin: 0.5rem 0 0;
   font-style: italic;
 }
 
@@ -51,19 +51,19 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  box-shadow: 0 4px 0 #1A1A1A, 0 6px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 0 #1A1A1A, 0 6px 10px rgb(0 0 0 / 30%);
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 .menu-button:hover {
   transform: translateY(-50%) translateY(-2px);
-  box-shadow: 0 6px 0 #1A1A1A, 0 8px 15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 0 #1A1A1A, 0 8px 15px rgb(0 0 0 / 40%);
 }
 
 .menu-button:active {
   transform: translateY(-50%) translateY(2px);
-  box-shadow: 0 2px 0 #1A1A1A, 0 3px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 0 #1A1A1A, 0 3px 5px rgb(0 0 0 / 30%);
 }
 
 .game-layout {
@@ -99,6 +99,7 @@
   min-height: 300px;
   display: flex;
   flex-direction: column;
+
   /* Limit height to board size in default view */
   --space-width: 70px;
   --space-height: 112px;
@@ -106,6 +107,7 @@
   --space-padding: 2px;
   --num-spaces-per-side: 9;
   --board-size: calc((var(--space-width) * (var(--num-spaces-per-side))) + (var(--corner-size) * 2) + (var(--space-padding) * (var(--num-spaces-per-side) - 1)));
+
   max-height: var(--board-size);
 }
 
@@ -116,7 +118,7 @@
 }
 
 /* Adjust board size and game log height for medium screens */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .game-log-section {
     --space-width: 60px;
     --corner-size: 96px;
@@ -124,7 +126,7 @@
 }
 
 /* High resolution screens */
-@media (min-width: 1600px) {
+@media (width >= 1600px) {
   .game-log-section {
     --space-width: 80px;
     --corner-size: 128px;
@@ -132,7 +134,7 @@
 }
 
 /* Narrow layout - stack vertically then switch to horizontal */
-@media (max-width: 1280px) {
+@media (width <= 1280px) {
   .game-layout {
     flex-direction: column;
   }
