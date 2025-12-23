@@ -49,7 +49,7 @@ const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps) => {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <div className={styles.icon}>🚧</div>
           <h2>STOY CHECKPOINT</h2>
@@ -62,7 +62,7 @@ const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps) => {
               Comrade {player?.name}, you have landed exactly on the STOY checkpoint!
             </p>
             <p className={styles.description}>
-              You may attempt to pilfer from the State Treasury while the guards aren't watching.
+              You may attempt to pilfer from the State Treasury while the guards aren&apos;t watching.
             </p>
           </div>
 
@@ -90,7 +90,7 @@ const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps) => {
               </div>
 
               {!isRolling && diceResult !== null && (
-                <div className={`${styles.outcome} ${styles[getOutcome() || '']}`}>
+                <div className={`${styles.outcome} ${styles[getOutcome() ?? '']}`}>
                   {getOutcome() === 'success' ? (
                     <>
                       <div className={styles.outcomeIcon}>✓</div>

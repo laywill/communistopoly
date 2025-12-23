@@ -44,10 +44,15 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
 
   const handlePay = () => {
     if (!canAfford) {
-      addLogEntry({
-        type: 'system',
-        message: `${payer.name} cannot pay ₽${fee} railway fee to ${controller.name} (debt system coming in Milestone 5)`,
-        playerId: payerId,
+      // Trigger liquidation modal
+      setPendingAction({
+        type: 'liquidation-required',
+        data: {
+          playerId: payerId,
+          amountOwed: fee,
+          creditorId: controller.id,
+          reason: `Railway fee for ${space.name}`,
+        },
       });
     } else {
       // Transfer rubles
@@ -56,19 +61,19 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
 
       addLogEntry({
         type: 'payment',
-        message: `${payer.name} paid ₽${fee} railway fee to ${controller.name} (${controlledStations} station${controlledStations > 1 ? 's' : ''})`,
+        message: `${payer.name} paid ₽${String(fee)} railway fee to ${controller.name} (${String(controlledStations)} station${controlledStations > 1 ? 's' : ''})`,
         playerId: payerId,
       });
-    }
 
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-    onClose();
+      setPendingAction(null);
+      setTurnPhase('post-turn');
+      onClose();
+    }
   };
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <span className={styles.icon}>🚂</span>
           <h2 className={styles.title}>TRANS-SIBERIAN RAILWAY</h2>
@@ -114,10 +119,10 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
               <strong>⚠ ALL STATIONS CONTROLLED:</strong>
               <p>
                 {controller.name} controls all Trans-Siberian Railway stations!
-                They may send ONE player to the Gulag this game for "attempting to flee the motherland."
+                They may send ONE player to the Gulag this game for &quot;attempting to flee the motherland.&quot;
               </p>
               <p className={styles.stalinNote}>
-                (This power is exercised through Stalin's control panel)
+                (This power is exercised through Stalin&apos;s control panel)
               </p>
             </div>
           )}
@@ -146,7 +151,7 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
             className={styles.payButton}
             onClick={handlePay}
           >
-            {canAfford ? `PAY ₽${fee}` : 'ACKNOWLEDGE DEBT'}
+            {canAfford ? `PAY ₽${String(fee)}` : 'ACKNOWLEDGE DEBT'}
           </button>
         </div>
       </div>

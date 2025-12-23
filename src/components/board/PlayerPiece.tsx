@@ -15,7 +15,7 @@ export default function PlayerPiece({ player, isCurrentPlayer }: PlayerPieceProp
   return (
     <div
       className={`player-piece ${isCurrentPlayer ? 'current-player' : ''}`}
-      title={`${player.name} (${pieceData?.name})`}
+      title={`${player.name} (${pieceData?.name ?? ''})`}
     >
       <span className="piece-icon">{pieceData?.icon}</span>
     </div>

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import Dice from '../game/Dice';
 import styles from './BoardCenter.module.css';
@@ -11,13 +12,24 @@ const BoardCenter = () => {
   const hasRolled = useGameStore((state) => state.hasRolled);
   const rollDice = useGameStore((state) => state.rollDice);
   const finishRolling = useGameStore((state) => state.finishRolling);
+  const handleGulagTurn = useGameStore((state) => state.handleGulagTurn);
 
   const currentPlayer = players[currentPlayerIndex];
   const [die1, die2] = dice;
   const isDoubles = die1 === die2;
 
+  // Handle Gulag players' turns
+  useEffect(() => {
+    if (turnPhase === 'pre-roll' && !hasRolled && currentPlayer.inGulag) {
+      handleGulagTurn(currentPlayer.id);
+    }
+    // Only depend on turnPhase and currentPlayerIndex to prevent infinite loop
+    // when gulagTurns increments (which changes currentPlayer object)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [turnPhase, currentPlayerIndex]);
+
   const handleRoll = () => {
-    if (turnPhase === 'pre-roll' && !hasRolled && currentPlayer && !currentPlayer.inGulag) {
+    if (turnPhase === 'pre-roll' && !hasRolled && !currentPlayer.inGulag) {
       rollDice();
     }
   };
@@ -54,7 +66,7 @@ const BoardCenter = () => {
               isDoubles={isDoubles}
               onRollComplete={finishRolling}
             />
-            {turnPhase === 'pre-roll' && !hasRolled && currentPlayer && !currentPlayer.inGulag && (
+            {turnPhase === 'pre-roll' && !hasRolled && !currentPlayer.inGulag && (
               <button className={styles.rollButton} onClick={handleRoll}>
                 ROLL DICE
               </button>
@@ -65,17 +77,9 @@ const BoardCenter = () => {
         <div className={styles.section}>
           <div className={styles.sectionTitle}>CURRENT TURN</div>
           <div className={styles.turnInfo}>
-            {currentPlayer ? (
-              <>
-                <div className={styles.playerName}>{currentPlayer.name}</div>
-                <div className={styles.playerPiece}>{getPieceEmoji(currentPlayer.piece)}</div>
-                <div className={styles.turnPhase}>{getTurnPhaseText(turnPhase)}</div>
-              </>
-            ) : (
-              <div className={styles.turnPlaceholder}>
-                Game Not Started
-              </div>
-            )}
+            <div className={styles.playerName}>{currentPlayer.name}</div>
+            <div className={styles.playerPiece}>{getPieceEmoji(currentPlayer.piece)}</div>
+            <div className={styles.turnPhase}>{getTurnPhaseText(turnPhase)}</div>
           </div>
         </div>
       </div>
@@ -88,13 +92,13 @@ function getPieceEmoji(piece: string | null): string {
     hammer: '🔨',
     sickle: '🌾',
     redStar: '⭐',
-    tank: '🚜',
+    tank: '🚛',
     breadLoaf: '🍞',
-    ironCurtain: '🎭',
+    ironCurtain: '🚧',
     vodkaBottle: '🍾',
     statueOfLenin: '🗿',
   };
-  return pieceEmojis[piece || ''] || '●';
+  return pieceEmojis[piece ?? ''] ?? '●';
 }
 
 function getTurnPhaseText(phase: string): string {

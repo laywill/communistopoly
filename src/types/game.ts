@@ -63,6 +63,18 @@ export type PartyRank = 'proletariat' | 'partyMember' | 'commissar' | 'innerCirc
 
 export type PieceType = 'hammer' | 'sickle' | 'redStar' | 'tank' | 'breadLoaf' | 'ironCurtain' | 'vodkaBottle' | 'statueOfLenin'
 
+// Gulag entry reasons
+export type GulagReason =
+  | 'enemyOfState' // Landed on Enemy of the State
+  | 'threeDoubles' // Rolled three consecutive doubles
+  | 'denouncementGuilty' // Found guilty in tribunal
+  | 'debtDefault' // Failed to pay debt within one round
+  | 'pilferingCaught' // Caught stealing at STOY
+  | 'stalinDecree' // Stalin sent you (with justification)
+  | 'railwayCapture' // Caught "fleeing motherland"
+  | 'campLabour' // Sent by Siberian Camp custodian
+  | 'voucherConsequence' // Voucher went to Gulag due to vouchee's offence
+
 export interface Player {
   id: string
   name: string
@@ -84,6 +96,19 @@ export interface Player {
   // Property system
   skipNextTurn: boolean // For Industrial Centers conscripted labour
   usedRailwayGulagPower: boolean // All four railways special power
+
+  // Gulag system
+  vouchingFor: string | null // Player ID they vouched for
+  vouchedByRound: number | null // Round number when vouch expires
+
+  // Debt system
+  debt: Debt | null
+  debtCreatedAtRound: number | null
+
+  // Piece abilities
+  hasUsedTankGulagImmunity: boolean // Tank: First Gulag immunity used
+  tankRequisitionUsedThisLap: boolean // Tank: Requisition used this lap
+  lapsCompleted: number // Track laps around board (for Tank requisition)
 }
 
 export interface Property {
@@ -91,6 +116,25 @@ export interface Property {
   custodianId: string | null // null = owned by State
   collectivizationLevel: number // 0-5 (0=none, 5=People's Palace)
   mortgaged: boolean
+}
+
+// Voucher system
+export interface VoucherAgreement {
+  id: string
+  prisonerId: string
+  voucherId: string
+  expiresAtRound: number // Current round + 3
+  isActive: boolean
+}
+
+// Debt system
+export interface Debt {
+  id: string
+  debtorId: string
+  creditorId: string // Can be a player ID or 'state' for taxes, property purchases
+  amount: number
+  createdAtRound: number
+  reason: string
 }
 
 // Game phases
@@ -118,10 +162,32 @@ export type PendingActionType =
   | 'tax-payment'
   | 'draw-card'
   | 'collective-farm-announcement'
+  | 'gulag-escape-choice'
+  | 'voucher-request'
+  | 'inform-on-player'
+  | 'bribe-stalin'
+  | 'liquidation-required'
 
 export interface PendingAction {
   type: PendingActionType
   data?: Record<string, unknown>
+}
+
+// Gulag escape methods
+export type GulagEscapeMethod =
+  | 'roll' // Roll for doubles
+  | 'pay' // Pay 500₽
+  | 'vouch' // Request voucher
+  | 'inform' // Inform on another
+  | 'bribe' // Bribe Stalin
+
+// Bribe request
+export interface BribeRequest {
+  id: string
+  playerId: string
+  amount: number
+  reason: string // For gulag escape, property influence, etc.
+  timestamp: Date
 }
 
 // Game state
@@ -144,6 +210,7 @@ export interface GameState {
   turnPhase: TurnPhase
   doublesCount: number
   hasRolled: boolean
+  roundNumber: number // Track rounds for voucher expiration and debt
 
   // Dice
   dice: [number, number]
@@ -154,4 +221,8 @@ export interface GameState {
 
   // Pending actions
   pendingAction: PendingAction | null
+
+  // Gulag system
+  activeVouchers: VoucherAgreement[]
+  pendingBribes: BribeRequest[]
 }

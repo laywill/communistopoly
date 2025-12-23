@@ -27,7 +27,7 @@ export function calculateQuota (
   landingPlayer?: Player
 ): number {
   const space = getSpaceById(property.spaceId)
-  if ((space == null) || (space.baseQuota == null) || (space.baseQuota === 0)) return 0
+  if (space?.baseQuota == null || (space.baseQuota === 0)) return 0
 
   let quota = space.baseQuota
 
@@ -180,7 +180,7 @@ export function canImproveProperty (
   }
 
   const space = getSpaceById(spaceId)
-  if ((space == null) || (space.group == null)) {
+  if (space?.group == null) {
     return { canImprove: false, reason: 'Invalid property' }
   }
 
@@ -196,7 +196,7 @@ export function canImproveProperty (
   const groupPropertyIds = PROPERTY_GROUPS[space.group].properties
   const groupProperties = groupPropertyIds.map((id) =>
     properties.find((p) => p.spaceId === id)
-  ).filter((p) => (p != null) && p.custodianId === custodianId)
+  ).filter((p) => p?.custodianId === custodianId)
 
   const minLevel = Math.min(...groupProperties.map((p) => p?.collectivizationLevel ?? 0))
   if (property.collectivizationLevel > minLevel) {

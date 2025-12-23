@@ -32,7 +32,7 @@ export function StalinPriceSetter({
     }
 
     if (numValue < minPrice || numValue > maxPrice) {
-      setError(`Price must be between ₽${minPrice} and ₽${maxPrice}`);
+      setError(`Price must be between ₽${String(minPrice)} and ₽${String(maxPrice)}`);
     } else {
       setError(null);
     }
@@ -92,7 +92,7 @@ export function StalinPriceSetter({
       </button>
 
       <div className={styles.note}>
-        "The State generously offers this property to the workers..."
+        &quot;The State generously offers this property to the workers...&quot;
       </div>
     </div>
   );

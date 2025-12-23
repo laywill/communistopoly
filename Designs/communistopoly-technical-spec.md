@@ -930,7 +930,7 @@ export const PIECES: PieceDefinition[] = [
     type: 'sickle',
     name: "The Sickle",
     quote: "The farmer's blade, reaping the harvest",
-    icon: "🌙",  // Closest emoji, or use custom SVG
+    icon: "🌾",  // Closest emoji, or use custom SVG
     abilities: [
       {
         type: 'passive',

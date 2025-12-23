@@ -1,0 +1,300 @@
+.stalin-panel {
+  background: var(--color-aged-white);
+  border: 4px solid var(--color-soviet-red);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.stalin-header {
+  background: linear-gradient(180deg, var(--color-soviet-red) 0%, #8B0000 100%);
+  color: var(--color-aged-white);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-bottom: 3px solid var(--color-kremlin-gold);
+}
+
+.stalin-icon {
+  font-size: 2rem;
+}
+
+.stalin-header h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.stalin-content {
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.stalin-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--color-propaganda-black);
+}
+
+.stalin-section:last-child {
+  border-bottom: none;
+}
+
+.stalin-section h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem;
+  color: var(--color-soviet-red);
+  letter-spacing: 0.05em;
+}
+
+.stalin-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.stalin-stat label {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-propaganda-black);
+  text-transform: uppercase;
+}
+
+.treasury-value {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-kremlin-gold);
+}
+
+.round-value {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-propaganda-black);
+}
+
+.empty-message {
+  color: var(--color-gulag-grey);
+  font-style: italic;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+/* Inmates List */
+.inmates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inmate-card {
+  background: var(--color-gulag-grey);
+  border: 2px solid #666;
+  padding: 0.75rem;
+  border-radius: 4px;
+}
+
+.inmate-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.inmate-name {
+  font-weight: 700;
+  color: var(--color-aged-white);
+  font-family: var(--font-display);
+}
+
+.inmate-sentence {
+  background: var(--color-blood-burgundy);
+  color: var(--color-aged-white);
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.inmate-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--color-aged-white);
+}
+
+.inmate-rubles {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.inmate-rank {
+  text-transform: capitalize;
+  font-style: italic;
+}
+
+/* Bribes List */
+.bribes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bribe-card {
+  background: #FFF8DC;
+  border: 2px solid var(--color-kremlin-gold);
+  padding: 0.75rem;
+  border-radius: 4px;
+}
+
+.bribe-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.bribe-player {
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+
+.bribe-amount {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-kremlin-gold);
+}
+
+.bribe-reason {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+}
+
+.bribe-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bribe-button {
+  flex: 1;
+  padding: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  border: 2px solid;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bribe-button.accept {
+  background: var(--color-military-olive);
+  color: var(--color-aged-white);
+  border-color: var(--color-military-olive);
+}
+
+.bribe-button.accept:hover {
+  background: #1a5a1a;
+}
+
+.bribe-button.reject {
+  background: var(--color-blood-burgundy);
+  color: var(--color-aged-white);
+  border-color: var(--color-blood-burgundy);
+}
+
+.bribe-button.reject:hover {
+  background: #6d0e0e;
+}
+
+/* Send to Gulag Form */
+.send-gulag-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-select,
+.justification-input {
+  width: 100%;
+  padding: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  border: 2px solid var(--color-propaganda-black);
+  border-radius: 4px;
+  background: var(--color-aged-white);
+}
+
+.player-select:focus,
+.justification-input:focus {
+  outline: none;
+  border-color: var(--color-soviet-red);
+}
+
+.justification-input {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.send-gulag-button {
+  padding: 0.75rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, var(--color-blood-burgundy) 0%, #6d0e0e 100%);
+  color: var(--color-aged-white);
+  border: 3px solid var(--color-propaganda-black);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 0 #1A1A1A;
+}
+
+.send-gulag-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 #1A1A1A;
+}
+
+.send-gulag-button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #1A1A1A;
+}
+
+.send-gulag-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Coming Soon */
+.coming-soon {
+  background: rgb(0 0 0 / 5%);
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.coming-soon ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.5rem;
+  color: var(--color-gulag-grey);
+  font-size: 0.85rem;
+}
+
+.coming-soon li {
+  margin-bottom: 0.25rem;
+}

@@ -7,7 +7,7 @@ interface RulesModalProps {
 export default function RulesModal({ onClose }: RulesModalProps) {
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-container rules-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-container rules-modal" onClick={(e) => { e.stopPropagation(); }}>
         <div className="modal-header">
           <h2>⚖️ HOW TO PLAY COMMUNISTOPOLY ⚖️</h2>
         </div>
@@ -17,7 +17,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             <h3>OBJECTIVE</h3>
             <p>
               There are no winners in Communistopoly—only survivors. Your goal is to outlast all other players by
-              avoiding elimination through the Gulag, denouncements, and Stalin's whims.
+              avoiding elimination through the Gulag, denouncements, and Stalin&apos;s whims.
             </p>
           </section>
 
@@ -46,7 +46,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             <h3>THE GULAG</h3>
             <p>You are sent to the Gulag when you:</p>
             <ul>
-              <li>Land on "Enemy of the State"</li>
+              <li>Land on &quot;Enemy of the State&quot;</li>
               <li>Are denounced and found guilty</li>
               <li>Roll three doubles in a row</li>
               <li>Fail to pay a debt</li>
@@ -64,7 +64,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
           </section>
 
           <section className="rules-section">
-            <h3>STALIN'S ROLE</h3>
+            <h3>STALIN&apos;S ROLE</h3>
             <p>
               Stalin controls the game as the Game Master. Stalin sets property prices, judges tribunals, accepts
               bribes, and may use special powers (with theatrical justification). Stalin does not play as a regular
@@ -73,11 +73,11 @@ export default function RulesModal({ onClose }: RulesModalProps) {
           </section>
 
           <section className="rules-section">
-            <h3>PROPERTIES ("CUSTODIANSHIP")</h3>
+            <h3>PROPERTIES (&quot;CUSTODIANSHIP&quot;)</h3>
             <p>
-              Instead of "owning" properties, you become their Custodian for the State. All properties start owned by
+              Instead of &quot;owning&quot; properties, you become their Custodian for the State. All properties start owned by
               the STATE. When you land on an uncontrolled property, Stalin sets a price (50-200% of base value), and
-              you may accept or decline. Custodians collect "productivity quotas" (rent) from other players who land
+              you may accept or decline. Custodians collect &quot;productivity quotas&quot; (rent) from other players who land
               on their properties.
             </p>
           </section>
@@ -85,8 +85,8 @@ export default function RulesModal({ onClose }: RulesModalProps) {
           <section className="rules-section">
             <h3>COLLECTIVIZATION (IMPROVEMENTS)</h3>
             <p>
-              Improve properties through 5 levels: Worker's Committee, Party Oversight, Full Collectivization, Model
-              Soviet, and People's Palace. Each level increases the quota collected. Must improve evenly across color
+              Improve properties through 5 levels: Worker&apos;s Committee, Party Oversight, Full Collectivization, Model
+              Soviet, and People&apos;s Palace. Each level increases the quota collected. Must improve evenly across color
               groups.
             </p>
           </section>

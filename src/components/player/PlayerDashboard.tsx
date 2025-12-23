@@ -21,11 +21,13 @@ export default function PlayerDashboard() {
   const turnPhase = useGameStore((state) => state.turnPhase);
   const endTurn = useGameStore((state) => state.endTurn);
   const finishMoving = useGameStore((state) => state.finishMoving);
+  const tankRequisition = useGameStore((state) => state.tankRequisition);
 
   // Modal state
   const [showPropertyModal, setShowPropertyModal] = useState(false);
   const [showImproveModal, setShowImproveModal] = useState(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [showTankRequisition, setShowTankRequisition] = useState(false);
 
   const handleEndTurn = () => {
     endTurn();
@@ -122,9 +124,11 @@ export default function PlayerDashboard() {
                   style={{ backgroundColor: getPlayerColor(player) }}
                   title={`${player.name}'s ownership color`}
                 />
-                <span className="player-piece-icon">{pieceData?.icon || '?'}</span>
+                {player.inGulag && <span style={{ fontSize: '1.5rem' }}>⛓️</span>}
+                <span className="player-piece-icon">{pieceData?.icon ?? '?'}</span>
                 <span className="player-name">{player.name}</span>
                 {isCurrentPlayer && <span className="current-badge">CURRENT</span>}
+                {player.inGulag && <span className="gulag-badge">IMPRISONED</span>}
               </div>
 
               <div className="player-card-body">
@@ -153,10 +157,19 @@ export default function PlayerDashboard() {
                   </span>
                 </div>
 
-                {isCurrentPlayer && !player.inGulag && (
+                {player.inGulag && (
+                  <div className="player-stat gulag-sentence">
+                    <label>SENTENCE:</label>
+                    <span className="stat-value" style={{ color: 'var(--color-blood-burgundy)', fontWeight: 'bold' }}>
+                      Day {player.gulagTurns + 1} of ???
+                    </span>
+                  </div>
+                )}
+
+                {isCurrentPlayer && (
                   <div className="player-actions">
-                    {/* Property Management Actions - Available during pre-roll and post-turn */}
-                    {(turnPhase === 'pre-roll' || turnPhase === 'post-turn') && (
+                    {/* Property Management Actions - Available during pre-roll and post-turn, but not in Gulag */}
+                    {!player.inGulag && (turnPhase === 'pre-roll' || turnPhase === 'post-turn') && (
                       <div className="property-actions">
                         <button
                           className="action-button secondary"
@@ -180,11 +193,25 @@ export default function PlayerDashboard() {
                         >
                           🏭 IMPROVE
                         </button>
+
+                        {/* Tank Requisition Ability */}
+                        {player.piece === 'tank' && !player.tankRequisitionUsedThisLap && (
+                          <button
+                            className="action-button secondary"
+                            onClick={() => {
+                              setSelectedPlayerId(player.id);
+                              setShowTankRequisition(true);
+                            }}
+                            title="Requisition ₽50 from another player (once per lap)"
+                          >
+                            🚛 REQUISITION ₽50
+                          </button>
+                        )}
                       </div>
                     )}
 
                     {/* Turn Control Actions */}
-                    {turnPhase === 'moving' && (
+                    {!player.inGulag && turnPhase === 'moving' && (
                       <button className="action-button" onClick={finishMoving}>
                         FINISH MOVING
                       </button>
@@ -221,6 +248,44 @@ export default function PlayerDashboard() {
             setSelectedPlayerId(null);
           }}
         />
+      )}
+
+      {/* Tank Requisition Modal */}
+      {showTankRequisition && selectedPlayerId && (
+        <div className="modal-overlay" onClick={() => { setShowTankRequisition(false); }}>
+          <div className="modal-content" onClick={(e) => { e.stopPropagation(); }} style={{ maxWidth: '400px' }}>
+            <h2>🚛 TANK REQUISITION</h2>
+            <p>Select a player to requisition ₽50 from:</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+              {players
+                .filter((p) => p.id !== selectedPlayerId && !p.isStalin && !p.isEliminated)
+                .map((targetPlayer) => (
+                  <button
+                    key={targetPlayer.id}
+                    className="action-button secondary"
+                    onClick={() => {
+                      tankRequisition(selectedPlayerId, targetPlayer.id);
+                      setShowTankRequisition(false);
+                      setSelectedPlayerId(null);
+                    }}
+                    style={{ width: '100%', textAlign: 'left', padding: '0.8rem' }}
+                  >
+                    {targetPlayer.name} - ₽{targetPlayer.rubles}
+                  </button>
+                ))}
+            </div>
+            <button
+              className="action-button"
+              onClick={() => {
+                setShowTankRequisition(false);
+                setSelectedPlayerId(null);
+              }}
+              style={{ marginTop: '1rem', width: '100%' }}
+            >
+              CANCEL
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

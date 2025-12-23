@@ -13,7 +13,7 @@ function App() {
   return (
     <div className="app">
       {gamePhase === 'welcome' && (
-        <WelcomeScreen onShowRules={() => setShowRules(true)} />
+        <WelcomeScreen onShowRules={() => { setShowRules(true); }} />
       )}
 
       {gamePhase === 'setup' && <SetupScreen />}
@@ -27,7 +27,7 @@ function App() {
         </div>
       )}
 
-      {showRules && <RulesModal onClose={() => setShowRules(false)} />}
+      {showRules && <RulesModal onClose={() => { setShowRules(false); }} />}
     </div>
   );
 }

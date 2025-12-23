@@ -50,8 +50,8 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
     setHasAnnounced(true);
     addLogEntry({
       type: 'system',
-      message: `${custodian?.name} announces: "The harvest is bountiful!"`,
-      playerId: custodian?.id,
+      message: `${custodian.name} announces: "The harvest is bountiful!"`,
+      playerId: custodian.id,
     });
   };
 
@@ -62,29 +62,35 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
         updatePlayer(payerId, { skipNextTurn: true });
         addLogEntry({
           type: 'system',
-          message: `${payer.name} cannot pay ₽${quota} - conscripted for labour! Will miss next turn.`,
+          message: `${payer.name} cannot pay ₽${String(quota)} - conscripted for labour! Will miss next turn.`,
           playerId: payerId,
         });
+        setPendingAction(null);
+        setTurnPhase('post-turn');
+        onClose();
       } else {
-        // For now, just log that they can't pay (debt handling in Milestone 5)
-        addLogEntry({
-          type: 'system',
-          message: `${payer.name} cannot pay ₽${quota} to ${custodian.name} (debt system coming in Milestone 5)`,
-          playerId: payerId,
+        // Trigger liquidation modal
+        setPendingAction({
+          type: 'liquidation-required',
+          data: {
+            playerId: payerId,
+            amountOwed: quota,
+            creditorId: custodian.id,
+            reason: `Quota payment for ${space.name}`,
+          },
         });
       }
     } else {
       payQuota(payerId, custodian.id, quota);
+      setPendingAction(null);
+      setTurnPhase('post-turn');
+      onClose();
     }
-
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-    onClose();
   };
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <h2 className={styles.title}>PRODUCTIVITY QUOTA DUE</h2>
         </div>
@@ -100,13 +106,13 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
           {isCollectiveFarm && !hasAnnounced && (
             <div className={styles.collectiveFarmNotice}>
               <p className={styles.noticeText}>
-                ⚠ Collective Farm Rule: The custodian must announce "The harvest is bountiful!" to collect full quota.
+                ⚠ Collective Farm Rule: The custodian must announce &quot;The harvest is bountiful!&quot; to collect full quota.
               </p>
               <p className={styles.noticeText}>
                 Without announcement, quota is halved.
               </p>
               <button className={styles.announceButton} onClick={handleAnnouncement}>
-                {custodian.name}: "THE HARVEST IS BOUNTIFUL!"
+                {custodian.name}: &quot;THE HARVEST IS BOUNTIFUL!&quot;
               </button>
             </div>
           )}
@@ -134,7 +140,7 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
                 <>
                   <strong>⚠ INSUFFICIENT FUNDS</strong>
                   <p>You do not have enough rubles to pay this quota.</p>
-                  <p>(Debt handling will be implemented in Milestone 5)</p>
+                  <p>You will need to liquidate assets or face a debt that must be paid within one round.</p>
                 </>
               )}
             </div>
@@ -153,7 +159,7 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
             className={styles.payButton}
             onClick={handlePay}
           >
-            {canAfford ? `PAY ₽${quota}` : 'ACKNOWLEDGE DEBT'}
+            {canAfford ? `PAY ₽${String(quota)}` : 'ACKNOWLEDGE DEBT'}
           </button>
         </div>
       </div>

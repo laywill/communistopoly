@@ -47,11 +47,17 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
 
   const handlePay = () => {
     if (!canAfford) {
-      addLogEntry({
-        type: 'system',
-        message: `${payer.name} cannot pay ₽${fee} utility fee to ${controller.name} (debt system coming in Milestone 5)`,
-        playerId: payerId,
+      // Trigger liquidation modal
+      setPendingAction({
+        type: 'liquidation-required',
+        data: {
+          playerId: payerId,
+          amountOwed: fee,
+          creditorId: controller.id,
+          reason: `Utility fee for ${space.name}`,
+        },
       });
+      return;
     } else {
       // Transfer rubles
       updatePlayer(payerId, { rubles: payer.rubles - fee });
@@ -59,7 +65,7 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
 
       addLogEntry({
         type: 'payment',
-        message: `${payer.name} paid ₽${fee} to ${controller.name} for use of ${space.name} (${diceTotal} × ${multiplier})`,
+        message: `${payer.name} paid ₽${String(fee)} to ${controller.name} for use of ${space.name} (${String(diceTotal)} × ${String(multiplier)})`,
         playerId: payerId,
       });
     }
@@ -71,7 +77,7 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <span className={styles.icon}>⚙️</span>
           <h2 className={styles.title}>MEANS OF PRODUCTION</h2>
@@ -162,7 +168,7 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
             className={styles.payButton}
             onClick={handlePay}
           >
-            {canAfford ? `PAY ₽${fee}` : 'ACKNOWLEDGE DEBT'}
+            {canAfford ? `PAY ₽${String(fee)}` : 'ACKNOWLEDGE DEBT'}
           </button>
         </div>
       </div>

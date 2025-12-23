@@ -23,7 +23,7 @@ const Board = () => {
   };
 
   const renderSpace = (space: BoardSpace, edgePosition: 'top' | 'bottom' | 'left' | 'right', additionalClass?: string) => {
-    const className = additionalClass || '';
+    const className = additionalClass ?? '';
     const playersHere = getPlayersAtPosition(space.id);
 
     if (space.type === 'corner') {

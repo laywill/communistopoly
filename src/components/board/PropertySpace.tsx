@@ -19,23 +19,25 @@ const PLAYER_COLORS = [
 ];
 
 const PropertySpace = ({ space }: PropertySpaceProps) => {
-  if (!space.group) return null;
-
-  const colors = PROPERTY_COLORS[space.group];
+  // Hooks must be called before any early returns
   const property = useGameStore((state) =>
     state.properties.find((p) => p.spaceId === space.id)
   );
-  const custodian = property?.custodianId
-    ? useGameStore((state) => state.players.find((p) => p.id === property.custodianId))
-    : null;
   const players = useGameStore((state) => state.players);
   const allProperties = useGameStore((state) => state.properties);
+  const custodian = property?.custodianId
+    ? players.find((p) => p.id === property.custodianId)
+    : null;
 
-  const collectivizationLevel = property?.collectivizationLevel || 0;
-  const isMortgaged = property?.mortgaged || false;
+  if (!space.group) return null;
+
+  const colors = PROPERTY_COLORS[space.group];
+
+  const collectivizationLevel = property?.collectivizationLevel ?? 0;
+  const isMortgaged = property?.mortgaged ?? false;
 
   // Check if custodian owns complete group
-  const hasCompleteGroup = property?.custodianId && space.group
+  const hasCompleteGroup = property?.custodianId
     ? ownsCompleteGroup(property.custodianId, space.group, allProperties)
     : false;
 
@@ -78,7 +80,7 @@ const PropertySpace = ({ space }: PropertySpaceProps) => {
 
         {/* Collectivization indicators */}
         <div className={styles.collectivization}>
-          {[...Array(5)].map((_, i) => (
+          {Array.from({ length: 5 }, (_, i) => (
             <span
               key={i}
               className={i < collectivizationLevel ? styles.filled : styles.empty}

@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--color-propaganda-black) 0%, var(--color-gulag-grey) 100%);
+  background: linear-gradient(135deg, var(--color-propaganda-black) 0%, var(--color-soviet-red) 45%,var(--color-soviet-red) 55%, var(--color-propaganda-black) 100%);
   padding: 2rem;
 }
 

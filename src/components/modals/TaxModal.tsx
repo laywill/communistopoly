@@ -110,22 +110,50 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
       const difference = chosenAmount - actualAmount;
       const totalPayment = actualAmount + difference + penalty;
 
+      // Check if player can afford it
+      if (player.rubles < totalPayment) {
+        setPendingAction({
+          type: 'liquidation-required',
+          data: {
+            playerId: playerId,
+            amountOwed: totalPayment,
+            creditorId: 'state',
+            reason: `Revolutionary Contribution with audit penalty`,
+          },
+        });
+        return;
+      }
+
       updatePlayer(playerId, { rubles: player.rubles - totalPayment });
       adjustTreasury(totalPayment);
 
       addLogEntry({
         type: 'payment',
-        message: `${player.name} paid ₽${totalPayment} Revolutionary Contribution (₽${actualAmount} + ₽${difference} difference + ₽${penalty} audit penalty)`,
+        message: `${player.name} paid ₽${String(totalPayment)} Revolutionary Contribution (₽${String(actualAmount)} + ₽${String(difference)} difference + ₽${String(penalty)} audit penalty)`,
         playerId,
       });
     } else {
       // No audit or player chose correctly
+      // Check if player can afford it
+      if (player.rubles < chosenAmount) {
+        setPendingAction({
+          type: 'liquidation-required',
+          data: {
+            playerId: playerId,
+            amountOwed: chosenAmount,
+            creditorId: 'state',
+            reason: `Revolutionary Contribution`,
+          },
+        });
+        return;
+      }
+
       updatePlayer(playerId, { rubles: player.rubles - chosenAmount });
       adjustTreasury(chosenAmount);
 
       addLogEntry({
         type: 'payment',
-        message: `${player.name} paid ₽${chosenAmount} Revolutionary Contribution${shouldAudit ? ' (audited - no penalty)' : ''}`,
+        message: `${player.name} paid ₽${String(chosenAmount)} Revolutionary Contribution${shouldAudit ? ' (audited - no penalty)' : ''}`,
         playerId,
       });
     }
@@ -138,6 +166,20 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
   const handleBourgeoisDecadence = () => {
     const amount = isWealthiestPlayer ? 200 : 100;
 
+    // Check if player can afford it
+    if (player.rubles < amount) {
+      setPendingAction({
+        type: 'liquidation-required',
+        data: {
+          playerId: playerId,
+          amountOwed: amount,
+          creditorId: 'state',
+          reason: `Bourgeois Decadence Tax`,
+        },
+      });
+      return;
+    }
+
     updatePlayer(playerId, { rubles: player.rubles - amount });
     adjustTreasury(amount);
 
@@ -145,13 +187,13 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
       demotePlayer(playerId);
       addLogEntry({
         type: 'payment',
-        message: `${player.name} paid ₽${amount} Bourgeois Decadence Tax as the wealthiest comrade - demoted for capitalist tendencies!`,
+        message: `${player.name} paid ₽${String(amount)} Bourgeois Decadence Tax as the wealthiest comrade - demoted for capitalist tendencies!`,
         playerId,
       });
     } else {
       addLogEntry({
         type: 'payment',
-        message: `${player.name} paid ₽${amount} Bourgeois Decadence Tax`,
+        message: `${player.name} paid ₽${String(amount)} Bourgeois Decadence Tax`,
         playerId,
       });
     }
@@ -163,7 +205,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <span className={styles.icon}>📋</span>
           <h2 className={styles.title}>{space.name}</h2>
@@ -203,7 +245,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
                 <div className={styles.choices}>
                   <button
                     className={styles.choiceButton}
-                    onClick={() => handleRevolutionaryChoice('percentage')}
+                    onClick={() => { handleRevolutionaryChoice('percentage'); }}
                   >
                     <div className={styles.choiceTitle}>15% of Total Wealth</div>
                     <div className={styles.choiceAmount}>₽{percentageAmount}</div>
@@ -213,7 +255,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
 
                   <button
                     className={styles.choiceButton}
-                    onClick={() => handleRevolutionaryChoice('flat')}
+                    onClick={() => { handleRevolutionaryChoice('flat'); }}
                   >
                     <div className={styles.choiceTitle}>Flat Rate</div>
                     <div className={styles.choiceAmount}>₽{flatAmount}</div>
@@ -224,11 +266,11 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
               {showStalinAudit && (
                 <div className={styles.auditSection}>
                   <div className={styles.choiceConfirm}>
-                    <strong>Choice Made:</strong> {playerChoice === 'percentage' ? `15% (₽${percentageAmount})` : `Flat Rate (₽${flatAmount})`}
+                    <strong>Choice Made:</strong> {playerChoice === 'percentage' ? `15% (₽${String(percentageAmount)})` : `Flat Rate (₽${String(flatAmount)})`}
                   </div>
 
                   <div className={styles.stalinDecision}>
-                    <h4 className={styles.auditTitle}>⚖ STALIN'S AUDIT DECISION ⚖</h4>
+                    <h4 className={styles.auditTitle}>⚖ STALIN&apos;S AUDIT DECISION ⚖</h4>
                     <p className={styles.auditDescription}>
                       Stalin may audit this contribution. If the player chose the higher amount,
                       they must pay the difference plus a ₽50 penalty!
@@ -237,13 +279,13 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
                     <div className={styles.auditButtons}>
                       <button
                         className={styles.noAuditButton}
-                        onClick={() => handleStalinAudit(false)}
+                        onClick={() => { handleStalinAudit(false); }}
                       >
                         NO AUDIT - Accept Payment
                       </button>
                       <button
                         className={styles.auditButton}
-                        onClick={() => handleStalinAudit(true)}
+                        onClick={() => { handleStalinAudit(true); }}
                       >
                         AUDIT - Verify Contribution
                       </button>

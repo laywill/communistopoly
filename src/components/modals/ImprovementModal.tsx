@@ -35,7 +35,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
   player.properties.forEach((propId) => {
     const spaceId = parseInt(propId);
     const space = getSpaceById(spaceId);
-    if (space && space.group && space.type === 'property') {
+    if (space?.group && space.type === 'property') {
       groupedProperties[space.group].push(spaceId);
     }
   });
@@ -43,7 +43,6 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
   // Check if player owns complete group
   const ownsCompleteGroup = (group: PropertyGroup): boolean => {
     const groupInfo = PROPERTY_GROUPS[group];
-    if (!groupInfo) return false;
 
     const ownedInGroup = groupedProperties[group];
     return ownedInGroup.length === groupInfo.properties.length;
@@ -54,7 +53,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
     const property = properties.find((p) => p.spaceId === spaceId);
     const space = getSpaceById(spaceId);
 
-    if (!property || !space || !space.group) {
+    if (!property || !space?.group) {
       return { canImprove: false, reason: 'Property not found' };
     }
 
@@ -71,7 +70,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
     // Check if can afford
     const cost = getNextCollectivizationCost(property.collectivizationLevel);
     if (player.rubles < cost) {
-      return { canImprove: false, reason: `Insufficient rubles (need ₽${cost})` };
+      return { canImprove: false, reason: `Insufficient rubles (need ₽${String(cost)})` };
     }
 
     // Check even building within group
@@ -120,7 +119,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
 
     addLogEntry({
       type: 'property',
-      message: `${player.name} improved ${space.name} to ${levelInfo.name} for ₽${cost}`,
+      message: `${player.name} improved ${space.name} to ${levelInfo.name} for ₽${String(cost)}`,
       playerId,
     });
 
@@ -129,7 +128,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.header}>
           <span className={styles.icon}>⚒️</span>
           <h2 className={styles.title}>PROPERTY COLLECTIVIZATION</h2>
@@ -203,17 +202,17 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
                                 <div className={styles.nextLevel}>
                                   <span className={styles.levelLabel}>Next:</span>
                                   <span className={styles.nextLevelValue}>
-                                    {nextLevelInfo.name} (₽{nextCost})
+                                    {nextLevelInfo.name} (₽{String(nextCost)})
                                   </span>
                                 </div>
 
                                 <button
                                   className={styles.improveButton}
-                                  onClick={() => handleImprove(spaceId)}
+                                  onClick={() => { handleImprove(spaceId); }}
                                   disabled={!canImproveProperty}
                                   title={reason}
                                 >
-                                  {canImproveProperty ? `IMPROVE (₽${nextCost})` : reason}
+                                  {canImproveProperty ? `IMPROVE (₽${String(nextCost)})` : reason}
                                 </button>
                               </>
                             )}
