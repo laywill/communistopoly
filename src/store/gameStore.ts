@@ -452,15 +452,39 @@ export const useGameStore = create<GameStore>()(
             })
             break
 
-          case 'card':
-            // Placeholder for future milestones
-            get().addLogEntry({
-              type: 'system',
-              message: `${currentPlayer.name} landed on ${space.name} (implementation coming in later milestone)`,
-              playerId: currentPlayer.id
-            })
-            set({ turnPhase: 'post-turn' })
+          case 'card': {
+            // Determine card type from space
+            const cardSpace = space as { cardType?: 'party-directive' | 'communist-test' }
+
+            if (cardSpace.cardType === 'party-directive') {
+              get().addLogEntry({
+                type: 'system',
+                message: `${currentPlayer.name} landed on Party Directive`,
+                playerId: currentPlayer.id
+              })
+              set({
+                pendingAction: {
+                  type: 'draw-party-directive',
+                  data: { playerId: currentPlayer.id }
+                }
+              })
+            } else if (cardSpace.cardType === 'communist-test') {
+              get().addLogEntry({
+                type: 'system',
+                message: `${currentPlayer.name} landed on Communist Test`,
+                playerId: currentPlayer.id
+              })
+              set({
+                pendingAction: {
+                  type: 'draw-communist-test',
+                  data: { playerId: currentPlayer.id }
+                }
+              })
+            } else {
+              set({ turnPhase: 'post-turn' })
+            }
             break
+          }
 
           default:
             set({ turnPhase: 'post-turn' })
