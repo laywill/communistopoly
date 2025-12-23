@@ -175,7 +175,7 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
           {showPlayerDecision && stalinPrice !== null && (
             <div className={styles.playerDecision}>
               <div className={styles.priceDisplay}>
-                <span className={styles.priceLabel}>Stalin's Price:</span>
+                <span className={styles.priceLabel}>Stalin&apos;s Price:</span>
                 <span className={styles.priceValue}>₽{stalinPrice}</span>
               </div>
 
