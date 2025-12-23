@@ -23,10 +23,10 @@ const UtilitySpace = ({ space }: UtilitySpaceProps) => {
   const property = useGameStore((state) =>
     state.properties.find((p) => p.spaceId === space.id)
   );
-  const custodian = property?.custodianId
-    ? useGameStore((state) => state.players.find((p) => p.id === property.custodianId))
-    : null;
   const players = useGameStore((state) => state.players);
+  const custodian = property?.custodianId
+    ? players.find((p) => p.id === property.custodianId)
+    : null;
 
   // Get player color for ownership indicator
   const getPlayerColor = (custodian: typeof players[0]) => {
