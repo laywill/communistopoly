@@ -119,10 +119,10 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
               <strong>⚠ ALL STATIONS CONTROLLED:</strong>
               <p>
                 {controller.name} controls all Trans-Siberian Railway stations!
-                They may send ONE player to the Gulag this game for "attempting to flee the motherland."
+                They may send ONE player to the Gulag this game for &quot;attempting to flee the motherland.&quot;
               </p>
               <p className={styles.stalinNote}>
-                (This power is exercised through Stalin's control panel)
+                (This power is exercised through Stalin&apos;s control panel)
               </p>
             </div>
           )}
