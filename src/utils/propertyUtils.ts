@@ -49,6 +49,11 @@ export function calculateQuota (
     }
   }
 
+  // SICKLE ABILITY: Half quota on Collective Farm properties
+  if (landingPlayer?.piece === 'sickle' && space.group === 'collective') {
+    quota *= 0.5
+  }
+
   return Math.floor(quota)
 }
 
