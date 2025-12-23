@@ -30,7 +30,7 @@ JSON_JSONLINT_ARGUMENTS: "--comments --trailing-newline --trailing-commas"
 SPELL_CSPELL_FILTER_REGEX_EXCLUDE: (\.cspell\.json|\.gitignore)
 
 # Filter Configuration
-FILTER_REGEX_EXCLUDE: (\.git|\.github|\.vite|node_modules|\.vscode|dist|\.megalinter|megalinter-reports)
+FILTER_REGEX_EXCLUDE: (\.git/|\.github/|\.vite/|node_modules/|\.vscode/|dist/|\.mega-linter|megalinter-reports/)
 
 # Checkov Configuration
 REPOSITORY_CHECKOV_ARGUMENTS: "--skip-check CKV2_GHA_1"
