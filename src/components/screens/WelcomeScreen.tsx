@@ -25,7 +25,7 @@ export default function WelcomeScreen({ onShowRules }: WelcomeScreenProps) {
           <div className="welcome-title-section">
             <h1 className="welcome-title">COMMUNISTOPOLY</h1>
             <p className="welcome-subtitle">
-              "All players are equal, but some players are more equal than others."
+              &quot;All players are equal, but some players are more equal than others.&quot;
             </p>
           </div>
           <span className="star-symbol">☭</span>
