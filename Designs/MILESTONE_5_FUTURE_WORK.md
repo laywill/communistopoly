@@ -225,7 +225,7 @@ if (currentPlayer.inGulag && !currentPlayer.isEliminated) {
 ### Manual Testing Scenarios
 1. Send player to Gulag → Roll for escape → Success/fail
 2. Send player to Gulag → Pay ₽500 → Check rank demotion
-3. Send player to Gulag → Request voucher → Accept → Commit offense within 3 rounds → Voucher goes to Gulag
+3. Send player to Gulag → Request voucher → Accept → Commit offence within 3 rounds → Voucher goes to Gulag
 4. Player can't pay quota → Create debt → Wait 1 round → Gulag
 5. Player in Gulag 10 turns → Elimination → Ghost state
 6. Bribe Stalin → Accept → Release

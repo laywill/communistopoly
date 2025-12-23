@@ -35,7 +35,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
     if (!voucherPlayer) return;
 
     const accepted = window.confirm(
-      `${voucherPlayer.name}, do you accept to vouch for ${prisoner.name}'s release from the Gulag?\n\nWARNING: If ${prisoner.name} commits ANY offense in the next 3 rounds, YOU will also go to the Gulag!`
+      `${voucherPlayer.name}, do you accept to vouch for ${prisoner.name}'s release from the Gulag?\n\nWARNING: If ${prisoner.name} commits ANY offence in the next 3 rounds, YOU will also go to the Gulag!`
     );
 
     if (accepted) {
@@ -126,7 +126,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
               ⚠️ WARNING
             </p>
             <p style={{ margin: '4px 0 0 0', fontSize: '12px', lineHeight: '1.5' }}>
-              If you commit ANY offense in the next 3 rounds, your voucher will also be sent to the Gulag!
+              If you commit ANY offence in the next 3 rounds, your voucher will also be sent to the Gulag!
             </p>
           </div>
 

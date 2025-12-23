@@ -1,10 +1,10 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod } from '../types/game';
-import { BOARD_SPACES, getSpaceById } from '../data/spaces';
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod } from '../types/game'
+import { BOARD_SPACES, getSpaceById } from '../data/spaces'
 
 // Helper functions
-function getGulagReasonText(reason: GulagReason, justification?: string): string {
+function getGulagReasonText (reason: GulagReason, justification?: string): string {
   const reasonTexts: Record<GulagReason, string> = {
     enemyOfState: 'Landed on Enemy of the State',
     threeDoubles: 'Rolled three consecutive doubles - counter-revolutionary dice behavior',
@@ -13,29 +13,29 @@ function getGulagReasonText(reason: GulagReason, justification?: string): string
     pilferingCaught: 'Caught stealing at STOY checkpoint',
     stalinDecree: justification ?? 'Sent by Stalin',
     railwayCapture: 'Caught attempting to flee the motherland via railway',
-    campLabor: 'Sent for forced labor by Siberian Camp custodian',
-    voucherConsequence: 'Voucher consequence - vouchee committed an offense',
-  };
+    campLabour: 'Sent for forced labour by Siberian Camp custodian',
+    voucherConsequence: 'Voucher consequence - vouchee committed an offence'
+  }
 
-  return reasonTexts[reason];
+  return reasonTexts[reason]
 }
 
-function getRequiredDoublesForEscape(turnsInGulag: number): number[] {
+function getRequiredDoublesForEscape (turnsInGulag: number): number[] {
   switch (turnsInGulag) {
     case 1:
-      return [6];
+      return [6]
     case 2:
-      return [5, 6];
+      return [5, 6]
     case 3:
-      return [4, 5, 6];
+      return [4, 5, 6]
     case 4:
-      return [3, 4, 5, 6];
+      return [3, 4, 5, 6]
     default:
-      return [1, 2, 3, 4, 5, 6]; // Any doubles after turn 5
+      return [1, 2, 3, 4, 5, 6] // Any doubles after turn 5
   }
 }
 
-function shouldTriggerVoucherConsequence(reason: GulagReason): boolean {
+function shouldTriggerVoucherConsequence (reason: GulagReason): boolean {
   // These reasons trigger voucher consequences
   const triggeringReasons: GulagReason[] = [
     'enemyOfState',
@@ -44,10 +44,10 @@ function shouldTriggerVoucherConsequence(reason: GulagReason): boolean {
     'pilferingCaught',
     'stalinDecree',
     'railwayCapture',
-    'campLabor',
-  ];
+    'campLabour'
+  ]
 
-  return triggeringReasons.includes(reason);
+  return triggeringReasons.includes(reason)
 }
 
 interface GameActions {
@@ -79,30 +79,30 @@ interface GameActions {
   setTurnPhase: (phase: TurnPhase) => void
 
   // Gulag management
-  sendToGulag: (playerId: string, reason: GulagReason, justification?: string) => void;
-  demotePlayer: (playerId: string) => void;
-  handleGulagTurn: (playerId: string) => void;
-  attemptGulagEscape: (playerId: string, method: GulagEscapeMethod, data?: Record<string, unknown>) => void;
-  checkFor10TurnElimination: (playerId: string) => void;
+  sendToGulag: (playerId: string, reason: GulagReason, justification?: string) => void
+  demotePlayer: (playerId: string) => void
+  handleGulagTurn: (playerId: string) => void
+  attemptGulagEscape: (playerId: string, method: GulagEscapeMethod, data?: Record<string, unknown>) => void
+  checkFor10TurnElimination: (playerId: string) => void
 
   // Voucher system
-  createVoucher: (prisonerId: string, voucherId: string) => void;
-  checkVoucherConsequences: (playerId: string, reason: GulagReason) => void;
-  expireVouchers: () => void;
+  createVoucher: (prisonerId: string, voucherId: string) => void
+  checkVoucherConsequences: (playerId: string, reason: GulagReason) => void
+  expireVouchers: () => void
 
   // Bribe system
-  submitBribe: (playerId: string, amount: number, reason: string) => void;
-  respondToBribe: (bribeId: string, accepted: boolean) => void;
+  submitBribe: (playerId: string, amount: number, reason: string) => void
+  respondToBribe: (bribeId: string, accepted: boolean) => void
 
   // Debt and liquidation
-  createDebt: (debtorId: string, creditorId: string | 'state', amount: number, reason: string) => void;
-  checkDebtStatus: () => void;
+  createDebt: (debtorId: string, creditorId: string | 'state', amount: number, reason: string) => void
+  checkDebtStatus: () => void
 
   // Elimination and ghosts
-  eliminatePlayer: (playerId: string, reason: string) => void;
+  eliminatePlayer: (playerId: string, reason: string) => void
 
   // Round management
-  incrementRound: () => void;
+  incrementRound: () => void
 
   // STOY handling
   handleStoyPassing: (playerId: string) => void
@@ -136,8 +136,8 @@ const initialState: GameState = {
   gameLog: [],
   pendingAction: null,
   activeVouchers: [],
-  pendingBribes: [],
-};
+  pendingBribes: []
+}
 
 export const useGameStore = create<GameStore>()(
   persist(
@@ -180,8 +180,8 @@ export const useGameStore = create<GameStore>()(
           vouchingFor: null,
           vouchedByRound: null,
           debt: null,
-          debtCreatedAtRound: null,
-        }));
+          debtCreatedAtRound: null
+        }))
 
         const stalinPlayer = players.find(p => p.isStalin)
         const nonStalinPlayers = players.filter(p => !p.isStalin)
@@ -252,27 +252,27 @@ export const useGameStore = create<GameStore>()(
           turnPhase: 'rolling'
         })
 
-        const currentPlayer = get().players[get().currentPlayerIndex];
+        const currentPlayer = get().players[get().currentPlayerIndex]
         get().addLogEntry({
           type: 'dice',
           message: `Rolled ${die1} + ${die2} = ${die1 + die2}`,
-          playerId: currentPlayer?.id ?? '',
-        });
+          playerId: currentPlayer?.id ?? ''
+        })
       },
 
       finishRolling: () => {
-        const { dice, doublesCount } = get();
-        const die1: number = dice[0];
-        const die2: number = dice[1];
-        const isDoubles = die1 === die2;
-        const newDoublesCount: number = isDoubles ? (doublesCount as number) + 1 : 0;
+        const { dice, doublesCount } = get()
+        const die1: number = dice[0]
+        const die2: number = dice[1]
+        const isDoubles = die1 === die2
+        const newDoublesCount: number = isDoubles ? (doublesCount) + 1 : 0
 
         // Check for three doubles (counter-revolutionary behavior)
         if (newDoublesCount >= 3) {
-          const currentPlayer = get().players[get().currentPlayerIndex];
-          get().sendToGulag(currentPlayer.id, 'threeDoubles');
-          set({ isRolling: false, doublesCount: 0 });
-          return;
+          const currentPlayer = get().players[get().currentPlayerIndex]
+          get().sendToGulag(currentPlayer.id, 'threeDoubles')
+          set({ isRolling: false, doublesCount: 0 })
+          return
         }
 
         set({
@@ -301,13 +301,13 @@ export const useGameStore = create<GameStore>()(
         // Update player position
         get().updatePlayer(playerId, { position: newPosition })
 
-        const fromSpace = getSpaceById(oldPosition);
-        const toSpace = getSpaceById(newPosition);
+        const fromSpace = getSpaceById(oldPosition)
+        const toSpace = getSpaceById(newPosition)
         get().addLogEntry({
           type: 'movement',
-          message: `${player.name as string} moved from ${fromSpace?.name ?? 'Unknown'} to ${toSpace?.name ?? 'Unknown'}`,
-          playerId,
-        });
+          message: `${player.name} moved from ${fromSpace?.name ?? 'Unknown'} to ${toSpace?.name ?? 'Unknown'}`,
+          playerId
+        })
 
         // Handle passing STOY
         if (passedStoy && newPosition !== 0) {
@@ -334,31 +334,31 @@ export const useGameStore = create<GameStore>()(
               // The Gulag - just visiting
               get().addLogEntry({
                 type: 'movement',
-                message: `${(currentPlayer.name ?? 'Player') as string} is just visiting the Gulag`,
-                playerId: currentPlayer.id,
-              });
-              set({ turnPhase: 'post-turn' });
+                message: `${(currentPlayer.name ?? 'Player')} is just visiting the Gulag`,
+                playerId: currentPlayer.id
+              })
+              set({ turnPhase: 'post-turn' })
             } else if (space.id === 20) {
               // Breadline - placeholder for now
               get().addLogEntry({
                 type: 'system',
-                message: `${(currentPlayer.name ?? 'Player') as string} landed on Breadline (implementation coming in later milestone)`,
-                playerId: currentPlayer.id,
-              });
-              set({ turnPhase: 'post-turn' });
+                message: `${(currentPlayer.name ?? 'Player')} landed on Breadline (implementation coming in later milestone)`,
+                playerId: currentPlayer.id
+              })
+              set({ turnPhase: 'post-turn' })
             } else if (space.id === 30) {
               // Enemy of the State - go to Gulag
-              get().sendToGulag(currentPlayer.id, 'enemyOfState');
+              get().sendToGulag(currentPlayer.id, 'enemyOfState')
             }
             break
 
           case 'property':
           case 'railway':
           case 'utility': {
-            const property = state.properties.find((p) => p.spaceId === space.id);
+            const property = state.properties.find((p) => p.spaceId === space.id)
             if (property == null) {
-              set({ turnPhase: 'post-turn' });
-              break;
+              set({ turnPhase: 'post-turn' })
+              break
             }
 
             // Check if property is owned by State (available for purchase)
@@ -366,9 +366,9 @@ export const useGameStore = create<GameStore>()(
               set({
                 pendingAction: {
                   type: 'property-purchase',
-                  data: { spaceId: space.id, playerId: currentPlayer.id },
-                },
-              });
+                  data: { spaceId: space.id, playerId: currentPlayer.id }
+                }
+              })
             } else if (property.custodianId !== currentPlayer.id) {
               // Check if property is owned by another player (must pay quota)
               if (space.type === 'railway') {
@@ -379,8 +379,8 @@ export const useGameStore = create<GameStore>()(
                   }
                 })
               } else if (space.type === 'utility') {
-                const die1: number = state.dice[0];
-                const die2: number = state.dice[1];
+                const die1: number = state.dice[0]
+                const die2: number = state.dice[1]
                 set({
                   pendingAction: {
                     type: 'utility-fee',
@@ -399,10 +399,10 @@ export const useGameStore = create<GameStore>()(
               // Player owns this property - just visiting
               get().addLogEntry({
                 type: 'system',
-                message: `${(currentPlayer.name ?? 'Player') as string} landed on their own property: ${(space.name ?? 'Unknown') as string}`,
-                playerId: currentPlayer.id,
-              });
-              set({ turnPhase: 'post-turn' });
+                message: `${(currentPlayer.name ?? 'Player')} landed on their own property: ${(space.name ?? 'Unknown')}`,
+                playerId: currentPlayer.id
+              })
+              set({ turnPhase: 'post-turn' })
             }
             break
           }
@@ -420,11 +420,11 @@ export const useGameStore = create<GameStore>()(
             // Placeholder for future milestones
             get().addLogEntry({
               type: 'system',
-              message: `${(currentPlayer.name ?? 'Player') as string} landed on ${(space.name ?? 'Unknown') as string} (implementation coming in later milestone)`,
-              playerId: currentPlayer.id,
-            });
-            set({ turnPhase: 'post-turn' });
-            break;
+              message: `${(currentPlayer.name ?? 'Player')} landed on ${(space.name ?? 'Unknown')} (implementation coming in later milestone)`,
+              playerId: currentPlayer.id
+            })
+            set({ turnPhase: 'post-turn' })
+            break
 
           default:
             set({ turnPhase: 'post-turn' })
@@ -438,7 +438,7 @@ export const useGameStore = create<GameStore>()(
         const { currentPlayerIndex, players, doublesCount } = state
 
         // If player rolled doubles and not in gulag, they get another turn
-        if (doublesCount > 0 && players[currentPlayerIndex].inGulag === false) {
+        if (doublesCount > 0 && !players[currentPlayerIndex].inGulag) {
           set({
             turnPhase: 'pre-roll',
             hasRolled: false,
@@ -448,11 +448,11 @@ export const useGameStore = create<GameStore>()(
         }
 
         // Find next player (skip Stalin and eliminated players, but include Gulag players)
-        let nextIndex: number = (currentPlayerIndex + 1) % players.length;
-        let attempts: number = 0;
+        let nextIndex: number = (currentPlayerIndex + 1) % players.length
+        let attempts: number = 0
 
         while (
-          (players[nextIndex].isStalin === true || players[nextIndex].isEliminated === true) &&
+          (players[nextIndex].isStalin || players[nextIndex].isEliminated) &&
           attempts < players.length
         ) {
           nextIndex = (nextIndex + 1) % players.length
@@ -461,9 +461,9 @@ export const useGameStore = create<GameStore>()(
 
         // Check if we've completed a round (cycling back to first non-Stalin player)
         // First non-Stalin player is typically at index 1
-        const firstNonStalinIndex: number = players.findIndex((p) => p.isStalin === false && p.isEliminated === false);
+        const firstNonStalinIndex: number = players.findIndex((p) => !p.isStalin && !p.isEliminated)
         if (nextIndex === firstNonStalinIndex && currentPlayerIndex !== firstNonStalinIndex) {
-          get().incrementRound();
+          get().incrementRound()
         }
 
         set({
@@ -474,21 +474,21 @@ export const useGameStore = create<GameStore>()(
           pendingAction: null
         })
 
-        const nextPlayer = players[nextIndex];
+        const nextPlayer = players[nextIndex]
         get().addLogEntry({
           type: 'system',
-          message: `${(nextPlayer?.name ?? 'Player') as string}'s turn`,
-          playerId: nextPlayer?.id ?? '',
-        });
+          message: `${(nextPlayer?.name ?? 'Player')}'s turn`,
+          playerId: nextPlayer?.id ?? ''
+        })
       },
 
       // Gulag management
       sendToGulag: (playerId, reason, justification) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
-        const reasonText = getGulagReasonText(reason, justification);
+        const reasonText = getGulagReasonText(reason, justification)
 
         get().updatePlayer(playerId, {
           inGulag: true,
@@ -501,21 +501,21 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'gulag',
-          message: `${(player.name ?? 'Player') as string} sent to Gulag: ${reasonText ?? 'Unknown reason'}`,
-          playerId,
-        });
+          message: `${(player.name ?? 'Player')} sent to Gulag: ${reasonText ?? 'Unknown reason'}`,
+          playerId
+        })
 
         // Check voucher consequences if applicable
-        get().checkVoucherConsequences(playerId, reason);
+        get().checkVoucherConsequences(playerId, reason)
 
         // End turn immediately
         set({ turnPhase: 'post-turn' })
       },
 
       demotePlayer: (playerId) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
         const rankOrder: Array<Player['rank']> = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
         const currentRankIndex = rankOrder.indexOf(player.rank)
@@ -525,17 +525,17 @@ export const useGameStore = create<GameStore>()(
           get().updatePlayer(playerId, { rank: newRank })
           get().addLogEntry({
             type: 'rank',
-            message: `${(player.name ?? 'Player') as string} demoted to ${newRank ?? 'unknown rank'}`,
-            playerId,
-          });
+            message: `${(player.name ?? 'Player')} demoted to ${newRank ?? 'unknown rank'}`,
+            playerId
+          })
         }
       },
 
       // STOY handling
       handleStoyPassing: (playerId) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
         // Deduct 200₽ travel tax
         get().updatePlayer(playerId, { rubles: player.rubles - 200 })
@@ -543,30 +543,30 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'payment',
-          message: `${(player.name ?? 'Player') as string} paid ₽200 travel tax at STOY`,
-          playerId,
-        });
+          message: `${(player.name ?? 'Player')} paid ₽200 travel tax at STOY`,
+          playerId
+        })
       },
 
       handleStoyPilfer: (playerId, diceRoll) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
         if (diceRoll >= 4) {
           // Success! Steal 100₽ from State
-          const newRubles: number = (player.rubles as number) + 100;
-          get().updatePlayer(playerId, { rubles: newRubles });
-          get().adjustTreasury(-100);
+          const newRubles: number = (player.rubles) + 100
+          get().updatePlayer(playerId, { rubles: newRubles })
+          get().adjustTreasury(-100)
 
           get().addLogEntry({
             type: 'payment',
-            message: `${(player.name ?? 'Player') as string} successfully pilfered ₽100 from the State Treasury!`,
-            playerId,
-          });
+            message: `${(player.name ?? 'Player')} successfully pilfered ₽100 from the State Treasury!`,
+            playerId
+          })
         } else {
           // Caught! Go to Gulag
-          get().sendToGulag(playerId, 'pilferingCaught');
+          get().sendToGulag(playerId, 'pilferingCaught')
         }
 
         set({ pendingAction: null, turnPhase: 'post-turn' })
@@ -588,15 +588,15 @@ export const useGameStore = create<GameStore>()(
       // Treasury
       adjustTreasury: (amount) => {
         set((state) => ({
-          stateTreasury: Math.max(0, (state.stateTreasury as number) + (amount as number)),
-        }));
+          stateTreasury: Math.max(0, (state.stateTreasury) + (amount))
+        }))
       },
 
       // Property transactions
       purchaseProperty: (playerId, spaceId, price) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null || player.rubles < price) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null || player.rubles < price) return
 
         // Deduct rubles
         get().updatePlayer(playerId, {
@@ -613,41 +613,41 @@ export const useGameStore = create<GameStore>()(
         const space = getSpaceById(spaceId)
         get().addLogEntry({
           type: 'property',
-          message: `${(player.name ?? 'Player') as string} became Custodian of ${space?.name ?? 'Unknown'} for ₽${price as number}`,
-          playerId,
-        });
+          message: `${(player.name ?? 'Player')} became Custodian of ${space?.name ?? 'Unknown'} for ₽${price}`,
+          playerId
+        })
       },
 
       payQuota: (payerId, custodianId, amount) => {
-        const state = get();
-        const payer = state.players.find((p) => p.id === payerId);
-        const custodian = state.players.find((p) => p.id === custodianId);
-        if (payer == null || custodian == null) return;
+        const state = get()
+        const payer = state.players.find((p) => p.id === payerId)
+        const custodian = state.players.find((p) => p.id === custodianId)
+        if (payer == null || custodian == null) return
 
         // Transfer rubles
-        get().updatePlayer(payerId, { rubles: (payer.rubles as number) - (amount as number) });
-        get().updatePlayer(custodianId, { rubles: (custodian.rubles as number) + (amount as number) });
+        get().updatePlayer(payerId, { rubles: (payer.rubles) - (amount) })
+        get().updatePlayer(custodianId, { rubles: (custodian.rubles) + (amount) })
 
         get().addLogEntry({
           type: 'payment',
-          message: `${(payer.name ?? 'Player') as string} paid ₽${amount as number} quota to ${(custodian.name ?? 'Player') as string}`,
-          playerId: payerId,
-        });
+          message: `${(payer.name ?? 'Player')} paid ₽${amount} quota to ${(custodian.name ?? 'Player')}`,
+          playerId: payerId
+        })
       },
 
       mortgageProperty: (spaceId) => {
-        const state = get();
-        const property = state.properties.find((p) => p.spaceId === spaceId);
-        if (property == null || property.custodianId == null) return;
+        const state = get()
+        const property = state.properties.find((p) => p.spaceId === spaceId)
+        if (property == null || property.custodianId == null) return
 
-        const space = getSpaceById(spaceId);
-        const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5);
+        const space = getSpaceById(spaceId)
+        const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5)
 
         // Give player half the base cost
-        const player = state.players.find((p) => p.id === property.custodianId);
+        const player = state.players.find((p) => p.id === property.custodianId)
         if (player != null) {
-          const newRubles: number = (player.rubles as number) + mortgageValue;
-          get().updatePlayer(player.id, { rubles: newRubles });
+          const newRubles: number = (player.rubles) + mortgageValue
+          get().updatePlayer(player.id, { rubles: newRubles })
         }
 
         // Mark as mortgaged
@@ -659,19 +659,19 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'property',
-          message: `${(player?.name ?? 'Player') as string} mortgaged ${space?.name ?? 'Unknown'} for ₽${mortgageValue as number}`,
-          playerId: property.custodianId ?? '',
-        });
+          message: `${(player?.name ?? 'Player')} mortgaged ${space?.name ?? 'Unknown'} for ₽${mortgageValue}`,
+          playerId: property.custodianId ?? ''
+        })
       },
 
       unmortgageProperty: (spaceId, playerId) => {
-        const state = get();
-        const property = state.properties.find((p) => p.spaceId === spaceId);
-        const player = state.players.find((p) => p.id === playerId);
-        if (property == null || player == null) return;
+        const state = get()
+        const property = state.properties.find((p) => p.spaceId === spaceId)
+        const player = state.players.find((p) => p.id === playerId)
+        if (property == null || player == null) return
 
-        const space = getSpaceById(spaceId);
-        const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6);
+        const space = getSpaceById(spaceId)
+        const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6)
 
         if (player.rubles < unmortgageCost) return
 
@@ -687,89 +687,89 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'property',
-          message: `${(player.name ?? 'Player') as string} unmortgaged ${space?.name ?? 'Unknown'} for ₽${unmortgageCost as number}`,
-          playerId,
-        });
+          message: `${(player.name ?? 'Player')} unmortgaged ${space?.name ?? 'Unknown'} for ₽${unmortgageCost}`,
+          playerId
+        })
       },
 
       // Pending actions
       setPendingAction: (action) => {
-        set({ pendingAction: action });
+        set({ pendingAction: action })
       },
 
       // New Gulag system functions
       handleGulagTurn: (playerId) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null || player.inGulag === false) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null || !player.inGulag) return
 
         // Increment turn counter
-        const newGulagTurns: number = (player.gulagTurns as number) + 1;
-        get().updatePlayer(playerId, { gulagTurns: newGulagTurns });
+        const newGulagTurns: number = (player.gulagTurns) + 1
+        get().updatePlayer(playerId, { gulagTurns: newGulagTurns })
 
         get().addLogEntry({
           type: 'gulag',
-          message: `${(player.name ?? 'Player') as string} begins turn ${newGulagTurns as number} in the Gulag`,
-          playerId,
-        });
+          message: `${(player.name ?? 'Player')} begins turn ${newGulagTurns} in the Gulag`,
+          playerId
+        })
 
         // Check for 10-turn elimination
-        get().checkFor10TurnElimination(playerId);
+        get().checkFor10TurnElimination(playerId)
 
         // Show Gulag escape options if not eliminated
-        const updatedPlayer = state.players.find((p) => p.id === playerId);
-        if (updatedPlayer != null && updatedPlayer.isEliminated === false) {
-          set({ pendingAction: { type: 'gulag-escape-choice', data: { playerId } } });
+        const updatedPlayer = state.players.find((p) => p.id === playerId)
+        if (updatedPlayer != null && !updatedPlayer.isEliminated) {
+          set({ pendingAction: { type: 'gulag-escape-choice', data: { playerId } } })
         }
       },
 
       checkFor10TurnElimination: (playerId) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null || player.inGulag === false) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null || !player.inGulag) return
 
         if (player.gulagTurns >= 10) {
-          get().eliminatePlayer(playerId, 'Died in Gulag after 10 turns');
+          get().eliminatePlayer(playerId, 'Died in Gulag after 10 turns')
         }
       },
 
       attemptGulagEscape: (playerId, method) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null || player.inGulag === false) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null || !player.inGulag) return
 
         switch (method) {
           case 'roll': {
             // This will be handled by the modal - check if doubles match requirements
-            const requiredDoubles = getRequiredDoublesForEscape(player.gulagTurns);
-            const dice = state.dice;
+            const requiredDoubles = getRequiredDoublesForEscape(player.gulagTurns)
+            const dice = state.dice
 
             if (dice[0] === dice[1] && requiredDoubles.includes(dice[0])) {
               // Success! Escape the Gulag
               get().updatePlayer(playerId, {
                 inGulag: false,
-                gulagTurns: 0,
-              });
+                gulagTurns: 0
+              })
 
-              const diceValue: number = dice[0];
+              const diceValue: number = dice[0]
               get().addLogEntry({
                 type: 'gulag',
-                message: `${(player.name ?? 'Player') as string} rolled double ${diceValue as number}s and escaped the Gulag!`,
-                playerId,
-              });
+                message: `${(player.name ?? 'Player')} rolled double ${diceValue}s and escaped the Gulag!`,
+                playerId
+              })
 
-              set({ turnPhase: 'post-turn', pendingAction: null });
+              set({ turnPhase: 'post-turn', pendingAction: null })
             } else {
               // Failed escape
               get().addLogEntry({
                 type: 'gulag',
-                message: `${(player.name ?? 'Player') as string} failed to escape the Gulag`,
-                playerId,
-              });
+                message: `${(player.name ?? 'Player')} failed to escape the Gulag`,
+                playerId
+              })
 
-              set({ turnPhase: 'post-turn', pendingAction: null });
+              set({ turnPhase: 'post-turn', pendingAction: null })
             }
-            break;
+            break
           }
 
           case 'pay': {
@@ -778,212 +778,212 @@ export const useGameStore = create<GameStore>()(
               get().updatePlayer(playerId, {
                 rubles: player.rubles - 500,
                 inGulag: false,
-                gulagTurns: 0,
-              });
+                gulagTurns: 0
+              })
 
-              get().adjustTreasury(500);
-              get().demotePlayer(playerId);
+              get().adjustTreasury(500)
+              get().demotePlayer(playerId)
 
               get().addLogEntry({
                 type: 'gulag',
-                message: `${(player.name ?? 'Player') as string} paid ₽500 for rehabilitation and was released (with demotion)`,
-                playerId,
-              });
+                message: `${(player.name ?? 'Player')} paid ₽500 for rehabilitation and was released (with demotion)`,
+                playerId
+              })
 
-              set({ turnPhase: 'post-turn', pendingAction: null });
+              set({ turnPhase: 'post-turn', pendingAction: null })
             }
-            break;
+            break
           }
 
           case 'vouch': {
             // Set up voucher request
-            set({ pendingAction: { type: 'voucher-request', data: { prisonerId: playerId } } });
-            break;
+            set({ pendingAction: { type: 'voucher-request', data: { prisonerId: playerId } } })
+            break
           }
 
           case 'inform': {
             // Set up inform modal
-            set({ pendingAction: { type: 'inform-on-player', data: { informerId: playerId } } });
-            break;
+            set({ pendingAction: { type: 'inform-on-player', data: { informerId: playerId } } })
+            break
           }
 
           case 'bribe': {
             // Set up bribe modal
-            set({ pendingAction: { type: 'bribe-stalin', data: { playerId, reason: 'gulag-escape' } } });
-            break;
+            set({ pendingAction: { type: 'bribe-stalin', data: { playerId, reason: 'gulag-escape' } } })
+            break
           }
         }
       },
 
       createVoucher: (prisonerId, voucherId) => {
-        const state = get();
+        const state = get()
         const voucher: VoucherAgreement = {
           id: `voucher-${Date.now()}`,
           prisonerId,
           voucherId,
           expiresAtRound: state.roundNumber + 3,
-          isActive: true,
-        };
+          isActive: true
+        }
 
-        const prisoner = state.players.find((p) => p.id === prisonerId);
-        const voucherPlayer = state.players.find((p) => p.id === voucherId);
+        const prisoner = state.players.find((p) => p.id === prisonerId)
+        const voucherPlayer = state.players.find((p) => p.id === voucherId)
 
-        if (prisoner == null || voucherPlayer == null) return;
+        if (prisoner == null || voucherPlayer == null) return
 
         // Release prisoner immediately
         get().updatePlayer(prisonerId, {
           inGulag: false,
-          gulagTurns: 0,
-        });
+          gulagTurns: 0
+        })
 
         // Update voucher's state
         get().updatePlayer(voucherId, {
           vouchingFor: prisonerId,
-          vouchedByRound: voucher.expiresAtRound,
-        });
+          vouchedByRound: voucher.expiresAtRound
+        })
 
         set((state) => ({
           activeVouchers: [...state.activeVouchers, voucher],
-          pendingAction: null,
-        }));
+          pendingAction: null
+        }))
 
-        const voucherName = (voucherPlayer.name ?? 'Player') as string;
-        const prisonerName = (prisoner.name ?? 'Prisoner') as string;
+        const voucherName = (voucherPlayer.name ?? 'Player')
+        const prisonerName = (prisoner.name ?? 'Prisoner')
         get().addLogEntry({
           type: 'gulag',
-          message: `${voucherName} vouched for ${prisonerName}'s release. WARNING: If ${prisonerName} commits ANY offense in the next 3 rounds, ${voucherName} goes to Gulag too!`,
-        });
+          message: `${voucherName} vouched for ${prisonerName}'s release. WARNING: If ${prisonerName} commits ANY offence in the next 3 rounds, ${voucherName} goes to Gulag too!`
+        })
 
-        set({ turnPhase: 'post-turn' });
+        set({ turnPhase: 'post-turn' })
       },
 
       checkVoucherConsequences: (playerId, reason) => {
-        const state = get();
+        const state = get()
 
         // Find active voucher where this player is the prisoner
         const activeVoucher = state.activeVouchers.find(
-          (v) => v.prisonerId === playerId && v.isActive === true && state.roundNumber <= v.expiresAtRound
-        );
+          (v) => v.prisonerId === playerId && v.isActive && state.roundNumber <= v.expiresAtRound
+        )
 
-        if (activeVoucher != null && shouldTriggerVoucherConsequence(reason) === true) {
-          const voucherPlayer = state.players.find((p) => p.id === activeVoucher.voucherId);
-          const player = state.players.find((p) => p.id === playerId);
+        if (activeVoucher != null && shouldTriggerVoucherConsequence(reason)) {
+          const voucherPlayer = state.players.find((p) => p.id === activeVoucher.voucherId)
+          const player = state.players.find((p) => p.id === playerId)
 
           if (voucherPlayer != null && player != null) {
             // Voucher must also go to Gulag!
-            get().sendToGulag(activeVoucher.voucherId, 'voucherConsequence');
+            get().sendToGulag(activeVoucher.voucherId, 'voucherConsequence')
 
             // Deactivate voucher
             set((state) => ({
               activeVouchers: state.activeVouchers.map((v) =>
                 v.id === activeVoucher.id ? { ...v, isActive: false } : v
-              ),
-            }));
+              )
+            }))
 
             get().addLogEntry({
               type: 'gulag',
-              message: `${(voucherPlayer.name ?? 'Player') as string} sent to Gulag due to ${(player.name ?? 'Player') as string}'s offense within voucher period!`,
-            });
+              message: `${(voucherPlayer.name ?? 'Player')} sent to Gulag due to ${(player.name ?? 'Player')}'s offence within voucher period!`
+            })
           }
         }
       },
 
       expireVouchers: () => {
-        const state = get();
+        const state = get()
         const expiredVouchers = state.activeVouchers.filter(
-          (v) => v.isActive === true && state.roundNumber > v.expiresAtRound
-        );
+          (v) => v.isActive && state.roundNumber > v.expiresAtRound
+        )
 
         expiredVouchers.forEach((voucher) => {
-          const voucherPlayer = state.players.find((p) => p.id === voucher.voucherId);
+          const voucherPlayer = state.players.find((p) => p.id === voucher.voucherId)
           if (voucherPlayer != null) {
             get().updatePlayer(voucher.voucherId, {
               vouchingFor: null,
-              vouchedByRound: null,
-            });
+              vouchedByRound: null
+            })
           }
-        });
+        })
 
-        if ((expiredVouchers.length as number) > 0) {
+        if ((expiredVouchers.length) > 0) {
           set((state) => ({
             activeVouchers: state.activeVouchers.map((v) =>
               expiredVouchers.some((ev) => ev.id === v.id) ? { ...v, isActive: false } : v
-            ),
-          }));
+            )
+          }))
         }
       },
 
       submitBribe: (playerId, amount, reason) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null || player.rubles < amount) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null || player.rubles < amount) return
 
         const bribe: BribeRequest = {
           id: `bribe-${Date.now()}`,
           playerId,
           amount,
           reason,
-          timestamp: new Date(),
-        };
+          timestamp: new Date()
+        }
 
         set((state) => ({
-          pendingBribes: [...state.pendingBribes, bribe],
-        }));
+          pendingBribes: [...state.pendingBribes, bribe]
+        }))
 
         get().addLogEntry({
           type: 'system',
-          message: `${(player.name ?? 'Player') as string} has submitted a bribe of ₽${amount as number} to Stalin`,
-          playerId,
-        });
+          message: `${(player.name ?? 'Player')} has submitted a bribe of ₽${amount} to Stalin`,
+          playerId
+        })
       },
 
       respondToBribe: (bribeId, accepted) => {
-        const state = get();
-        const bribe = state.pendingBribes.find((b) => b.id === bribeId);
-        if (bribe == null) return;
+        const state = get()
+        const bribe = state.pendingBribes.find((b) => b.id === bribeId)
+        if (bribe == null) return
 
-        const player = state.players.find((p) => p.id === bribe.playerId);
-        if (player == null) return;
+        const player = state.players.find((p) => p.id === bribe.playerId)
+        if (player == null) return
 
         // Always take the money
-        get().updatePlayer(bribe.playerId, { rubles: player.rubles - bribe.amount });
-        get().adjustTreasury(bribe.amount);
+        get().updatePlayer(bribe.playerId, { rubles: player.rubles - bribe.amount })
+        get().adjustTreasury(bribe.amount)
 
-        if (accepted === true) {
+        if (accepted) {
           // Release from Gulag or grant favor
-          if (bribe.reason === 'gulag-escape' && player.inGulag === true) {
+          if (bribe.reason === 'gulag-escape' && player.inGulag) {
             get().updatePlayer(bribe.playerId, {
               inGulag: false,
-              gulagTurns: 0,
-            });
+              gulagTurns: 0
+            })
 
             get().addLogEntry({
               type: 'gulag',
-              message: `Stalin accepted ${(player.name ?? 'Player') as string}'s bribe of ₽${bribe.amount as number} and released them from the Gulag`,
-              playerId: bribe.playerId,
-            });
+              message: `Stalin accepted ${(player.name ?? 'Player')}'s bribe of ₽${bribe.amount} and released them from the Gulag`,
+              playerId: bribe.playerId
+            })
 
-            set({ turnPhase: 'post-turn', pendingAction: null });
+            set({ turnPhase: 'post-turn', pendingAction: null })
           }
         } else {
           // Rejected - money confiscated anyway
           get().addLogEntry({
             type: 'payment',
-            message: `Stalin rejected ${(player.name ?? 'Player') as string}'s bribe of ₽${bribe.amount as number} and confiscated it as contraband`,
-            playerId: bribe.playerId,
-          });
+            message: `Stalin rejected ${(player.name ?? 'Player')}'s bribe of ₽${bribe.amount} and confiscated it as contraband`,
+            playerId: bribe.playerId
+          })
         }
 
         // Remove bribe from pending
         set((state) => ({
-          pendingBribes: state.pendingBribes.filter((b) => b.id !== bribeId),
-        }));
+          pendingBribes: state.pendingBribes.filter((b) => b.id !== bribeId)
+        }))
       },
 
       createDebt: (debtorId, creditorId, amount, reason) => {
-        const state = get();
-        const debtor = state.players.find((p) => p.id === debtorId);
-        if (debtor == null) return;
+        const state = get()
+        const debtor = state.players.find((p) => p.id === debtorId)
+        if (debtor == null) return
 
         const debt = {
           id: `debt-${Date.now()}`,
@@ -991,88 +991,88 @@ export const useGameStore = create<GameStore>()(
           creditorId,
           amount,
           createdAtRound: state.roundNumber,
-          reason,
-        };
+          reason
+        }
 
         get().updatePlayer(debtorId, {
           debt,
-          debtCreatedAtRound: state.roundNumber,
-        });
+          debtCreatedAtRound: state.roundNumber
+        })
 
-        const creditorName = creditorId === 'state' ? 'the State' : state.players.find((p) => p.id === creditorId)?.name ?? 'Unknown';
+        const creditorName = creditorId === 'state' ? 'the State' : state.players.find((p) => p.id === creditorId)?.name ?? 'Unknown'
         get().addLogEntry({
           type: 'payment',
-          message: `${(debtor.name ?? 'Player') as string} owes ₽${amount as number} to ${creditorName as string} - ${reason as string}. Must pay within one round or face Gulag!`,
-          playerId: debtorId,
-        });
+          message: `${(debtor.name ?? 'Player')} owes ₽${amount} to ${creditorName} - ${reason}. Must pay within one round or face Gulag!`,
+          playerId: debtorId
+        })
       },
 
       checkDebtStatus: () => {
-        const state = get();
+        const state = get()
 
         state.players.forEach((player) => {
           if (player.debt != null && player.debtCreatedAtRound !== null) {
             // Check if one full round has passed
-            if ((state.roundNumber as number) > (player.debtCreatedAtRound as number) + 1) {
+            if ((state.roundNumber) > (player.debtCreatedAtRound) + 1) {
               // Debt default! Send to Gulag
-              get().sendToGulag(player.id, 'debtDefault');
+              get().sendToGulag(player.id, 'debtDefault')
 
               // Clear debt
               get().updatePlayer(player.id, {
                 debt: null,
-                debtCreatedAtRound: null,
-              });
+                debtCreatedAtRound: null
+              })
             }
           }
-        });
+        })
       },
 
       eliminatePlayer: (playerId, reason) => {
-        const state = get();
-        const player = state.players.find((p) => p.id === playerId);
-        if (player == null) return;
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
 
         get().updatePlayer(playerId, {
           isEliminated: true,
-          inGulag: false,  // Remove from Gulag if there
-        });
+          inGulag: false // Remove from Gulag if there
+        })
 
         // Return all properties to State
         player.properties.forEach((propId) => {
-          get().setPropertyCustodian(parseInt(propId), null);
-        });
+          get().setPropertyCustodian(parseInt(propId), null)
+        })
 
-        get().updatePlayer(playerId, { properties: [] });
+        get().updatePlayer(playerId, { properties: [] })
 
         get().addLogEntry({
           type: 'gulag',
-          message: `${(player.name ?? 'Player') as string} has been eliminated: ${reason as string}. They are now a Ghost of the Revolution.`,
-          playerId,
-        });
+          message: `${(player.name ?? 'Player')} has been eliminated: ${reason}. They are now a Ghost of the Revolution.`,
+          playerId
+        })
 
         // Check if game should end
-        const remainingPlayers = state.players.filter((p) => p.isStalin === false && p.isEliminated === false);
+        const remainingPlayers = state.players.filter((p) => !p.isStalin && !p.isEliminated)
         if (remainingPlayers.length <= 1) {
-          set({ gamePhase: 'ended' });
+          set({ gamePhase: 'ended' })
         }
       },
 
       incrementRound: () => {
-        const state = get();
-        const newRound: number = (state.roundNumber as number) + 1;
-        set({ roundNumber: newRound });
+        const state = get()
+        const newRound: number = (state.roundNumber) + 1
+        set({ roundNumber: newRound })
 
         // Expire vouchers
-        get().expireVouchers();
+        get().expireVouchers()
 
         // Check debt status
-        get().checkDebtStatus();
+        get().checkDebtStatus()
 
         get().addLogEntry({
           type: 'system',
-          message: `Round ${newRound as number} begins`,
-        });
-      },
+          message: `Round ${newRound} begins`
+        })
+      }
     }),
     {
       name: 'communistopoly-save',
@@ -1090,8 +1090,8 @@ export const useGameStore = create<GameStore>()(
         dice: state.dice,
         gameLog: state.gameLog,
         activeVouchers: state.activeVouchers,
-        pendingBribes: state.pendingBribes,
-      }),
+        pendingBribes: state.pendingBribes
+      })
     }
   )
 )

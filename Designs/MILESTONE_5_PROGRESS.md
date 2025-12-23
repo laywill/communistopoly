@@ -104,8 +104,8 @@
 5. ✅ Pilfering Caught (STOY roll 1-3)
 6. ✅ Stalin Decree (with justification)
 7. ✅ Railway Capture (pending railway special power)
-8. ✅ Camp Labor (pending Siberian camp special power)
-9. ✅ Voucher Consequence (vouchee offense triggers)
+8. ✅ Camp Labour (pending Siberian camp special power)
+9. ✅ Voucher Consequence (vouchee offence triggers)
 
 #### Escape Methods (5 total)
 1. ✅ Roll for Escape - Doubles requirement decreases each turn
@@ -123,7 +123,7 @@
 - ✅ 3-round active period
 - ✅ Tracks prisonerId, voucherId, expiration
 - ✅ Auto-expires after round limit
-- ✅ Triggers consequence on Gulag-worthy offenses
+- ✅ Triggers consequence on Gulag-worthy offences
 - ✅ Deactivates after consequence triggered
 
 #### Debt System

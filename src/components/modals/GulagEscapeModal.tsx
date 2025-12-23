@@ -128,7 +128,7 @@ export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) 
               🤝 REQUEST VOUCHER from another player
             </button>
             <p style={{ fontSize: '12px', color: 'var(--color-gulag-grey)', marginTop: '4px' }}>
-              Warning: If you commit ANY offense in next 3 rounds, your voucher goes to Gulag too!
+              Warning: If you commit ANY offence in next 3 rounds, your voucher goes to Gulag too!
             </p>
           </div>
 
