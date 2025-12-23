@@ -74,6 +74,7 @@ interface GameActions {
 
   // Turn management
   rollDice: () => void
+  rollVodka3Dice: () => void
   finishRolling: () => void
   movePlayer: (playerId: string, spaces: number) => void
   finishMoving: () => void
@@ -307,6 +308,37 @@ export const useGameStore = create<GameStore>()(
         get().addLogEntry({
           type: 'dice',
           message: `Rolled ${String(die1)} + ${String(die2)} = ${String(die1 + die2)}`,
+          playerId: currentPlayer.id
+        })
+      },
+
+      // VODKA BOTTLE ABILITY: Roll 3 dice, use best 2
+      rollVodka3Dice: () => {
+        const die1 = Math.floor(Math.random() * 6) + 1
+        const die2 = Math.floor(Math.random() * 6) + 1
+        const die3 = Math.floor(Math.random() * 6) + 1
+
+        // Find best 2 dice (highest sum)
+        const allDice = [die1, die2, die3].sort((a, b) => b - a)
+        const bestTwo: [number, number] = [allDice[0], allDice[1]]
+
+        set({
+          dice: bestTwo,
+          isRolling: true,
+          hasRolled: true,
+          turnPhase: 'rolling'
+        })
+
+        const currentPlayer = get().players[get().currentPlayerIndex]
+
+        // Increment vodka use count
+        get().updatePlayer(currentPlayer.id, {
+          vodkaUseCount: currentPlayer.vodkaUseCount + 1
+        })
+
+        get().addLogEntry({
+          type: 'dice',
+          message: `${currentPlayer.name} drank and rolled 3 dice: ${die1}, ${die2}, ${die3}. Using best 2: ${bestTwo[0]} + ${bestTwo[1]} = ${bestTwo[0] + bestTwo[1]}`,
           playerId: currentPlayer.id
         })
       },
