@@ -292,7 +292,7 @@ export const useGameStore = create<GameStore>()(
         const player = state.players.find((p) => p.id === playerId)
         if (player == null) return
 
-        const oldPosition = player.position
+        const oldPosition: number = player.position
         const newPosition = (oldPosition + spaces) % 40
 
         // Check if player passed STOY (position 0)
@@ -305,7 +305,7 @@ export const useGameStore = create<GameStore>()(
         const toSpace = getSpaceById(newPosition)
         get().addLogEntry({
           type: 'movement',
-          message: `${player.name} moved from ${fromSpace?.name ?? 'Unknown'} to ${toSpace?.name ?? 'Unknown'}`,
+          message: `${String(player.name)} moved from ${String(fromSpace?.name ?? 'Unknown')} to ${String(toSpace?.name ?? 'Unknown')}`,
           playerId
         })
 
@@ -334,7 +334,7 @@ export const useGameStore = create<GameStore>()(
               // The Gulag - just visiting
               get().addLogEntry({
                 type: 'movement',
-                message: `${(currentPlayer.name ?? 'Player')} is just visiting the Gulag`,
+                message: `${String(currentPlayer.name ?? 'Player')} is just visiting the Gulag`,
                 playerId: currentPlayer.id
               })
               set({ turnPhase: 'post-turn' })
@@ -342,7 +342,7 @@ export const useGameStore = create<GameStore>()(
               // Breadline - placeholder for now
               get().addLogEntry({
                 type: 'system',
-                message: `${(currentPlayer.name ?? 'Player')} landed on Breadline (implementation coming in later milestone)`,
+                message: `${String(currentPlayer.name ?? 'Player')} landed on Breadline (implementation coming in later milestone)`,
                 playerId: currentPlayer.id
               })
               set({ turnPhase: 'post-turn' })
@@ -399,7 +399,7 @@ export const useGameStore = create<GameStore>()(
               // Player owns this property - just visiting
               get().addLogEntry({
                 type: 'system',
-                message: `${(currentPlayer.name ?? 'Player')} landed on their own property: ${(space.name ?? 'Unknown')}`,
+                message: `${String(currentPlayer.name ?? 'Player')} landed on their own property: ${String(space.name ?? 'Unknown')}`,
                 playerId: currentPlayer.id
               })
               set({ turnPhase: 'post-turn' })
@@ -420,7 +420,7 @@ export const useGameStore = create<GameStore>()(
             // Placeholder for future milestones
             get().addLogEntry({
               type: 'system',
-              message: `${(currentPlayer.name ?? 'Player')} landed on ${(space.name ?? 'Unknown')} (implementation coming in later milestone)`,
+              message: `${String(currentPlayer.name ?? 'Player')} landed on ${String(space.name ?? 'Unknown')} (implementation coming in later milestone)`,
               playerId: currentPlayer.id
             })
             set({ turnPhase: 'post-turn' })
@@ -438,7 +438,7 @@ export const useGameStore = create<GameStore>()(
         const { currentPlayerIndex, players, doublesCount } = state
 
         // If player rolled doubles and not in gulag, they get another turn
-        if (doublesCount > 0 && !players[currentPlayerIndex].inGulag) {
+        if ((doublesCount) > 0 && !players[currentPlayerIndex]?.inGulag) {
           set({
             turnPhase: 'pre-roll',
             hasRolled: false,
@@ -452,8 +452,8 @@ export const useGameStore = create<GameStore>()(
         let attempts: number = 0
 
         while (
-          (players[nextIndex].isStalin || players[nextIndex].isEliminated) &&
-          attempts < players.length
+          (Boolean(players[nextIndex]?.isStalin) || Boolean(players[nextIndex]?.isEliminated)) &&
+          (attempts) < players.length
         ) {
           nextIndex = (nextIndex + 1) % players.length
           attempts++
@@ -477,7 +477,7 @@ export const useGameStore = create<GameStore>()(
         const nextPlayer = players[nextIndex]
         get().addLogEntry({
           type: 'system',
-          message: `${(nextPlayer?.name ?? 'Player')}'s turn`,
+          message: `${String(nextPlayer?.name ?? 'Player')}'s turn`,
           playerId: nextPlayer?.id ?? ''
         })
       },
@@ -501,7 +501,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'gulag',
-          message: `${(player.name ?? 'Player')} sent to Gulag: ${reasonText ?? 'Unknown reason'}`,
+          message: `${String(player.name ?? 'Player')} sent to Gulag: ${String(reasonText ?? 'Unknown reason')}`,
           playerId
         })
 
@@ -525,7 +525,7 @@ export const useGameStore = create<GameStore>()(
           get().updatePlayer(playerId, { rank: newRank })
           get().addLogEntry({
             type: 'rank',
-            message: `${(player.name ?? 'Player')} demoted to ${newRank ?? 'unknown rank'}`,
+            message: `${String(player.name ?? 'Player')} demoted to ${String(newRank ?? 'unknown rank')}`,
             playerId
           })
         }
@@ -543,7 +543,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'payment',
-          message: `${(player.name ?? 'Player')} paid ₽200 travel tax at STOY`,
+          message: `${String(player.name ?? 'Player')} paid ₽200 travel tax at STOY`,
           playerId
         })
       },
@@ -561,7 +561,7 @@ export const useGameStore = create<GameStore>()(
 
           get().addLogEntry({
             type: 'payment',
-            message: `${(player.name ?? 'Player')} successfully pilfered ₽100 from the State Treasury!`,
+            message: `${String(player.name ?? 'Player')} successfully pilfered ₽100 from the State Treasury!`,
             playerId
           })
         } else {
@@ -613,7 +613,7 @@ export const useGameStore = create<GameStore>()(
         const space = getSpaceById(spaceId)
         get().addLogEntry({
           type: 'property',
-          message: `${(player.name ?? 'Player')} became Custodian of ${space?.name ?? 'Unknown'} for ₽${price}`,
+          message: `${String(player.name ?? 'Player')} became Custodian of ${String(space?.name ?? 'Unknown')} for ₽${String(price)}`,
           playerId
         })
       },
@@ -630,7 +630,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'payment',
-          message: `${(payer.name ?? 'Player')} paid ₽${amount} quota to ${(custodian.name ?? 'Player')}`,
+          message: `${String(payer.name ?? 'Player')} paid ₽${String(amount)} quota to ${String(custodian.name ?? 'Player')}`,
           playerId: payerId
         })
       },
@@ -659,7 +659,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'property',
-          message: `${(player?.name ?? 'Player')} mortgaged ${space?.name ?? 'Unknown'} for ₽${mortgageValue}`,
+          message: `${String(player?.name ?? 'Player')} mortgaged ${String(space?.name ?? 'Unknown')} for ₽${String(mortgageValue)}`,
           playerId: property.custodianId ?? ''
         })
       },
@@ -687,7 +687,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'property',
-          message: `${(player.name ?? 'Player')} unmortgaged ${space?.name ?? 'Unknown'} for ₽${unmortgageCost}`,
+          message: `${String(player.name ?? 'Player')} unmortgaged ${String(space?.name ?? 'Unknown')} for ₽${String(unmortgageCost)}`,
           playerId
         })
       },
@@ -709,7 +709,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'gulag',
-          message: `${(player.name ?? 'Player')} begins turn ${newGulagTurns} in the Gulag`,
+          message: `${String(player.name ?? 'Player')} begins turn ${String(newGulagTurns)} in the Gulag`,
           playerId
         })
 
@@ -754,7 +754,7 @@ export const useGameStore = create<GameStore>()(
               const diceValue: number = dice[0]
               get().addLogEntry({
                 type: 'gulag',
-                message: `${(player.name ?? 'Player')} rolled double ${diceValue}s and escaped the Gulag!`,
+                message: `${String(player.name ?? 'Player')} rolled double ${String(diceValue)}s and escaped the Gulag!`,
                 playerId
               })
 
@@ -763,7 +763,7 @@ export const useGameStore = create<GameStore>()(
               // Failed escape
               get().addLogEntry({
                 type: 'gulag',
-                message: `${(player.name ?? 'Player')} failed to escape the Gulag`,
+                message: `${String(player.name ?? 'Player')} failed to escape the Gulag`,
                 playerId
               })
 
@@ -786,7 +786,7 @@ export const useGameStore = create<GameStore>()(
 
               get().addLogEntry({
                 type: 'gulag',
-                message: `${(player.name ?? 'Player')} paid ₽500 for rehabilitation and was released (with demotion)`,
+                message: `${String(player.name ?? 'Player')} paid ₽500 for rehabilitation and was released (with demotion)`,
                 playerId
               })
 
@@ -821,7 +821,7 @@ export const useGameStore = create<GameStore>()(
           id: `voucher-${Date.now()}`,
           prisonerId,
           voucherId,
-          expiresAtRound: state.roundNumber + 3,
+          expiresAtRound: (state.roundNumber) + 3,
           isActive: true
         }
 
@@ -847,8 +847,8 @@ export const useGameStore = create<GameStore>()(
           pendingAction: null
         }))
 
-        const voucherName = (voucherPlayer.name ?? 'Player')
-        const prisonerName = (prisoner.name ?? 'Prisoner')
+        const voucherName = String(voucherPlayer.name ?? 'Player')
+        const prisonerName = String(prisoner.name ?? 'Prisoner')
         get().addLogEntry({
           type: 'gulag',
           message: `${voucherName} vouched for ${prisonerName}'s release. WARNING: If ${prisonerName} commits ANY offence in the next 3 rounds, ${voucherName} goes to Gulag too!`
@@ -862,7 +862,7 @@ export const useGameStore = create<GameStore>()(
 
         // Find active voucher where this player is the prisoner
         const activeVoucher = state.activeVouchers.find(
-          (v) => v.prisonerId === playerId && v.isActive && state.roundNumber <= v.expiresAtRound
+          (v) => v.prisonerId === playerId && Boolean(v.isActive) && state.roundNumber <= v.expiresAtRound
         )
 
         if (activeVoucher != null && shouldTriggerVoucherConsequence(reason)) {
@@ -882,7 +882,7 @@ export const useGameStore = create<GameStore>()(
 
             get().addLogEntry({
               type: 'gulag',
-              message: `${(voucherPlayer.name ?? 'Player')} sent to Gulag due to ${(player.name ?? 'Player')}'s offence within voucher period!`
+              message: `${String(voucherPlayer.name ?? 'Player')} sent to Gulag due to ${String(player.name ?? 'Player')}'s offence within voucher period!`
             })
           }
         }
@@ -891,7 +891,7 @@ export const useGameStore = create<GameStore>()(
       expireVouchers: () => {
         const state = get()
         const expiredVouchers = state.activeVouchers.filter(
-          (v) => v.isActive && state.roundNumber > v.expiresAtRound
+          (v) => Boolean(v.isActive) && state.roundNumber > v.expiresAtRound
         )
 
         expiredVouchers.forEach((voucher) => {
@@ -932,7 +932,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'system',
-          message: `${(player.name ?? 'Player')} has submitted a bribe of ₽${amount} to Stalin`,
+          message: `${String(player.name ?? 'Player')} has submitted a bribe of ₽${String(amount)} to Stalin`,
           playerId
         })
       },
@@ -951,7 +951,7 @@ export const useGameStore = create<GameStore>()(
 
         if (accepted) {
           // Release from Gulag or grant favor
-          if (bribe.reason === 'gulag-escape' && player.inGulag) {
+          if (bribe.reason === 'gulag-escape' && Boolean(player.inGulag)) {
             get().updatePlayer(bribe.playerId, {
               inGulag: false,
               gulagTurns: 0
@@ -959,7 +959,7 @@ export const useGameStore = create<GameStore>()(
 
             get().addLogEntry({
               type: 'gulag',
-              message: `Stalin accepted ${(player.name ?? 'Player')}'s bribe of ₽${bribe.amount} and released them from the Gulag`,
+              message: `Stalin accepted ${String(player.name ?? 'Player')}'s bribe of ₽${String(bribe.amount)} and released them from the Gulag`,
               playerId: bribe.playerId
             })
 
@@ -969,7 +969,7 @@ export const useGameStore = create<GameStore>()(
           // Rejected - money confiscated anyway
           get().addLogEntry({
             type: 'payment',
-            message: `Stalin rejected ${(player.name ?? 'Player')}'s bribe of ₽${bribe.amount} and confiscated it as contraband`,
+            message: `Stalin rejected ${String(player.name ?? 'Player')}'s bribe of ₽${String(bribe.amount)} and confiscated it as contraband`,
             playerId: bribe.playerId
           })
         }
@@ -999,10 +999,10 @@ export const useGameStore = create<GameStore>()(
           debtCreatedAtRound: state.roundNumber
         })
 
-        const creditorName = creditorId === 'state' ? 'the State' : state.players.find((p) => p.id === creditorId)?.name ?? 'Unknown'
+        const creditorName = creditorId === 'state' ? 'the State' : String(state.players.find((p) => p.id === creditorId)?.name ?? 'Unknown')
         get().addLogEntry({
           type: 'payment',
-          message: `${(debtor.name ?? 'Player')} owes ₽${amount} to ${creditorName} - ${reason}. Must pay within one round or face Gulag!`,
+          message: `${String(debtor.name ?? 'Player')} owes ₽${String(amount)} to ${creditorName} - ${String(reason)}. Must pay within one round or face Gulag!`,
           playerId: debtorId
         })
       },
@@ -1046,7 +1046,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'gulag',
-          message: `${(player.name ?? 'Player')} has been eliminated: ${reason}. They are now a Ghost of the Revolution.`,
+          message: `${String(player.name ?? 'Player')} has been eliminated: ${String(reason)}. They are now a Ghost of the Revolution.`,
           playerId
         })
 
