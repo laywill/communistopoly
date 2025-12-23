@@ -38,7 +38,7 @@ export default function GameScreen() {
       <header className="game-header">
         <div className="game-header-content">
           <h1 className="game-title">COMMUNISTOPOLY</h1>
-          <p className="game-tagline">"All players are equal, but some are more equal than others"</p>
+          <p className="game-tagline">&quot;All players are equal, but some are more equal than others&quot;</p>
         </div>
         <button className="menu-button" onClick={() => setShowExitConfirm(true)}>
           ☭ MENU
