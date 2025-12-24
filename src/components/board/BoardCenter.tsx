@@ -15,6 +15,7 @@ const BoardCenter = () => {
   const handleGulagTurn = useGameStore((state) => state.handleGulagTurn);
   const partyDirectiveDeck = useGameStore((state) => state.partyDirectiveDeck);
   const communistTestUsedQuestions = useGameStore((state) => state.communistTestUsedQuestions);
+  const setPendingAction = useGameStore((state) => state.setPendingAction);
 
   const currentPlayer = players[currentPlayerIndex];
   const [die1, die2] = dice;
@@ -32,7 +33,15 @@ const BoardCenter = () => {
 
   const handleRoll = () => {
     if (turnPhase === 'pre-roll' && !hasRolled && !currentPlayer.inGulag) {
-      rollDice();
+      // Check if player is Sickle - they must announce "For the Motherland!"
+      if (currentPlayer.piece === 'sickle') {
+        setPendingAction({
+          type: 'sickle-motherland-announcement',
+          data: { playerId: currentPlayer.id }
+        });
+      } else {
+        rollDice();
+      }
     }
   };
 

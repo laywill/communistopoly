@@ -71,6 +71,7 @@ interface GameActions {
   payQuota: (payerId: string, custodianId: string, amount: number) => void
   mortgageProperty: (spaceId: number) => void
   unmortgageProperty: (spaceId: number, playerId: string) => void
+  transferProperty: (propertyId: string, newCustodianId: string) => void
 
   // Turn management
   rollDice: () => void
@@ -209,7 +210,8 @@ export const useGameStore = create<GameStore>()(
           hasUsedIronCurtainDisappear: false,
           hasFreeFromGulagCard: false,
           vodkaUseCount: 0,
-          ironCurtainClaimedRubles: 1500 // Start with initial amount claimed
+          ironCurtainClaimedRubles: 1500, // Start with initial amount claimed
+          owesFavourTo: []
         }))
 
         const stalinPlayer = players.find(p => p.isStalin)
@@ -427,13 +429,18 @@ export const useGameStore = create<GameStore>()(
               })
               set({ turnPhase: 'post-turn' })
             } else if (space.id === 20) {
-              // Breadline - placeholder for now
+              // Breadline - all players must contribute
               get().addLogEntry({
                 type: 'system',
-                message: `${currentPlayer.name} landed on Breadline (implementation coming in later milestone)`,
+                message: `${currentPlayer.name} landed on Breadline - all comrades must contribute!`,
                 playerId: currentPlayer.id
               })
-              set({ turnPhase: 'post-turn' })
+              set({
+                pendingAction: {
+                  type: 'breadline-contribution',
+                  data: { landingPlayerId: currentPlayer.id }
+                }
+              })
             } else if (space.id === 30) {
               // Enemy of the State - go to Gulag
               get().sendToGulag(currentPlayer.id, 'enemyOfState')
@@ -908,6 +915,34 @@ export const useGameStore = create<GameStore>()(
           message: `${player.name} unmortgaged ${space?.name ?? 'Unknown'} for ₽${String(unmortgageCost)}`,
           playerId
         })
+      },
+
+      transferProperty: (propertyId, newCustodianId) => {
+        const state = get()
+        const spaceId = parseInt(propertyId)
+        const property = state.properties.find((p) => p.spaceId === spaceId)
+        if (property == null) return
+
+        const oldCustodianId = property.custodianId
+
+        // Update property custodian
+        get().setPropertyCustodian(spaceId, newCustodianId)
+
+        // Remove from old owner's properties array
+        if (oldCustodianId != null) {
+          const oldOwner = state.players.find((p) => p.id === oldCustodianId)
+          if (oldOwner != null) {
+            const updatedProperties = oldOwner.properties.filter((id) => id !== propertyId)
+            get().updatePlayer(oldCustodianId, { properties: updatedProperties })
+          }
+        }
+
+        // Add to new owner's properties array
+        const newOwner = state.players.find((p) => p.id === newCustodianId)
+        if (newOwner != null) {
+          const updatedProperties = [...newOwner.properties, propertyId]
+          get().updatePlayer(newCustodianId, { properties: updatedProperties })
+        }
       },
 
       // Pending actions

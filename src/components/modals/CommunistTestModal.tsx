@@ -16,7 +16,6 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
 
   const [phase, setPhase] = useState<'setup' | 'question' | 'result'>('setup')
   const [selectedReaderId, setSelectedReaderId] = useState<string>(stalinPlayerId ?? '')
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('shown')
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
 
   const testedPlayer = players.find((p) => p.id === testedPlayerId)

@@ -10,6 +10,8 @@ import { VoucherRequestModal } from './VoucherRequestModal';
 import { BribeStalinModal } from './BribeStalinModal';
 import { InformOnPlayerModal } from './InformOnPlayerModal';
 import { LiquidationModal } from './LiquidationModal';
+import { BreadlineModal } from './BreadlineModal';
+import { SickleMotherlandModal } from './SickleMotherlandModal';
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -127,6 +129,28 @@ export function PendingActionHandler() {
             amountOwed={pendingAction.data.amountOwed as number}
             creditorId={pendingAction.data.creditorId as string}
             reason={pendingAction.data.reason as string}
+          />
+        );
+      }
+      return null;
+
+    case 'breadline-contribution':
+      if (pendingAction.data?.landingPlayerId) {
+        return (
+          <BreadlineModal
+            landingPlayerId={pendingAction.data.landingPlayerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'sickle-motherland-announcement':
+      if (pendingAction.data?.playerId) {
+        return (
+          <SickleMotherlandModal
+            playerId={pendingAction.data.playerId as string}
+            onClose={handleClose}
           />
         );
       }

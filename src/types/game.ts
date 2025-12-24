@@ -116,6 +116,7 @@ export interface Player {
   hasFreeFromGulagCard: boolean // Owns a "Get out of Gulag free" card
   vodkaUseCount: number // Vodka: Track sobriety level
   ironCurtainClaimedRubles: number // Iron Curtain: Last claimed amount (for audits)
+  owesFavourTo: string[] // Breadline: Player IDs they owe favours to
 }
 
 export interface Property {
@@ -181,6 +182,9 @@ export type PendingActionType =
   | 'iron-curtain-disappear'
   | 'lenin-speech'
   | 'vodka-roll'
+  | 'breadline-contribution'
+  | 'breadline-response'
+  | 'sickle-motherland-announcement'
 
 export interface PendingAction {
   type: PendingActionType
