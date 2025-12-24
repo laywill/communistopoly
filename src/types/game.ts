@@ -97,6 +97,12 @@ export interface Player {
   skipNextTurn: boolean // For Industrial Centers conscripted labour
   usedRailwayGulagPower: boolean // All four railways special power
 
+  // Property special abilities
+  hasUsedSiberianCampsGulag: boolean // Siberian Camps: Send to Gulag ability used
+  kgbTestPreviewsUsedThisRound: number // KGB Headquarters: Test previews used this round
+  hasUsedMinistryTruthRewrite: boolean // Ministry of Truth: Rewrite rule ability used
+  hasUsedPravdaPressRevote: boolean // Pravda Press: Force re-vote ability used
+
   // Gulag system
   vouchingFor: string | null // Player ID they vouched for
   vouchedByRound: number | null // Round number when vouch expires

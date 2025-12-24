@@ -4,6 +4,10 @@ import { getPieceByType } from '../../data/pieces';
 import { PropertyManagementModal } from '../modals/PropertyManagementModal';
 import { ImprovementModal } from '../modals/ImprovementModal';
 import { TradeModal } from '../modals/TradeModal';
+import { SickleHarvestModal } from '../modals/SickleHarvestModal';
+import { IronCurtainDisappearModal } from '../modals/IronCurtainDisappearModal';
+import { LeninSpeechModal } from '../modals/LeninSpeechModal';
+import { shouldHideIronCurtainMoney } from '../../utils/pieceAbilityUtils';
 import './PlayerDashboard.css';
 
 // Player colors for ownership indicators (matches PropertySpace.tsx)
@@ -30,10 +34,16 @@ export default function PlayerDashboard() {
   const [showTradeModal, setShowTradeModal] = useState(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [showTankRequisition, setShowTankRequisition] = useState(false);
+  const [showSickleHarvest, setShowSickleHarvest] = useState(false);
+  const [showIronCurtainDisappear, setShowIronCurtainDisappear] = useState(false);
+  const [showLeninSpeech, setShowLeninSpeech] = useState(false);
 
   const handleEndTurn = () => {
     endTurn();
   };
+
+  // Get current player for checking Iron Curtain visibility
+  const currentPlayer = players[currentPlayerIndex] ?? null;
 
   // Get player color for ownership indicator
   const getPlayerColor = (player: typeof players[0]) => {
@@ -144,13 +154,28 @@ export default function PlayerDashboard() {
 
                 <div className="player-stat">
                   <label>RUBLES:</label>
-                  <span className="stat-value rubles">₽{player.rubles}</span>
+                  {shouldHideIronCurtainMoney(player, currentPlayer?.id ?? '') ? (
+                    <span className="stat-value rubles" title="Iron Curtain: Money is hidden">
+                      ₽???
+                    </span>
+                  ) : (
+                    <span className="stat-value rubles">₽{player.rubles}</span>
+                  )}
                 </div>
 
                 <div className="player-stat">
                   <label>PROPERTIES:</label>
                   <span className="stat-value">{player.properties.length}</span>
                 </div>
+
+                {player.hasFreeFromGulagCard && (
+                  <div className="player-stat special-item">
+                    <label>SPECIAL:</label>
+                    <span className="stat-value" style={{ color: 'var(--color-gold)', fontWeight: 'bold' }}>
+                      🎫 Free from Gulag Card
+                    </span>
+                  </div>
+                )}
 
                 <div className="player-stat">
                   <label>STATUS:</label>
@@ -217,6 +242,48 @@ export default function PlayerDashboard() {
                             title="Requisition ₽50 from another player (once per lap)"
                           >
                             🚛 REQUISITION ₽50
+                          </button>
+                        )}
+
+                        {/* Sickle Harvest Ability */}
+                        {player.piece === 'sickle' && !player.hasUsedSickleHarvest && (
+                          <button
+                            className="action-button secondary"
+                            onClick={() => {
+                              setSelectedPlayerId(player.id);
+                              setShowSickleHarvest(true);
+                            }}
+                            title="Steal a property worth less than ₽150 (once per game)"
+                          >
+                            🌾 HARVEST PROPERTY
+                          </button>
+                        )}
+
+                        {/* Iron Curtain Disappear Ability */}
+                        {player.piece === 'ironCurtain' && !player.hasUsedIronCurtainDisappear && (
+                          <button
+                            className="action-button secondary"
+                            onClick={() => {
+                              setSelectedPlayerId(player.id);
+                              setShowIronCurtainDisappear(true);
+                            }}
+                            title="Make a property disappear back to the State (once per game)"
+                          >
+                            🚧 DISAPPEAR PROPERTY
+                          </button>
+                        )}
+
+                        {/* Lenin Speech Ability */}
+                        {player.piece === 'statueOfLenin' && !player.hasUsedLeninSpeech && (
+                          <button
+                            className="action-button secondary"
+                            onClick={() => {
+                              setSelectedPlayerId(player.id);
+                              setShowLeninSpeech(true);
+                            }}
+                            title="Give an inspiring speech to collect from applauders (once per game)"
+                          >
+                            🗿 INSPIRING SPEECH
                           </button>
                         )}
                       </div>
@@ -309,6 +376,39 @@ export default function PlayerDashboard() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Sickle Harvest Modal */}
+      {showSickleHarvest && selectedPlayerId && (
+        <SickleHarvestModal
+          sicklePlayerId={selectedPlayerId}
+          onClose={() => {
+            setShowSickleHarvest(false);
+            setSelectedPlayerId(null);
+          }}
+        />
+      )}
+
+      {/* Iron Curtain Disappear Modal */}
+      {showIronCurtainDisappear && selectedPlayerId && (
+        <IronCurtainDisappearModal
+          ironCurtainPlayerId={selectedPlayerId}
+          onClose={() => {
+            setShowIronCurtainDisappear(false);
+            setSelectedPlayerId(null);
+          }}
+        />
+      )}
+
+      {/* Lenin Speech Modal */}
+      {showLeninSpeech && selectedPlayerId && (
+        <LeninSpeechModal
+          leninPlayerId={selectedPlayerId}
+          onClose={() => {
+            setShowLeninSpeech(false);
+            setSelectedPlayerId(null);
+          }}
+        />
       )}
     </div>
   );

@@ -130,6 +130,12 @@ interface GameActions {
   leninSpeech: (leninPlayerId: string, applauders: string[]) => void
   promotePlayer: (playerId: string) => void
 
+  // Property special abilities
+  siberianCampsGulag: (custodianId: string, targetPlayerId: string) => void
+  kgbPreviewTest: (custodianId: string) => void
+  ministryTruthRewrite: (custodianId: string, newRule: string) => void
+  pravdaPressRevote: (custodianId: string, decision: string) => void
+
   // Game log
   addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void
 
@@ -217,7 +223,11 @@ export const useGameStore = create<GameStore>()(
           hasFreeFromGulagCard: false,
           vodkaUseCount: 0,
           ironCurtainClaimedRubles: 1500, // Start with initial amount claimed
-          owesFavourTo: []
+          owesFavourTo: [],
+          hasUsedSiberianCampsGulag: false,
+          kgbTestPreviewsUsedThisRound: 0,
+          hasUsedMinistryTruthRewrite: false,
+          hasUsedPravdaPressRevote: false
         }))
 
         const stalinPlayer = players.find(p => p.isStalin)
@@ -1815,10 +1825,192 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
+      // Property special abilities
+      siberianCampsGulag: (custodianId, targetPlayerId) => {
+        const state = get()
+        const custodian = state.players.find(p => p.id === custodianId)
+        const target = state.players.find(p => p.id === targetPlayerId)
+
+        if (!custodian || !target) return
+        if (custodian.hasUsedSiberianCampsGulag) return
+
+        // Check if custodian owns both Siberian Camps (spaces 1 and 3)
+        const ownsCampVorkuta = state.properties.find(p => p.spaceId === 1 && p.custodianId === custodianId)
+        const ownsCampKolyma = state.properties.find(p => p.spaceId === 3 && p.custodianId === custodianId)
+
+        if (!ownsCampVorkuta || !ownsCampKolyma) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} must control both Siberian Camps to use this ability!`
+          })
+          return
+        }
+
+        // Ask Stalin for approval (in real game, this would be a modal)
+        const approved = window.confirm(
+          `STALIN'S APPROVAL REQUIRED\n\n${custodian.name} wants to send ${target.name} to the Gulag for "labour needs".\n\nDo you approve?`
+        )
+
+        if (approved) {
+          get().sendToGulag(targetPlayerId, 'campLabour')
+          get().updatePlayer(custodianId, { hasUsedSiberianCampsGulag: true })
+
+          get().addLogEntry({
+            type: 'gulag',
+            message: `${custodian.name} sent ${target.name} to the Gulag for forced labour! (Siberian Camps ability)`,
+            playerId: custodianId
+          })
+        } else {
+          get().addLogEntry({
+            type: 'system',
+            message: `Stalin denied ${custodian.name}'s request to send ${target.name} to the Gulag`
+          })
+        }
+
+        set({ pendingAction: null })
+      },
+
+      kgbPreviewTest: (custodianId) => {
+        const state = get()
+        const custodian = state.players.find(p => p.id === custodianId)
+
+        if (!custodian) return
+
+        // Check if custodian owns KGB Headquarters (space 23)
+        const ownsKGB = state.properties.find(p => p.spaceId === 23 && p.custodianId === custodianId)
+
+        if (!ownsKGB) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} must control KGB Headquarters to use this ability!`
+          })
+          return
+        }
+
+        // Check if already used this round
+        if (custodian.kgbTestPreviewsUsedThisRound >= 1) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} has already used KGB Preview this round!`
+          })
+          return
+        }
+
+        // Draw a random question to preview
+        const difficulty = getRandomDifficulty()
+        const question = getRandomQuestionByDifficulty(difficulty)
+
+        // Show the question to the custodian
+        alert(
+          `KGB HEADQUARTERS - TEST PREVIEW\n\n` +
+          `Difficulty: ${difficulty.toUpperCase()}\n` +
+          `Question: ${question.question}\n\n` +
+          `Answer: ${question.answer}\n\n` +
+          `This preview has been noted by the KGB.`
+        )
+
+        get().updatePlayer(custodianId, {
+          kgbTestPreviewsUsedThisRound: custodian.kgbTestPreviewsUsedThisRound + 1
+        })
+
+        get().addLogEntry({
+          type: 'system',
+          message: `${custodian.name} used KGB Headquarters to preview a Communist Test question`,
+          playerId: custodianId
+        })
+      },
+
+      ministryTruthRewrite: (custodianId, newRule) => {
+        const state = get()
+        const custodian = state.players.find(p => p.id === custodianId)
+
+        if (!custodian) return
+        if (custodian.hasUsedMinistryTruthRewrite) return
+
+        // Check if custodian owns all three Ministry properties (16, 18, 19)
+        const ownsMinistries = [16, 18, 19].every(spaceId =>
+          state.properties.find(p => p.spaceId === spaceId && p.custodianId === custodianId)
+        )
+
+        if (!ownsMinistries) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} must control all three Government Ministries to use this ability!`
+          })
+          return
+        }
+
+        // Ask Stalin for approval
+        const approved = window.confirm(
+          `STALIN'S VETO POWER\n\n${custodian.name} wants to rewrite a rule:\n\n"${newRule}"\n\nDo you approve this rule change?`
+        )
+
+        if (approved) {
+          get().updatePlayer(custodianId, { hasUsedMinistryTruthRewrite: true })
+
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} used Ministry of Truth to rewrite a rule: "${newRule}"`,
+            playerId: custodianId
+          })
+        } else {
+          get().addLogEntry({
+            type: 'system',
+            message: `Stalin vetoed ${custodian.name}'s rule rewrite attempt`
+          })
+        }
+
+        set({ pendingAction: null })
+      },
+
+      pravdaPressRevote: (custodianId, decision) => {
+        const state = get()
+        const custodian = state.players.find(p => p.id === custodianId)
+
+        if (!custodian) return
+        if (custodian.hasUsedPravdaPressRevote) return
+
+        // Check if custodian owns all three State Media properties (26, 27, 29)
+        const ownsMedia = [26, 27, 29].every(spaceId =>
+          state.properties.find(p => p.spaceId === spaceId && p.custodianId === custodianId)
+        )
+
+        if (!ownsMedia) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} must control all three State Media properties to use this ability!`
+          })
+          return
+        }
+
+        get().updatePlayer(custodianId, { hasUsedPravdaPressRevote: true })
+
+        get().addLogEntry({
+          type: 'system',
+          message: `${custodian.name} used Pravda Press to force a re-vote on: "${decision}" - The people demand it!`,
+          playerId: custodianId
+        })
+
+        alert(
+          `PRAVDA PRESS - PROPAGANDA SPREAD\n\n` +
+          `${custodian.name} demands a re-vote on:\n"${decision}"\n\n` +
+          `THE PEOPLE DEMAND IT!`
+        )
+
+        set({ pendingAction: null })
+      },
+
       incrementRound: () => {
         const state = get()
         const newRound: number = (state.roundNumber) + 1
         set({ roundNumber: newRound })
+
+        // Reset KGB test preview counter for all players
+        state.players.forEach(player => {
+          if (player.kgbTestPreviewsUsedThisRound > 0) {
+            get().updatePlayer(player.id, { kgbTestPreviewsUsedThisRound: 0 })
+          }
+        })
 
         // Expire vouchers
         get().expireVouchers()
