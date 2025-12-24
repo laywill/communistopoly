@@ -3,6 +3,7 @@ import { useGameStore } from '../../store/gameStore';
 import { getPieceByType } from '../../data/pieces';
 import { PropertyManagementModal } from '../modals/PropertyManagementModal';
 import { ImprovementModal } from '../modals/ImprovementModal';
+import { TradeModal } from '../modals/TradeModal';
 import './PlayerDashboard.css';
 
 // Player colors for ownership indicators (matches PropertySpace.tsx)
@@ -26,6 +27,7 @@ export default function PlayerDashboard() {
   // Modal state
   const [showPropertyModal, setShowPropertyModal] = useState(false);
   const [showImproveModal, setShowImproveModal] = useState(false);
+  const [showTradeModal, setShowTradeModal] = useState(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [showTankRequisition, setShowTankRequisition] = useState(false);
 
@@ -193,6 +195,16 @@ export default function PlayerDashboard() {
                         >
                           🏭 IMPROVE
                         </button>
+                        <button
+                          className="action-button secondary"
+                          onClick={() => {
+                            setSelectedPlayerId(player.id);
+                            setShowTradeModal(true);
+                          }}
+                          title="Propose a trade with another player"
+                        >
+                          🤝 PROPOSE TRADE
+                        </button>
 
                         {/* Tank Requisition Ability */}
                         {player.piece === 'tank' && !player.tankRequisitionUsedThisLap && (
@@ -245,6 +257,17 @@ export default function PlayerDashboard() {
           playerId={selectedPlayerId}
           onClose={() => {
             setShowImproveModal(false);
+            setSelectedPlayerId(null);
+          }}
+        />
+      )}
+
+      {showTradeModal && selectedPlayerId && (
+        <TradeModal
+          mode="propose"
+          proposerId={selectedPlayerId}
+          onClose={() => {
+            setShowTradeModal(false);
             setSelectedPlayerId(null);
           }}
         />
