@@ -31,6 +31,23 @@ const BoardCenter = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [turnPhase, currentPlayerIndex]);
 
+  // Handle starving Bread Loaf players
+  useEffect(() => {
+    if (
+      turnPhase === 'pre-roll' &&
+      !hasRolled &&
+      !currentPlayer.inGulag &&
+      currentPlayer.piece === 'breadLoaf' &&
+      currentPlayer.rubles < 100
+    ) {
+      setPendingAction({
+        type: 'bread-loaf-begging',
+        data: { playerId: currentPlayer.id }
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [turnPhase, currentPlayerIndex]);
+
   const handleRoll = () => {
     if (turnPhase === 'pre-roll' && !hasRolled && !currentPlayer.inGulag) {
       // Check if player is Sickle - they must announce "For the Motherland!"

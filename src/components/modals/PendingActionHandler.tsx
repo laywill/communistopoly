@@ -12,6 +12,7 @@ import { InformOnPlayerModal } from './InformOnPlayerModal';
 import { LiquidationModal } from './LiquidationModal';
 import { BreadlineModal } from './BreadlineModal';
 import { SickleMotherlandModal } from './SickleMotherlandModal';
+import { BeggingModal } from './BeggingModal';
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -149,6 +150,17 @@ export function PendingActionHandler() {
       if (pendingAction.data?.playerId) {
         return (
           <SickleMotherlandModal
+            playerId={pendingAction.data.playerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'bread-loaf-begging':
+      if (pendingAction.data?.playerId) {
+        return (
+          <BeggingModal
             playerId={pendingAction.data.playerId as string}
             onClose={handleClose}
           />

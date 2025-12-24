@@ -185,6 +185,7 @@ export type PendingActionType =
   | 'breadline-contribution'
   | 'breadline-response'
   | 'sickle-motherland-announcement'
+  | 'bread-loaf-begging'
 
 export interface PendingAction {
   type: PendingActionType
