@@ -186,6 +186,8 @@ export type PendingActionType =
   | 'breadline-response'
   | 'sickle-motherland-announcement'
   | 'bread-loaf-begging'
+  | 'trade-offer'
+  | 'trade-response'
 
 export interface PendingAction {
   type: PendingActionType
@@ -208,6 +210,24 @@ export interface BribeRequest {
   amount: number
   reason: string // For gulag escape, property influence, etc.
   timestamp: Date
+}
+
+// Trade system
+export interface TradeOffer {
+  id: string
+  fromPlayerId: string
+  toPlayerId: string
+  offering: TradeItems
+  requesting: TradeItems
+  status: 'pending' | 'accepted' | 'rejected'
+  timestamp: Date
+}
+
+export interface TradeItems {
+  rubles: number
+  properties: string[] // property space IDs
+  gulagCards: number // Number of "Get out of Gulag free" cards
+  favours: number // Number of favours owed
 }
 
 // Game state
@@ -245,6 +265,9 @@ export interface GameState {
   // Gulag system
   activeVouchers: VoucherAgreement[]
   pendingBribes: BribeRequest[]
+
+  // Trade system
+  activeTradeOffers: TradeOffer[]
 
   // Card decks
   partyDirectiveDeck: string[] // Card IDs (shuffled)

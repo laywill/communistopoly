@@ -13,6 +13,7 @@ import { LiquidationModal } from './LiquidationModal';
 import { BreadlineModal } from './BreadlineModal';
 import { SickleMotherlandModal } from './SickleMotherlandModal';
 import { BeggingModal } from './BeggingModal';
+import { TradeModal } from './TradeModal';
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -162,6 +163,30 @@ export function PendingActionHandler() {
         return (
           <BeggingModal
             playerId={pendingAction.data.playerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'trade-offer':
+      if (pendingAction.data?.proposerId) {
+        return (
+          <TradeModal
+            mode="propose"
+            proposerId={pendingAction.data.proposerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'trade-response':
+      if (pendingAction.data?.tradeOfferId) {
+        return (
+          <TradeModal
+            mode="respond"
+            tradeOfferId={pendingAction.data.tradeOfferId as string}
             onClose={handleClose}
           />
         );

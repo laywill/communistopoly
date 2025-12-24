@@ -98,6 +98,11 @@ interface GameActions {
   submitBribe: (playerId: string, amount: number, reason: string) => void
   respondToBribe: (bribeId: string, accepted: boolean) => void
 
+  // Trade system
+  proposeTrade: (fromPlayerId: string, toPlayerId: string, items: { offering: import('../types/game').TradeItems, requesting: import('../types/game').TradeItems }) => void
+  acceptTrade: (tradeId: string) => void
+  rejectTrade: (tradeId: string) => void
+
   // Debt and liquidation
   createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => void
   checkDebtStatus: () => void
@@ -154,6 +159,7 @@ const initialState: GameState = {
   pendingAction: null,
   activeVouchers: [],
   pendingBribes: [],
+  activeTradeOffers: [],
   partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
   partyDirectiveDiscard: [],
   communistTestUsedQuestions: new Set()
@@ -1249,6 +1255,128 @@ export const useGameStore = create<GameStore>()(
         set((state) => ({
           pendingBribes: state.pendingBribes.filter((b) => b.id !== bribeId)
         }))
+      },
+
+      // Trade system
+      proposeTrade: (fromPlayerId, toPlayerId, items) => {
+        const state = get()
+        const fromPlayer = state.players.find((p) => p.id === fromPlayerId)
+        const toPlayer = state.players.find((p) => p.id === toPlayerId)
+
+        if (!fromPlayer || !toPlayer) return
+
+        const tradeOffer: import('../types/game').TradeOffer = {
+          id: `trade-${String(Date.now())}`,
+          fromPlayerId,
+          toPlayerId,
+          offering: items.offering,
+          requesting: items.requesting,
+          status: 'pending',
+          timestamp: new Date()
+        }
+
+        set((state) => ({
+          activeTradeOffers: [...state.activeTradeOffers, tradeOffer]
+        }))
+
+        get().addLogEntry({
+          type: 'system',
+          message: `${fromPlayer.name} proposed a trade to ${toPlayer.name}`,
+          playerId: fromPlayerId
+        })
+
+        // Show trade response modal to the receiving player
+        get().setPendingAction({
+          type: 'trade-response',
+          data: { tradeOfferId: tradeOffer.id }
+        })
+      },
+
+      acceptTrade: (tradeId) => {
+        const state = get()
+        const trade = state.activeTradeOffers.find((t) => t.id === tradeId)
+        if (!trade) return
+
+        const fromPlayer = state.players.find((p) => p.id === trade.fromPlayerId)
+        const toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
+        if (!fromPlayer || !toPlayer) return
+
+        // Transfer offering from fromPlayer to toPlayer
+        if (trade.offering.rubles > 0) {
+          get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles - trade.offering.rubles })
+          get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles + trade.offering.rubles })
+        }
+
+        trade.offering.properties.forEach((propId) => {
+          get().transferProperty(propId, toPlayer.id)
+        })
+
+        if (trade.offering.gulagCards > 0 && fromPlayer.hasFreeFromGulagCard) {
+          get().updatePlayer(fromPlayer.id, { hasFreeFromGulagCard: false })
+          get().updatePlayer(toPlayer.id, { hasFreeFromGulagCard: true })
+        }
+
+        if (trade.offering.favours > 0) {
+          const updatedFavours = fromPlayer.owesFavourTo.filter((id, index) =>
+            !(id === toPlayer.id && index < trade.offering.favours)
+          )
+          get().updatePlayer(fromPlayer.id, { owesFavourTo: updatedFavours })
+        }
+
+        // Transfer requesting from toPlayer to fromPlayer
+        if (trade.requesting.rubles > 0) {
+          get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles - trade.requesting.rubles })
+          get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles + trade.requesting.rubles })
+        }
+
+        trade.requesting.properties.forEach((propId) => {
+          get().transferProperty(propId, fromPlayer.id)
+        })
+
+        if (trade.requesting.gulagCards > 0 && toPlayer.hasFreeFromGulagCard) {
+          get().updatePlayer(toPlayer.id, { hasFreeFromGulagCard: false })
+          get().updatePlayer(fromPlayer.id, { hasFreeFromGulagCard: true })
+        }
+
+        if (trade.requesting.favours > 0) {
+          const updatedFavours = toPlayer.owesFavourTo.filter((id, index) =>
+            !(id === fromPlayer.id && index < trade.requesting.favours)
+          )
+          get().updatePlayer(toPlayer.id, { owesFavourTo: updatedFavours })
+        }
+
+        // Mark trade as accepted and remove
+        set((state) => ({
+          activeTradeOffers: state.activeTradeOffers.filter((t) => t.id !== tradeId)
+        }))
+
+        get().addLogEntry({
+          type: 'property',
+          message: `${toPlayer.name} accepted trade from ${fromPlayer.name}`,
+          playerId: toPlayer.id
+        })
+      },
+
+      rejectTrade: (tradeId) => {
+        const state = get()
+        const trade = state.activeTradeOffers.find((t) => t.id === tradeId)
+        if (!trade) return
+
+        const fromPlayer = state.players.find((p) => p.id === trade.fromPlayerId)
+        const toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
+
+        // Mark trade as rejected and remove
+        set((state) => ({
+          activeTradeOffers: state.activeTradeOffers.filter((t) => t.id !== tradeId)
+        }))
+
+        if (fromPlayer && toPlayer) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${toPlayer.name} rejected trade from ${fromPlayer.name}`,
+            playerId: toPlayer.id
+          })
+        }
       },
 
       createDebt: (debtorId, creditorId, amount, reason) => {
