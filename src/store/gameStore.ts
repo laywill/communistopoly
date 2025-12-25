@@ -1655,9 +1655,11 @@ export const useGameStore = create<GameStore>()(
           endVotes: {}
         })
 
+        const initiator = get().players.find(p => p.id === initiatorId)
+        const initiatorName = initiator?.name ?? 'Unknown'
         get().addLogEntry({
           type: 'system',
-          message: `Comrade ${get().players.find(p => p.id === initiatorId)?.name} has initiated a vote to end the game. All players must vote unanimously to end.`
+          message: `Comrade ${initiatorName} has initiated a vote to end the game. All players must vote unanimously to end.`
         })
       },
 
@@ -1669,9 +1671,10 @@ export const useGameStore = create<GameStore>()(
         }))
 
         const player = state.players.find(p => p.id === playerId)
+        const playerName = player?.name ?? 'Unknown'
         get().addLogEntry({
           type: 'system',
-          message: `${player?.name} voted ${vote ? 'YES' : 'NO'} to end the game`
+          message: `${playerName} voted ${vote ? 'YES' : 'NO'} to end the game`
         })
 
         // Check if all active players have voted
@@ -1682,7 +1685,7 @@ export const useGameStore = create<GameStore>()(
 
         if (allVoted) {
           const votes = get().endVotes
-          const unanimous = activePlayerIds.every(id => votes[id] === true)
+          const unanimous = activePlayerIds.every(id => votes[id])
 
           if (unanimous) {
             get().endGame('unanimous', null)
@@ -1697,29 +1700,24 @@ export const useGameStore = create<GameStore>()(
       },
 
       updatePlayerStat: (playerId, statKey, increment) => {
-        set((state) => {
-          const currentStats = state.gameStatistics.playerStats[playerId]
-          if (!currentStats) return state
-
-          return {
-            gameStatistics: {
-              ...state.gameStatistics,
-              playerStats: {
-                ...state.gameStatistics.playerStats,
-                [playerId]: {
-                  ...currentStats,
-                  [statKey]: currentStats[statKey] + increment
-                }
+        set((state) => ({
+          gameStatistics: {
+            ...state.gameStatistics,
+            playerStats: {
+              ...state.gameStatistics.playerStats,
+              [playerId]: {
+                ...state.gameStatistics.playerStats[playerId],
+                [statKey]: state.gameStatistics.playerStats[playerId][statKey] + increment
               }
             }
           }
-        })
+        }))
       },
 
       submitConfession: (prisonerId, confession) => {
         const state = get()
         const prisoner = state.players.find(p => p.id === prisonerId)
-        if (!prisoner || !prisoner.inGulag) return
+        if (!prisoner?.inGulag) return
 
         const newConfession: Confession = {
           id: `confession-${String(Date.now())}`,

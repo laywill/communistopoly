@@ -43,7 +43,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
             <div className="error-details">
               <p className="error-message">
-                {this.state.error?.message || 'An unknown error occurred'}
+                {this.state.error?.message ?? 'An unknown error occurred'}
               </p>
               {import.meta.env.DEV && (
                 <pre className="error-stack">

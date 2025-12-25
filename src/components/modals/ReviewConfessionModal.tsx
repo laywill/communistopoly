@@ -24,8 +24,8 @@ export default function ReviewConfessionModal({ confessionId }: ReviewConfession
     <div className="modal-overlay">
       <div className="review-confession-modal modal-content">
         <div className="review-header">
-          <h2>☭ STALIN'S JUDGMENT ☭</h2>
-          <p className="review-subtitle">Review the prisoner's rehabilitation confession</p>
+          <h2>☭ STALIN&apos;S JUDGMENT ☭</h2>
+          <p className="review-subtitle">Review the prisoner&apos;s rehabilitation confession</p>
         </div>
 
         <div className="prisoner-details">

@@ -21,7 +21,7 @@ export default function GameEndScreen() {
     const duration = gameStatistics.gameEndTime.getTime() - gameStatistics.gameStartTime.getTime();
     const hours = Math.floor(duration / (1000 * 60 * 60));
     const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
+    return `${String(hours)}h ${String(minutes)}m`;
   };
 
   const handleNewGame = () => {
@@ -75,11 +75,11 @@ export default function GameEndScreen() {
               </div>
               <div className="stat-item">
                 <span className="stat-label">Time in Gulag:</span>
-                <span className="stat-value">{gameStatistics.playerStats[winner.id]?.totalGulagTurns || 0} turns</span>
+                <span className="stat-value">{gameStatistics.playerStats[winner.id].totalGulagTurns} turns</span>
               </div>
               <div className="stat-item">
                 <span className="stat-label">Tests Passed:</span>
-                <span className="stat-value">{gameStatistics.playerStats[winner.id]?.testsPassed || 0}</span>
+                <span className="stat-value">{gameStatistics.playerStats[winner.id].testsPassed}</span>
               </div>
             </div>
           </div>
@@ -94,8 +94,8 @@ export default function GameEndScreen() {
                     <span className="player-name">{p.name}</span>
                   </div>
                   <div className="player-final-stats">
-                    <span className="player-rank">{formatRank(p.finalRank || p.rank)}</span>
-                    <span className="player-wealth">₽{p.finalWealth || p.rubles}</span>
+                    <span className="player-rank">{formatRank(p.finalRank ?? p.rank)}</span>
+                    <span className="player-wealth">₽{p.finalWealth ?? p.rubles}</span>
                     {p.isEliminated && (
                       <span className="elimination-reason">
                         ({p.eliminationReason?.replace(/([A-Z])/g, ' $1').trim()})

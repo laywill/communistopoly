@@ -51,7 +51,7 @@ export default function ConfessionModal({ prisonerId, onClose }: ConfessionModal
             id="confession-text"
             className="confession-textarea"
             value={confession}
-            onChange={(e) => setConfession(e.target.value)}
+            onChange={(e) => { setConfession(e.target.value); }}
             placeholder="I confess that I have been a traitor to the Party. I have committed counter-revolutionary acts and deserve re-education..."
             rows={8}
             maxLength={500}
