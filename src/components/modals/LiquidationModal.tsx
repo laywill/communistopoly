@@ -27,6 +27,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
     addLogEntry,
     createDebt,
     adjustTreasury,
+    setTurnPhase,
   } = useGameStore();
 
   const player = players.find((p) => p.id === playerId);
@@ -180,6 +181,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
     });
 
     setPendingAction(null);
+    setTurnPhase('post-turn');
   };
 
   const handleCannotPay = () => {
@@ -205,6 +207,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
     }
 
     setPendingAction(null);
+    setTurnPhase('post-turn');
   };
 
   const creditorName = creditorId === 'state' ? 'the State' : players.find((p) => p.id === creditorId)?.name;
