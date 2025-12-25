@@ -36,13 +36,9 @@ export function BreadlineModal({ landingPlayerId, onClose }: BreadlineModalProps
     return null;
   }
 
-  const currentContributorProperties = currentContributor
-    ? properties.filter((p) => p.custodianId === currentContributor.id && !p.mortgaged)
-    : [];
+  const currentContributorProperties = properties.filter((p) => p.custodianId === currentContributor.id && !p.mortgaged);
 
   const handleContribution = (type: 'rubles' | 'property' | 'favour' | 'refuse') => {
-    if (!currentContributor) return;
-
     if (type === 'rubles') {
       // Check if player can afford
       if (currentContributor.rubles < 50) {
@@ -83,7 +79,7 @@ export function BreadlineModal({ landingPlayerId, onClose }: BreadlineModalProps
       setSelectedPropertyId('');
     } else if (type === 'favour') {
       // Track favour as a custom player attribute (stored in player state)
-      const updatedOwesFavour = [...(currentContributor.owesFavourTo ?? []), landingPlayerId];
+      const updatedOwesFavour = [...currentContributor.owesFavourTo, landingPlayerId];
       updatePlayer(currentContributor.id, { owesFavourTo: updatedOwesFavour });
 
       addLogEntry({
@@ -93,7 +89,8 @@ export function BreadlineModal({ landingPlayerId, onClose }: BreadlineModalProps
       });
 
       setContributions([...contributions, { playerId: currentContributor.id, type: 'favour' }]);
-    } else if (type === 'refuse') {
+    } else {
+      // type === 'refuse'
       addLogEntry({
         type: 'system',
         message: `${currentContributor.name} REFUSED to contribute at the Breadline - subject to denouncement!`,
@@ -190,8 +187,8 @@ export function BreadlineModal({ landingPlayerId, onClose }: BreadlineModalProps
     );
   }
 
-  if (!currentContributor) {
-    // No eligible contributors - show results immediately
+  // No eligible contributors - show results immediately
+  if (eligibleContributors.length === 0) {
     return (
       <div className={styles.overlay} onClick={(e) => { e.stopPropagation(); }}>
         <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
@@ -270,7 +267,7 @@ export function BreadlineModal({ landingPlayerId, onClose }: BreadlineModalProps
                     const space = getSpaceById(prop.spaceId);
                     return (
                       <option key={prop.spaceId} value={String(prop.spaceId)}>
-                        {space?.name ?? `Property ${prop.spaceId}`}
+                        {space?.name ?? `Property ${String(prop.spaceId)}`}
                       </option>
                     );
                   })}

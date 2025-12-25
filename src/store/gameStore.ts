@@ -267,7 +267,7 @@ export const useGameStore = create<GameStore>()(
               get().adjustTreasury(excess)
               get().addLogEntry({
                 type: 'payment',
-                message: `${player.name}'s Bread Loaf forces donation of ₽${excess} to the State (max 1000₽)`,
+                message: `${player.name}'s Bread Loaf forces donation of ₽${String(excess)} to the State (max 1000₽)`,
                 playerId
               })
             }
@@ -356,7 +356,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'dice',
-          message: `${currentPlayer.name} drank and rolled 3 dice: ${die1}, ${die2}, ${die3}. Using best 2: ${bestTwo[0]} + ${bestTwo[1]} = ${bestTwo[0] + bestTwo[1]}`,
+          message: `${currentPlayer.name} drank and rolled 3 dice: ${String(die1)}, ${String(die2)}, ${String(die3)}. Using best 2: ${String(bestTwo[0])} + ${String(bestTwo[1])} = ${String(bestTwo[0] + bestTwo[1])}`,
           playerId: currentPlayer.id
         })
       },
@@ -1573,9 +1573,10 @@ export const useGameStore = create<GameStore>()(
 
           case 'collectFromAll':
             if (card.effect.amount !== undefined) {
+              const effectAmount = card.effect.amount
               state.players.forEach(p => {
                 if (!p.isStalin && p.id !== playerId && !p.isEliminated) {
-                  const amount = Math.min(card.effect.amount!, p.rubles)
+                  const amount = Math.min(effectAmount, p.rubles)
                   get().updatePlayer(p.id, { rubles: p.rubles - amount })
                   get().updatePlayer(playerId, { rubles: player.rubles + amount })
                 }
@@ -1585,9 +1586,10 @@ export const useGameStore = create<GameStore>()(
 
           case 'payToAll':
             if (card.effect.amount !== undefined) {
+              const effectAmount = card.effect.amount
               state.players.forEach(p => {
                 if (!p.isStalin && p.id !== playerId && !p.isEliminated) {
-                  const amount = Math.min(card.effect.amount!, player.rubles)
+                  const amount = Math.min(effectAmount, player.rubles)
                   get().updatePlayer(playerId, { rubles: player.rubles - amount })
                   get().updatePlayer(p.id, { rubles: p.rubles + amount })
                 }
@@ -1609,7 +1611,7 @@ export const useGameStore = create<GameStore>()(
             get().adjustTreasury(totalTax)
             get().addLogEntry({
               type: 'payment',
-              message: `${player.name} paid ₽${totalTax} in property taxes`,
+              message: `${player.name} paid ₽${String(totalTax)} in property taxes`,
               playerId
             })
             break
@@ -1628,11 +1630,10 @@ export const useGameStore = create<GameStore>()(
         set({ pendingAction: null, turnPhase: 'post-turn' })
       },
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       answerCommunistTest: (question, answer, readerId) => {
         const state = get()
         const currentPlayer = state.players[state.currentPlayerIndex]
-        const reader = state.players.find(p => p.id === readerId)
-        if (!currentPlayer || !reader) return
 
         // Check if Vodka Bottle is immune to trick questions
         const isCorrect = isAnswerCorrect(question, answer)
@@ -1673,7 +1674,7 @@ export const useGameStore = create<GameStore>()(
 
           get().addLogEntry({
             type: 'system',
-            message: `${currentPlayer.name} answered correctly! Reward: ₽${reward}`,
+            message: `${currentPlayer.name} answered correctly! Reward: ₽${String(reward)}`,
             playerId: currentPlayer.id
           })
         } else {
@@ -1697,7 +1698,7 @@ export const useGameStore = create<GameStore>()(
 
           get().addLogEntry({
             type: 'system',
-            message: `${currentPlayer.name} answered incorrectly. Penalty: ₽${penalty}`,
+            message: `${currentPlayer.name} answered incorrectly. Penalty: ₽${String(penalty)}`,
             playerId: currentPlayer.id
           })
         }
@@ -1793,7 +1794,7 @@ export const useGameStore = create<GameStore>()(
 
         get().addLogEntry({
           type: 'payment',
-          message: `${leninPlayer.name}'s inspiring speech collected ₽${totalCollected} from ${applauders.length} applauders!`,
+          message: `${leninPlayer.name}'s inspiring speech collected ₽${String(totalCollected)} from ${String(applauders.length)} applauders!`,
           playerId: leninPlayerId
         })
 

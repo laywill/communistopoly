@@ -107,7 +107,7 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
     }
 
     if (offeringFavours > proposerFavoursOwed) {
-      alert(`You only owe ${proposerFavoursOwed} favour(s) to this player!`);
+      alert(`You only owe ${String(proposerFavoursOwed)} favour(s) to this player!`);
       return;
     }
 
@@ -316,7 +316,7 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                               className={`${styles.propertyButton} ${isSelected ? styles.selected : ''}`}
                               onClick={() => { toggleOfferingProperty(String(prop.spaceId)); }}
                             >
-                              {space?.name ?? `Property ${prop.spaceId}`}
+                              {space?.name ?? `Property ${String(prop.spaceId)}`}
                             </button>
                           );
                         })}
@@ -390,7 +390,7 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                               className={`${styles.propertyButton} ${isSelected ? styles.selected : ''}`}
                               onClick={() => { toggleRequestingProperty(String(prop.spaceId)); }}
                             >
-                              {space?.name ?? `Property ${prop.spaceId}`}
+                              {space?.name ?? `Property ${String(prop.spaceId)}`}
                             </button>
                           );
                         })}

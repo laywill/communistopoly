@@ -31,7 +31,7 @@ export function BeggingModal({ playerId, onClose }: BeggingModalProps) {
     if (granted) {
       // Check if target can afford
       if (target.rubles < requestedAmount) {
-        alert(`${target.name} does not have ₽${requestedAmount} to give!`);
+        alert(`${target.name} does not have ₽${String(requestedAmount)} to give!`);
         return;
       }
 
@@ -41,7 +41,7 @@ export function BeggingModal({ playerId, onClose }: BeggingModalProps) {
 
       addLogEntry({
         type: 'payment',
-        message: `${target.name} gave ₽${requestedAmount} to starving ${player.name} 🍞`,
+        message: `${target.name} gave ₽${String(requestedAmount)} to starving ${player.name} 🍞`,
         playerId: target.id,
       });
 

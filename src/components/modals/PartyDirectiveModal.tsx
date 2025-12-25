@@ -43,15 +43,15 @@ export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirective
   const getEffectDescription = (): string => {
     switch (card.effect.type) {
       case 'move':
-        return `Move to position ${card.effect.destination ?? 'unknown'}`
+        return `Move to position ${String(card.effect.destination ?? 'unknown')}`
       case 'moveRelative':
         return card.effect.spaces && card.effect.spaces > 0
-          ? `Move forward ${card.effect.spaces} spaces`
-          : `Move backward ${Math.abs(card.effect.spaces ?? 0)} spaces`
+          ? `Move forward ${String(card.effect.spaces)} spaces`
+          : `Move backward ${String(Math.abs(card.effect.spaces ?? 0))} spaces`
       case 'money':
         return card.effect.amount && card.effect.amount > 0
-          ? `Collect ₽${card.effect.amount}`
-          : `Pay ₽${Math.abs(card.effect.amount ?? 0)}`
+          ? `Collect ₽${String(card.effect.amount)}`
+          : `Pay ₽${String(Math.abs(card.effect.amount ?? 0))}`
       case 'gulag':
         return 'Go directly to Gulag'
       case 'freeFromGulag':
@@ -59,9 +59,9 @@ export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirective
       case 'rankChange':
         return card.effect.direction === 'up' ? 'Advance one rank' : 'Lose one rank'
       case 'collectFromAll':
-        return `Collect ₽${card.effect.amount ?? 0} from each player`
+        return `Collect ₽${String(card.effect.amount ?? 0)} from each player`
       case 'payToAll':
-        return `Pay ₽${card.effect.amount ?? 0} to each player`
+        return `Pay ₽${String(card.effect.amount ?? 0)} to each player`
       case 'propertyTax': {
         const playerProperties = properties.filter((p) => p.custodianId === playerId)
         const totalImprovements = playerProperties.reduce((sum, p) => sum + p.collectivizationLevel, 0)
@@ -72,7 +72,7 @@ export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirective
         if (card.effect.perImprovement) {
           total += totalImprovements * card.effect.perImprovement
         }
-        return `Pay ₽${total} in taxes (${playerProperties.length} properties, ${totalImprovements} improvements)`
+        return `Pay ₽${String(total)} in taxes (${String(playerProperties.length)} properties, ${String(totalImprovements)} improvements)`
       }
       case 'custom':
         return card.description

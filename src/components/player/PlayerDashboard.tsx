@@ -154,7 +154,7 @@ export default function PlayerDashboard() {
 
                 <div className="player-stat">
                   <label>RUBLES:</label>
-                  {shouldHideIronCurtainMoney(player, currentPlayer?.id ?? '') ? (
+                  {shouldHideIronCurtainMoney(player, currentPlayer.id) ? (
                     <span className="stat-value rubles" title="Iron Curtain: Money is hidden">
                       ₽???
                     </span>

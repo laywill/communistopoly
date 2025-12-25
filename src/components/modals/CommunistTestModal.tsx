@@ -186,66 +186,64 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
     )
   }
 
-  // Result Phase
-  if (phase === 'result') {
-    // For trick questions, Stalin must decide before showing result
-    if (question.difficulty === 'trick' && isCorrect === null) {
-      return (
-        <div className={styles.overlay} onClick={(e) => { e.stopPropagation() }}>
-          <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
-            <div className={styles.header}>
-              <span className={styles.icon}>☭</span>
-              <h2 className={styles.title}>STALIN&apos;S JUDGMENT</h2>
-              <span className={styles.icon}>☭</span>
-            </div>
+  // Result Phase - For trick questions, Stalin must decide before showing result
+  if (question.difficulty === 'trick' && isCorrect === null) {
+    return (
+      <div className={styles.overlay} onClick={(e) => { e.stopPropagation() }}>
+        <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
+          <div className={styles.header}>
+            <span className={styles.icon}>☭</span>
+            <h2 className={styles.title}>STALIN&apos;S JUDGMENT</h2>
+            <span className={styles.icon}>☭</span>
+          </div>
 
-            <div className={styles.content}>
-              <div className={styles.trickResultSection}>
-                <h3 className={styles.trickQuestion}>TRICK QUESTION</h3>
-                <p className={styles.trickInstruction}>
-                  <strong>{stalin?.name ?? 'Stalin'}</strong>, you must judge{' '}
-                  <strong>{testedPlayer.name}</strong>&apos;s answer.
+          <div className={styles.content}>
+            <div className={styles.trickResultSection}>
+              <h3 className={styles.trickQuestion}>TRICK QUESTION</h3>
+              <p className={styles.trickInstruction}>
+                <strong>{stalin?.name ?? 'Stalin'}</strong>, you must judge{' '}
+                <strong>{testedPlayer.name}</strong>&apos;s answer.
+              </p>
+
+              <div className={styles.trickDecision}>
+                <p className={styles.questionRecap}>Question: <em>{question.question}</em></p>
+                <p className={styles.answerRecap}>
+                  {testedPlayer.name}&apos;s answer: <em>(spoken aloud)</em>
                 </p>
+              </div>
 
-                <div className={styles.trickDecision}>
-                  <p className={styles.questionRecap}>Question: <em>{question.question}</em></p>
-                  <p className={styles.answerRecap}>
-                    {testedPlayer.name}&apos;s answer: <em>(spoken aloud)</em>
-                  </p>
-                </div>
-
-                <div className={styles.stalinDecisionButtons}>
-                  <button
-                    className={styles.buttonReward}
-                    onClick={() => { handleStalinDecision('reward') }}
-                  >
-                    REWARD (+₽200)
-                  </button>
-                  <button
-                    className={styles.buttonNeutral}
-                    onClick={() => { handleStalinDecision('neutral') }}
-                  >
-                    ACCEPTABLE (No change)
-                  </button>
-                  <button
-                    className={styles.buttonPunish}
-                    onClick={() => { handleStalinDecision('punish') }}
-                  >
-                    PUNISH (-₽200)
-                  </button>
-                </div>
+              <div className={styles.stalinDecisionButtons}>
+                <button
+                  className={styles.buttonReward}
+                  onClick={() => { handleStalinDecision('reward') }}
+                >
+                  REWARD (+₽200)
+                </button>
+                <button
+                  className={styles.buttonNeutral}
+                  onClick={() => { handleStalinDecision('neutral') }}
+                >
+                  ACCEPTABLE (No change)
+                </button>
+                <button
+                  className={styles.buttonPunish}
+                  onClick={() => { handleStalinDecision('punish') }}
+                >
+                  PUNISH (-₽200)
+                </button>
               </div>
             </div>
           </div>
         </div>
-      )
-    }
+      </div>
+    )
+  }
 
-    // Show result
-    const reward = testedPlayer.piece === 'redStar' ? question.reward * 2 : question.reward
-    const penalty = testedPlayer.piece === 'redStar' ? question.penalty * 2 : question.penalty
+  // Show result (phase === 'result')
+  const reward = testedPlayer.piece === 'redStar' ? question.reward * 2 : question.reward
+  const penalty = testedPlayer.piece === 'redStar' ? question.penalty * 2 : question.penalty
 
-    return (
+  return (
       <div className={styles.overlay} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
           <div className={styles.header}>
@@ -305,7 +303,4 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
         </div>
       </div>
     )
-  }
-
-  return null
 }
