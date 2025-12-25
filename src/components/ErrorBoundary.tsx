@@ -45,13 +45,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               <p className="error-message">
                 {this.state.error?.message || 'An unknown error occurred'}
               </p>
-              {process.env.NODE_ENV === 'development' && (
+              {import.meta.env.DEV && (
                 <pre className="error-stack">
                   {this.state.error?.stack}
                 </pre>
               )}
             </div>
-
             <div className="error-actions">
               <button className="reload-button" onClick={this.handleReload}>
                 ☭ RESTART THE REVOLUTION ☭

@@ -88,7 +88,7 @@ function calculateTotalWealth (player: Player, properties: Property[]): number {
   return total
 }
 
-function initializePlayerStats (playerId: string): PlayerStatistics {
+function initializePlayerStats (): PlayerStatistics {
   return {
     turnsPlayed: 0,
     denouncementsMade: 0,
@@ -336,7 +336,7 @@ export const useGameStore = create<GameStore>()(
         const playerStats: Record<string, PlayerStatistics> = {}
         players.forEach(player => {
           if (!player.isStalin) {
-            playerStats[player.id] = initializePlayerStats(player.id)
+            playerStats[player.id] = initializePlayerStats()
           }
         })
 
@@ -1622,8 +1622,6 @@ export const useGameStore = create<GameStore>()(
       },
 
       endGame: (condition, winnerId) => {
-        const state = get()
-
         // Calculate final statistics
         get().calculateFinalStats()
 
@@ -1641,8 +1639,6 @@ export const useGameStore = create<GameStore>()(
       },
 
       calculateFinalStats: () => {
-        const state = get()
-
         set((state) => ({
           gameStatistics: {
             ...state.gameStatistics,
