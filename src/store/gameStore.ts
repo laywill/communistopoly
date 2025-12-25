@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod } from '../types/game'
+import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, PlayerStatistics } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
 import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck, type DirectiveCard } from '../data/partyDirectiveCards'
 import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
@@ -50,6 +50,60 @@ function shouldTriggerVoucherConsequence (reason: GulagReason): boolean {
   ]
 
   return triggeringReasons.includes(reason)
+}
+
+function getEliminationMessage (playerName: string, reason: EliminationReason): string {
+  const messages: Record<EliminationReason, string> = {
+    bankruptcy: `${playerName} has been eliminated due to bankruptcy. They have been declared an Enemy of the People.`,
+    execution: `${playerName} has been executed by order of Stalin. They are now a Ghost of the Revolution.`,
+    gulagTimeout: `${playerName} died in the Gulag after 10 turns. They are now a Ghost of the Revolution.`,
+    redStarDemotion: `${playerName}'s Red Star has fallen to Proletariat - immediate execution! They are now a Ghost of the Revolution.`,
+    unanimous: `${playerName} was unanimously voted out by all players. They are now a Ghost of the Revolution.`
+  }
+  return messages[reason]
+}
+
+function calculateTotalWealth (player: Player, properties: Property[]): number {
+  let total = player.rubles
+
+  // Add property values (50% of base cost for mortgaged properties)
+  player.properties.forEach(propId => {
+    const property = properties.find(p => p.spaceId === parseInt(propId))
+    if (property) {
+      const space = getSpaceById(property.spaceId)
+      const baseValue = space?.baseCost ?? 0
+      const propertyValue = property.mortgaged ? baseValue * 0.5 : baseValue
+      total += propertyValue
+
+      // Add improvement values
+      total += property.collectivizationLevel * 50
+    }
+  })
+
+  // Subtract debts
+  if (player.debt) {
+    total -= player.debt.amount
+  }
+
+  return total
+}
+
+function initializePlayerStats (playerId: string): PlayerStatistics {
+  return {
+    turnsPlayed: 0,
+    denouncementsMade: 0,
+    denouncementsReceived: 0,
+    tribunalsWon: 0,
+    tribunalsLost: 0,
+    totalGulagTurns: 0,
+    gulagEscapes: 0,
+    moneyEarned: 0,
+    moneySpent: 0,
+    propertiesOwned: 0,
+    maxWealth: 1500,
+    testsPassed: 0,
+    testsFailed: 0
+  }
 }
 
 interface GameActions {
@@ -108,7 +162,20 @@ interface GameActions {
   checkDebtStatus: () => void
 
   // Elimination and ghosts
-  eliminatePlayer: (playerId: string, reason: string) => void
+  eliminatePlayer: (playerId: string, reason: EliminationReason) => void
+  checkElimination: (playerId: string) => boolean
+
+  // Game end
+  checkGameEnd: () => GameEndCondition | null
+  endGame: (condition: GameEndCondition, winnerId: string | null) => void
+  calculateFinalStats: () => void
+
+  // Unanimous end vote
+  initiateEndVote: (initiatorId: string) => void
+  castEndVote: (playerId: string, vote: boolean) => void
+
+  // Statistics
+  updatePlayerStat: (playerId: string, statKey: keyof PlayerStatistics, increment: number) => void
 
   // Round management
   incrementRound: () => void
@@ -168,7 +235,28 @@ const initialState: GameState = {
   activeTradeOffers: [],
   partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
   partyDirectiveDiscard: [],
-  communistTestUsedQuestions: new Set()
+  communistTestUsedQuestions: new Set(),
+
+  // Game end tracking
+  gameEndCondition: null,
+  winnerId: null,
+  showEndScreen: false,
+
+  // Statistics
+  gameStatistics: {
+    gameStartTime: new Date(),
+    totalTurns: 0,
+    playerStats: {},
+    totalDenouncements: 0,
+    totalTribunals: 0,
+    totalGulagSentences: 0,
+    stateTreasuryPeak: 0
+  },
+
+  // Unanimous end vote
+  endVoteInProgress: false,
+  endVoteInitiator: null,
+  endVotes: {}
 }
 
 export const useGameStore = create<GameStore>()(
@@ -237,6 +325,14 @@ export const useGameStore = create<GameStore>()(
         const playerCount = nonStalinPlayers.length
         const stateTreasury = playerCount * 1500 // Starting treasury
 
+        // Initialize player statistics
+        const playerStats: Record<string, PlayerStatistics> = {}
+        players.forEach(player => {
+          if (!player.isStalin) {
+            playerStats[player.id] = initializePlayerStats(player.id)
+          }
+        })
+
         set({
           players,
           stalinPlayerId: stalinPlayer?.id ?? null,
@@ -244,7 +340,16 @@ export const useGameStore = create<GameStore>()(
           stateTreasury,
           partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
           partyDirectiveDiscard: [],
-          communistTestUsedQuestions: new Set()
+          communistTestUsedQuestions: new Set(),
+          gameStatistics: {
+            gameStartTime: new Date(),
+            totalTurns: 0,
+            playerStats,
+            totalDenouncements: 0,
+            totalTribunals: 0,
+            totalGulagSentences: 0,
+            stateTreasuryPeak: stateTreasury
+          }
         })
 
         // Initialize properties
@@ -718,7 +823,7 @@ export const useGameStore = create<GameStore>()(
               message: `${player.name}'s Red Star has fallen to Proletariat - IMMEDIATE EXECUTION!`,
               playerId
             })
-            get().eliminatePlayer(playerId, 'Red Star fallen to Proletariat - executed by the Party')
+            get().eliminatePlayer(playerId, 'redStarDemotion')
           }
         }
       },
@@ -998,7 +1103,7 @@ export const useGameStore = create<GameStore>()(
         if (!player?.inGulag) return
 
         if (player.gulagTurns >= 10) {
-          get().eliminatePlayer(playerId, 'Died in Gulag after 10 turns')
+          get().eliminatePlayer(playerId, 'gulagTimeout')
         }
       },
 
@@ -1441,29 +1546,171 @@ export const useGameStore = create<GameStore>()(
         const player = state.players.find((p) => p.id === playerId)
         if (player == null) return
 
-        get().updatePlayer(playerId, {
-          isEliminated: true,
-          inGulag: false // Remove from Gulag if there
-        })
-
-        // Return all properties to State
+        // Return all properties to State (with improvements removed)
         player.properties.forEach((propId) => {
           get().setPropertyCustodian(parseInt(propId), null)
+          get().updateCollectivizationLevel(parseInt(propId), 0)
         })
 
-        get().updatePlayer(playerId, { properties: [] })
+        // Update player with elimination details
+        get().updatePlayer(playerId, {
+          isEliminated: true,
+          inGulag: false,
+          properties: [],
+          eliminationReason: reason,
+          eliminationTurn: state.roundNumber,
+          finalWealth: player.rubles,
+          finalRank: player.rank,
+          finalProperties: player.properties.length
+        })
 
+        // Log elimination with proper message
+        const message = getEliminationMessage(player.name, reason)
         get().addLogEntry({
-          type: 'gulag',
-          message: `${player.name} has been eliminated: ${reason}. They are now a Ghost of the Revolution.`,
+          type: 'system',
+          message,
           playerId
         })
 
         // Check if game should end
-        const remainingPlayers = state.players.filter((p) => !p.isStalin && !p.isEliminated)
-        if (remainingPlayers.length <= 1) {
-          set({ gamePhase: 'ended' })
+        get().checkGameEnd()
+      },
+
+      checkElimination: (playerId) => {
+        const state = get()
+        const player = state.players.find(p => p.id === playerId)
+        if (!player || player.isEliminated || player.isStalin) return false
+
+        // Bankruptcy check
+        const totalWealth = calculateTotalWealth(player, state.properties)
+        if (totalWealth < 0 && player.debt) {
+          get().eliminatePlayer(playerId, 'bankruptcy')
+          return true
         }
+
+        // Red Star specific - already checked in demotePlayer
+
+        // Gulag timeout - already checked in checkFor10TurnElimination
+
+        return false
+      },
+
+      checkGameEnd: () => {
+        const state = get()
+        const activePlayers = state.players.filter(p => !p.isEliminated && !p.isStalin)
+
+        // Survivor victory
+        if (activePlayers.length === 1) {
+          get().endGame('survivor', activePlayers[0].id)
+          return 'survivor'
+        }
+
+        // Stalin victory (all eliminated)
+        if (activePlayers.length === 0) {
+          get().endGame('stalinWins', null)
+          return 'stalinWins'
+        }
+
+        return null
+      },
+
+      endGame: (condition, winnerId) => {
+        const state = get()
+
+        // Calculate final statistics
+        get().calculateFinalStats()
+
+        set({
+          gamePhase: 'ended',
+          gameEndCondition: condition,
+          winnerId,
+          showEndScreen: true
+        })
+
+        get().addLogEntry({
+          type: 'system',
+          message: `Game Over: ${condition === 'survivor' ? 'Survivor Victory!' : condition === 'stalinWins' ? 'Stalin Wins!' : condition === 'unanimous' ? 'Unanimous Vote to End' : 'Game Ended'}`
+        })
+      },
+
+      calculateFinalStats: () => {
+        const state = get()
+
+        set((state) => ({
+          gameStatistics: {
+            ...state.gameStatistics,
+            gameEndTime: new Date(),
+            totalTurns: state.roundNumber
+          }
+        }))
+      },
+
+      initiateEndVote: (initiatorId) => {
+        set({
+          endVoteInProgress: true,
+          endVoteInitiator: initiatorId,
+          endVotes: {}
+        })
+
+        get().addLogEntry({
+          type: 'system',
+          message: `Comrade ${get().players.find(p => p.id === initiatorId)?.name} has initiated a vote to end the game. All players must vote unanimously to end.`
+        })
+      },
+
+      castEndVote: (playerId, vote) => {
+        const state = get()
+
+        set((state) => ({
+          endVotes: { ...state.endVotes, [playerId]: vote }
+        }))
+
+        const player = state.players.find(p => p.id === playerId)
+        get().addLogEntry({
+          type: 'system',
+          message: `${player?.name} voted ${vote ? 'YES' : 'NO'} to end the game`
+        })
+
+        // Check if all active players have voted
+        const activePlayerIds = state.players
+          .filter(p => !p.isStalin && !p.isEliminated)
+          .map(p => p.id)
+        const allVoted = activePlayerIds.every(id => id in state.endVotes || id in get().endVotes)
+
+        if (allVoted) {
+          const votes = get().endVotes
+          const unanimous = activePlayerIds.every(id => votes[id] === true)
+
+          if (unanimous) {
+            get().endGame('unanimous', null)
+          } else {
+            set({ endVoteInProgress: false, endVoteInitiator: null, endVotes: {} })
+            get().addLogEntry({
+              type: 'system',
+              message: 'End vote failed - not unanimous'
+            })
+          }
+        }
+      },
+
+      updatePlayerStat: (playerId, statKey, increment) => {
+        set((state) => {
+          const currentStats = state.gameStatistics.playerStats[playerId]
+          if (!currentStats) return state
+
+          return {
+            gameStatistics: {
+              ...state.gameStatistics,
+              playerStats: {
+                ...state.gameStatistics.playerStats,
+                [playerId]: {
+                  ...currentStats,
+                  [statKey]: currentStats[statKey] + increment
+                }
+              }
+            }
+          }
+        })
       },
 
       // Card system
@@ -2044,7 +2291,14 @@ export const useGameStore = create<GameStore>()(
         pendingBribes: state.pendingBribes,
         partyDirectiveDeck: state.partyDirectiveDeck,
         partyDirectiveDiscard: state.partyDirectiveDiscard,
-        communistTestUsedQuestions: state.communistTestUsedQuestions
+        communistTestUsedQuestions: state.communistTestUsedQuestions,
+        gameEndCondition: state.gameEndCondition,
+        winnerId: state.winnerId,
+        showEndScreen: state.showEndScreen,
+        gameStatistics: state.gameStatistics,
+        endVoteInProgress: state.endVoteInProgress,
+        endVoteInitiator: state.endVoteInitiator,
+        endVotes: state.endVotes
       })
     }
   )
