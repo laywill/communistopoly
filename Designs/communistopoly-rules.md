@@ -1,3 +1,6 @@
+<!-- Copyright © 2025 William Lay -->
+<!-- Licensed under the PolyForm Noncommercial License 1.0.0 -->
+
 # COMMUNISTOPOLY
 ## A Satirical House-Rules Variant of Monopoly
 ### *"All players are equal, but some players are more equal than others."*

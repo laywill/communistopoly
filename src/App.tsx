@@ -1,3 +1,6 @@
+// Copyright © 2025 William Lay
+// Licensed under the PolyForm Noncommercial License 1.0.0
+
 import { useState } from 'react';
 import { useGameStore } from './store/gameStore';
 import WelcomeScreen from './components/screens/WelcomeScreen';

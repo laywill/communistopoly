@@ -1,3 +1,6 @@
+// Copyright © 2025 William Lay
+// Licensed under the PolyForm Noncommercial License 1.0.0
+
 export type SpaceType = 'property' | 'railway' | 'utility' | 'tax' | 'card' | 'corner'
 
 export type PropertyGroup =

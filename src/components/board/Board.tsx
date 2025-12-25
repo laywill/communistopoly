@@ -1,3 +1,6 @@
+// Copyright © 2025 William Lay
+// Licensed under the PolyForm Noncommercial License 1.0.0
+
 import { BOARD_SPACES } from '../../data/spaces';
 import { BoardSpace } from '../../types/game';
 import { useGameStore } from '../../store/gameStore';

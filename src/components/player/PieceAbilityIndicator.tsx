@@ -1,3 +1,6 @@
+// Copyright © 2025 William Lay
+// Licensed under the PolyForm Noncommercial License 1.0.0
+
 import type { Player } from '../../types/game'
 import { PIECE_ABILITIES } from '../../data/pieceAbilities'
 import { getAbilityStatusText } from '../../utils/pieceAbilityUtils'

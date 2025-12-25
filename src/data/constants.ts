@@ -1,3 +1,6 @@
+// Copyright © 2025 William Lay
+// Licensed under the PolyForm Noncommercial License 1.0.0
+
 import { PropertyGroup } from '../types/game'
 
 export const PROPERTY_COLORS: Record<PropertyGroup, { background: string, border: string, text: string }> = {
