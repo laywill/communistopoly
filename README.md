@@ -10,26 +10,83 @@ Communistopoly is a shared-screen/hot-seat digital board game for 3-6 players, w
 
 This repository contains the web-based implementation built with React, TypeScript, and Vite, featuring authentic Soviet-era visual design inspired by Constructivist propaganda art.
 
-## Current Status: Milestone 1 Complete ✓
+## Current Status: Fully Playable Game - All Milestones Complete! ✓
 
-**Static Board Implementation** - The visual foundation is complete with all 40 board spaces, Soviet-themed styling, and responsive layout. No game logic yet—this is the foundation for future development.
+**Communistopoly is now a complete, fully playable board game!** All core mechanics, special features, and victory conditions have been implemented. The game is ready for 3-6 players with one acting as Stalin.
 
 ### What's Implemented
+
+#### Core Foundation ✓
 - ✅ React + TypeScript + Vite project setup
-- ✅ Complete board rendering with 40 spaces
-- ✅ All space types: Properties, Railways, Utilities, Taxes, Cards, Corners
-- ✅ Property color groups matching the Soviet theme
-- ✅ Soviet-themed styling (colors, fonts, borders)
-- ✅ Board center placeholder
-- ✅ Devcontainer configuration
+- ✅ Complete 40-space board with Soviet theme
+- ✅ Zustand state management with persistence
+- ✅ Error boundary for robust error handling
 - ✅ Responsive design (1024px - 1600px+)
 
-### What's Next (Milestone 2)
-- State management (Zustand store)
-- Player setup flow
-- Game initialization
-- Player pieces on the board
-- Dice rolling and movement
+#### Game Loop & Movement ✓
+- ✅ Player setup (3-6 players + Stalin)
+- ✅ Dice rolling with doubles detection
+- ✅ Player movement around board
+- ✅ Turn management with proper phase tracking
+- ✅ Round system for tracking game time
+
+#### Property System ✓
+- ✅ Property custodianship (ownership)
+- ✅ Quota collection (rent system)
+- ✅ Collectivization levels (0-5 improvements)
+- ✅ Mortgaging and unmortgaging
+- ✅ Property trading between players
+- ✅ Rank restrictions enforcement
+
+#### The Gulag System ✓
+- ✅ Multiple entry reasons (doubles, denouncement, debt, etc.)
+- ✅ Escalating escape difficulty (1st turn: 6s, 5th turn: any doubles)
+- ✅ Five escape methods (roll, pay, vouch, inform, bribe)
+- ✅ Voucher system with consequences
+- ✅ 10-turn elimination mechanic
+- ✅ Rehabilitation confessions (optional)
+
+#### Stalin Powers ✓
+- ✅ Stalin control panel
+- ✅ Bribe acceptance/rejection
+- ✅ Price setting for properties
+- ✅ Confession review system
+- ✅ Absolute authority over game rules
+
+#### Cards & Tests ✓
+- ✅ Party Directive deck (32 cards)
+- ✅ Communist Test system (Easy/Medium/Hard/Trick)
+- ✅ Card effects (movement, money, gulag, rank changes)
+- ✅ Deck reshuffling when empty
+- ✅ Rank progression through tests
+
+#### Player Pieces & Abilities ✓
+- ✅ 8 unique pieces (Hammer, Sickle, Red Star, Tank, etc.)
+- ✅ Special abilities for each piece
+- ✅ Piece restrictions (Tank can't own Collective Farms, etc.)
+- ✅ Ability cooldowns and one-time use tracking
+
+#### Special Property Abilities ✓
+- ✅ Siberian Camps: Send to Gulag (Stalin approval required)
+- ✅ KGB Headquarters: Preview test questions
+- ✅ Ministry of Truth: Rewrite rules
+- ✅ Pravda Press: Force re-votes
+
+#### Game End & Victory ✓
+- ✅ Individual elimination (bankruptcy, execution, Gulag timeout, etc.)
+- ✅ Survivor victory condition
+- ✅ Stalin victory (all players eliminated)
+- ✅ Unanimous end vote system
+- ✅ Victory/defeat screens with statistics
+- ✅ Final game statistics display
+
+#### Polish & Features ✓
+- ✅ Comprehensive game log
+- ✅ Statistics tracking (turns, Gulag time, tests, etc.)
+- ✅ Save/load game state (automatic)
+- ✅ Animations and visual effects
+- ✅ Soviet-themed UI throughout
+- ✅ Modal system for all interactions
 
 ## Quick Start
 
@@ -113,11 +170,12 @@ communistopoly/
 ## Technology Stack
 
 - **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite 5
-- **Styling**: CSS Modules
-- **State Management**: (Coming in Milestone 2) - Zustand or React Context + useReducer
+- **Build Tool**: Vite 7.3
+- **Styling**: CSS with CSS Modules
+- **State Management**: Zustand with persistence middleware
 - **Fonts**: Google Fonts (Oswald, Roboto Condensed, Roboto Mono)
-- **Audio**: (Future) Howler.js
+- **Error Handling**: React Error Boundaries
+- **Type Safety**: TypeScript strict mode
 
 ## Design Philosophy
 
@@ -141,51 +199,40 @@ For the complete rule set, see `Designs/communistopoly-rules.md`. Key mechanics 
 - **Stalin's Powers**: Absolute authority over all players
 - **Special Mechanics**: Tribunals, property collectivization, pilfering, and more
 
-## Development Roadmap
+## How to Play
 
-### Phase 1: Foundation (Complete) ✓
-- [x] Project setup
-- [x] Board rendering
-- [x] All space types implemented
-- [x] Soviet theme styling
+### Setup
+1. Launch the game and click "START NEW GAME"
+2. Select 3-6 players (one will be Stalin)
+3. Choose your piece - each has unique abilities
+4. Stalin player gets the control panel
 
-### Phase 2: Core Game Loop ✓
-- [x] Game state management
-- [x] Dice rolling and movement
-- [x] Turn management
-- [x] Basic space resolution
+### Basic Gameplay
+- **Turns**: Roll dice, move, resolve the space you land on
+- **Properties**: Land on unclaimed properties to purchase them (if your rank allows)
+- **Quotas**: Pay rent to property custodians when landing on their properties
+- **Cards**: Draw Party Directives or take Communist Tests when landing on those spaces
+- **Passing STOY**: Collect 200₽ when passing Start the Oligarch Year
 
-### Phase 3: Property System
-- [X] Property ownership (custodianship)
-- [X] Quota collection (rent)
-- [X] Collectivization (improvements)
-- [X] Trading system
+### The Gulag
+- Enter via: Rolling 3 doubles, denouncement, debt default, Stalin's decree
+- Escape by: Rolling required doubles, paying 500₽, getting vouched, informing on another, bribing Stalin
+- Difficulty increases each turn (1st turn: need 6-6, 5th turn: any doubles)
+- **10 turns in Gulag = Elimination!**
 
-### Phase 4: Gulag Mechanics (Next)
-- [ ] Gulag mechanics
+### Winning
+- **Survivor Victory**: Be the last player standing (not eliminated)
+- **Stalin Victory**: All players are eliminated
+- **Unanimous End**: All players vote to end the game
 
-### Phase 5: Stalin & Special Mechanics
-- [ ] Stalin control panel
-- [ ] Denouncement system
-- [ ] Tribunal flow
-- [ ] Gulag mechanics
+### Special Features
+- **Piece Abilities**: Each game piece has unique powers (check rules for details)
+- **Rank System**: Progress from Proletariat → Party Member → Commissar → Inner Circle
+- **Property Abilities**: Some properties grant special powers when owned
+- **Trading**: Players can trade properties, money, and favors
+- **Confessions**: Players in Gulag can write confessions to Stalin for possible early release
 
-### Phase 6: Cards & Tests
-- [ ] Party Directive cards
-- [ ] Communist Test system
-- [ ] Card deck management
-
-### Phase 7: Player Pieces
-- [ ] Piece selection
-- [ ] Special abilities
-- [ ] Restrictions enforcement
-
-### Phase 8: Polish & Completion
-- [ ] Player elimination
-- [ ] Victory conditions
-- [ ] Game log
-- [ ] Animations
-- [ ] Sound effects (optional)
+For complete rules, see `Designs/communistopoly-rules.md`.
 
 ## Browser Support
 
@@ -225,25 +272,41 @@ As the developer of this Monopoly game project, it is essential to clarify the f
 
 7. Personal Responsibility: As the developer, you are responsible for complying with all applicable laws, including intellectual property laws, and ensuring that your usage of this project is within legal boundaries.
 
+## Features & Highlights
+
+### Automatic Save/Load
+- Game state is automatically saved to browser localStorage
+- Resume interrupted games automatically
+- Clear save data from Main Menu if needed
+
+### Statistics Tracking
+- Individual player stats (turns played, Gulag time, tests passed/failed)
+- Game-wide statistics (total denouncements, tribunals, Gulag sentences)
+- Final statistics display on game end screen
+
+### Error Handling
+- Error boundary catches crashes gracefully
+- Clear error messages with restart option
+- Stack traces in development mode
+
+### Keyboard Shortcuts
+- `Ctrl+Shift+R`: Quick reset game (development feature)
+
+### Visual Polish
+- Smooth animations for dice rolls and movements
+- Soviet-themed color palette throughout
+- Responsive modals for all interactions
+- Pulsing animations on important elements
+- Screen shake effects for dramatic moments (eliminated players coming soon)
+
 ---
 
-## Testing the Board
+## Known Limitations
 
-After starting the dev server, you should see:
-- A complete board with all 40 spaces
-- Four corner spaces (STOY, GULAG, BREADLINE, ENEMY OF THE STATE)
-- Property spaces with color-coded bands
-- Railway stations in black with red accents
-- Utilities with special "COMMISSAR+ ONLY" markers
-- Tax spaces with warning styling
-- Card spaces (Party Directive and Communist Test)
-- A center area with placeholder for dice, cards, and turn info
-
-The board should be:
-- Centred on screen
-- Properly bordered with Soviet Red and Kremlin Gold
-- Responsive to window size
-- Visually complete and styled according to the Soviet theme
+- **Single Device Only**: This is a hot-seat game requiring all players to share one screen
+- **No AI Players**: All players must be human (including Stalin)
+- **No Undo**: All actions are final once committed
+- **Browser Storage**: Save data is stored locally and will be lost if browser data is cleared
 
 ---
 
