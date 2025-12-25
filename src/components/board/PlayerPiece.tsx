@@ -1,3 +1,6 @@
+// Copyright © 2025 William Lay
+// Licensed under the PolyForm Noncommercial License 1.0.0
+
 import { Player } from '../../types/game';
 import { getPieceByType } from '../../data/pieces';
 import './PlayerPiece.css';

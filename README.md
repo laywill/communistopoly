@@ -1,3 +1,6 @@
+<!-- Copyright © 2025 William Lay -->
+<!-- Licensed under the PolyForm Noncommercial License 1.0.0 -->
+
 # Communistopoly ☭
 
 A satirical digital board game that transforms Monopoly's capitalist fantasy into a darkly comedic simulation of Soviet bureaucracy, paranoia, and ideological absurdity.
