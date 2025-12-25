@@ -85,7 +85,7 @@ export function SickleMotherlandModal({ playerId, onClose }: SickleMotherlandMod
             <button className={styles.announceButton} onClick={handleAnnounce}>
               <div className={styles.buttonIcon}>🌾</div>
               <div className={styles.buttonText}>
-                <div className={styles.buttonTitle}>ANNOUNCE</div>
+                <div className={styles.buttonTitle}>I REMEMBERED TO ANNOUNCE</div>
                 <div className={styles.buttonDesc}>&quot;For the Motherland!&quot;</div>
               </div>
             </button>
@@ -93,7 +93,7 @@ export function SickleMotherlandModal({ playerId, onClose }: SickleMotherlandMod
             <button className={`${styles.forgetButton} ${player.rubles < 25 ? styles.insufficient : ''}`} onClick={handleForget}>
               <div className={styles.buttonIcon}>❌</div>
               <div className={styles.buttonText}>
-                <div className={styles.buttonTitle}>FORGET</div>
+                <div className={styles.buttonTitle}>I FORGET</div>
                 <div className={styles.buttonDesc}>Pay ₽25 fine</div>
               </div>
             </button>
