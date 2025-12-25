@@ -10,6 +10,7 @@ import { TradeModal } from '../modals/TradeModal';
 import { SickleHarvestModal } from '../modals/SickleHarvestModal';
 import { IronCurtainDisappearModal } from '../modals/IronCurtainDisappearModal';
 import { LeninSpeechModal } from '../modals/LeninSpeechModal';
+import { DenounceModal } from '../modals/DenounceModal';
 import { PieceAbilityIndicator } from './PieceAbilityIndicator';
 import { shouldHideIronCurtainMoney } from '../../utils/pieceAbilityUtils';
 import './PlayerDashboard.css';
@@ -41,6 +42,7 @@ export default function PlayerDashboard() {
   const [showSickleHarvest, setShowSickleHarvest] = useState(false);
   const [showIronCurtainDisappear, setShowIronCurtainDisappear] = useState(false);
   const [showLeninSpeech, setShowLeninSpeech] = useState(false);
+  const [showDenounce, setShowDenounce] = useState(false);
 
   const handleEndTurn = () => {
     endTurn();
@@ -207,6 +209,19 @@ export default function PlayerDashboard() {
                     {/* Property Management Actions - Available during pre-roll and post-turn, but not in Gulag */}
                     {!player.inGulag && (turnPhase === 'pre-roll' || turnPhase === 'post-turn') && (
                       <div className="property-actions">
+                        {/* Denounce Button */}
+                        <button
+                          className="action-button secondary"
+                          onClick={() => {
+                            setSelectedPlayerId(player.id);
+                            setShowDenounce(true);
+                          }}
+                          title="Denounce another player to the Party"
+                          style={{ background: 'var(--color-blood-burgundy)', color: 'white' }}
+                        >
+                          ⚖️ DENOUNCE
+                        </button>
+
                         <button
                           className="action-button secondary"
                           onClick={() => {
@@ -415,6 +430,17 @@ export default function PlayerDashboard() {
           leninPlayerId={selectedPlayerId}
           onClose={() => {
             setShowLeninSpeech(false);
+            setSelectedPlayerId(null);
+          }}
+        />
+      )}
+
+      {/* Denounce Modal */}
+      {showDenounce && selectedPlayerId && (
+        <DenounceModal
+          accuserId={selectedPlayerId}
+          onClose={() => {
+            setShowDenounce(false);
             setSelectedPlayerId(null);
           }}
         />

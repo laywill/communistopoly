@@ -8,11 +8,13 @@ import SetupScreen from './components/screens/SetupScreen';
 import GameScreen from './components/screens/GameScreen';
 import GameEndScreen from './components/screens/GameEndScreen';
 import RulesModal from './components/modals/RulesModal';
+import { TribunalModal } from './components/modals/TribunalModal';
 import './App.css';
 
 function App() {
   const [showRules, setShowRules] = useState(false);
   const gamePhase = useGameStore((state) => state.gamePhase);
+  const activeTribunal = useGameStore((state) => state.activeTribunal);
 
   return (
     <div className="app">
@@ -27,6 +29,9 @@ function App() {
       {gamePhase === 'ended' && <GameEndScreen />}
 
       {showRules && <RulesModal onClose={() => { setShowRules(false); }} />}
+
+      {/* Tribunal Modal - Shows when there's an active tribunal */}
+      {activeTribunal && <TribunalModal />}
     </div>
   );
 }
