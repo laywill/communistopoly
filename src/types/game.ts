@@ -77,11 +77,11 @@ export type GulagReason =
 
 // Elimination reasons
 export type EliminationReason =
-  | 'bankruptcy'           // Can't pay debt, no assets
-  | 'execution'            // Stalin executed
-  | 'gulagTimeout'         // 10 turns in Gulag
-  | 'redStarDemotion'      // Red Star fell to Proletariat
-  | 'unanimous'            // All players + Stalin voted
+  | 'bankruptcy' // Can't pay debt, no assets
+  | 'execution' // Stalin executed
+  | 'gulagTimeout' // 10 turns in Gulag
+  | 'redStarDemotion' // Red Star fell to Proletariat
+  | 'unanimous' // All players + Stalin voted
 
 export interface Player {
   id: string
@@ -255,10 +255,10 @@ export interface TradeItems {
 
 // Game End conditions
 export type GameEndCondition =
-  | 'survivor'      // One player remains
-  | 'stalinWins'    // All players eliminated
-  | 'timeout'       // 3+ hours passed
-  | 'unanimous'     // Players voted to end
+  | 'survivor' // One player remains
+  | 'stalinWins' // All players eliminated
+  | 'timeout' // 3+ hours passed
+  | 'unanimous' // Players voted to end
 
 // Player statistics
 export interface PlayerStatistics {

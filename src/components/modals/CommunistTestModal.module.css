@@ -1,10 +1,7 @@
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
+  background: rgb(0 0 0 / 85%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,6 +13,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -25,7 +23,7 @@
   background: linear-gradient(135deg, #2C1810 0%, #1A1A1A 100%);
   border: 4px solid #C41E3A;
   border-radius: 8px;
-  box-shadow: 0 0 40px rgba(196, 30, 58, 0.5), inset 0 0 0 2px #D4A84B;
+  box-shadow: 0 0 40px rgb(196 30 58 / 50%), inset 0 0 0 2px #D4A84B;
   max-width: 600px;
   width: 90%;
   max-height: 90vh;
@@ -38,6 +36,7 @@
     transform: scale(0.9) translateY(-20px);
     opacity: 0;
   }
+
   to {
     transform: scale(1) translateY(0);
     opacity: 1;
@@ -60,13 +59,13 @@
 }
 
 .title {
-  font-family: 'Oswald', 'Bebas Neue', Impact, sans-serif;
+  font-family: Oswald, 'Bebas Neue', Impact, sans-serif;
   font-size: 28px;
   font-weight: 700;
   color: #FAF6EF;
   letter-spacing: 0.1em;
   margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 2px 2px 4px rgb(0 0 0 / 50%);
 }
 
 .content {
@@ -82,10 +81,10 @@
 }
 
 .sectionTitle {
-  font-family: 'Oswald', sans-serif;
+  font-family: Oswald, sans-serif;
   font-size: 20px;
   color: #D4A84B;
-  margin: 0 0 12px 0;
+  margin: 0 0 12px;
   text-transform: uppercase;
 }
 
@@ -100,7 +99,7 @@
   flex-direction: column;
   gap: 12px;
   padding: 16px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   border: 2px solid #D4A84B;
   border-radius: 4px;
 }
@@ -117,7 +116,7 @@
 }
 
 .radioOption:hover {
-  background: rgba(212, 168, 75, 0.1);
+  background: rgb(212 168 75 / 10%);
 }
 
 .radioOption input[type="radio"] {
@@ -128,14 +127,14 @@
 
 .difficultyInfo {
   padding: 16px;
-  background: rgba(196, 30, 58, 0.2);
+  background: rgb(196 30 58 / 20%);
   border: 2px solid #C41E3A;
   border-radius: 4px;
 }
 
 .difficultyInfo h4 {
-  margin: 0 0 12px 0;
-  font-family: 'Oswald', sans-serif;
+  margin: 0 0 12px;
+  font-family: Oswald, sans-serif;
   font-size: 18px;
 }
 
@@ -179,7 +178,7 @@
   display: flex;
   justify-content: space-between;
   padding: 12px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   border: 2px solid #D4A84B;
   border-radius: 4px;
 }
@@ -202,7 +201,7 @@
   padding: 12px;
   background: linear-gradient(135deg, #C41E3A, #8B0000);
   color: #FAF6EF;
-  font-family: 'Oswald', sans-serif;
+  font-family: Oswald, sans-serif;
   font-size: 20px;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -212,16 +211,16 @@
 
 .question {
   padding: 20px;
-  background: rgba(212, 168, 75, 0.1);
+  background: rgb(212 168 75 / 10%);
   border: 3px solid #D4A84B;
   border-radius: 4px;
 }
 
 .questionLabel {
-  font-family: 'Oswald', sans-serif;
+  font-family: Oswald, sans-serif;
   font-size: 16px;
   color: #D4A84B;
-  margin: 0 0 12px 0;
+  margin: 0 0 12px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -235,16 +234,16 @@
 
 .answer {
   padding: 20px;
-  background: rgba(76, 175, 80, 0.1);
+  background: rgb(76 175 80 / 10%);
   border: 3px solid #4CAF50;
   border-radius: 4px;
 }
 
 .answerLabel {
-  font-family: 'Oswald', sans-serif;
+  font-family: Oswald, sans-serif;
   font-size: 14px;
   color: #4CAF50;
-  margin: 0 0 12px 0;
+  margin: 0 0 12px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -259,15 +258,15 @@
 
 .alternativeAnswers {
   font-size: 14px;
-  margin: 12px 0 0 0;
+  margin: 12px 0 0;
   color: #8BC34A;
   font-style: italic;
 }
 
 .instructions {
   padding: 16px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 2px solid rgba(212, 168, 75, 0.3);
+  background: rgb(0 0 0 / 30%);
+  border: 2px solid rgb(212 168 75 / 30%);
   border-radius: 4px;
   font-size: 14px;
   line-height: 1.6;
@@ -300,17 +299,17 @@
 }
 
 .resultCorrect {
-  background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.1));
+  background: linear-gradient(135deg, rgb(76 175 80 / 30%), rgb(76 175 80 / 10%));
   border: 3px solid #4CAF50;
 }
 
 .resultIncorrect {
-  background: linear-gradient(135deg, rgba(244, 67, 54, 0.3), rgba(244, 67, 54, 0.1));
+  background: linear-gradient(135deg, rgb(244 67 54 / 30%), rgb(244 67 54 / 10%));
   border: 3px solid #F44336;
 }
 
 .resultTitle {
-  font-family: 'Oswald', sans-serif;
+  font-family: Oswald, sans-serif;
   font-size: 32px;
   margin: 0;
   letter-spacing: 0.15em;
@@ -326,15 +325,15 @@
 
 .answerReveal {
   padding: 16px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   border: 2px solid #D4A84B;
   border-radius: 4px;
 }
 
 .answerReveal h4 {
-  font-family: 'Oswald', sans-serif;
+  font-family: Oswald, sans-serif;
   color: #D4A84B;
-  margin: 0 0 8px 0;
+  margin: 0 0 8px;
   font-size: 16px;
   text-transform: uppercase;
 }
@@ -353,12 +352,12 @@
 }
 
 .rewardDisplay {
-  background: rgba(76, 175, 80, 0.2);
+  background: rgb(76 175 80 / 20%);
   border: 2px solid #4CAF50;
 }
 
 .penaltyDisplay {
-  background: rgba(244, 67, 54, 0.2);
+  background: rgb(244 67 54 / 20%);
   border: 2px solid #F44336;
 }
 
@@ -375,14 +374,14 @@
 }
 
 .rubles {
-  font-family: 'Oswald', sans-serif;
+  font-family: Oswald, sans-serif;
   font-size: 24px;
 }
 
 .rankUpText,
 .demoteText {
   font-size: 16px;
-  margin: 12px 0 0 0;
+  margin: 12px 0 0;
   font-weight: 600;
 }
 
@@ -396,7 +395,7 @@
 
 .redStarWarning {
   padding: 12px;
-  background: rgba(255, 193, 7, 0.2);
+  background: rgb(255 193 7 / 20%);
   border: 2px solid #FFC107;
   border-radius: 4px;
   text-align: center;
@@ -412,7 +411,7 @@
 }
 
 .trickQuestion {
-  font-family: 'Oswald', sans-serif;
+  font-family: Oswald, sans-serif;
   font-size: 24px;
   text-align: center;
   color: #FFC107;
@@ -428,7 +427,7 @@
 
 .trickDecision {
   padding: 16px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   border: 2px solid #D4A84B;
   border-radius: 4px;
 }
@@ -455,7 +454,7 @@
 .actions button {
   flex: 1;
   padding: 16px;
-  font-family: 'Oswald', sans-serif;
+  font-family: Oswald, sans-serif;
   font-size: 16px;
   font-weight: 700;
   text-transform: uppercase;
@@ -464,17 +463,17 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 0 rgb(0 0 0 / 30%);
 }
 
 .actions button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 0 rgb(0 0 0 / 30%);
 }
 
 .actions button:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 0 rgb(0 0 0 / 30%);
 }
 
 .buttonPrimary {

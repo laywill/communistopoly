@@ -80,6 +80,6 @@ export function getPieceByType (type: PieceType): PieceData | undefined {
   return PIECES.find(piece => piece.type === type)
 }
 
-export function getAvailablePieces (usedPieces: (PieceType | null)[]): PieceData[] {
+export function getAvailablePieces (usedPieces: Array<PieceType | null>): PieceData[] {
   return PIECES.filter(piece => !usedPieces.includes(piece.type))
 }

@@ -35,7 +35,7 @@ export interface DirectiveCard {
   title: string
   description: string
   effect: DirectiveEffect
-  flavorText?: string
+  flavourText?: string
 }
 
 export const PARTY_DIRECTIVE_CARDS: DirectiveCard[] = [
@@ -68,7 +68,7 @@ export const PARTY_DIRECTIVE_CARDS: DirectiveCard[] = [
     title: 'REHABILITATION COMPLETE',
     description: 'Your re-education is successful. Get out of Gulag free.',
     effect: { type: 'freeFromGulag' },
-    flavorText: 'Keep this card until needed or traded'
+    flavourText: 'Keep this card until needed or traded'
   },
   {
     id: 'pd-6',
@@ -105,7 +105,7 @@ export const PARTY_DIRECTIVE_CARDS: DirectiveCard[] = [
     title: 'DENOUNCED!',
     description: 'An anonymous comrade has reported you. Tribunal immediately.',
     effect: { type: 'custom', handler: 'triggerAnonymousTribunal' },
-    flavorText: 'Stalin will preside over the tribunal'
+    flavourText: 'Stalin will preside over the tribunal'
   },
   {
     id: 'pd-12',
@@ -121,7 +121,7 @@ export const PARTY_DIRECTIVE_CARDS: DirectiveCard[] = [
   },
   {
     id: 'pd-14',
-    title: 'BANK ERROR IN YOUR FAVOR',
+    title: 'BANK ERROR IN YOUR FAVOUR',
     description: 'The State accounting office has made a mistake. Collect ₽300.',
     effect: { type: 'money', amount: 300 }
   },

@@ -1,10 +1,7 @@
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  inset: 0;
+  background: rgb(0 0 0 / 80%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,7 +17,7 @@
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 10px 40px rgb(0 0 0 / 80%);
 }
 
 .header {
@@ -40,7 +37,7 @@
   margin: 0;
   font-size: 1.8rem;
   color: var(--color-gold);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 2px 2px 4px rgb(0 0 0 / 50%);
   letter-spacing: 2px;
 }
 
@@ -53,14 +50,14 @@
   line-height: 1.6;
   margin-bottom: 1.5rem;
   color: var(--color-cream);
-  background: rgba(139, 69, 19, 0.2);
+  background: rgb(139 69 19 / 20%);
   padding: 1rem;
   border-radius: 8px;
   border-left: 4px solid #8B4513;
 }
 
 .sectionTitle {
-  margin: 1.5rem 0 1rem 0;
+  margin: 1.5rem 0 1rem;
   color: var(--color-gold);
   font-size: 1.3rem;
   border-bottom: 2px solid var(--color-gold);
@@ -75,7 +72,7 @@
 }
 
 .propertyButton {
-  background: rgba(139, 69, 19, 0.3);
+  background: rgb(139 69 19 / 30%);
   border: 2px solid var(--color-gold);
   border-radius: 8px;
   padding: 1rem;
@@ -85,10 +82,10 @@
 }
 
 .propertyButton:hover {
-  background: rgba(139, 69, 19, 0.5);
+  background: rgb(139 69 19 / 50%);
   border-color: var(--color-cream);
   transform: translateX(5px);
-  box-shadow: 0 4px 12px rgba(212, 168, 75, 0.3);
+  box-shadow: 0 4px 12px rgb(212 168 75 / 30%);
 }
 
 .propertyInfo {
@@ -127,7 +124,7 @@
 }
 
 .noProperties {
-  background: rgba(196, 30, 58, 0.2);
+  background: rgb(196 30 58 / 20%);
   border: 2px solid var(--color-blood-burgundy);
   border-radius: 8px;
   padding: 2rem;
@@ -151,7 +148,7 @@
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 2px solid rgba(212, 168, 75, 0.3);
+  border-top: 2px solid rgb(212 168 75 / 30%);
 }
 
 .buttonCancel {
@@ -171,5 +168,5 @@
 .buttonCancel:hover {
   background: linear-gradient(135deg, #C41E3A 0%, #8B0000 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(196, 30, 58, 0.4);
+  box-shadow: 0 4px 12px rgb(196 30 58 / 40%);
 }

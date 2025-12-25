@@ -1,9 +1,6 @@
 .game-end-screen {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: linear-gradient(135deg, #8b0000 0%, #4a0000 100%);
   display: flex;
   align-items: center;
@@ -16,6 +13,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -29,7 +27,7 @@
   max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 50px rgb(255 215 0 / 50%);
   animation: slideDown 0.5s ease-out;
 }
 
@@ -38,6 +36,7 @@
     transform: translateY(-50px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -60,14 +59,14 @@
   font-size: 48px;
   font-weight: bold;
   color: #ffd700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  text-shadow: 2px 2px 4px rgb(0 0 0 / 80%);
   margin: 20px 0;
   letter-spacing: 4px;
 }
 
 .stalin-title {
   font-size: 56px;
-  color: #ff0000;
+  color: #f00;
 }
 
 /* Survivor Victory Styles */
@@ -75,7 +74,7 @@
   text-align: center;
   margin: 30px 0;
   padding: 30px;
-  background: rgba(255, 215, 0, 0.1);
+  background: rgb(255 215 0 / 10%);
   border: 2px solid #ffd700;
   border-radius: 8px;
 }
@@ -90,7 +89,7 @@
   font-weight: bold;
   color: #ffd700;
   margin: 10px 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  text-shadow: 2px 2px 4px rgb(0 0 0 / 80%);
 }
 
 .winner-subtitle {
@@ -107,7 +106,7 @@
   margin: 30px 0;
   padding: 20px;
   border-left: 4px solid #ffd700;
-  background: rgba(255, 215, 0, 0.05);
+  background: rgb(255 215 0 / 5%);
 }
 
 .winner-stats,
@@ -138,7 +137,7 @@
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
   border-radius: 4px;
 }
 
@@ -166,13 +165,13 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
   border-radius: 4px;
   border-left: 4px solid transparent;
 }
 
 .player-row.survivor {
-  border-left-color: #00ff00;
+  border-left-color: #0f0;
 }
 
 .player-row.eliminated,
@@ -249,10 +248,10 @@
 
 .stalin-glory {
   font-size: 32px;
-  color: #ff0000;
+  color: #f00;
   font-weight: bold;
   margin-top: 20px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  text-shadow: 2px 2px 4px rgb(0 0 0 / 80%);
 }
 
 .stalin-portrait {
@@ -262,8 +261,8 @@
 
 .portrait-frame {
   font-size: 120px;
-  color: #ff0000;
-  text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+  color: #f00;
+  text-shadow: 0 0 20px rgb(255 0 0 / 80%);
   animation: pulse 2s ease-in-out infinite;
 }
 
@@ -272,6 +271,7 @@
     transform: scale(1);
     opacity: 1;
   }
+
   50% {
     transform: scale(1.1);
     opacity: 0.8;
@@ -299,7 +299,7 @@
 .game-summary {
   margin: 30px 0;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   border-radius: 8px;
 }
 
@@ -313,7 +313,7 @@
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
   border-radius: 4px;
   color: #ccc;
 }
@@ -352,7 +352,7 @@
 .new-game-button:hover {
   background: #ffed4e;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 4px 8px rgb(255 215 0 / 50%);
 }
 
 .main-menu-button {
@@ -361,7 +361,7 @@
 }
 
 .main-menu-button:hover {
-  background: rgba(255, 215, 0, 0.1);
+  background: rgb(255 215 0 / 10%);
   transform: translateY(-2px);
 }
 
@@ -371,7 +371,7 @@
 }
 
 .game-end-content::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgb(0 0 0 / 30%);
   border-radius: 5px;
 }
 

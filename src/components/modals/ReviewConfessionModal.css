@@ -13,7 +13,7 @@
   font-size: 28px;
   color: #ffd700;
   margin-bottom: 10px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  text-shadow: 2px 2px 4px rgb(0 0 0 / 80%);
 }
 
 .review-subtitle {
@@ -27,7 +27,7 @@
   align-items: center;
   gap: 20px;
   padding: 20px;
-  background: rgba(255, 0, 0, 0.1);
+  background: rgb(255 0 0 / 10%);
   border: 2px solid #8b0000;
   border-radius: 8px;
   margin-bottom: 25px;
@@ -69,7 +69,7 @@
 
 .confession-text {
   padding: 20px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgb(0 0 0 / 50%);
   border-left: 4px solid #8b0000;
   border-radius: 4px;
   font-size: 16px;
@@ -87,7 +87,7 @@
 
 .stalin-decision {
   padding: 20px;
-  background: rgba(255, 215, 0, 0.05);
+  background: rgb(255 215 0 / 5%);
   border: 2px solid #ffd700;
   border-radius: 8px;
   margin-bottom: 20px;
@@ -121,32 +121,32 @@
 }
 
 .accept-button {
-  background: #00aa00;
+  background: #0a0;
   color: #fff;
-  border-color: #006600;
+  border-color: #060;
 }
 
 .accept-button:hover {
-  background: #00cc00;
+  background: #0c0;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 170, 0, 0.5);
+  box-shadow: 0 4px 8px rgb(0 170 0 / 50%);
 }
 
 .reject-button {
-  background: #cc0000;
+  background: #c00;
   color: #fff;
-  border-color: #880000;
+  border-color: #800;
 }
 
 .reject-button:hover {
-  background: #ee0000;
+  background: #e00;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(204, 0, 0, 0.5);
+  box-shadow: 0 4px 8px rgb(204 0 0 / 50%);
 }
 
 .stalin-note {
   padding: 15px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgb(255 255 255 / 5%);
   border-left: 4px solid #ffd700;
   border-radius: 4px;
 }

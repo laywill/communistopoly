@@ -229,7 +229,7 @@ For the complete rule set, see `Designs/communistopoly-rules.md`. Key mechanics 
 - **Piece Abilities**: Each game piece has unique powers (check rules for details)
 - **Rank System**: Progress from Proletariat → Party Member → Commissar → Inner Circle
 - **Property Abilities**: Some properties grant special powers when owned
-- **Trading**: Players can trade properties, money, and favors
+- **Trading**: Players can trade properties, money, and favours
 - **Confessions**: Players in Gulag can write confessions to Stalin for possible early release
 
 For complete rules, see `Designs/communistopoly-rules.md`.
