@@ -14,8 +14,8 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
       parserOptions: {
-        projectService: true,
-      },
+        projectService: true
+      }
     },
     plugins: {
       'react-hooks': pluginReactHooks

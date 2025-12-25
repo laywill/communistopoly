@@ -16,7 +16,7 @@ import {
 /**
  * Hook for checking and using piece abilities
  */
-export function usePieceAbility(player: Player | undefined) {
+export function usePieceAbility (player: Player | undefined) {
   const gameStore = useGameStore()
 
   if (player?.piece == null) {
@@ -152,7 +152,7 @@ export function usePieceAbility(player: Player | undefined) {
 /**
  * Helper to check if a player can be denounced by another player based on rank
  */
-export function canDenouncePieceByRank(
+export function canDenouncePieceByRank (
   denouncer: Player,
   target: Player
 ): boolean {
@@ -173,7 +173,7 @@ export function canDenouncePieceByRank(
 /**
  * Helper to calculate quota with piece ability modifiers
  */
-export function calculateQuotaWithPieceAbility(
+export function calculateQuotaWithPieceAbility (
   baseQuota: number,
   payerPiece: PieceType | null,
   propertyGroup: string
@@ -191,10 +191,10 @@ export function calculateQuotaWithPieceAbility(
 /**
  * Helper to check if a piece can own properties in a specific group
  */
-export function canOwnPropertyGroup(
+export function canOwnPropertyGroup (
   piece: PieceType | null,
   propertyGroup: string
-): { canOwn: boolean; reason?: string } {
+): { canOwn: boolean, reason?: string } {
   // Tank: Cannot control Collective Farms
   if (piece === 'tank' && propertyGroup === 'collective') {
     return {
@@ -209,7 +209,7 @@ export function canOwnPropertyGroup(
 /**
  * Helper to apply test penalty multiplier for Red Star
  */
-export function applyTestPenaltyMultiplier(
+export function applyTestPenaltyMultiplier (
   basePenalty: number,
   playerPiece: PieceType | null
 ): number {
@@ -222,6 +222,6 @@ export function applyTestPenaltyMultiplier(
 /**
  * Helper to check if player is immune to trick questions
  */
-export function isImmuneToTrickQuestions(piece: PieceType | null): boolean {
+export function isImmuneToTrickQuestions (piece: PieceType | null): boolean {
   return piece === 'vodkaBottle'
 }

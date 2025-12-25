@@ -75,6 +75,14 @@ export type GulagReason =
   | 'campLabour' // Sent by Siberian Camp custodian
   | 'voucherConsequence' // Voucher went to Gulag due to vouchee's offence
 
+// Elimination reasons
+export type EliminationReason =
+  | 'bankruptcy' // Can't pay debt, no assets
+  | 'execution' // Stalin executed
+  | 'gulagTimeout' // 10 turns in Gulag
+  | 'redStarDemotion' // Red Star fell to Proletariat
+  | 'unanimous' // All players + Stalin voted
+
 export interface Player {
   id: string
   name: string
@@ -87,6 +95,13 @@ export interface Player {
   gulagTurns: number
   isEliminated: boolean
   isStalin: boolean
+
+  // Elimination tracking
+  eliminationReason?: EliminationReason
+  eliminationTurn?: number
+  finalWealth?: number
+  finalRank?: PartyRank
+  finalProperties?: number
 
   // Tracking for rank progression
   correctTestAnswers: number
@@ -194,6 +209,8 @@ export type PendingActionType =
   | 'bread-loaf-begging'
   | 'trade-offer'
   | 'trade-response'
+  | 'write-confession'
+  | 'review-confession'
 
 export interface PendingAction {
   type: PendingActionType
@@ -234,6 +251,59 @@ export interface TradeItems {
   properties: string[] // property space IDs
   gulagCards: number // Number of "Get out of Gulag free" cards
   favours: number // Number of favours owed
+}
+
+// Game End conditions
+export type GameEndCondition =
+  | 'survivor' // One player remains
+  | 'stalinWins' // All players eliminated
+  | 'timeout' // 3+ hours passed
+  | 'unanimous' // Players voted to end
+
+// Player statistics
+export interface PlayerStatistics {
+  turnsPlayed: number
+  denouncementsMade: number
+  denouncementsReceived: number
+  tribunalsWon: number
+  tribunalsLost: number
+  totalGulagTurns: number
+  gulagEscapes: number
+  moneyEarned: number
+  moneySpent: number
+  propertiesOwned: number
+  maxWealth: number
+  testsPassed: number
+  testsFailed: number
+}
+
+// Game statistics
+export interface GameStatistics {
+  gameStartTime: Date
+  gameEndTime?: Date
+  totalTurns: number
+  playerStats: Record<string, PlayerStatistics>
+  totalDenouncements: number
+  totalTribunals: number
+  totalGulagSentences: number
+  stateTreasuryPeak: number
+}
+
+// Unanimous end vote
+export interface EndVote {
+  voterId: string
+  vote: boolean
+  timestamp: Date
+}
+
+// Rehabilitation Confession
+export interface Confession {
+  id: string
+  prisonerId: string
+  confession: string
+  timestamp: Date
+  reviewed: boolean
+  accepted?: boolean
 }
 
 // Game state
@@ -279,4 +349,20 @@ export interface GameState {
   partyDirectiveDeck: string[] // Card IDs (shuffled)
   partyDirectiveDiscard: string[] // Used cards
   communistTestUsedQuestions: Set<string> // Question IDs already used
+
+  // Game end tracking
+  gameEndCondition: GameEndCondition | null
+  winnerId: string | null
+  showEndScreen: boolean
+
+  // Statistics
+  gameStatistics: GameStatistics
+
+  // Unanimous end vote
+  endVoteInProgress: boolean
+  endVoteInitiator: string | null
+  endVotes: Record<string, boolean> // playerId -> vote
+
+  // Rehabilitation confessions
+  confessions: Confession[]
 }

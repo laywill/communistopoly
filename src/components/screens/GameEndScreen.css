@@ -1,0 +1,385 @@
+.game-end-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #8b0000 0%, #4a0000 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.game-end-content {
+  background: #2a0000;
+  border: 3px solid #ffd700;
+  border-radius: 8px;
+  padding: 40px;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 50px rgb(255 215 0 / 50%);
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.end-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.soviet-symbols {
+  font-size: 24px;
+  color: #ffd700;
+  margin: 10px 0;
+  letter-spacing: 8px;
+}
+
+.end-title {
+  font-size: 48px;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 2px 2px 4px rgb(0 0 0 / 80%);
+  margin: 20px 0;
+  letter-spacing: 4px;
+}
+
+.stalin-title {
+  font-size: 56px;
+  color: #f00;
+}
+
+/* Survivor Victory Styles */
+.survivor-victory .winner-display {
+  text-align: center;
+  margin: 30px 0;
+  padding: 30px;
+  background: rgb(255 215 0 / 10%);
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+}
+
+.winner-piece {
+  font-size: 72px;
+  margin-bottom: 20px;
+}
+
+.winner-name {
+  font-size: 36px;
+  font-weight: bold;
+  color: #ffd700;
+  margin: 10px 0;
+  text-shadow: 2px 2px 4px rgb(0 0 0 / 80%);
+}
+
+.winner-subtitle {
+  font-size: 18px;
+  color: #ccc;
+  font-style: italic;
+}
+
+.winner-quote {
+  text-align: center;
+  font-size: 20px;
+  font-style: italic;
+  color: #ffd700;
+  margin: 30px 0;
+  padding: 20px;
+  border-left: 4px solid #ffd700;
+  background: rgb(255 215 0 / 5%);
+}
+
+.winner-stats,
+.all-players-stats,
+.game-summary {
+  margin: 30px 0;
+}
+
+.winner-stats h3,
+.all-players-stats h3,
+.game-summary h3,
+.casualty-list h3,
+.final-standings h3 {
+  font-size: 24px;
+  color: #ffd700;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: rgb(255 255 255 / 5%);
+  border-radius: 4px;
+}
+
+.stat-label {
+  color: #ccc;
+}
+
+.stat-value {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.players-table,
+.casualties-table,
+.standings-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.player-row,
+.casualty-row,
+.standing-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgb(255 255 255 / 5%);
+  border-radius: 4px;
+  border-left: 4px solid transparent;
+}
+
+.player-row.survivor {
+  border-left-color: #0f0;
+}
+
+.player-row.eliminated,
+.casualty-row {
+  border-left-color: #666;
+  opacity: 0.7;
+}
+
+.player-info,
+.casualty-row,
+.standing-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.player-piece,
+.casualty-piece,
+.standing-piece {
+  font-size: 24px;
+}
+
+.player-name,
+.casualty-name,
+.standing-name {
+  font-weight: bold;
+  color: #fff;
+  min-width: 120px;
+}
+
+.player-final-stats {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.player-rank,
+.player-wealth {
+  color: #ffd700;
+}
+
+.elimination-reason,
+.casualty-cause {
+  color: #999;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.casualty-turn {
+  color: #666;
+  font-size: 14px;
+}
+
+.standing-rank {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffd700;
+  min-width: 50px;
+}
+
+.standing-wealth,
+.standing-properties {
+  color: #ccc;
+}
+
+/* Stalin Victory Styles */
+.stalin-victory .stalin-message {
+  text-align: center;
+  font-size: 24px;
+  color: #fff;
+  margin: 40px 0;
+  line-height: 1.8;
+}
+
+.stalin-glory {
+  font-size: 32px;
+  color: #f00;
+  font-weight: bold;
+  margin-top: 20px;
+  text-shadow: 2px 2px 4px rgb(0 0 0 / 80%);
+}
+
+.stalin-portrait {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.portrait-frame {
+  font-size: 120px;
+  color: #f00;
+  text-shadow: 0 0 20px rgb(255 0 0 / 80%);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.casualty-list {
+  margin: 30px 0;
+}
+
+/* Unanimous End Styles */
+.unanimous-end .unanimous-message {
+  text-align: center;
+  font-size: 20px;
+  color: #fff;
+  margin: 30px 0;
+  line-height: 1.8;
+}
+
+.final-standings {
+  margin: 30px 0;
+}
+
+/* Game Summary */
+.game-summary {
+  margin: 30px 0;
+  padding: 20px;
+  background: rgb(0 0 0 / 30%);
+  border-radius: 8px;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: rgb(255 255 255 / 5%);
+  border-radius: 4px;
+  color: #ccc;
+}
+
+.summary-item span:last-child {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+/* Action Buttons */
+.end-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.new-game-button,
+.main-menu-button {
+  padding: 15px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  border: 2px solid #ffd700;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.new-game-button {
+  background: #ffd700;
+  color: #000;
+}
+
+.new-game-button:hover {
+  background: #ffed4e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgb(255 215 0 / 50%);
+}
+
+.main-menu-button {
+  background: transparent;
+  color: #ffd700;
+}
+
+.main-menu-button:hover {
+  background: rgb(255 215 0 / 10%);
+  transform: translateY(-2px);
+}
+
+/* Scrollbar Styling */
+.game-end-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.game-end-content::-webkit-scrollbar-track {
+  background: rgb(0 0 0 / 30%);
+  border-radius: 5px;
+}
+
+.game-end-content::-webkit-scrollbar-thumb {
+  background: #ffd700;
+  border-radius: 5px;
+}
+
+.game-end-content::-webkit-scrollbar-thumb:hover {
+  background: #ffed4e;
+}

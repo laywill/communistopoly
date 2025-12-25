@@ -387,7 +387,7 @@ export function getRandomDifficulty (): TestDifficulty {
 // Check if answer is correct (case-insensitive, trimmed)
 export function isAnswerCorrect (question: TestQuestion, userAnswer: string): boolean {
   const normalized = userAnswer.toLowerCase().trim()
-  if (!question.acceptableAnswers) return false
+  if (question.acceptableAnswers == null) return false
 
   return question.acceptableAnswers.some((acceptable) =>
     normalized.includes(acceptable) || acceptable.includes(normalized)

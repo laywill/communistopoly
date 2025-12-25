@@ -185,7 +185,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
 function getReasonText(reason: string): string {
   const reasons: Record<string, string> = {
     'gulag-escape': 'Release from the Gulag',
-    'property-favor': 'Favorable property pricing',
+    'property-favour': 'Favourable property pricing',
     'rank-promotion': 'Rank advancement',
     'tribunal-influence': 'Tribunal influence',
   };

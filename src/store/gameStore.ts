@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod } from '../types/game'
+import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, PlayerStatistics, Confession } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
 import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck, type DirectiveCard } from '../data/partyDirectiveCards'
 import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
@@ -50,6 +50,60 @@ function shouldTriggerVoucherConsequence (reason: GulagReason): boolean {
   ]
 
   return triggeringReasons.includes(reason)
+}
+
+function getEliminationMessage (playerName: string, reason: EliminationReason): string {
+  const messages: Record<EliminationReason, string> = {
+    bankruptcy: `${playerName} has been eliminated due to bankruptcy. They have been declared an Enemy of the People.`,
+    execution: `${playerName} has been executed by order of Stalin. They are now a Ghost of the Revolution.`,
+    gulagTimeout: `${playerName} died in the Gulag after 10 turns. They are now a Ghost of the Revolution.`,
+    redStarDemotion: `${playerName}'s Red Star has fallen to Proletariat - immediate execution! They are now a Ghost of the Revolution.`,
+    unanimous: `${playerName} was unanimously voted out by all players. They are now a Ghost of the Revolution.`
+  }
+  return messages[reason]
+}
+
+function calculateTotalWealth (player: Player, properties: Property[]): number {
+  let total = player.rubles
+
+  // Add property values (50% of base cost for mortgaged properties)
+  player.properties.forEach(propId => {
+    const property = properties.find(p => p.spaceId === parseInt(propId))
+    if (property != null) {
+      const space = getSpaceById(property.spaceId)
+      const baseValue = space?.baseCost ?? 0
+      const propertyValue = property.mortgaged ? baseValue * 0.5 : baseValue
+      total += propertyValue
+
+      // Add improvement values
+      total += property.collectivizationLevel * 50
+    }
+  })
+
+  // Subtract debts
+  if (player.debt != null) {
+    total -= player.debt.amount
+  }
+
+  return total
+}
+
+function initializePlayerStats (): PlayerStatistics {
+  return {
+    turnsPlayed: 0,
+    denouncementsMade: 0,
+    denouncementsReceived: 0,
+    tribunalsWon: 0,
+    tribunalsLost: 0,
+    totalGulagTurns: 0,
+    gulagEscapes: 0,
+    moneyEarned: 0,
+    moneySpent: 0,
+    propertiesOwned: 0,
+    maxWealth: 1500,
+    testsPassed: 0,
+    testsFailed: 0
+  }
 }
 
 interface GameActions {
@@ -108,7 +162,24 @@ interface GameActions {
   checkDebtStatus: () => void
 
   // Elimination and ghosts
-  eliminatePlayer: (playerId: string, reason: string) => void
+  eliminatePlayer: (playerId: string, reason: EliminationReason) => void
+  checkElimination: (playerId: string) => boolean
+
+  // Game end
+  checkGameEnd: () => GameEndCondition | null
+  endGame: (condition: GameEndCondition, winnerId: string | null) => void
+  calculateFinalStats: () => void
+
+  // Unanimous end vote
+  initiateEndVote: (initiatorId: string) => void
+  castEndVote: (playerId: string, vote: boolean) => void
+
+  // Statistics
+  updatePlayerStat: (playerId: string, statKey: keyof PlayerStatistics, increment: number) => void
+
+  // Confessions
+  submitConfession: (prisonerId: string, confession: string) => void
+  reviewConfession: (confessionId: string, accepted: boolean) => void
 
   // Round management
   incrementRound: () => void
@@ -168,7 +239,31 @@ const initialState: GameState = {
   activeTradeOffers: [],
   partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
   partyDirectiveDiscard: [],
-  communistTestUsedQuestions: new Set()
+  communistTestUsedQuestions: new Set(),
+
+  // Game end tracking
+  gameEndCondition: null,
+  winnerId: null,
+  showEndScreen: false,
+
+  // Statistics
+  gameStatistics: {
+    gameStartTime: new Date(),
+    totalTurns: 0,
+    playerStats: {},
+    totalDenouncements: 0,
+    totalTribunals: 0,
+    totalGulagSentences: 0,
+    stateTreasuryPeak: 0
+  },
+
+  // Unanimous end vote
+  endVoteInProgress: false,
+  endVoteInitiator: null,
+  endVotes: {},
+
+  // Rehabilitation confessions
+  confessions: []
 }
 
 export const useGameStore = create<GameStore>()(
@@ -237,6 +332,14 @@ export const useGameStore = create<GameStore>()(
         const playerCount = nonStalinPlayers.length
         const stateTreasury = playerCount * 1500 // Starting treasury
 
+        // Initialize player statistics
+        const playerStats: Record<string, PlayerStatistics> = {}
+        players.forEach(player => {
+          if (!player.isStalin) {
+            playerStats[player.id] = initializePlayerStats()
+          }
+        })
+
         set({
           players,
           stalinPlayerId: stalinPlayer?.id ?? null,
@@ -244,7 +347,16 @@ export const useGameStore = create<GameStore>()(
           stateTreasury,
           partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
           partyDirectiveDiscard: [],
-          communistTestUsedQuestions: new Set()
+          communistTestUsedQuestions: new Set(),
+          gameStatistics: {
+            gameStartTime: new Date(),
+            totalTurns: 0,
+            playerStats,
+            totalDenouncements: 0,
+            totalTribunals: 0,
+            totalGulagSentences: 0,
+            stateTreasuryPeak: stateTreasury
+          }
         })
 
         // Initialize properties
@@ -718,7 +830,7 @@ export const useGameStore = create<GameStore>()(
               message: `${player.name}'s Red Star has fallen to Proletariat - IMMEDIATE EXECUTION!`,
               playerId
             })
-            get().eliminatePlayer(playerId, 'Red Star fallen to Proletariat - executed by the Party')
+            get().eliminatePlayer(playerId, 'redStarDemotion')
           }
         }
       },
@@ -998,7 +1110,7 @@ export const useGameStore = create<GameStore>()(
         if (!player?.inGulag) return
 
         if (player.gulagTurns >= 10) {
-          get().eliminatePlayer(playerId, 'Died in Gulag after 10 turns')
+          get().eliminatePlayer(playerId, 'gulagTimeout')
         }
       },
 
@@ -1237,7 +1349,7 @@ export const useGameStore = create<GameStore>()(
         get().adjustTreasury(bribe.amount)
 
         if (accepted) {
-          // Release from Gulag or grant favor
+          // Release from Gulag or grant favour
           if (bribe.reason === 'gulag-escape' && player.inGulag) {
             get().updatePlayer(bribe.playerId, {
               inGulag: false,
@@ -1273,7 +1385,7 @@ export const useGameStore = create<GameStore>()(
         const fromPlayer = state.players.find((p) => p.id === fromPlayerId)
         const toPlayer = state.players.find((p) => p.id === toPlayerId)
 
-        if (!fromPlayer || !toPlayer) return
+        if ((fromPlayer == null) || (toPlayer == null)) return
 
         const tradeOffer: import('../types/game').TradeOffer = {
           id: `trade-${String(Date.now())}`,
@@ -1305,11 +1417,11 @@ export const useGameStore = create<GameStore>()(
       acceptTrade: (tradeId) => {
         const state = get()
         const trade = state.activeTradeOffers.find((t) => t.id === tradeId)
-        if (!trade) return
+        if (trade == null) return
 
         const fromPlayer = state.players.find((p) => p.id === trade.fromPlayerId)
         const toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
-        if (!fromPlayer || !toPlayer) return
+        if ((fromPlayer == null) || (toPlayer == null)) return
 
         // Transfer offering from fromPlayer to toPlayer
         if (trade.offering.rubles > 0) {
@@ -1370,7 +1482,7 @@ export const useGameStore = create<GameStore>()(
       rejectTrade: (tradeId) => {
         const state = get()
         const trade = state.activeTradeOffers.find((t) => t.id === tradeId)
-        if (!trade) return
+        if (trade == null) return
 
         const fromPlayer = state.players.find((p) => p.id === trade.fromPlayerId)
         const toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
@@ -1380,7 +1492,7 @@ export const useGameStore = create<GameStore>()(
           activeTradeOffers: state.activeTradeOffers.filter((t) => t.id !== tradeId)
         }))
 
-        if (fromPlayer && toPlayer) {
+        if ((fromPlayer != null) && (toPlayer != null)) {
           get().addLogEntry({
             type: 'system',
             message: `${toPlayer.name} rejected trade from ${fromPlayer.name}`,
@@ -1441,29 +1553,235 @@ export const useGameStore = create<GameStore>()(
         const player = state.players.find((p) => p.id === playerId)
         if (player == null) return
 
-        get().updatePlayer(playerId, {
-          isEliminated: true,
-          inGulag: false // Remove from Gulag if there
-        })
-
-        // Return all properties to State
+        // Return all properties to State (with improvements removed)
         player.properties.forEach((propId) => {
           get().setPropertyCustodian(parseInt(propId), null)
+          get().updateCollectivizationLevel(parseInt(propId), 0)
         })
 
-        get().updatePlayer(playerId, { properties: [] })
+        // Update player with elimination details
+        get().updatePlayer(playerId, {
+          isEliminated: true,
+          inGulag: false,
+          properties: [],
+          eliminationReason: reason,
+          eliminationTurn: state.roundNumber,
+          finalWealth: player.rubles,
+          finalRank: player.rank,
+          finalProperties: player.properties.length
+        })
 
+        // Log elimination with proper message
+        const message = getEliminationMessage(player.name, reason)
         get().addLogEntry({
-          type: 'gulag',
-          message: `${player.name} has been eliminated: ${reason}. They are now a Ghost of the Revolution.`,
+          type: 'system',
+          message,
           playerId
         })
 
         // Check if game should end
-        const remainingPlayers = state.players.filter((p) => !p.isStalin && !p.isEliminated)
-        if (remainingPlayers.length <= 1) {
-          set({ gamePhase: 'ended' })
+        get().checkGameEnd()
+      },
+
+      checkElimination: (playerId) => {
+        const state = get()
+        const player = state.players.find(p => p.id === playerId)
+        if ((player == null) || player.isEliminated || player.isStalin) return false
+
+        // Bankruptcy check
+        const totalWealth = calculateTotalWealth(player, state.properties)
+        if (totalWealth < 0 && (player.debt != null)) {
+          get().eliminatePlayer(playerId, 'bankruptcy')
+          return true
         }
+
+        // Red Star specific - already checked in demotePlayer
+
+        // Gulag timeout - already checked in checkFor10TurnElimination
+
+        return false
+      },
+
+      checkGameEnd: () => {
+        const state = get()
+        const activePlayers = state.players.filter(p => !p.isEliminated && !p.isStalin)
+
+        // Survivor victory
+        if (activePlayers.length === 1) {
+          get().endGame('survivor', activePlayers[0].id)
+          return 'survivor'
+        }
+
+        // Stalin victory (all eliminated)
+        if (activePlayers.length === 0) {
+          get().endGame('stalinWins', null)
+          return 'stalinWins'
+        }
+
+        return null
+      },
+
+      endGame: (condition, winnerId) => {
+        // Calculate final statistics
+        get().calculateFinalStats()
+
+        set({
+          gamePhase: 'ended',
+          gameEndCondition: condition,
+          winnerId,
+          showEndScreen: true
+        })
+
+        get().addLogEntry({
+          type: 'system',
+          message: `Game Over: ${condition === 'survivor' ? 'Survivor Victory!' : condition === 'stalinWins' ? 'Stalin Wins!' : condition === 'unanimous' ? 'Unanimous Vote to End' : 'Game Ended'}`
+        })
+      },
+
+      calculateFinalStats: () => {
+        set((state) => ({
+          gameStatistics: {
+            ...state.gameStatistics,
+            gameEndTime: new Date(),
+            totalTurns: state.roundNumber
+          }
+        }))
+      },
+
+      initiateEndVote: (initiatorId) => {
+        set({
+          endVoteInProgress: true,
+          endVoteInitiator: initiatorId,
+          endVotes: {}
+        })
+
+        const initiator = get().players.find(p => p.id === initiatorId)
+        const initiatorName = initiator?.name ?? 'Unknown'
+        get().addLogEntry({
+          type: 'system',
+          message: `Comrade ${initiatorName} has initiated a vote to end the game. All players must vote unanimously to end.`
+        })
+      },
+
+      castEndVote: (playerId, vote) => {
+        const state = get()
+
+        set((state) => ({
+          endVotes: { ...state.endVotes, [playerId]: vote }
+        }))
+
+        const player = state.players.find(p => p.id === playerId)
+        const playerName = player?.name ?? 'Unknown'
+        get().addLogEntry({
+          type: 'system',
+          message: `${playerName} voted ${vote ? 'YES' : 'NO'} to end the game`
+        })
+
+        // Check if all active players have voted
+        const activePlayerIds = state.players
+          .filter(p => !p.isStalin && !p.isEliminated)
+          .map(p => p.id)
+        const allVoted = activePlayerIds.every(id => id in state.endVotes || id in get().endVotes)
+
+        if (allVoted) {
+          const votes = get().endVotes
+          const unanimous = activePlayerIds.every(id => votes[id])
+
+          if (unanimous) {
+            get().endGame('unanimous', null)
+          } else {
+            set({ endVoteInProgress: false, endVoteInitiator: null, endVotes: {} })
+            get().addLogEntry({
+              type: 'system',
+              message: 'End vote failed - not unanimous'
+            })
+          }
+        }
+      },
+
+      updatePlayerStat: (playerId, statKey, increment) => {
+        set((state) => ({
+          gameStatistics: {
+            ...state.gameStatistics,
+            playerStats: {
+              ...state.gameStatistics.playerStats,
+              [playerId]: {
+                ...state.gameStatistics.playerStats[playerId],
+                [statKey]: state.gameStatistics.playerStats[playerId][statKey] + increment
+              }
+            }
+          }
+        }))
+      },
+
+      submitConfession: (prisonerId, confession) => {
+        const state = get()
+        const prisoner = state.players.find(p => p.id === prisonerId)
+        if (!prisoner?.inGulag) return
+
+        const newConfession: Confession = {
+          id: `confession-${String(Date.now())}`,
+          prisonerId,
+          confession,
+          timestamp: new Date(),
+          reviewed: false
+        }
+
+        set((state) => ({
+          confessions: [...state.confessions, newConfession]
+        }))
+
+        get().addLogEntry({
+          type: 'gulag',
+          message: `${prisoner.name} has submitted a rehabilitation confession to Stalin`,
+          playerId: prisonerId
+        })
+
+        // Notify Stalin (set pending action for Stalin to review)
+        set({
+          pendingAction: {
+            type: 'review-confession',
+            data: { confessionId: newConfession.id }
+          }
+        })
+      },
+
+      reviewConfession: (confessionId, accepted) => {
+        const state = get()
+        const confession = state.confessions.find(c => c.id === confessionId)
+        if ((confession == null) || confession.reviewed) return
+
+        const prisoner = state.players.find(p => p.id === confession.prisonerId)
+        if (prisoner == null) return
+
+        // Mark confession as reviewed
+        set((state) => ({
+          confessions: state.confessions.map(c =>
+            c.id === confessionId ? { ...c, reviewed: true, accepted } : c
+          )
+        }))
+
+        if (accepted) {
+          // Release from Gulag
+          get().updatePlayer(confession.prisonerId, {
+            inGulag: false,
+            gulagTurns: 0
+          })
+
+          get().addLogEntry({
+            type: 'gulag',
+            message: `Stalin accepted ${prisoner.name}'s rehabilitation confession and released them from the Gulag!`,
+            playerId: confession.prisonerId
+          })
+        } else {
+          get().addLogEntry({
+            type: 'gulag',
+            message: `Stalin rejected ${prisoner.name}'s rehabilitation confession. They remain in the Gulag.`,
+            playerId: confession.prisonerId
+          })
+        }
+
+        set({ pendingAction: null })
       },
 
       // Card system
@@ -1484,7 +1802,7 @@ export const useGameStore = create<GameStore>()(
         const cardId = partyDirectiveDeck[0]
         const card = PARTY_DIRECTIVE_CARDS.find(c => c.id === cardId)
 
-        if (!card) {
+        if (card == null) {
           // Fallback if card not found
           return PARTY_DIRECTIVE_CARDS[0]
         }
@@ -1515,7 +1833,7 @@ export const useGameStore = create<GameStore>()(
       applyDirectiveEffect: (card, playerId) => {
         const state = get()
         const player = state.players.find(p => p.id === playerId)
-        if (!player) return
+        if (player == null) return
 
         get().addLogEntry({
           type: 'system',
@@ -1713,7 +2031,7 @@ export const useGameStore = create<GameStore>()(
         const property = state.properties.find(p => p.spaceId === targetPropertyId)
         const space = getSpaceById(targetPropertyId)
 
-        if (!sicklePlayer || !property || !space) return
+        if ((sicklePlayer == null) || (property == null) || (space == null)) return
         if (sicklePlayer.piece !== 'sickle') return
         if (sicklePlayer.hasUsedSickleHarvest) return
 
@@ -1748,7 +2066,7 @@ export const useGameStore = create<GameStore>()(
         const property = state.properties.find(p => p.spaceId === targetPropertyId)
         const space = getSpaceById(targetPropertyId)
 
-        if (!ironCurtainPlayer || !property || !space) return
+        if ((ironCurtainPlayer == null) || (property == null) || (space == null)) return
         if (ironCurtainPlayer.piece !== 'ironCurtain') return
         if (ironCurtainPlayer.hasUsedIronCurtainDisappear) return
 
@@ -1772,7 +2090,7 @@ export const useGameStore = create<GameStore>()(
         const state = get()
         const leninPlayer = state.players.find(p => p.id === leninPlayerId)
 
-        if (!leninPlayer) return
+        if (leninPlayer == null) return
         if (leninPlayer.piece !== 'statueOfLenin') return
         if (leninPlayer.hasUsedLeninSpeech) return
 
@@ -1780,7 +2098,7 @@ export const useGameStore = create<GameStore>()(
         let totalCollected = 0
         applauders.forEach(applauderId => {
           const applauder = state.players.find(p => p.id === applauderId)
-          if (applauder && !applauder.isEliminated) {
+          if ((applauder != null) && !applauder.isEliminated) {
             const amount = Math.min(100, applauder.rubles)
             get().updatePlayer(applauderId, { rubles: applauder.rubles - amount })
             totalCollected += amount
@@ -1804,7 +2122,7 @@ export const useGameStore = create<GameStore>()(
       promotePlayer: (playerId) => {
         const state = get()
         const player = state.players.find(p => p.id === playerId)
-        if (!player) return
+        if (player == null) return
 
         const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
         const currentRankIndex = rankOrder.indexOf(player.rank)
@@ -1832,14 +2150,14 @@ export const useGameStore = create<GameStore>()(
         const custodian = state.players.find(p => p.id === custodianId)
         const target = state.players.find(p => p.id === targetPlayerId)
 
-        if (!custodian || !target) return
+        if ((custodian == null) || (target == null)) return
         if (custodian.hasUsedSiberianCampsGulag) return
 
         // Check if custodian owns both Siberian Camps (spaces 1 and 3)
         const ownsCampVorkuta = state.properties.find(p => p.spaceId === 1 && p.custodianId === custodianId)
         const ownsCampKolyma = state.properties.find(p => p.spaceId === 3 && p.custodianId === custodianId)
 
-        if (!ownsCampVorkuta || !ownsCampKolyma) {
+        if ((ownsCampVorkuta == null) || (ownsCampKolyma == null)) {
           get().addLogEntry({
             type: 'system',
             message: `${custodian.name} must control both Siberian Camps to use this ability!`
@@ -1875,12 +2193,12 @@ export const useGameStore = create<GameStore>()(
         const state = get()
         const custodian = state.players.find(p => p.id === custodianId)
 
-        if (!custodian) return
+        if (custodian == null) return
 
         // Check if custodian owns KGB Headquarters (space 23)
         const ownsKGB = state.properties.find(p => p.spaceId === 23 && p.custodianId === custodianId)
 
-        if (!ownsKGB) {
+        if (ownsKGB == null) {
           get().addLogEntry({
             type: 'system',
             message: `${custodian.name} must control KGB Headquarters to use this ability!`
@@ -1903,11 +2221,11 @@ export const useGameStore = create<GameStore>()(
 
         // Show the question to the custodian
         alert(
-          `KGB HEADQUARTERS - TEST PREVIEW\n\n` +
+          'KGB HEADQUARTERS - TEST PREVIEW\n\n' +
           `Difficulty: ${difficulty.toUpperCase()}\n` +
           `Question: ${question.question}\n\n` +
           `Answer: ${question.answer}\n\n` +
-          `This preview has been noted by the KGB.`
+          'This preview has been noted by the KGB.'
         )
 
         get().updatePlayer(custodianId, {
@@ -1925,7 +2243,7 @@ export const useGameStore = create<GameStore>()(
         const state = get()
         const custodian = state.players.find(p => p.id === custodianId)
 
-        if (!custodian) return
+        if (custodian == null) return
         if (custodian.hasUsedMinistryTruthRewrite) return
 
         // Check if custodian owns all three Ministry properties (16, 18, 19)
@@ -1968,7 +2286,7 @@ export const useGameStore = create<GameStore>()(
         const state = get()
         const custodian = state.players.find(p => p.id === custodianId)
 
-        if (!custodian) return
+        if (custodian == null) return
         if (custodian.hasUsedPravdaPressRevote) return
 
         // Check if custodian owns all three State Media properties (26, 27, 29)
@@ -1993,9 +2311,9 @@ export const useGameStore = create<GameStore>()(
         })
 
         alert(
-          `PRAVDA PRESS - PROPAGANDA SPREAD\n\n` +
+          'PRAVDA PRESS - PROPAGANDA SPREAD\n\n' +
           `${custodian.name} demands a re-vote on:\n"${decision}"\n\n` +
-          `THE PEOPLE DEMAND IT!`
+          'THE PEOPLE DEMAND IT!'
         )
 
         set({ pendingAction: null })
@@ -2044,7 +2362,15 @@ export const useGameStore = create<GameStore>()(
         pendingBribes: state.pendingBribes,
         partyDirectiveDeck: state.partyDirectiveDeck,
         partyDirectiveDiscard: state.partyDirectiveDiscard,
-        communistTestUsedQuestions: state.communistTestUsedQuestions
+        communistTestUsedQuestions: state.communistTestUsedQuestions,
+        gameEndCondition: state.gameEndCondition,
+        winnerId: state.winnerId,
+        showEndScreen: state.showEndScreen,
+        gameStatistics: state.gameStatistics,
+        endVoteInProgress: state.endVoteInProgress,
+        endVoteInitiator: state.endVoteInitiator,
+        endVotes: state.endVotes,
+        confessions: state.confessions
       })
     }
   )

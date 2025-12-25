@@ -63,9 +63,11 @@ jobs:
       # MegaLinter
       - name: MegaLinter
 
+        # cSpell:disable
         # You can override MegaLinter flavor used to have faster performances
         # More info at https://megalinter.io/latest/flavors/
         uses: oxsecurity/megalinter/flavors/javascript@55a59b24a441e0e1943080d4a512d827710d4a9d
+        # cSpell:enable
 
         id: ml
 

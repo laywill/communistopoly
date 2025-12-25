@@ -3,6 +3,7 @@ import { useGameStore } from './store/gameStore';
 import WelcomeScreen from './components/screens/WelcomeScreen';
 import SetupScreen from './components/screens/SetupScreen';
 import GameScreen from './components/screens/GameScreen';
+import GameEndScreen from './components/screens/GameEndScreen';
 import RulesModal from './components/modals/RulesModal';
 import './App.css';
 
@@ -20,12 +21,7 @@ function App() {
 
       {gamePhase === 'playing' && <GameScreen />}
 
-      {gamePhase === 'ended' && (
-        <div className="end-screen">
-          <h1>Game Over</h1>
-          <p>(End screen coming in later milestone)</p>
-        </div>
-      )}
+      {gamePhase === 'ended' && <GameEndScreen />}
 
       {showRules && <RulesModal onClose={() => { setShowRules(false); }} />}
     </div>
