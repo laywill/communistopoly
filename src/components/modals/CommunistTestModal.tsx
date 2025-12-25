@@ -14,20 +14,15 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
   const stalinPlayerId = useGameStore((state) => state.stalinPlayerId)
   const answerCommunistTest = useGameStore((state) => state.answerCommunistTest)
 
-  const [phase, setPhase] = useState<'setup' | 'question' | 'result'>('setup')
-  const [selectedReaderId, setSelectedReaderId] = useState<string>(stalinPlayerId ?? '')
+  const [phase, setPhase] = useState<'question' | 'result'>('question')
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
 
   const testedPlayer = players.find((p) => p.id === testedPlayerId)
-  const reader = players.find((p) => p.id === selectedReaderId)
   const stalin = players.find((p) => p.id === stalinPlayerId)
+  const reader = stalin // Stalin is always the reader
 
   if (!testedPlayer) {
     return null
-  }
-
-  const handleStartTest = () => {
-    setPhase('question')
   }
 
   const handleMarkAnswer = (correct: boolean) => {
@@ -38,7 +33,7 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
       setPhase('result')
     } else {
       // Apply effects immediately
-      answerCommunistTest(question, correct ? question.answer : 'wrong', selectedReaderId)
+      answerCommunistTest(question, correct ? question.answer : 'wrong', stalinPlayerId ?? '')
       setPhase('result')
     }
   }
@@ -46,7 +41,7 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
   const handleStalinDecision = (decision: 'reward' | 'punish' | 'neutral') => {
     // For trick questions, Stalin decides the outcome
     const fakeCorrect = decision === 'reward'
-    answerCommunistTest(question, fakeCorrect ? question.answer : 'wrong', selectedReaderId)
+    answerCommunistTest(question, fakeCorrect ? question.answer : 'wrong', stalinPlayerId ?? '')
     setPhase('result')
   }
 
@@ -54,69 +49,7 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
     onClose()
   }
 
-  // Setup Phase - Stalin selects reader and difficulty
-  if (phase === 'setup') {
-    const eligibleReaders = players.filter((p) => !p.isStalin && p.id !== testedPlayerId && !p.isEliminated)
-
-    return (
-      <div className={styles.overlay} onClick={(e) => { e.stopPropagation() }}>
-        <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
-          <div className={styles.header}>
-            <span className={styles.icon}>⭐</span>
-            <h2 className={styles.title}>COMMUNIST TEST</h2>
-            <span className={styles.icon}>⭐</span>
-          </div>
-
-          <div className={styles.content}>
-            <div className={styles.setupSection}>
-              <h3 className={styles.sectionTitle}>Test Setup</h3>
-              <p className={styles.instruction}>
-                <strong>{stalin?.name ?? 'Stalin'}</strong>, select who will read the question to{' '}
-                <strong>{testedPlayer.name}</strong>:
-              </p>
-
-              <div className={styles.readerSelection}>
-                {eligibleReaders.map((player) => (
-                  <label key={player.id} className={styles.radioOption}>
-                    <input
-                      type="radio"
-                      name="reader"
-                      value={player.id}
-                      checked={selectedReaderId === player.id}
-                      onChange={(e) => { setSelectedReaderId(e.target.value) }}
-                    />
-                    <span>{player.name}</span>
-                  </label>
-                ))}
-              </div>
-
-              <div className={styles.difficultyInfo}>
-                <h4>Difficulty: <span className={styles.difficultyBadge}>{question.difficulty.toUpperCase()}</span></h4>
-                <div className={styles.rewardInfo}>
-                  {question.difficulty !== 'trick' ? (
-                    <>
-                      <div className={styles.reward}>Correct: <strong>+₽{question.reward}</strong></div>
-                      <div className={styles.penalty}>Wrong: <strong>-₽{question.penalty}</strong></div>
-                    </>
-                  ) : (
-                    <div className={styles.trickWarning}>⚠ Stalin decides the outcome</div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.actions}>
-              <button className={styles.buttonPrimary} onClick={handleStartTest}>
-                BEGIN TEST
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Question Phase - Reader sees question and answer
+  // Question Phase - Stalin reads the question and answer
   if (phase === 'question') {
     return (
       <div className={styles.overlay} onClick={(e) => { e.stopPropagation() }}>
@@ -160,9 +93,9 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
               </div>
 
               <div className={styles.instructions}>
-                <p><strong>{reader?.name}</strong>, read the question aloud to <strong>{testedPlayer.name}</strong>.</p>
+                <p><strong>{stalin?.name ?? 'Stalin'}</strong>, read the question aloud to <strong>{testedPlayer.name}</strong>.</p>
                 <p><strong>{testedPlayer.name}</strong> will answer verbally.</p>
-                <p><strong>{reader?.name}</strong>, mark their answer below:</p>
+                <p><strong>{stalin?.name ?? 'Stalin'}</strong>, mark their answer below:</p>
               </div>
             </div>
 
