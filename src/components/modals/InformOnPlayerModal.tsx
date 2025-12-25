@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
+import { canBeDenouncedBy } from '../../utils/pieceAbilityUtils';
 import styles from './Modal.module.css';
 
 interface InformOnPlayerModalProps {
@@ -17,9 +18,30 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
 
   if (!informer) return null;
 
-  // Get eligible targets (not in Gulag, not eliminated, not Stalin, not self)
+  // Get eligible targets (not in Gulag, not eliminated, not Stalin, not self, can be denounced by informer)
   const eligibleTargets = players.filter(
-    (p) => p.id !== informerId && p.id !== stalinPlayerId && !p.inGulag && !p.isEliminated && !p.isStalin
+    (p) => {
+      if (p.id === informerId || p.id === stalinPlayerId || p.inGulag || p.isEliminated || p.isStalin) {
+        return false
+      }
+
+      // Check Lenin piece ability protection
+      const denouncementCheck = canBeDenouncedBy(p, informer)
+      return denouncementCheck.allowed
+    }
+  );
+
+  // Get players who are protected from denouncement
+  const protectedPlayers = players.filter(
+    (p) => {
+      if (p.id === informerId || p.id === stalinPlayerId || p.inGulag || p.isEliminated || p.isStalin) {
+        return false
+      }
+
+      // Check Lenin piece ability protection
+      const denouncementCheck = canBeDenouncedBy(p, informer)
+      return !denouncementCheck.allowed
+    }
   );
 
   const handleSelectTarget = (targetId: string) => {
@@ -238,6 +260,37 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                   ))}
                 </div>
               </div>
+
+              {/* Protected Players Info */}
+              {protectedPlayers.length > 0 && (
+                <div style={{ marginBottom: '20px' }}>
+                  <div
+                    style={{
+                      background: 'rgba(212, 168, 75, 0.1)',
+                      border: '2px solid var(--color-gold)',
+                      borderRadius: '4px',
+                      padding: '12px',
+                    }}
+                  >
+                    <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--color-gold)', fontWeight: 'bold' }}>
+                      🗿 PROTECTED COMRADES
+                    </p>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '12px', lineHeight: '1.5' }}>
+                      The following comrades cannot be denounced by you:
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {protectedPlayers.map((target) => {
+                        const denouncementCheck = canBeDenouncedBy(target, informer)
+                        return (
+                          <div key={target.id} style={{ fontSize: '12px', color: 'var(--color-cream)' }}>
+                            • <strong>{target.name}</strong> - {denouncementCheck.reason}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Accusation Input */}
               <div style={{ marginBottom: '20px' }}>

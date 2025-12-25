@@ -37,12 +37,7 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
   const isCollectiveFarm = space.group === 'collective';
 
   // Calculate quota
-  let quota = calculateQuota(property, properties, payer);
-
-  // If Collective Farm and custodian hasn't announced, halve the quota
-  if (isCollectiveFarm && !hasAnnounced) {
-    quota = Math.floor(quota / 2);
-  }
+  const quota = calculateQuota(property, properties, payer);
 
   const canAfford = payer.rubles >= quota;
 
@@ -56,6 +51,17 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
   };
 
   const handlePay = () => {
+    // Check if Collective Farm announcement was forgotten
+    if (isCollectiveFarm && !hasAnnounced && custodian.rubles >= 25) {
+      // Fine the custodian ₽25 for not announcing
+      updatePlayer(custodian.id, { rubles: custodian.rubles - 25 });
+      addLogEntry({
+        type: 'payment',
+        message: `${custodian.name} fined ₽25 for failing to announce "The harvest is bountiful!" at their Collective Farm`,
+        playerId: custodian.id,
+      });
+    }
+
     if (!canAfford) {
       // Check if Industrial Centers - conscript labour (skip next turn)
       if (space.group === 'industrial') {
@@ -106,10 +112,10 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
           {isCollectiveFarm && !hasAnnounced && (
             <div className={styles.collectiveFarmNotice}>
               <p className={styles.noticeText}>
-                ⚠ Collective Farm Rule: The custodian must announce &quot;The harvest is bountiful!&quot; to collect full quota.
+                ⚠ Collective Farm Rule: The custodian must announce &quot;The harvest is bountiful!&quot;
               </p>
               <p className={styles.noticeText}>
-                Without announcement, quota is halved.
+                Failure to announce results in a ₽25 fine to the custodian!
               </p>
               <button className={styles.announceButton} onClick={handleAnnouncement}>
                 {custodian.name}: &quot;THE HARVEST IS BOUNTIFUL!&quot;

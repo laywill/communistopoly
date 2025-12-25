@@ -10,6 +10,12 @@ import { VoucherRequestModal } from './VoucherRequestModal';
 import { BribeStalinModal } from './BribeStalinModal';
 import { InformOnPlayerModal } from './InformOnPlayerModal';
 import { LiquidationModal } from './LiquidationModal';
+import { BreadlineModal } from './BreadlineModal';
+import { SickleMotherlandModal } from './SickleMotherlandModal';
+import { BeggingModal } from './BeggingModal';
+import { TradeModal } from './TradeModal';
+import { PartyDirectiveModal } from './PartyDirectiveModal';
+import { CommunistTestModal } from './CommunistTestModal';
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -18,6 +24,8 @@ export function PendingActionHandler() {
   const pendingAction = useGameStore((state) => state.pendingAction);
   const setPendingAction = useGameStore((state) => state.setPendingAction);
   const currentPlayer = useGameStore((state) => state.players[state.currentPlayerIndex]);
+  const drawPartyDirective = useGameStore((state) => state.drawPartyDirective);
+  const drawCommunistTest = useGameStore((state) => state.drawCommunistTest);
 
   const handleClose = () => {
     setPendingAction(null);
@@ -127,6 +135,91 @@ export function PendingActionHandler() {
             amountOwed={pendingAction.data.amountOwed as number}
             creditorId={pendingAction.data.creditorId as string}
             reason={pendingAction.data.reason as string}
+          />
+        );
+      }
+      return null;
+
+    case 'breadline-contribution':
+      if (pendingAction.data?.landingPlayerId) {
+        return (
+          <BreadlineModal
+            landingPlayerId={pendingAction.data.landingPlayerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'sickle-motherland-announcement':
+      if (pendingAction.data?.playerId) {
+        return (
+          <SickleMotherlandModal
+            playerId={pendingAction.data.playerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'bread-loaf-begging':
+      if (pendingAction.data?.playerId) {
+        return (
+          <BeggingModal
+            playerId={pendingAction.data.playerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'trade-offer':
+      if (pendingAction.data?.proposerId) {
+        return (
+          <TradeModal
+            mode="propose"
+            proposerId={pendingAction.data.proposerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'trade-response':
+      if (pendingAction.data?.tradeOfferId) {
+        return (
+          <TradeModal
+            mode="respond"
+            tradeOfferId={pendingAction.data.tradeOfferId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'draw-party-directive':
+      if (pendingAction.data?.playerId) {
+        // Draw a card from the deck
+        const card = drawPartyDirective();
+        return (
+          <PartyDirectiveModal
+            card={card}
+            playerId={pendingAction.data.playerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'draw-communist-test':
+      if (pendingAction.data?.playerId) {
+        // Draw a question
+        const question = drawCommunistTest();
+        return (
+          <CommunistTestModal
+            question={question}
+            testedPlayerId={pendingAction.data.playerId as string}
+            onClose={handleClose}
           />
         );
       }

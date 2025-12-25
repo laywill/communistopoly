@@ -97,6 +97,12 @@ export interface Player {
   skipNextTurn: boolean // For Industrial Centers conscripted labour
   usedRailwayGulagPower: boolean // All four railways special power
 
+  // Property special abilities
+  hasUsedSiberianCampsGulag: boolean // Siberian Camps: Send to Gulag ability used
+  kgbTestPreviewsUsedThisRound: number // KGB Headquarters: Test previews used this round
+  hasUsedMinistryTruthRewrite: boolean // Ministry of Truth: Rewrite rule ability used
+  hasUsedPravdaPressRevote: boolean // Pravda Press: Force re-vote ability used
+
   // Gulag system
   vouchingFor: string | null // Player ID they vouched for
   vouchedByRound: number | null // Round number when vouch expires
@@ -109,6 +115,14 @@ export interface Player {
   hasUsedTankGulagImmunity: boolean // Tank: First Gulag immunity used
   tankRequisitionUsedThisLap: boolean // Tank: Requisition used this lap
   lapsCompleted: number // Track laps around board (for Tank requisition)
+  hasUsedSickleHarvest: boolean // Sickle: Harvest ability used
+  sickleMotherlandForgotten: boolean // Sickle: Forgot to say "For the Motherland!"
+  hasUsedLeninSpeech: boolean // Lenin: Inspiring speech used
+  hasUsedIronCurtainDisappear: boolean // Iron Curtain: Disappear property used
+  hasFreeFromGulagCard: boolean // Owns a "Get out of Gulag free" card
+  vodkaUseCount: number // Vodka: Track sobriety level
+  ironCurtainClaimedRubles: number // Iron Curtain: Last claimed amount (for audits)
+  owesFavourTo: string[] // Breadline: Player IDs they owe favours to
 }
 
 export interface Property {
@@ -160,13 +174,26 @@ export type PendingActionType =
   | 'railway-fee'
   | 'utility-fee'
   | 'tax-payment'
-  | 'draw-card'
+  | 'draw-party-directive'
+  | 'draw-communist-test'
+  | 'party-directive-effect'
+  | 'communist-test-answer'
   | 'collective-farm-announcement'
   | 'gulag-escape-choice'
   | 'voucher-request'
   | 'inform-on-player'
   | 'bribe-stalin'
   | 'liquidation-required'
+  | 'sickle-harvest'
+  | 'iron-curtain-disappear'
+  | 'lenin-speech'
+  | 'vodka-roll'
+  | 'breadline-contribution'
+  | 'breadline-response'
+  | 'sickle-motherland-announcement'
+  | 'bread-loaf-begging'
+  | 'trade-offer'
+  | 'trade-response'
 
 export interface PendingAction {
   type: PendingActionType
@@ -180,6 +207,7 @@ export type GulagEscapeMethod =
   | 'vouch' // Request voucher
   | 'inform' // Inform on another
   | 'bribe' // Bribe Stalin
+  | 'card' // Use "Get out of Gulag free" card
 
 // Bribe request
 export interface BribeRequest {
@@ -188,6 +216,24 @@ export interface BribeRequest {
   amount: number
   reason: string // For gulag escape, property influence, etc.
   timestamp: Date
+}
+
+// Trade system
+export interface TradeOffer {
+  id: string
+  fromPlayerId: string
+  toPlayerId: string
+  offering: TradeItems
+  requesting: TradeItems
+  status: 'pending' | 'accepted' | 'rejected'
+  timestamp: Date
+}
+
+export interface TradeItems {
+  rubles: number
+  properties: string[] // property space IDs
+  gulagCards: number // Number of "Get out of Gulag free" cards
+  favours: number // Number of favours owed
 }
 
 // Game state
@@ -225,4 +271,12 @@ export interface GameState {
   // Gulag system
   activeVouchers: VoucherAgreement[]
   pendingBribes: BribeRequest[]
+
+  // Trade system
+  activeTradeOffers: TradeOffer[]
+
+  // Card decks
+  partyDirectiveDeck: string[] // Card IDs (shuffled)
+  partyDirectiveDiscard: string[] // Used cards
+  communistTestUsedQuestions: Set<string> // Question IDs already used
 }

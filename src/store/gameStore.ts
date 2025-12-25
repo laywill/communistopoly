@@ -2,6 +2,8 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
+import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck, type DirectiveCard } from '../data/partyDirectiveCards'
+import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
 
 // Helper functions
 function getGulagReasonText (reason: GulagReason, justification?: string): string {
@@ -69,9 +71,11 @@ interface GameActions {
   payQuota: (payerId: string, custodianId: string, amount: number) => void
   mortgageProperty: (spaceId: number) => void
   unmortgageProperty: (spaceId: number, playerId: string) => void
+  transferProperty: (propertyId: string, newCustodianId: string) => void
 
   // Turn management
   rollDice: () => void
+  rollVodka3Dice: () => void
   finishRolling: () => void
   movePlayer: (playerId: string, spaces: number) => void
   finishMoving: () => void
@@ -94,6 +98,11 @@ interface GameActions {
   submitBribe: (playerId: string, amount: number, reason: string) => void
   respondToBribe: (bribeId: string, accepted: boolean) => void
 
+  // Trade system
+  proposeTrade: (fromPlayerId: string, toPlayerId: string, items: { offering: import('../types/game').TradeItems, requesting: import('../types/game').TradeItems }) => void
+  acceptTrade: (tradeId: string) => void
+  rejectTrade: (tradeId: string) => void
+
   // Debt and liquidation
   createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => void
   checkDebtStatus: () => void
@@ -108,8 +117,24 @@ interface GameActions {
   handleStoyPassing: (playerId: string) => void
   handleStoyPilfer: (playerId: string, diceRoll: number) => void
 
+  // Card system
+  drawPartyDirective: () => DirectiveCard
+  drawCommunistTest: (difficulty?: 'easy' | 'medium' | 'hard' | 'trick') => TestQuestion
+  applyDirectiveEffect: (card: DirectiveCard, playerId: string) => void
+  answerCommunistTest: (question: TestQuestion, answer: string, readerId: string) => void
+
   // Piece abilities
   tankRequisition: (tankPlayerId: string, targetPlayerId: string) => void
+  sickleHarvest: (sicklePlayerId: string, targetPropertyId: number) => void
+  ironCurtainDisappear: (ironCurtainPlayerId: string, targetPropertyId: number) => void
+  leninSpeech: (leninPlayerId: string, applauders: string[]) => void
+  promotePlayer: (playerId: string) => void
+
+  // Property special abilities
+  siberianCampsGulag: (custodianId: string, targetPlayerId: string) => void
+  kgbPreviewTest: (custodianId: string) => void
+  ministryTruthRewrite: (custodianId: string, newRule: string) => void
+  pravdaPressRevote: (custodianId: string, decision: string) => void
 
   // Game log
   addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void
@@ -139,7 +164,11 @@ const initialState: GameState = {
   gameLog: [],
   pendingAction: null,
   activeVouchers: [],
-  pendingBribes: []
+  pendingBribes: [],
+  activeTradeOffers: [],
+  partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
+  partyDirectiveDiscard: [],
+  communistTestUsedQuestions: new Set()
 }
 
 export const useGameStore = create<GameStore>()(
@@ -186,7 +215,19 @@ export const useGameStore = create<GameStore>()(
           debtCreatedAtRound: null,
           hasUsedTankGulagImmunity: false,
           tankRequisitionUsedThisLap: false,
-          lapsCompleted: 0
+          lapsCompleted: 0,
+          hasUsedSickleHarvest: false,
+          sickleMotherlandForgotten: false,
+          hasUsedLeninSpeech: false,
+          hasUsedIronCurtainDisappear: false,
+          hasFreeFromGulagCard: false,
+          vodkaUseCount: 0,
+          ironCurtainClaimedRubles: 1500, // Start with initial amount claimed
+          owesFavourTo: [],
+          hasUsedSiberianCampsGulag: false,
+          kgbTestPreviewsUsedThisRound: 0,
+          hasUsedMinistryTruthRewrite: false,
+          hasUsedPravdaPressRevote: false
         }))
 
         const stalinPlayer = players.find(p => p.isStalin)
@@ -200,7 +241,10 @@ export const useGameStore = create<GameStore>()(
           players,
           stalinPlayerId: stalinPlayer?.id ?? null,
           currentPlayerIndex: 1, // Start with first non-Stalin player
-          stateTreasury
+          stateTreasury,
+          partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
+          partyDirectiveDiscard: [],
+          communistTestUsedQuestions: new Set()
         })
 
         // Initialize properties
@@ -210,11 +254,31 @@ export const useGameStore = create<GameStore>()(
       setCurrentPlayer: (index) => set({ currentPlayerIndex: index }),
 
       updatePlayer: (playerId, updates) => {
-        set((state) => ({
-          players: state.players.map((player) =>
-            player.id === playerId ? { ...player, ...updates } : player
-          )
-        }))
+        set((state) => {
+          const player = state.players.find(p => p.id === playerId)
+
+          // BREAD LOAF ABILITY: Enforce 1000₽ wealth cap
+          if (player?.piece === 'breadLoaf' && updates.rubles !== undefined) {
+            if (updates.rubles > 1000) {
+              const excess = updates.rubles - 1000
+              updates.rubles = 1000
+
+              // Donate excess to State
+              get().adjustTreasury(excess)
+              get().addLogEntry({
+                type: 'payment',
+                message: `${player.name}'s Bread Loaf forces donation of ₽${String(excess)} to the State (max 1000₽)`,
+                playerId
+              })
+            }
+          }
+
+          return {
+            players: state.players.map((p) =>
+              p.id === playerId ? { ...p, ...updates } : p
+            )
+          }
+        })
       },
 
       initializeProperties: () => {
@@ -262,6 +326,37 @@ export const useGameStore = create<GameStore>()(
         get().addLogEntry({
           type: 'dice',
           message: `Rolled ${String(die1)} + ${String(die2)} = ${String(die1 + die2)}`,
+          playerId: currentPlayer.id
+        })
+      },
+
+      // VODKA BOTTLE ABILITY: Roll 3 dice, use best 2
+      rollVodka3Dice: () => {
+        const die1 = Math.floor(Math.random() * 6) + 1
+        const die2 = Math.floor(Math.random() * 6) + 1
+        const die3 = Math.floor(Math.random() * 6) + 1
+
+        // Find best 2 dice (highest sum)
+        const allDice = [die1, die2, die3].sort((a, b) => b - a)
+        const bestTwo: [number, number] = [allDice[0], allDice[1]]
+
+        set({
+          dice: bestTwo,
+          isRolling: true,
+          hasRolled: true,
+          turnPhase: 'rolling'
+        })
+
+        const currentPlayer = get().players[get().currentPlayerIndex]
+
+        // Increment vodka use count
+        get().updatePlayer(currentPlayer.id, {
+          vodkaUseCount: currentPlayer.vodkaUseCount + 1
+        })
+
+        get().addLogEntry({
+          type: 'dice',
+          message: `${currentPlayer.name} drank and rolled 3 dice: ${String(die1)}, ${String(die2)}, ${String(die3)}. Using best 2: ${String(bestTwo[0])} + ${String(bestTwo[1])} = ${String(bestTwo[0] + bestTwo[1])}`,
           playerId: currentPlayer.id
         })
       },
@@ -350,13 +445,18 @@ export const useGameStore = create<GameStore>()(
               })
               set({ turnPhase: 'post-turn' })
             } else if (space.id === 20) {
-              // Breadline - placeholder for now
+              // Breadline - all players must contribute
               get().addLogEntry({
                 type: 'system',
-                message: `${currentPlayer.name} landed on Breadline (implementation coming in later milestone)`,
+                message: `${currentPlayer.name} landed on Breadline - all comrades must contribute!`,
                 playerId: currentPlayer.id
               })
-              set({ turnPhase: 'post-turn' })
+              set({
+                pendingAction: {
+                  type: 'breadline-contribution',
+                  data: { landingPlayerId: currentPlayer.id }
+                }
+              })
             } else if (space.id === 30) {
               // Enemy of the State - go to Gulag
               get().sendToGulag(currentPlayer.id, 'enemyOfState')
@@ -427,15 +527,39 @@ export const useGameStore = create<GameStore>()(
             })
             break
 
-          case 'card':
-            // Placeholder for future milestones
-            get().addLogEntry({
-              type: 'system',
-              message: `${currentPlayer.name} landed on ${space.name} (implementation coming in later milestone)`,
-              playerId: currentPlayer.id
-            })
-            set({ turnPhase: 'post-turn' })
+          case 'card': {
+            // Determine card type from space
+            const cardSpace = space as { cardType?: 'party-directive' | 'communist-test' }
+
+            if (cardSpace.cardType === 'party-directive') {
+              get().addLogEntry({
+                type: 'system',
+                message: `${currentPlayer.name} landed on Party Directive`,
+                playerId: currentPlayer.id
+              })
+              set({
+                pendingAction: {
+                  type: 'draw-party-directive',
+                  data: { playerId: currentPlayer.id }
+                }
+              })
+            } else if (cardSpace.cardType === 'communist-test') {
+              get().addLogEntry({
+                type: 'system',
+                message: `${currentPlayer.name} landed on Communist Test`,
+                playerId: currentPlayer.id
+              })
+              set({
+                pendingAction: {
+                  type: 'draw-communist-test',
+                  data: { playerId: currentPlayer.id }
+                }
+              })
+            } else {
+              set({ turnPhase: 'post-turn' })
+            }
             break
+          }
 
           default:
             set({ turnPhase: 'post-turn' })
@@ -809,6 +933,34 @@ export const useGameStore = create<GameStore>()(
         })
       },
 
+      transferProperty: (propertyId, newCustodianId) => {
+        const state = get()
+        const spaceId = parseInt(propertyId)
+        const property = state.properties.find((p) => p.spaceId === spaceId)
+        if (property == null) return
+
+        const oldCustodianId = property.custodianId
+
+        // Update property custodian
+        get().setPropertyCustodian(spaceId, newCustodianId)
+
+        // Remove from old owner's properties array
+        if (oldCustodianId != null) {
+          const oldOwner = state.players.find((p) => p.id === oldCustodianId)
+          if (oldOwner != null) {
+            const updatedProperties = oldOwner.properties.filter((id) => id !== propertyId)
+            get().updatePlayer(oldCustodianId, { properties: updatedProperties })
+          }
+        }
+
+        // Add to new owner's properties array
+        const newOwner = state.players.find((p) => p.id === newCustodianId)
+        if (newOwner != null) {
+          const updatedProperties = [...newOwner.properties, propertyId]
+          get().updatePlayer(newCustodianId, { properties: updatedProperties })
+        }
+      },
+
       // Pending actions
       setPendingAction: (action) => {
         set({ pendingAction: action })
@@ -927,6 +1079,26 @@ export const useGameStore = create<GameStore>()(
           case 'bribe': {
             // Set up bribe modal
             set({ pendingAction: { type: 'bribe-stalin', data: { playerId, reason: 'gulag-escape' } } })
+            break
+          }
+
+          case 'card': {
+            // Use "Get out of Gulag free" card
+            if (player.hasFreeFromGulagCard) {
+              get().updatePlayer(playerId, {
+                inGulag: false,
+                gulagTurns: 0,
+                hasFreeFromGulagCard: false // Remove the card
+              })
+
+              get().addLogEntry({
+                type: 'gulag',
+                message: `${player.name} used "Get out of Gulag free" card and was immediately released!`,
+                playerId
+              })
+
+              set({ turnPhase: 'post-turn', pendingAction: null })
+            }
             break
           }
         }
@@ -1095,6 +1267,128 @@ export const useGameStore = create<GameStore>()(
         }))
       },
 
+      // Trade system
+      proposeTrade: (fromPlayerId, toPlayerId, items) => {
+        const state = get()
+        const fromPlayer = state.players.find((p) => p.id === fromPlayerId)
+        const toPlayer = state.players.find((p) => p.id === toPlayerId)
+
+        if (!fromPlayer || !toPlayer) return
+
+        const tradeOffer: import('../types/game').TradeOffer = {
+          id: `trade-${String(Date.now())}`,
+          fromPlayerId,
+          toPlayerId,
+          offering: items.offering,
+          requesting: items.requesting,
+          status: 'pending',
+          timestamp: new Date()
+        }
+
+        set((state) => ({
+          activeTradeOffers: [...state.activeTradeOffers, tradeOffer]
+        }))
+
+        get().addLogEntry({
+          type: 'system',
+          message: `${fromPlayer.name} proposed a trade to ${toPlayer.name}`,
+          playerId: fromPlayerId
+        })
+
+        // Show trade response modal to the receiving player
+        get().setPendingAction({
+          type: 'trade-response',
+          data: { tradeOfferId: tradeOffer.id }
+        })
+      },
+
+      acceptTrade: (tradeId) => {
+        const state = get()
+        const trade = state.activeTradeOffers.find((t) => t.id === tradeId)
+        if (!trade) return
+
+        const fromPlayer = state.players.find((p) => p.id === trade.fromPlayerId)
+        const toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
+        if (!fromPlayer || !toPlayer) return
+
+        // Transfer offering from fromPlayer to toPlayer
+        if (trade.offering.rubles > 0) {
+          get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles - trade.offering.rubles })
+          get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles + trade.offering.rubles })
+        }
+
+        trade.offering.properties.forEach((propId) => {
+          get().transferProperty(propId, toPlayer.id)
+        })
+
+        if (trade.offering.gulagCards > 0 && fromPlayer.hasFreeFromGulagCard) {
+          get().updatePlayer(fromPlayer.id, { hasFreeFromGulagCard: false })
+          get().updatePlayer(toPlayer.id, { hasFreeFromGulagCard: true })
+        }
+
+        if (trade.offering.favours > 0) {
+          const updatedFavours = fromPlayer.owesFavourTo.filter((id, index) =>
+            !(id === toPlayer.id && index < trade.offering.favours)
+          )
+          get().updatePlayer(fromPlayer.id, { owesFavourTo: updatedFavours })
+        }
+
+        // Transfer requesting from toPlayer to fromPlayer
+        if (trade.requesting.rubles > 0) {
+          get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles - trade.requesting.rubles })
+          get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles + trade.requesting.rubles })
+        }
+
+        trade.requesting.properties.forEach((propId) => {
+          get().transferProperty(propId, fromPlayer.id)
+        })
+
+        if (trade.requesting.gulagCards > 0 && toPlayer.hasFreeFromGulagCard) {
+          get().updatePlayer(toPlayer.id, { hasFreeFromGulagCard: false })
+          get().updatePlayer(fromPlayer.id, { hasFreeFromGulagCard: true })
+        }
+
+        if (trade.requesting.favours > 0) {
+          const updatedFavours = toPlayer.owesFavourTo.filter((id, index) =>
+            !(id === fromPlayer.id && index < trade.requesting.favours)
+          )
+          get().updatePlayer(toPlayer.id, { owesFavourTo: updatedFavours })
+        }
+
+        // Mark trade as accepted and remove
+        set((state) => ({
+          activeTradeOffers: state.activeTradeOffers.filter((t) => t.id !== tradeId)
+        }))
+
+        get().addLogEntry({
+          type: 'property',
+          message: `${toPlayer.name} accepted trade from ${fromPlayer.name}`,
+          playerId: toPlayer.id
+        })
+      },
+
+      rejectTrade: (tradeId) => {
+        const state = get()
+        const trade = state.activeTradeOffers.find((t) => t.id === tradeId)
+        if (!trade) return
+
+        const fromPlayer = state.players.find((p) => p.id === trade.fromPlayerId)
+        const toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
+
+        // Mark trade as rejected and remove
+        set((state) => ({
+          activeTradeOffers: state.activeTradeOffers.filter((t) => t.id !== tradeId)
+        }))
+
+        if (fromPlayer && toPlayer) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${toPlayer.name} rejected trade from ${fromPlayer.name}`,
+            playerId: toPlayer.id
+          })
+        }
+      },
+
       createDebt: (debtorId, creditorId, amount, reason) => {
         const state = get()
         const debtor = state.players.find((p) => p.id === debtorId)
@@ -1172,10 +1466,552 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
+      // Card system
+      drawPartyDirective: () => {
+        const state = get()
+        let { partyDirectiveDeck, partyDirectiveDiscard } = state
+
+        // If deck is empty, reshuffle discard pile
+        if (partyDirectiveDeck.length === 0) {
+          partyDirectiveDeck = [...partyDirectiveDiscard].sort(() => Math.random() - 0.5)
+          partyDirectiveDiscard = []
+          get().addLogEntry({
+            type: 'system',
+            message: 'Party Directive deck reshuffled'
+          })
+        }
+
+        const cardId = partyDirectiveDeck[0]
+        const card = PARTY_DIRECTIVE_CARDS.find(c => c.id === cardId)
+
+        if (!card) {
+          // Fallback if card not found
+          return PARTY_DIRECTIVE_CARDS[0]
+        }
+
+        // Update deck state
+        set({
+          partyDirectiveDeck: partyDirectiveDeck.slice(1),
+          partyDirectiveDiscard: [...partyDirectiveDiscard, cardId]
+        })
+
+        return card
+      },
+
+      drawCommunistTest: (difficulty) => {
+        const state = get()
+        const selectedDifficulty = difficulty ?? getRandomDifficulty()
+        const question = getRandomQuestionByDifficulty(selectedDifficulty)
+
+        // Mark question as used
+        const newUsedQuestions = new Set(state.communistTestUsedQuestions)
+        newUsedQuestions.add(question.id)
+
+        set({ communistTestUsedQuestions: newUsedQuestions })
+
+        return question
+      },
+
+      applyDirectiveEffect: (card, playerId) => {
+        const state = get()
+        const player = state.players.find(p => p.id === playerId)
+        if (!player) return
+
+        get().addLogEntry({
+          type: 'system',
+          message: `${player.name} drew: ${card.title} - ${card.description}`
+        })
+
+        switch (card.effect.type) {
+          case 'move':
+            if (card.effect.destination !== undefined) {
+              get().updatePlayer(playerId, { position: card.effect.destination })
+              // Check if passed STOY
+              if (player.position < card.effect.destination && card.effect.destination !== 0) {
+                get().handleStoyPassing(playerId)
+              }
+            }
+            break
+
+          case 'moveRelative':
+            if (card.effect.spaces !== undefined) {
+              get().movePlayer(playerId, card.effect.spaces)
+            }
+            break
+
+          case 'money':
+            if (card.effect.amount !== undefined) {
+              get().updatePlayer(playerId, { rubles: player.rubles + card.effect.amount })
+              if (card.effect.amount > 0) {
+                get().adjustTreasury(-card.effect.amount)
+              } else {
+                get().adjustTreasury(Math.abs(card.effect.amount))
+              }
+            }
+            break
+
+          case 'gulag':
+            get().sendToGulag(playerId, 'stalinDecree', 'Party Directive card')
+            break
+
+          case 'freeFromGulag':
+            get().updatePlayer(playerId, { hasFreeFromGulagCard: true })
+            get().addLogEntry({
+              type: 'system',
+              message: `${player.name} received a "Get out of Gulag free" card!`,
+              playerId
+            })
+            break
+
+          case 'rankChange':
+            if (card.effect.direction === 'up') {
+              get().promotePlayer(playerId)
+            } else {
+              get().demotePlayer(playerId)
+            }
+            break
+
+          case 'collectFromAll':
+            if (card.effect.amount !== undefined) {
+              const effectAmount = card.effect.amount
+              state.players.forEach(p => {
+                if (!p.isStalin && p.id !== playerId && !p.isEliminated) {
+                  const amount = Math.min(effectAmount, p.rubles)
+                  get().updatePlayer(p.id, { rubles: p.rubles - amount })
+                  get().updatePlayer(playerId, { rubles: player.rubles + amount })
+                }
+              })
+            }
+            break
+
+          case 'payToAll':
+            if (card.effect.amount !== undefined) {
+              const effectAmount = card.effect.amount
+              state.players.forEach(p => {
+                if (!p.isStalin && p.id !== playerId && !p.isEliminated) {
+                  const amount = Math.min(effectAmount, player.rubles)
+                  get().updatePlayer(playerId, { rubles: player.rubles - amount })
+                  get().updatePlayer(p.id, { rubles: p.rubles + amount })
+                }
+              })
+            }
+            break
+
+          case 'propertyTax': {
+            const properties = state.properties.filter(p => p.custodianId === playerId)
+            let totalTax = 0
+            if (card.effect.perProperty) {
+              totalTax += properties.length * card.effect.perProperty
+            }
+            if (card.effect.perImprovement) {
+              const totalImprovements = properties.reduce((sum, p) => sum + p.collectivizationLevel, 0)
+              totalTax += totalImprovements * card.effect.perImprovement
+            }
+            get().updatePlayer(playerId, { rubles: player.rubles - totalTax })
+            get().adjustTreasury(totalTax)
+            get().addLogEntry({
+              type: 'payment',
+              message: `${player.name} paid ₽${String(totalTax)} in property taxes`,
+              playerId
+            })
+            break
+          }
+
+          case 'custom':
+            // Handle custom effects in modal
+            get().addLogEntry({
+              type: 'system',
+              message: `Custom effect: ${card.effect.handler ?? 'unknown'} - requires special handling`,
+              playerId
+            })
+            break
+        }
+
+        set({ pendingAction: null, turnPhase: 'post-turn' })
+      },
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      answerCommunistTest: (question, answer, _readerId) => {
+        const state = get()
+        const currentPlayer = state.players[state.currentPlayerIndex]
+
+        // Check if Vodka Bottle is immune to trick questions
+        const isCorrect = isAnswerCorrect(question, answer)
+
+        if (question.difficulty === 'trick' && currentPlayer.piece === 'vodkaBottle') {
+          get().addLogEntry({
+            type: 'system',
+            message: `${currentPlayer.name}'s Vodka Bottle makes them immune to trick questions!`,
+            playerId: currentPlayer.id
+          })
+          set({ pendingAction: null, turnPhase: 'post-turn' })
+          return
+        }
+
+        if (isCorrect) {
+          // Correct answer
+          get().updatePlayer(currentPlayer.id, {
+            correctTestAnswers: currentPlayer.correctTestAnswers + 1,
+            consecutiveFailedTests: 0
+          })
+
+          // Apply reward (doubled for Red Star penalty)
+          const reward = currentPlayer.piece === 'redStar' ? question.reward * 2 : question.reward
+          if (reward > 0) {
+            get().updatePlayer(currentPlayer.id, { rubles: currentPlayer.rubles + reward })
+            get().adjustTreasury(-reward)
+          }
+
+          // Hard questions grant rank up
+          if (question.grantsRankUp) {
+            get().promotePlayer(currentPlayer.id)
+          }
+
+          // Check for Party Member eligibility (2 correct answers)
+          if (currentPlayer.correctTestAnswers >= 2 && currentPlayer.rank === 'proletariat') {
+            get().promotePlayer(currentPlayer.id)
+          }
+
+          get().addLogEntry({
+            type: 'system',
+            message: `${currentPlayer.name} answered correctly! Reward: ₽${String(reward)}`,
+            playerId: currentPlayer.id
+          })
+        } else {
+          // Wrong answer
+          get().updatePlayer(currentPlayer.id, {
+            consecutiveFailedTests: currentPlayer.consecutiveFailedTests + 1
+          })
+
+          // Apply penalty (doubled for Red Star)
+          const penalty = currentPlayer.piece === 'redStar' ? question.penalty * 2 : question.penalty
+          if (penalty > 0) {
+            get().updatePlayer(currentPlayer.id, { rubles: currentPlayer.rubles - penalty })
+            get().adjustTreasury(penalty)
+          }
+
+          // 2 consecutive failures = rank loss
+          if (currentPlayer.consecutiveFailedTests >= 2) {
+            get().demotePlayer(currentPlayer.id)
+            get().updatePlayer(currentPlayer.id, { consecutiveFailedTests: 0 })
+          }
+
+          get().addLogEntry({
+            type: 'system',
+            message: `${currentPlayer.name} answered incorrectly. Penalty: ₽${String(penalty)}`,
+            playerId: currentPlayer.id
+          })
+        }
+
+        set({ pendingAction: null, turnPhase: 'post-turn' })
+      },
+
+      // Piece abilities
+      sickleHarvest: (sicklePlayerId, targetPropertyId) => {
+        const state = get()
+        const sicklePlayer = state.players.find(p => p.id === sicklePlayerId)
+        const property = state.properties.find(p => p.spaceId === targetPropertyId)
+        const space = getSpaceById(targetPropertyId)
+
+        if (!sicklePlayer || !property || !space) return
+        if (sicklePlayer.piece !== 'sickle') return
+        if (sicklePlayer.hasUsedSickleHarvest) return
+
+        // Check property value < ₽150
+        if ((space.baseCost ?? 0) >= 150) {
+          get().addLogEntry({
+            type: 'system',
+            message: `Cannot harvest ${space.name} - value must be less than ₽150!`,
+            playerId: sicklePlayerId
+          })
+          return
+        }
+
+        // Transfer property
+        const oldCustodian = state.players.find(p => p.id === property.custodianId)
+        get().setPropertyCustodian(targetPropertyId, sicklePlayerId)
+
+        get().updatePlayer(sicklePlayerId, { hasUsedSickleHarvest: true })
+
+        get().addLogEntry({
+          type: 'property',
+          message: `${sicklePlayer.name}'s Sickle harvested ${space.name} from ${oldCustodian?.name ?? 'the State'}!`,
+          playerId: sicklePlayerId
+        })
+
+        set({ pendingAction: null })
+      },
+
+      ironCurtainDisappear: (ironCurtainPlayerId, targetPropertyId) => {
+        const state = get()
+        const ironCurtainPlayer = state.players.find(p => p.id === ironCurtainPlayerId)
+        const property = state.properties.find(p => p.spaceId === targetPropertyId)
+        const space = getSpaceById(targetPropertyId)
+
+        if (!ironCurtainPlayer || !property || !space) return
+        if (ironCurtainPlayer.piece !== 'ironCurtain') return
+        if (ironCurtainPlayer.hasUsedIronCurtainDisappear) return
+
+        const victimPlayer = state.players.find(p => p.id === property.custodianId)
+
+        // Return property to State
+        get().setPropertyCustodian(targetPropertyId, null)
+
+        get().updatePlayer(ironCurtainPlayer.id, { hasUsedIronCurtainDisappear: true })
+
+        get().addLogEntry({
+          type: 'property',
+          message: `${ironCurtainPlayer.name}'s Iron Curtain made ${space.name} disappear from ${victimPlayer?.name ?? 'the State'}!`,
+          playerId: ironCurtainPlayer.id
+        })
+
+        set({ pendingAction: null })
+      },
+
+      leninSpeech: (leninPlayerId, applauders) => {
+        const state = get()
+        const leninPlayer = state.players.find(p => p.id === leninPlayerId)
+
+        if (!leninPlayer) return
+        if (leninPlayer.piece !== 'statueOfLenin') return
+        if (leninPlayer.hasUsedLeninSpeech) return
+
+        // Collect ₽100 from each applauder
+        let totalCollected = 0
+        applauders.forEach(applauderId => {
+          const applauder = state.players.find(p => p.id === applauderId)
+          if (applauder && !applauder.isEliminated) {
+            const amount = Math.min(100, applauder.rubles)
+            get().updatePlayer(applauderId, { rubles: applauder.rubles - amount })
+            totalCollected += amount
+          }
+        })
+
+        get().updatePlayer(leninPlayerId, {
+          rubles: leninPlayer.rubles + totalCollected,
+          hasUsedLeninSpeech: true
+        })
+
+        get().addLogEntry({
+          type: 'payment',
+          message: `${leninPlayer.name}'s inspiring speech collected ₽${String(totalCollected)} from ${String(applauders.length)} applauders!`,
+          playerId: leninPlayerId
+        })
+
+        set({ pendingAction: null })
+      },
+
+      promotePlayer: (playerId) => {
+        const state = get()
+        const player = state.players.find(p => p.id === playerId)
+        if (!player) return
+
+        const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+        const currentRankIndex = rankOrder.indexOf(player.rank)
+
+        if (currentRankIndex < rankOrder.length - 1) {
+          const newRank = rankOrder[currentRankIndex + 1]
+          get().updatePlayer(playerId, { rank: newRank })
+          get().addLogEntry({
+            type: 'rank',
+            message: `${player.name} promoted to ${newRank}!`,
+            playerId
+          })
+        } else {
+          get().addLogEntry({
+            type: 'system',
+            message: `${player.name} is already at the highest rank (Inner Circle)`,
+            playerId
+          })
+        }
+      },
+
+      // Property special abilities
+      siberianCampsGulag: (custodianId, targetPlayerId) => {
+        const state = get()
+        const custodian = state.players.find(p => p.id === custodianId)
+        const target = state.players.find(p => p.id === targetPlayerId)
+
+        if (!custodian || !target) return
+        if (custodian.hasUsedSiberianCampsGulag) return
+
+        // Check if custodian owns both Siberian Camps (spaces 1 and 3)
+        const ownsCampVorkuta = state.properties.find(p => p.spaceId === 1 && p.custodianId === custodianId)
+        const ownsCampKolyma = state.properties.find(p => p.spaceId === 3 && p.custodianId === custodianId)
+
+        if (!ownsCampVorkuta || !ownsCampKolyma) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} must control both Siberian Camps to use this ability!`
+          })
+          return
+        }
+
+        // Ask Stalin for approval (in real game, this would be a modal)
+        const approved = window.confirm(
+          `STALIN'S APPROVAL REQUIRED\n\n${custodian.name} wants to send ${target.name} to the Gulag for "labour needs".\n\nDo you approve?`
+        )
+
+        if (approved) {
+          get().sendToGulag(targetPlayerId, 'campLabour')
+          get().updatePlayer(custodianId, { hasUsedSiberianCampsGulag: true })
+
+          get().addLogEntry({
+            type: 'gulag',
+            message: `${custodian.name} sent ${target.name} to the Gulag for forced labour! (Siberian Camps ability)`,
+            playerId: custodianId
+          })
+        } else {
+          get().addLogEntry({
+            type: 'system',
+            message: `Stalin denied ${custodian.name}'s request to send ${target.name} to the Gulag`
+          })
+        }
+
+        set({ pendingAction: null })
+      },
+
+      kgbPreviewTest: (custodianId) => {
+        const state = get()
+        const custodian = state.players.find(p => p.id === custodianId)
+
+        if (!custodian) return
+
+        // Check if custodian owns KGB Headquarters (space 23)
+        const ownsKGB = state.properties.find(p => p.spaceId === 23 && p.custodianId === custodianId)
+
+        if (!ownsKGB) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} must control KGB Headquarters to use this ability!`
+          })
+          return
+        }
+
+        // Check if already used this round
+        if (custodian.kgbTestPreviewsUsedThisRound >= 1) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} has already used KGB Preview this round!`
+          })
+          return
+        }
+
+        // Draw a random question to preview
+        const difficulty = getRandomDifficulty()
+        const question = getRandomQuestionByDifficulty(difficulty)
+
+        // Show the question to the custodian
+        alert(
+          `KGB HEADQUARTERS - TEST PREVIEW\n\n` +
+          `Difficulty: ${difficulty.toUpperCase()}\n` +
+          `Question: ${question.question}\n\n` +
+          `Answer: ${question.answer}\n\n` +
+          `This preview has been noted by the KGB.`
+        )
+
+        get().updatePlayer(custodianId, {
+          kgbTestPreviewsUsedThisRound: custodian.kgbTestPreviewsUsedThisRound + 1
+        })
+
+        get().addLogEntry({
+          type: 'system',
+          message: `${custodian.name} used KGB Headquarters to preview a Communist Test question`,
+          playerId: custodianId
+        })
+      },
+
+      ministryTruthRewrite: (custodianId, newRule) => {
+        const state = get()
+        const custodian = state.players.find(p => p.id === custodianId)
+
+        if (!custodian) return
+        if (custodian.hasUsedMinistryTruthRewrite) return
+
+        // Check if custodian owns all three Ministry properties (16, 18, 19)
+        const ownsMinistries = [16, 18, 19].every(spaceId =>
+          state.properties.find(p => p.spaceId === spaceId && p.custodianId === custodianId)
+        )
+
+        if (!ownsMinistries) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} must control all three Government Ministries to use this ability!`
+          })
+          return
+        }
+
+        // Ask Stalin for approval
+        const approved = window.confirm(
+          `STALIN'S VETO POWER\n\n${custodian.name} wants to rewrite a rule:\n\n"${newRule}"\n\nDo you approve this rule change?`
+        )
+
+        if (approved) {
+          get().updatePlayer(custodianId, { hasUsedMinistryTruthRewrite: true })
+
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} used Ministry of Truth to rewrite a rule: "${newRule}"`,
+            playerId: custodianId
+          })
+        } else {
+          get().addLogEntry({
+            type: 'system',
+            message: `Stalin vetoed ${custodian.name}'s rule rewrite attempt`
+          })
+        }
+
+        set({ pendingAction: null })
+      },
+
+      pravdaPressRevote: (custodianId, decision) => {
+        const state = get()
+        const custodian = state.players.find(p => p.id === custodianId)
+
+        if (!custodian) return
+        if (custodian.hasUsedPravdaPressRevote) return
+
+        // Check if custodian owns all three State Media properties (26, 27, 29)
+        const ownsMedia = [26, 27, 29].every(spaceId =>
+          state.properties.find(p => p.spaceId === spaceId && p.custodianId === custodianId)
+        )
+
+        if (!ownsMedia) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${custodian.name} must control all three State Media properties to use this ability!`
+          })
+          return
+        }
+
+        get().updatePlayer(custodianId, { hasUsedPravdaPressRevote: true })
+
+        get().addLogEntry({
+          type: 'system',
+          message: `${custodian.name} used Pravda Press to force a re-vote on: "${decision}" - The people demand it!`,
+          playerId: custodianId
+        })
+
+        alert(
+          `PRAVDA PRESS - PROPAGANDA SPREAD\n\n` +
+          `${custodian.name} demands a re-vote on:\n"${decision}"\n\n` +
+          `THE PEOPLE DEMAND IT!`
+        )
+
+        set({ pendingAction: null })
+      },
+
       incrementRound: () => {
         const state = get()
         const newRound: number = (state.roundNumber) + 1
         set({ roundNumber: newRound })
+
+        // Reset KGB test preview counter for all players
+        state.players.forEach(player => {
+          if (player.kgbTestPreviewsUsedThisRound > 0) {
+            get().updatePlayer(player.id, { kgbTestPreviewsUsedThisRound: 0 })
+          }
+        })
 
         // Expire vouchers
         get().expireVouchers()
@@ -1205,7 +2041,10 @@ export const useGameStore = create<GameStore>()(
         dice: state.dice,
         gameLog: state.gameLog,
         activeVouchers: state.activeVouchers,
-        pendingBribes: state.pendingBribes
+        pendingBribes: state.pendingBribes,
+        partyDirectiveDeck: state.partyDirectiveDeck,
+        partyDirectiveDiscard: state.partyDirectiveDiscard,
+        communistTestUsedQuestions: state.communistTestUsedQuestions
       })
     }
   )

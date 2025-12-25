@@ -1,0 +1,189 @@
+/* Sickle Motherland Modal Styles */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 75%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #F5E6C8;
+  border: 4px solid #228B22;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgb(0 0 0 / 50%);
+  max-width: 550px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.header {
+  background: #228B22;
+  color: #FAF6EF;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  border-bottom: 2px solid #32CD32;
+}
+
+.icon {
+  font-size: 28px;
+}
+
+.title {
+  font-family: Oswald, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-align: center;
+}
+
+.content {
+  padding: 30px;
+}
+
+.description {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 16px;
+  color: #1A1A1A;
+  line-height: 1.6;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.warningBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
+  background: rgb(196 30 58 / 10%);
+  border: 2px solid rgb(196 30 58 / 30%);
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.warningIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.warningText {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 14px;
+  color: #C41E3A;
+  margin: 0;
+  font-weight: 600;
+}
+
+.balanceInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: rgb(26 26 26 / 5%);
+  border-radius: 4px;
+  margin-bottom: 25px;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 14px;
+  color: #4A4A4A;
+}
+
+.balance {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 700;
+  color: #228B22;
+  font-size: 18px;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.announceButton,
+.forgetButton {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border: 3px solid;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: linear-gradient(180deg, #FAF6EF 0%, #F5E6C8 100%);
+}
+
+.announceButton {
+  border-color: #228B22;
+}
+
+.announceButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgb(0 0 0 / 20%);
+  background: linear-gradient(180deg, #E8F5E9 0%, #C8E6C9 100%);
+}
+
+.forgetButton {
+  border-color: #C41E3A;
+}
+
+.forgetButton:hover:not(.insufficient) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgb(0 0 0 / 20%);
+  background: linear-gradient(180deg, #FFEBEE 0%, #FFCDD2 100%);
+}
+
+.forgetButton.insufficient {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.buttonIcon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.buttonText {
+  flex: 1;
+  text-align: left;
+}
+
+.buttonTitle {
+  font-family: Oswald, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #1A1A1A;
+  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+}
+
+.buttonDesc {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 13px;
+  color: #4A4A4A;
+  font-style: italic;
+}
+
+.insufficientWarning {
+  margin-top: 15px;
+  padding: 12px;
+  background: rgb(255 152 0 / 10%);
+  border: 2px solid rgb(255 152 0 / 30%);
+  border-radius: 4px;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 13px;
+  color: #F57C00;
+  text-align: center;
+}
