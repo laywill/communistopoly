@@ -272,10 +272,10 @@ Properties can be improved through collectivization (similar to houses/hotels in
 
 #### Utilities (Means of Production)
 
-| Property                  | Cost | Mortgage | Rent (1 owned)     | Rent (2 owned)      |
-|---------------------------|------|----------|--------------------|---------------------|
-| State Electricity Board   | ₽150 | ₽75      | 4 × dice roll      | 10 × dice roll      |
-| People's Water Collective | ₽150 | ₽75      | 4 × dice roll      | 10 × dice roll      |
+| Property                  | Cost | Mortgage | Rent (1 owned) | Rent (2 owned) |
+|---------------------------|------|----------|----------------|----------------|
+| State Electricity Board   | ₽150 | ₽75      | 4 × dice roll  | 10 × dice roll |
+| People's Water Collective | ₽150 | ₽75      | 4 × dice roll  | 10 × dice roll |
 
 **Note**: Utilities and railways cannot be collectivized. Only COMMISSAR rank or higher may own utilities.
 
