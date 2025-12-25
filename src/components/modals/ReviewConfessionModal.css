@@ -1,0 +1,162 @@
+.review-confession-modal {
+  max-width: 700px;
+  background: linear-gradient(135deg, #1a0000 0%, #0a0000 100%);
+  border: 3px solid #ffd700;
+}
+
+.review-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.review-header h2 {
+  font-size: 28px;
+  color: #ffd700;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.review-subtitle {
+  font-size: 14px;
+  color: #ccc;
+  font-style: italic;
+}
+
+.prisoner-details {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: rgba(255, 0, 0, 0.1);
+  border: 2px solid #8b0000;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.prisoner-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.prisoner-text h3 {
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.prisoner-text p {
+  font-size: 14px;
+  color: #ccc;
+  margin: 4px 0;
+}
+
+.prisoner-rank {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.confession-display {
+  margin-bottom: 25px;
+}
+
+.confession-display h3 {
+  font-size: 18px;
+  color: #ffd700;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.confession-text {
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-left: 4px solid #8b0000;
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: #fff;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.confession-meta {
+  text-align: right;
+  font-size: 12px;
+  color: #999;
+}
+
+.stalin-decision {
+  padding: 20px;
+  background: rgba(255, 215, 0, 0.05);
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.decision-prompt {
+  font-size: 18px;
+  color: #ffd700;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.decision-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.accept-button,
+.reject-button {
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.accept-button {
+  background: #00aa00;
+  color: #fff;
+  border-color: #006600;
+}
+
+.accept-button:hover {
+  background: #00cc00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 170, 0, 0.5);
+}
+
+.reject-button {
+  background: #cc0000;
+  color: #fff;
+  border-color: #880000;
+}
+
+.reject-button:hover {
+  background: #ee0000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(204, 0, 0, 0.5);
+}
+
+.stalin-note {
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #ffd700;
+  border-radius: 4px;
+}
+
+.stalin-note p {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.stalin-note strong {
+  color: #ffd700;
+}

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, PlayerStatistics } from '../types/game'
+import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, PlayerStatistics, Confession } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
 import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck, type DirectiveCard } from '../data/partyDirectiveCards'
 import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
@@ -177,6 +177,10 @@ interface GameActions {
   // Statistics
   updatePlayerStat: (playerId: string, statKey: keyof PlayerStatistics, increment: number) => void
 
+  // Confessions
+  submitConfession: (prisonerId: string, confession: string) => void
+  reviewConfession: (confessionId: string, accepted: boolean) => void
+
   // Round management
   incrementRound: () => void
 
@@ -256,7 +260,10 @@ const initialState: GameState = {
   // Unanimous end vote
   endVoteInProgress: false,
   endVoteInitiator: null,
-  endVotes: {}
+  endVotes: {},
+
+  // Rehabilitation confessions
+  confessions: []
 }
 
 export const useGameStore = create<GameStore>()(
@@ -1713,6 +1720,76 @@ export const useGameStore = create<GameStore>()(
         })
       },
 
+      submitConfession: (prisonerId, confession) => {
+        const state = get()
+        const prisoner = state.players.find(p => p.id === prisonerId)
+        if (!prisoner || !prisoner.inGulag) return
+
+        const newConfession: Confession = {
+          id: `confession-${String(Date.now())}`,
+          prisonerId,
+          confession,
+          timestamp: new Date(),
+          reviewed: false
+        }
+
+        set((state) => ({
+          confessions: [...state.confessions, newConfession]
+        }))
+
+        get().addLogEntry({
+          type: 'gulag',
+          message: `${prisoner.name} has submitted a rehabilitation confession to Stalin`,
+          playerId: prisonerId
+        })
+
+        // Notify Stalin (set pending action for Stalin to review)
+        set({
+          pendingAction: {
+            type: 'review-confession',
+            data: { confessionId: newConfession.id }
+          }
+        })
+      },
+
+      reviewConfession: (confessionId, accepted) => {
+        const state = get()
+        const confession = state.confessions.find(c => c.id === confessionId)
+        if (!confession || confession.reviewed) return
+
+        const prisoner = state.players.find(p => p.id === confession.prisonerId)
+        if (!prisoner) return
+
+        // Mark confession as reviewed
+        set((state) => ({
+          confessions: state.confessions.map(c =>
+            c.id === confessionId ? { ...c, reviewed: true, accepted } : c
+          )
+        }))
+
+        if (accepted) {
+          // Release from Gulag
+          get().updatePlayer(confession.prisonerId, {
+            inGulag: false,
+            gulagTurns: 0
+          })
+
+          get().addLogEntry({
+            type: 'gulag',
+            message: `Stalin accepted ${prisoner.name}'s rehabilitation confession and released them from the Gulag!`,
+            playerId: confession.prisonerId
+          })
+        } else {
+          get().addLogEntry({
+            type: 'gulag',
+            message: `Stalin rejected ${prisoner.name}'s rehabilitation confession. They remain in the Gulag.`,
+            playerId: confession.prisonerId
+          })
+        }
+
+        set({ pendingAction: null })
+      },
+
       // Card system
       drawPartyDirective: () => {
         const state = get()
@@ -2298,7 +2375,8 @@ export const useGameStore = create<GameStore>()(
         gameStatistics: state.gameStatistics,
         endVoteInProgress: state.endVoteInProgress,
         endVoteInitiator: state.endVoteInitiator,
-        endVotes: state.endVotes
+        endVotes: state.endVotes,
+        confessions: state.confessions
       })
     }
   )

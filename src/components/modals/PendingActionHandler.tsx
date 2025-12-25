@@ -16,6 +16,8 @@ import { BeggingModal } from './BeggingModal';
 import { TradeModal } from './TradeModal';
 import { PartyDirectiveModal } from './PartyDirectiveModal';
 import { CommunistTestModal } from './CommunistTestModal';
+import ConfessionModal from './ConfessionModal';
+import ReviewConfessionModal from './ReviewConfessionModal';
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -220,6 +222,27 @@ export function PendingActionHandler() {
             question={question}
             testedPlayerId={pendingAction.data.playerId as string}
             onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'write-confession':
+      if (pendingAction.data?.prisonerId) {
+        return (
+          <ConfessionModal
+            prisonerId={pendingAction.data.prisonerId as string}
+            onClose={handleClose}
+          />
+        );
+      }
+      return null;
+
+    case 'review-confession':
+      if (pendingAction.data?.confessionId) {
+        return (
+          <ReviewConfessionModal
+            confessionId={pendingAction.data.confessionId as string}
           />
         );
       }

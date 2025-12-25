@@ -209,6 +209,8 @@ export type PendingActionType =
   | 'bread-loaf-begging'
   | 'trade-offer'
   | 'trade-response'
+  | 'write-confession'
+  | 'review-confession'
 
 export interface PendingAction {
   type: PendingActionType
@@ -294,6 +296,16 @@ export interface EndVote {
   timestamp: Date
 }
 
+// Rehabilitation Confession
+export interface Confession {
+  id: string
+  prisonerId: string
+  confession: string
+  timestamp: Date
+  reviewed: boolean
+  accepted?: boolean
+}
+
 // Game state
 export interface GameState {
   // Game flow
@@ -350,4 +362,7 @@ export interface GameState {
   endVoteInProgress: boolean
   endVoteInitiator: string | null
   endVotes: Record<string, boolean> // playerId -> vote
+
+  // Rehabilitation confessions
+  confessions: Confession[]
 }
