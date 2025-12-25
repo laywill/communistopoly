@@ -93,6 +93,11 @@ export function calculateUtilityFee (
  * Check if player can purchase a property based on rank restrictions
  */
 export function canPurchaseProperty (player: Player, propertyGroup: PropertyGroup): boolean {
+  // TANK ABILITY: Cannot control Collective Farm properties
+  if (player.piece === 'tank' && propertyGroup === 'collective') {
+    return false
+  }
+
   switch (propertyGroup) {
     case 'elite':
       // Green properties: Party Member or higher

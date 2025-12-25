@@ -1631,7 +1631,7 @@ export const useGameStore = create<GameStore>()(
       },
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      answerCommunistTest: (question, answer, readerId) => {
+      answerCommunistTest: (question, answer, _readerId) => {
         const state = get()
         const currentPlayer = state.players[state.currentPlayerIndex]
 

@@ -7,6 +7,7 @@ import { TradeModal } from '../modals/TradeModal';
 import { SickleHarvestModal } from '../modals/SickleHarvestModal';
 import { IronCurtainDisappearModal } from '../modals/IronCurtainDisappearModal';
 import { LeninSpeechModal } from '../modals/LeninSpeechModal';
+import { PieceAbilityIndicator } from './PieceAbilityIndicator';
 import { shouldHideIronCurtainMoney } from '../../utils/pieceAbilityUtils';
 import './PlayerDashboard.css';
 
@@ -191,6 +192,11 @@ export default function PlayerDashboard() {
                       Day {player.gulagTurns + 1} of ???
                     </span>
                   </div>
+                )}
+
+                {/* Piece Ability Indicator */}
+                {player.piece && (
+                  <PieceAbilityIndicator player={player} />
                 )}
 
                 {isCurrentPlayer && (
