@@ -16,7 +16,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Camp Vorkuta',
     type: 'property',
     group: 'siberian',
-    baseQuota: 20,
+    baseQuota: 2,
     baseCost: 60
   },
 
@@ -34,7 +34,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Camp Kolyma',
     type: 'property',
     group: 'siberian',
-    baseQuota: 40,
+    baseQuota: 4,
     baseCost: 60,
     specialRule: 'Both Siberian camps: May send ONE player to Gulag per game (Stalin must approve)'
   },
@@ -62,7 +62,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Kolkhoz Sunrise',
     type: 'property',
     group: 'collective',
-    baseQuota: 60,
+    baseQuota: 6,
     baseCost: 100,
     specialRule: 'Custodian must announce "The harvest is bountiful!" when collecting quota. Failure = halved quota'
   },
@@ -81,7 +81,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Kolkhoz Progress',
     type: 'property',
     group: 'collective',
-    baseQuota: 60,
+    baseQuota: 6,
     baseCost: 100
   },
 
@@ -91,7 +91,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Kolkhoz Victory',
     type: 'property',
     group: 'collective',
-    baseQuota: 80,
+    baseQuota: 8,
     baseCost: 120
   },
 
@@ -110,7 +110,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Tractor Factory #47',
     type: 'property',
     group: 'industrial',
-    baseQuota: 100,
+    baseQuota: 10,
     baseCost: 140,
     specialRule: 'If player cannot pay, they work off debt by missing next turn'
   },
@@ -131,7 +131,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Steel Mill Molotov',
     type: 'property',
     group: 'industrial',
-    baseQuota: 100,
+    baseQuota: 10,
     baseCost: 140
   },
 
@@ -141,7 +141,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Munitions Plant Kalashnikov',
     type: 'property',
     group: 'industrial',
-    baseQuota: 120,
+    baseQuota: 12,
     baseCost: 160
   },
 
@@ -160,7 +160,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Ministry of Truth',
     type: 'property',
     group: 'ministry',
-    baseQuota: 140,
+    baseQuota: 14,
     baseCost: 180,
     specialRule: 'Custodian of all three: May rewrite ONE rule per game (Stalin has veto)'
   },
@@ -179,7 +179,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Ministry of Plenty',
     type: 'property',
     group: 'ministry',
-    baseQuota: 140,
+    baseQuota: 14,
     baseCost: 180
   },
 
@@ -189,7 +189,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Ministry of Love',
     type: 'property',
     group: 'ministry',
-    baseQuota: 160,
+    baseQuota: 16,
     baseCost: 200
   },
 
@@ -208,7 +208,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Red Army Barracks',
     type: 'property',
     group: 'military',
-    baseQuota: 180,
+    baseQuota: 18,
     baseCost: 220
   },
 
@@ -226,7 +226,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'KGB Headquarters',
     type: 'property',
     group: 'military',
-    baseQuota: 180,
+    baseQuota: 18,
     baseCost: 220,
     specialRule: 'Custodian may look at one Communist Test card before anyone draws it, once per round'
   },
@@ -237,7 +237,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Nuclear Bunker Arzamas-16',
     type: 'property',
     group: 'military',
-    baseQuota: 200,
+    baseQuota: 20,
     baseCost: 240
   },
 
@@ -256,7 +256,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Pravda Printing Press',
     type: 'property',
     group: 'media',
-    baseQuota: 220,
+    baseQuota: 22,
     baseCost: 260,
     specialRule: 'Custodian: Spread propaganda once per game - force re-vote on Stalin decision'
   },
@@ -267,7 +267,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Radio Moscow',
     type: 'property',
     group: 'media',
-    baseQuota: 220,
+    baseQuota: 22,
     baseCost: 260
   },
 
@@ -287,7 +287,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'State Television Center',
     type: 'property',
     group: 'media',
-    baseQuota: 240,
+    baseQuota: 22,
     baseCost: 280
   },
 
@@ -306,7 +306,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Politburo Apartments',
     type: 'property',
     group: 'elite',
-    baseQuota: 260,
+    baseQuota: 26,
     baseCost: 300,
     specialRule: 'Only PARTY MEMBER+ rank may become Custodian. Lower ranks pay double + must salute'
   },
@@ -317,7 +317,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'Dachas of the Nomenklatura',
     type: 'property',
     group: 'elite',
-    baseQuota: 260,
+    baseQuota: 26,
     baseCost: 300
   },
 
@@ -335,7 +335,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: 'The Lubyanka',
     type: 'property',
     group: 'elite',
-    baseQuota: 280,
+    baseQuota: 28,
     baseCost: 320
   },
 
@@ -363,7 +363,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: "Lenin's Mausoleum",
     type: 'property',
     group: 'kremlin',
-    baseQuota: 350,
+    baseQuota: 35,
     baseCost: 350,
     specialRule: 'Only INNER CIRCLE rank. Immune to ONE denouncement per game (Lenin protects you)'
   },
@@ -382,7 +382,7 @@ export const BOARD_SPACES: BoardSpace[] = [
     name: "Stalin's Private Office",
     type: 'property',
     group: 'kremlin',
-    baseQuota: 500,
+    baseQuota: 50,
     baseCost: 400,
     specialRule: 'Only INNER CIRCLE rank. Custodian may whisper privately with Stalin once per round'
   }
