@@ -88,24 +88,6 @@ export default function StalinPanel() {
     }
   };
 
-  // const calculatePlayerWealth = (playerId: string): number => {
-  //   const player = players.find(p => p.id === playerId);
-  //   if (!player) return 0;
-
-  //   let total = player.rubles;
-
-  //   // Add property values
-  //   player.properties.forEach(propId => {
-  //     const property = properties.find(p => p.spaceId === parseInt(propId));
-  //     if (property) {
-  //       // Simplified - would need to import getSpaceById to get actual values
-  //       total += 100; // Placeholder
-  //     }
-  //   });
-
-  //   return total;
-  // };
-
   const getRankName = (rank: string) => {
     const rankNames: Record<string, string> = {
       proletariat: 'Proletariat',
