@@ -30,6 +30,10 @@ export function createTestPlayer(overrides: Partial<Player> = {}): Player {
     vodkaUseCount: 0,
     ironCurtainClaimedRubles: 0,
     owesFavourTo: [],
+    hasUsedTankGulagImmunity: false,
+    vouchingFor: null,
+    vouchedByRound: null,
+    debt: null,
     ...overrides
   }
 }
@@ -41,5 +45,23 @@ export function createTestProperty(spaceId: number, overrides: Partial<Property>
     collectivizationLevel: 0,
     mortgaged: false,
     ...overrides
+  }
+}
+
+/**
+ * Helper to get the required doubles for Gulag escape based on turn number
+ */
+export function getRequiredDoublesForEscape(gulagTurns: number): number[] {
+  switch (gulagTurns) {
+    case 1:
+      return [6] // Only double 6s
+    case 2:
+      return [5, 6] // Double 5s or 6s
+    case 3:
+      return [4, 5, 6] // Double 4s, 5s, or 6s
+    case 4:
+      return [3, 4, 5, 6] // Double 3s, 4s, 5s, or 6s
+    default:
+      return [1, 2, 3, 4, 5, 6] // Any doubles
   }
 }
