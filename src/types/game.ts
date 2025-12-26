@@ -309,6 +309,58 @@ export interface Confession {
   accepted?: boolean
 }
 
+// Denouncement and Tribunal System
+export type TribunalPhase = 'accusation' | 'defence' | 'witnesses' | 'judgement'
+
+export type TribunalVerdict = 'guilty' | 'innocent' | 'bothGuilty' | 'insufficient'
+
+export interface Denouncement {
+  id: string
+  accuserId: string
+  accusedId: string
+  crime: string
+  timestamp: Date
+  roundNumber: number
+}
+
+export interface ActiveTribunal {
+  id: string
+  accuserId: string
+  accusedId: string
+  crime: string
+  phase: TribunalPhase
+  phaseStartTime: Date
+  witnessesFor: string[] // Player IDs who spoke for accuser
+  witnessesAgainst: string[] // Player IDs who spoke for accused
+  requiredWitnesses: number | 'unanimous' // Based on accused's rank
+}
+
+export interface WitnessRequirement {
+  required: number | 'unanimous'
+  reason: string
+}
+
+// Special Decrees
+export interface GreatPurge {
+  isActive: boolean
+  votes: Record<string, string> // voterId -> targetId
+  timestamp: Date
+}
+
+export interface FiveYearPlan {
+  isActive: boolean
+  target: number
+  collected: number
+  deadline: Date
+  startTime: Date
+}
+
+export interface HeroOfSovietUnion {
+  playerId: string
+  grantedAtRound: number
+  expiresAtRound: number // grantedAtRound + 3
+}
+
 // Game state
 export interface GameState {
   // Game flow
@@ -368,4 +420,14 @@ export interface GameState {
 
   // Rehabilitation confessions
   confessions: Confession[]
+
+  // Denouncement and Tribunal System
+  denouncementsThisRound: Denouncement[] // Track who denounced whom this round
+  activeTribunal: ActiveTribunal | null // Current ongoing tribunal
+
+  // Special Decrees
+  greatPurgeUsed: boolean
+  activeGreatPurge: GreatPurge | null
+  activeFiveYearPlan: FiveYearPlan | null
+  heroesOfSovietUnion: HeroOfSovietUnion[]
 }
