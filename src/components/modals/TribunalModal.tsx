@@ -17,25 +17,10 @@ export const TribunalModal: React.FC = () => {
 
   const [timeRemaining, setTimeRemaining] = useState(30);
 
-  if (!activeTribunal) return null;
-
-  const accuser = players.find((p) => p.id === activeTribunal.accuserId);
-  const accused = players.find((p) => p.id === activeTribunal.accusedId);
-
-  // Get eligible witnesses (not accuser, not accused, not Stalin, not in Gulag, not eliminated)
-  const eligibleWitnesses = players.filter(
-    (p) =>
-      p.id !== activeTribunal.accuserId &&
-      p.id !== activeTribunal.accusedId &&
-      !p.isStalin &&
-      !p.inGulag &&
-      !p.isEliminated &&
-      !activeTribunal.witnessesFor.includes(p.id) &&
-      !activeTribunal.witnessesAgainst.includes(p.id)
-  );
-
   // Timer effect
   useEffect(() => {
+    if (!activeTribunal) return;
+
     let phaseTime = 30;
     if (activeTribunal.phase === 'witnesses') {
       phaseTime = 15;
@@ -54,14 +39,31 @@ export const TribunalModal: React.FC = () => {
     }, 1000);
 
     return () => { clearInterval(interval); };
-  }, [activeTribunal.phase, activeTribunal.phaseStartTime]);
+  }, [activeTribunal]);
+
+  if (!activeTribunal) return null;
+
+  const accuser = players.find((p) => p.id === activeTribunal.accuserId);
+  const accused = players.find((p) => p.id === activeTribunal.accusedId);
+
+  // Get eligible witnesses (not accuser, not accused, not Stalin, not in Gulag, not eliminated)
+  const eligibleWitnesses = players.filter(
+    (p) =>
+      p.id !== activeTribunal.accuserId &&
+      p.id !== activeTribunal.accusedId &&
+      !p.isStalin &&
+      !p.inGulag &&
+      !p.isEliminated &&
+      !activeTribunal.witnessesFor.includes(p.id) &&
+      !activeTribunal.witnessesAgainst.includes(p.id)
+  );
 
   const getPhaseInstructions = (): string => {
     switch (activeTribunal.phase) {
       case 'accusation':
-        return `${accuser?.name}, you have 30 seconds to verbally present your case against ${accused?.name}.`;
+        return `${accuser?.name ?? 'Accuser'}, you have 30 seconds to verbally present your case against ${accused?.name ?? 'Accused'}.`;
       case 'defense':
-        return `${accused?.name}, you have 30 seconds to verbally defend yourself.`;
+        return `${accused?.name ?? 'Accused'}, you have 30 seconds to verbally defend yourself.`;
       case 'witnesses':
         return 'Witnesses may now speak for 15 seconds each. Click the buttons below to indicate support.';
       case 'judgment':
@@ -76,7 +78,7 @@ export const TribunalModal: React.FC = () => {
       if (activeTribunal.requiredWitnesses === 0) {
         return 'No witnesses required';
       }
-      return `Requires ${activeTribunal.requiredWitnesses} witness(es)`;
+      return `Requires ${String(activeTribunal.requiredWitnesses)} witness(es)`;
     }
     return 'Requires unanimous player agreement';
   };
@@ -320,7 +322,7 @@ export const TribunalModal: React.FC = () => {
                     </p>
                     <p style={{ margin: '4px 0 0 0', fontSize: '12px' }}>
                       {typeof activeTribunal.requiredWitnesses === 'number'
-                        ? `Need ${activeTribunal.requiredWitnesses} witness(es) for accuser, currently have ${activeTribunal.witnessesFor.length}`
+                        ? `Need ${String(activeTribunal.requiredWitnesses)} witness(es) for accuser, currently have ${String(activeTribunal.witnessesFor.length)}`
                         : 'Need unanimous agreement from all players'}
                     </p>
                   </div>

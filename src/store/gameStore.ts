@@ -2377,7 +2377,7 @@ export const useGameStore = create<GameStore>()(
 
         // Create denouncement record
         const denouncement: import('../types/game').Denouncement = {
-          id: `denouncement-${Date.now()}`,
+          id: `denouncement-${String(Date.now())}`,
           accuserId,
           accusedId,
           crime,
@@ -2390,7 +2390,7 @@ export const useGameStore = create<GameStore>()(
 
         // Create tribunal
         const tribunal: import('../types/game').ActiveTribunal = {
-          id: `tribunal-${Date.now()}`,
+          id: `tribunal-${String(Date.now())}`,
           accuserId,
           accusedId,
           crime,
@@ -2453,15 +2453,13 @@ export const useGameStore = create<GameStore>()(
         const currentIndex = phaseOrder.indexOf(state.activeTribunal.phase)
         const nextPhase = phaseOrder[currentIndex + 1]
 
-        if (nextPhase != null) {
-          set({
-            activeTribunal: {
-              ...state.activeTribunal,
-              phase: nextPhase,
-              phaseStartTime: new Date()
-            }
-          })
-        }
+        set({
+          activeTribunal: {
+            ...state.activeTribunal,
+            phase: nextPhase,
+            phaseStartTime: new Date()
+          }
+        })
       },
 
       addWitness: (witnessId, side) => {
@@ -2503,7 +2501,7 @@ export const useGameStore = create<GameStore>()(
         if (accuser == null || accused == null) return
 
         switch (verdict) {
-          case 'guilty':
+          case 'guilty': {
             // Send accused to Gulag
             get().sendToGulag(accused.id, 'denouncementGuilty')
 
@@ -2518,17 +2516,12 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            const accuserStats = state.gameStatistics.playerStats[accuser.id]
-            if (accuserStats != null) {
-              accuserStats.tribunalsWon++
-            }
-            const accusedStats = state.gameStatistics.playerStats[accused.id]
-            if (accusedStats != null) {
-              accusedStats.tribunalsLost++
-            }
+            state.gameStatistics.playerStats[accuser.id].tribunalsWon++
+            state.gameStatistics.playerStats[accused.id].tribunalsLost++
             break
+          }
 
-          case 'innocent':
+          case 'innocent': {
             // Demote accuser
             get().demotePlayer(accuser.id)
 
@@ -2538,17 +2531,12 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            const accuserStats2 = state.gameStatistics.playerStats[accuser.id]
-            if (accuserStats2 != null) {
-              accuserStats2.tribunalsLost++
-            }
-            const accusedStats2 = state.gameStatistics.playerStats[accused.id]
-            if (accusedStats2 != null) {
-              accusedStats2.tribunalsWon++
-            }
+            state.gameStatistics.playerStats[accuser.id].tribunalsLost++
+            state.gameStatistics.playerStats[accused.id].tribunalsWon++
             break
+          }
 
-          case 'bothGuilty':
+          case 'bothGuilty': {
             // Send both to Gulag
             get().sendToGulag(accused.id, 'denouncementGuilty')
             get().sendToGulag(accuser.id, 'denouncementGuilty')
@@ -2559,15 +2547,10 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            const accuserStats3 = state.gameStatistics.playerStats[accuser.id]
-            if (accuserStats3 != null) {
-              accuserStats3.tribunalsLost++
-            }
-            const accusedStats3 = state.gameStatistics.playerStats[accused.id]
-            if (accusedStats3 != null) {
-              accusedStats3.tribunalsLost++
-            }
+            state.gameStatistics.playerStats[accuser.id].tribunalsLost++
+            state.gameStatistics.playerStats[accused.id].tribunalsLost++
             break
+          }
 
           case 'insufficient':
             // Mark accused as under suspicion
@@ -2734,13 +2717,11 @@ export const useGameStore = create<GameStore>()(
             .filter(p => !p.isStalin && !p.isEliminated && !p.inGulag)
             .sort((a, b) => a.rubles - b.rubles)[0]
 
-          if (poorestPlayer != null) {
-            get().sendToGulag(poorestPlayer.id, 'denouncementGuilty')
-            get().addLogEntry({
-              type: 'system',
-              message: `Five-Year Plan FAILED! ${poorestPlayer.name} (poorest player) has been sent to the Gulag for sabotage.`
-            })
-          }
+          get().sendToGulag(poorestPlayer.id, 'denouncementGuilty')
+          get().addLogEntry({
+            type: 'system',
+            message: `Five-Year Plan FAILED! ${poorestPlayer.name} (poorest player) has been sent to the Gulag for sabotage.`
+          })
         }
 
         set({ activeFiveYearPlan: null })

@@ -66,7 +66,7 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
   const handleSubmit = () => {
     if (!selectedTargetId || !selectedCrime) return;
 
-    const crime = selectedCrime === 'custom' ? customCrime : PREDEFINED_CRIMES.find(c => c.value === selectedCrime)?.label || selectedCrime;
+    const crime = selectedCrime === 'custom' ? customCrime : PREDEFINED_CRIMES.find(c => c.value === selectedCrime)?.label ?? selectedCrime;
 
     if (!crime.trim()) return;
 
@@ -78,7 +78,7 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
   const getFinalCrime = () => {
     if (!selectedCrime) return '';
     if (selectedCrime === 'custom') return customCrime;
-    return PREDEFINED_CRIMES.find(c => c.value === selectedCrime)?.label || '';
+    return PREDEFINED_CRIMES.find(c => c.value === selectedCrime)?.label ?? '';
   };
 
   return (
@@ -162,7 +162,7 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
                 <p style={{ margin: '4px 0 0 0', fontSize: '12px', lineHeight: '1.5' }}>
                   <strong style={{ color: 'var(--color-military-olive)' }}>If GUILTY:</strong> Accused goes to Gulag, you receive ₽100 informant bonus
                   <br />
-                  <strong style={{ color: 'var(--color-blood-burgundy)' }}>If INNOCENT:</strong> You lose one Party Rank for wasting the Party's time
+                  <strong style={{ color: 'var(--color-blood-burgundy)' }}>If INNOCENT:</strong> You lose one Party Rank for wasting the Party&apos;s time
                   <br />
                   <strong style={{ color: 'var(--color-blood-burgundy)' }}>If BOTH GUILTY:</strong> Both you and the accused go to Gulag
                 </p>

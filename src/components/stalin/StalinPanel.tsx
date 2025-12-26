@@ -450,7 +450,7 @@ export default function StalinPanel() {
                     <strong>Properties:</strong> {player.properties.length}
                   </div>
                   <div style={{ marginBottom: '4px' }}>
-                    <strong>In Gulag:</strong> {player.inGulag ? `Yes (Day ${player.gulagTurns + 1})` : 'No'}
+                    <strong>In Gulag:</strong> {player.inGulag ? `Yes (Day ${String(player.gulagTurns + 1)})` : 'No'}
                   </div>
                   {player.piece === 'ironCurtain' && (
                     <div style={{ marginTop: '8px', padding: '8px', background: 'var(--color-warning-amber)', borderRadius: '4px' }}>
