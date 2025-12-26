@@ -2,6 +2,7 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import { Player, Property, PartyRank, PieceType } from '../../types/game'
+import { useGameStore } from '../../store/gameStore'
 
 export function createTestPlayer(overrides: Partial<Player> = {}): Player {
   return {
@@ -64,4 +65,23 @@ export function getRequiredDoublesForEscape(gulagTurns: number): number[] {
     default:
       return [1, 2, 3, 4, 5, 6] // Any doubles
   }
+}
+
+/**
+ * Helper to send a player to Gulag with a test justification
+ */
+export function sendPlayerToGulag(playerId: string, reason: string) {
+  const { sendToGulag } = useGameStore.getState()
+  sendToGulag(playerId, reason as any, 'Test justification')
+}
+
+/**
+ * Helper to set the number of turns a player has spent in Gulag
+ */
+export function setGulagTurns(playerId: string, turns: number) {
+  useGameStore.setState((state) => ({
+    players: state.players.map((p) =>
+      p.id === playerId ? { ...p, gulagTurns: turns } : p
+    ),
+  }))
 }

@@ -458,11 +458,11 @@ Instead of houses and hotels, properties are improved through Collectivization.
 
 ## Levels of Collectivization
 
-1. **Worker's Committee** (House equivalent): +50% to quota. Cost: 100₽
-2. **Party Oversight** (2 houses): +100% to quota. Cost: 100₽
-3. **Full Collectivization** (3 houses): +150% to quota. Cost: 100₽
-4. **Model Soviet** (4 houses): +200% to quota. Cost: 100₽
-5. **People's Palace** (Hotel): +300% to quota, other players must salute when landing. Cost: 200₽
+1. **Worker's Committee** (House equivalent): +200% (== 3x base) to quota. Cost: 100₽
+2. **Party Oversight** (2 houses): +800% (== 9x base) to quota. Cost: 100₽
+3. **Full Collectivization** (3 houses): +1400% (== 15x base) to quota. Cost: 100₽
+4. **Model Soviet** (4 houses): +1900% (== 20x base) to quota. Cost: 100₽
+5. **People's Palace** (Hotel): +2900% (== 30x base) to quota, other players must salute when landing. Cost: 200₽
 
 ## Improvement Rules
 
