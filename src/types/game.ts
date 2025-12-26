@@ -310,7 +310,7 @@ export interface Confession {
 }
 
 // Denouncement and Tribunal System
-export type TribunalPhase = 'accusation' | 'defense' | 'witnesses' | 'judgment'
+export type TribunalPhase = 'accusation' | 'defence' | 'witnesses' | 'judgement'
 
 export type TribunalVerdict = 'guilty' | 'innocent' | 'bothGuilty' | 'insufficient'
 

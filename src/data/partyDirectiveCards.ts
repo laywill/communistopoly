@@ -50,7 +50,7 @@ export const PARTY_DIRECTIVE_CARDS: DirectiveCard[] = [
   },
   {
     id: 'pd-2',
-    title: 'LABOR REASSIGNMENT',
+    title: 'LABOUR REASSIGNMENT',
     description: 'You are needed at Camp Vorkuta. Go directly, do not pass STOY.',
     effect: { type: 'move', destination: 1 }
   },

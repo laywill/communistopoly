@@ -220,7 +220,7 @@ interface GameActions {
   setPendingAction: (action: PendingAction | null) => void
 
   // Denouncement and Tribunal
-  canPlayerDenounce: (playerId: string) => { canDenounce: boolean; reason: string }
+  canPlayerDenounce: (playerId: string) => { canDenounce: boolean, reason: string }
   initiateDenouncement: (accuserId: string, accusedId: string, crime: string) => void
   advanceTribunalPhase: () => void
   addWitness: (witnessId: string, side: 'for' | 'against') => void
@@ -2449,7 +2449,7 @@ export const useGameStore = create<GameStore>()(
         const state = get()
         if (state.activeTribunal == null) return
 
-        const phaseOrder: import('../types/game').TribunalPhase[] = ['accusation', 'defense', 'witnesses', 'judgment']
+        const phaseOrder: import('../types/game').TribunalPhase[] = ['accusation', 'defence', 'witnesses', 'judgement']
         const currentIndex = phaseOrder.indexOf(state.activeTribunal.phase)
         const nextPhase = phaseOrder[currentIndex + 1]
 
@@ -2615,7 +2615,7 @@ export const useGameStore = create<GameStore>()(
 
       voteInGreatPurge: (voterId, targetId) => {
         const state = get()
-        if (state.activeGreatPurge == null || !state.activeGreatPurge.isActive) return
+        if (!state.activeGreatPurge?.isActive) return
 
         set({
           activeGreatPurge: {
@@ -2682,7 +2682,7 @@ export const useGameStore = create<GameStore>()(
 
       contributeToFiveYearPlan: (playerId, amount) => {
         const state = get()
-        if (state.activeFiveYearPlan == null || !state.activeFiveYearPlan.isActive) return
+        if (!state.activeFiveYearPlan?.isActive) return
 
         const player = state.players.find(p => p.id === playerId)
         if (player == null || player.rubles < amount) return
@@ -2726,7 +2726,7 @@ export const useGameStore = create<GameStore>()(
 
           get().addLogEntry({
             type: 'system',
-            message: `Five-Year Plan SUCCESSFUL! All players receive ₽100 bonus for meeting the quota.`
+            message: 'Five-Year Plan SUCCESSFUL! All players receive ₽100 bonus for meeting the quota.'
           })
         } else {
           // Find poorest player and send to Gulag
