@@ -3,11 +3,12 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, PlayerStatistics, Confession } from '../types/game'
+import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, Confession } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
 import { type DirectiveCard } from '../data/partyDirectiveCards'
 import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
 import { createCardSlice, type CardSliceState, type CardSliceActions } from './slices/cardSlice'
+import { createStatisticsSlice, type StatisticsSliceState, type StatisticsSliceActions } from './slices/statisticsSlice'
 
 // Helper functions
 function getGulagReasonText (reason: GulagReason, justification?: string): string {
@@ -92,24 +93,6 @@ function calculateTotalWealth (player: Player, properties: Property[]): number {
   return total
 }
 
-function initializePlayerStats (): PlayerStatistics {
-  return {
-    turnsPlayed: 0,
-    denouncementsMade: 0,
-    denouncementsReceived: 0,
-    tribunalsWon: 0,
-    tribunalsLost: 0,
-    totalGulagTurns: 0,
-    gulagEscapes: 0,
-    moneyEarned: 0,
-    moneySpent: 0,
-    propertiesOwned: 0,
-    maxWealth: 1500,
-    testsPassed: 0,
-    testsFailed: 0
-  }
-}
-
 interface GameActions {
   // Game phase management
   setGamePhase: (phase: GamePhase) => void
@@ -172,14 +155,10 @@ interface GameActions {
   // Game end
   checkGameEnd: () => GameEndCondition | null
   endGame: (condition: GameEndCondition, winnerId: string | null) => void
-  calculateFinalStats: () => void
 
   // Unanimous end vote
   initiateEndVote: (initiatorId: string) => void
   castEndVote: (playerId: string, vote: boolean) => void
-
-  // Statistics
-  updatePlayerStat: (playerId: string, statKey: keyof PlayerStatistics, increment: number) => void
 
   // Confessions
   submitConfession: (prisonerId: string, confession: string) => void
@@ -237,7 +216,7 @@ interface GameActions {
   isHeroOfSovietUnion: (playerId: string) => boolean
 }
 
-type GameStore = GameState & GameActions & CardSliceState & CardSliceActions
+type GameStore = GameState & GameActions & CardSliceState & CardSliceActions & StatisticsSliceState & StatisticsSliceActions
 
 const initialState: GameState = {
   gamePhase: 'welcome',
@@ -262,17 +241,6 @@ const initialState: GameState = {
   gameEndCondition: null,
   winnerId: null,
   showEndScreen: false,
-
-  // Statistics
-  gameStatistics: {
-    gameStartTime: new Date(),
-    totalTurns: 0,
-    playerStats: {},
-    totalDenouncements: 0,
-    totalTribunals: 0,
-    totalGulagSentences: 0,
-    stateTreasuryPeak: 0
-  },
 
   // Unanimous end vote
   endVoteInProgress: false,
@@ -300,9 +268,14 @@ export const useGameStore = create<GameStore>()(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       const cardSlice = createCardSlice(set as any, get as any, undefined as any)
 
+      // Create the statistics slice
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      const statisticsSlice = createStatisticsSlice(set as any, get as any, undefined as any)
+
       return {
         ...initialState,
         ...cardSlice,
+        ...statisticsSlice,
 
         setGamePhase: (phase) => set({ gamePhase: phase }),
 
@@ -329,10 +302,15 @@ export const useGameStore = create<GameStore>()(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
         const freshCardSlice = createCardSlice(set as any, get as any, undefined as any)
 
+        // Create fresh statistics state
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+        const freshStatisticsSlice = createStatisticsSlice(set as any, get as any, undefined as any)
+
         // Reset all state to initial values
         set({
           ...initialState,
           ...freshCardSlice,
+          ...freshStatisticsSlice,
           gamePhase: 'welcome'
         })
       },
@@ -383,30 +361,23 @@ export const useGameStore = create<GameStore>()(
         const playerCount = nonStalinPlayers.length
         const stateTreasury = playerCount * 1500 // Starting treasury
 
-        // Initialize player statistics
-        const playerStats: Record<string, PlayerStatistics> = {}
-        players.forEach(player => {
-          if (!player.isStalin) {
-            playerStats[player.id] = initializePlayerStats()
-          }
-        })
-
         // Reset card state when starting new game
         get().resetCardState()
+
+        // Reset statistics when starting new game
+        get().resetStatistics()
 
         set({
           players,
           stalinPlayerId: stalinPlayer?.id ?? null,
           currentPlayerIndex: 1, // Start with first non-Stalin player
-          stateTreasury,
-          gameStatistics: {
-            gameStartTime: new Date(),
-            totalTurns: 0,
-            playerStats,
-            totalDenouncements: 0,
-            totalTribunals: 0,
-            totalGulagSentences: 0,
-            stateTreasuryPeak: stateTreasury
+          stateTreasury
+        })
+
+        // Initialize player statistics
+        players.forEach(player => {
+          if (!player.isStalin) {
+            get().initializePlayerStats(player.id)
           }
         })
 
@@ -1689,16 +1660,6 @@ export const useGameStore = create<GameStore>()(
         })
       },
 
-      calculateFinalStats: () => {
-        set((state) => ({
-          gameStatistics: {
-            ...state.gameStatistics,
-            gameEndTime: new Date(),
-            totalTurns: state.roundNumber
-          }
-        }))
-      },
-
       initiateEndVote: (initiatorId) => {
         set({
           endVoteInProgress: true,
@@ -1748,21 +1709,6 @@ export const useGameStore = create<GameStore>()(
             })
           }
         }
-      },
-
-      updatePlayerStat: (playerId, statKey, increment) => {
-        set((state) => ({
-          gameStatistics: {
-            ...state.gameStatistics,
-            playerStats: {
-              ...state.gameStatistics.playerStats,
-              [playerId]: {
-                ...state.gameStatistics.playerStats[playerId],
-                [statKey]: state.gameStatistics.playerStats[playerId][statKey] + increment
-              }
-            }
-          }
-        }))
       },
 
       submitConfession: (prisonerId, confession) => {
@@ -2382,13 +2328,8 @@ export const useGameStore = create<GameStore>()(
         })
 
         // Update statistics
-        set({
-          gameStatistics: {
-            ...state.gameStatistics,
-            totalDenouncements: state.gameStatistics.totalDenouncements + 1,
-            totalTribunals: state.gameStatistics.totalTribunals + 1
-          }
-        })
+        get().incrementTotalDenouncements()
+        get().incrementTotalTribunals()
 
         get().addLogEntry({
           type: 'tribunal',
@@ -2491,8 +2432,8 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            state.gameStatistics.playerStats[accuser.id].tribunalsWon++
-            state.gameStatistics.playerStats[accused.id].tribunalsLost++
+            get().updatePlayerStat(accuser.id, 'tribunalsWon', 1)
+            get().updatePlayerStat(accused.id, 'tribunalsLost', 1)
             break
           }
 
@@ -2506,8 +2447,8 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            state.gameStatistics.playerStats[accuser.id].tribunalsLost++
-            state.gameStatistics.playerStats[accused.id].tribunalsWon++
+            get().updatePlayerStat(accuser.id, 'tribunalsLost', 1)
+            get().updatePlayerStat(accused.id, 'tribunalsWon', 1)
             break
           }
 
@@ -2522,8 +2463,8 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            state.gameStatistics.playerStats[accuser.id].tribunalsLost++
-            state.gameStatistics.playerStats[accused.id].tribunalsLost++
+            get().updatePlayerStat(accuser.id, 'tribunalsLost', 1)
+            get().updatePlayerStat(accused.id, 'tribunalsLost', 1)
             break
           }
 

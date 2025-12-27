@@ -405,9 +405,6 @@ export interface GameState {
   winnerId: string | null
   showEndScreen: boolean
 
-  // Statistics
-  gameStatistics: GameStatistics
-
   // Unanimous end vote
   endVoteInProgress: boolean
   endVoteInitiator: string | null
