@@ -3,7 +3,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useGameStore } from '../../store/gameStore'
-import { createTestPlayer, getRequiredDoublesForEscape } from '../helpers/gameStateHelpers'
+import { getRequiredDoublesForEscape } from '../helpers/gameStateHelpers'
 
 describe('Gulag System', () => {
   beforeEach(() => {
@@ -649,7 +649,7 @@ describe('Gulag System', () => {
         { name: 'Target', piece: 'hammer', isStalin: false }
       ])
 
-      const [prisoner, target] = useGameStore.getState().players
+      const [prisoner] = useGameStore.getState().players
       sendToGulag(prisoner.id, 'enemyOfState')
 
       // Attempt to inform on target
@@ -837,7 +837,7 @@ describe('Gulag System', () => {
       })
 
       it('should go to Gulag on second offense', () => {
-        const { initializePlayers, sendToGulag, updatePlayer } = useGameStore.getState()
+        const { initializePlayers, sendToGulag } = useGameStore.getState()
 
         initializePlayers([
           { name: 'Tank Player', piece: 'tank', isStalin: false }

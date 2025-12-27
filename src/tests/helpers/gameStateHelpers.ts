@@ -1,7 +1,7 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { Player, Property, PartyRank, PieceType } from '../../types/game'
+import { Player, Property, GulagReason } from '../../types/game'
 import { useGameStore } from '../../store/gameStore'
 
 export function createTestPlayer(overrides: Partial<Player> = {}): Player {
@@ -70,9 +70,9 @@ export function getRequiredDoublesForEscape(gulagTurns: number): number[] {
 /**
  * Helper to send a player to Gulag with a test justification
  */
-export function sendPlayerToGulag(playerId: string, reason: string) {
+export function sendPlayerToGulag(playerId: string, reason: GulagReason) {
   const { sendToGulag } = useGameStore.getState()
-  sendToGulag(playerId, reason as any, 'Test justification')
+  sendToGulag(playerId, reason, 'Test justification')
 }
 
 /**

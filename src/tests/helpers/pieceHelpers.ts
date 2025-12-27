@@ -72,8 +72,8 @@ export function createMultiplePlayersWithPieces(
     const basePlayer = createPlayerWithPiece(piece, overrides[index] || {})
     return {
       ...basePlayer,
-      id: `test-player-${index + 1}`,
-      name: `Player ${index + 1}`
+      id: `test-player-${String(index + 1)}`,
+      name: `Player ${String(index + 1)}`
     }
   })
 }
