@@ -11,6 +11,7 @@ import { createCardSlice, type CardSliceState, type CardSliceActions } from './s
 import { createStatisticsSlice, type StatisticsSliceState, type StatisticsSliceActions } from './slices/statisticsSlice'
 import { createGulagSlice, type GulagSliceState, type GulagSliceActions } from './slices/gulagSlice'
 import { createPropertySlice, type PropertySliceState, type PropertySliceActions } from './slices/propertySlice'
+import { createTribunalSlice, type TribunalSliceState, type TribunalSliceActions } from './slices/tribunalSlice'
 
 // Helper functions
 function getEliminationMessage (playerName: string, reason: EliminationReason): string {
@@ -133,14 +134,6 @@ interface GameActions {
   // Pending actions
   setPendingAction: (action: PendingAction | null) => void
 
-  // Denouncement and Tribunal
-  canPlayerDenounce: (playerId: string) => { canDenounce: boolean, reason: string }
-  initiateDenouncement: (accuserId: string, accusedId: string, crime: string) => void
-  advanceTribunalPhase: () => void
-  addWitness: (witnessId: string, side: 'for' | 'against') => void
-  renderTribunalVerdict: (verdict: import('../types/game').TribunalVerdict) => void
-  getWitnessRequirement: (playerId: string) => import('../types/game').WitnessRequirement
-
   // Special Decrees
   initiateGreatPurge: () => void
   voteInGreatPurge: (voterId: string, targetId: string) => void
@@ -152,7 +145,7 @@ interface GameActions {
   isHeroOfSovietUnion: (playerId: string) => boolean
 }
 
-type GameStore = GameState & GameActions & CardSliceState & CardSliceActions & StatisticsSliceState & StatisticsSliceActions & GulagSliceState & GulagSliceActions & PropertySliceState & PropertySliceActions
+type GameStore = GameState & GameActions & CardSliceState & CardSliceActions & StatisticsSliceState & StatisticsSliceActions & GulagSliceState & GulagSliceActions & PropertySliceState & PropertySliceActions & TribunalSliceState & TribunalSliceActions
 
 const initialState: GameState = {
   gamePhase: 'welcome',
@@ -186,10 +179,6 @@ const initialState: GameState = {
   // Rehabilitation confessions
   confessions: [],
 
-  // Denouncement and Tribunal System
-  denouncementsThisRound: [],
-  activeTribunal: null,
-
   // Special Decrees
   greatPurgeUsed: false,
   activeGreatPurge: null,
@@ -216,12 +205,17 @@ export const useGameStore = create<GameStore>()(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       const propertySlice = createPropertySlice(set as any, get as any, undefined as any)
 
+      // Create the tribunal slice
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      const tribunalSlice = createTribunalSlice(set as any, get as any, undefined as any)
+
       return {
         ...initialState,
         ...cardSlice,
         ...statisticsSlice,
         ...gulagSlice,
         ...propertySlice,
+        ...tribunalSlice,
 
         setGamePhase: (phase) => set({ gamePhase: phase }),
 
@@ -260,6 +254,10 @@ export const useGameStore = create<GameStore>()(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
         const freshPropertySlice = createPropertySlice(set as any, get as any, undefined as any)
 
+        // Create fresh tribunal state
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+        const freshTribunalSlice = createTribunalSlice(set as any, get as any, undefined as any)
+
         // Reset all state to initial values
         set({
           ...initialState,
@@ -267,6 +265,7 @@ export const useGameStore = create<GameStore>()(
           ...freshStatisticsSlice,
           ...freshGulagSlice,
           ...freshPropertySlice,
+          ...freshTribunalSlice,
           gamePhase: 'welcome'
         })
       },
@@ -1654,220 +1653,6 @@ export const useGameStore = create<GameStore>()(
         )
 
         set({ pendingAction: null })
-      },
-
-      // Denouncement and Tribunal System
-      canPlayerDenounce: (playerId) => {
-        const state = get()
-        const player = state.players.find(p => p.id === playerId)
-
-        if (player == null) {
-          return { canDenounce: false, reason: 'Player not found' }
-        }
-
-        // Check if already denounced this round (unless Commissar or Inner Circle)
-        const hasDenounced = state.denouncementsThisRound.some(d => d.accuserId === playerId)
-        if (hasDenounced && player.rank !== 'commissar' && player.rank !== 'innerCircle') {
-          return { canDenounce: false, reason: 'You may only denounce once per round (unless Commissar+)' }
-        }
-
-        return { canDenounce: true, reason: '' }
-      },
-
-      initiateDenouncement: (accuserId, accusedId, crime) => {
-        const state = get()
-        const accuser = state.players.find(p => p.id === accuserId)
-        const accused = state.players.find(p => p.id === accusedId)
-
-        if (accuser == null || accused == null) return
-
-        // Create denouncement record
-        const denouncement: import('../types/game').Denouncement = {
-          id: `denouncement-${String(Date.now())}`,
-          accuserId,
-          accusedId,
-          crime,
-          timestamp: new Date(),
-          roundNumber: state.roundNumber
-        }
-
-        // Get witness requirement for accused
-        const witnessReq = get().getWitnessRequirement(accusedId)
-
-        // Create tribunal
-        const tribunal: import('../types/game').ActiveTribunal = {
-          id: `tribunal-${String(Date.now())}`,
-          accuserId,
-          accusedId,
-          crime,
-          phase: 'accusation',
-          phaseStartTime: new Date(),
-          witnessesFor: [],
-          witnessesAgainst: [],
-          requiredWitnesses: witnessReq.required
-        }
-
-        set({
-          denouncementsThisRound: [...state.denouncementsThisRound, denouncement],
-          activeTribunal: tribunal
-        })
-
-        // Update statistics
-        get().incrementTotalDenouncements()
-        get().incrementTotalTribunals()
-
-        get().addLogEntry({
-          type: 'tribunal',
-          message: `${accuser.name} has denounced ${accused.name} for "${crime}". Tribunal is now in session!`
-        })
-      },
-
-      getWitnessRequirement: (playerId) => {
-        const state = get()
-        const player = state.players.find(p => p.id === playerId)
-
-        if (player == null) {
-          return { required: 0, reason: 'Player not found' }
-        }
-
-        // Check if under suspicion
-        if (player.underSuspicion) {
-          return { required: 0, reason: 'Player is under suspicion - no witnesses required' }
-        }
-
-        // Rank-based requirements
-        switch (player.rank) {
-          case 'commissar':
-            return { required: 2, reason: 'Commissar rank requires 2 witnesses' }
-          case 'innerCircle':
-            return { required: 'unanimous', reason: 'Inner Circle rank requires unanimous agreement' }
-          default:
-            return { required: 0, reason: 'No witnesses required' }
-        }
-      },
-
-      advanceTribunalPhase: () => {
-        const state = get()
-        if (state.activeTribunal == null) return
-
-        const phaseOrder: import('../types/game').TribunalPhase[] = ['accusation', 'defence', 'witnesses', 'judgement']
-        const currentIndex = phaseOrder.indexOf(state.activeTribunal.phase)
-        const nextPhase = phaseOrder[currentIndex + 1]
-
-        set({
-          activeTribunal: {
-            ...state.activeTribunal,
-            phase: nextPhase,
-            phaseStartTime: new Date()
-          }
-        })
-      },
-
-      addWitness: (witnessId, side) => {
-        const state = get()
-        if (state.activeTribunal == null) return
-
-        const witness = state.players.find(p => p.id === witnessId)
-        if (witness == null) return
-
-        if (side === 'for') {
-          set({
-            activeTribunal: {
-              ...state.activeTribunal,
-              witnessesFor: [...state.activeTribunal.witnessesFor, witnessId]
-            }
-          })
-        } else {
-          set({
-            activeTribunal: {
-              ...state.activeTribunal,
-              witnessesAgainst: [...state.activeTribunal.witnessesAgainst, witnessId]
-            }
-          })
-        }
-
-        get().addLogEntry({
-          type: 'tribunal',
-          message: `${witness.name} testified ${side === 'for' ? 'for the accuser' : 'for the accused'}`
-        })
-      },
-
-      renderTribunalVerdict: (verdict) => {
-        const state = get()
-        if (state.activeTribunal == null) return
-
-        const accuser = state.players.find(p => p.id === state.activeTribunal?.accuserId)
-        const accused = state.players.find(p => p.id === state.activeTribunal?.accusedId)
-
-        if (accuser == null || accused == null) return
-
-        switch (verdict) {
-          case 'guilty': {
-            // Send accused to Gulag
-            get().sendToGulag(accused.id, 'denouncementGuilty')
-
-            // Give accuser informant bonus
-            get().updatePlayer(accuser.id, {
-              rubles: accuser.rubles + 100
-            })
-
-            get().addLogEntry({
-              type: 'tribunal',
-              message: `GUILTY! ${accused.name} has been sent to the Gulag. ${accuser.name} receives ₽100 informant bonus.`
-            })
-
-            // Update statistics
-            get().updatePlayerStat(accuser.id, 'tribunalsWon', 1)
-            get().updatePlayerStat(accused.id, 'tribunalsLost', 1)
-            break
-          }
-
-          case 'innocent': {
-            // Demote accuser
-            get().demotePlayer(accuser.id)
-
-            get().addLogEntry({
-              type: 'tribunal',
-              message: `INNOCENT! ${accused.name} is innocent. ${accuser.name} loses one rank for wasting the Party's time.`
-            })
-
-            // Update statistics
-            get().updatePlayerStat(accuser.id, 'tribunalsLost', 1)
-            get().updatePlayerStat(accused.id, 'tribunalsWon', 1)
-            break
-          }
-
-          case 'bothGuilty': {
-            // Send both to Gulag
-            get().sendToGulag(accused.id, 'denouncementGuilty')
-            get().sendToGulag(accuser.id, 'denouncementGuilty')
-
-            get().addLogEntry({
-              type: 'tribunal',
-              message: `BOTH GUILTY! ${accuser.name} and ${accused.name} have both been sent to the Gulag.`
-            })
-
-            // Update statistics
-            get().updatePlayerStat(accuser.id, 'tribunalsLost', 1)
-            get().updatePlayerStat(accused.id, 'tribunalsLost', 1)
-            break
-          }
-
-          case 'insufficient':
-            // Mark accused as under suspicion
-            get().updatePlayer(accused.id, {
-              underSuspicion: true
-            })
-
-            get().addLogEntry({
-              type: 'tribunal',
-              message: `INSUFFICIENT EVIDENCE. ${accused.name} is now under suspicion. Next denouncement requires no witnesses.`
-            })
-            break
-        }
-
-        // Close tribunal
-        set({ activeTribunal: null })
       },
 
       // Special Decrees
