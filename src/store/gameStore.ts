@@ -10,6 +10,7 @@ import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, ty
 import { createCardSlice, type CardSliceState, type CardSliceActions } from './slices/cardSlice'
 import { createStatisticsSlice, type StatisticsSliceState, type StatisticsSliceActions } from './slices/statisticsSlice'
 import { createGulagSlice, type GulagSliceState, type GulagSliceActions } from './slices/gulagSlice'
+import { createPropertySlice, type PropertySliceState, type PropertySliceActions } from './slices/propertySlice'
 
 // Helper functions
 function getEliminationMessage (playerName: string, reason: EliminationReason): string {
@@ -59,15 +60,9 @@ interface GameActions {
   setCurrentPlayer: (index: number) => void
   updatePlayer: (playerId: string, updates: Partial<Player>) => void
 
-  // Property management
+  // Property management (Note: most property actions moved to propertySlice)
   initializeProperties: () => void
-  setPropertyCustodian: (spaceId: number, custodianId: string | null) => void
   updateCollectivizationLevel: (spaceId: number, level: number) => void
-  purchaseProperty: (playerId: string, spaceId: number, price: number) => void
-  payQuota: (payerId: string, custodianId: string, amount: number) => void
-  mortgageProperty: (spaceId: number) => void
-  unmortgageProperty: (spaceId: number, playerId: string) => void
-  transferProperty: (propertyId: string, newCustodianId: string) => void
 
   // Turn management
   rollDice: () => void
@@ -157,7 +152,7 @@ interface GameActions {
   isHeroOfSovietUnion: (playerId: string) => boolean
 }
 
-type GameStore = GameState & GameActions & CardSliceState & CardSliceActions & StatisticsSliceState & StatisticsSliceActions & GulagSliceState & GulagSliceActions
+type GameStore = GameState & GameActions & CardSliceState & CardSliceActions & StatisticsSliceState & StatisticsSliceActions & GulagSliceState & GulagSliceActions & PropertySliceState & PropertySliceActions
 
 const initialState: GameState = {
   gamePhase: 'welcome',
@@ -217,11 +212,16 @@ export const useGameStore = create<GameStore>()(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       const gulagSlice = createGulagSlice(set as any, get as any, undefined as any)
 
+      // Create the property slice
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      const propertySlice = createPropertySlice(set as any, get as any, undefined as any)
+
       return {
         ...initialState,
         ...cardSlice,
         ...statisticsSlice,
         ...gulagSlice,
+        ...propertySlice,
 
         setGamePhase: (phase) => set({ gamePhase: phase }),
 
@@ -256,12 +256,17 @@ export const useGameStore = create<GameStore>()(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
         const freshGulagSlice = createGulagSlice(set as any, get as any, undefined as any)
 
+        // Create fresh property state
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+        const freshPropertySlice = createPropertySlice(set as any, get as any, undefined as any)
+
         // Reset all state to initial values
         set({
           ...initialState,
           ...freshCardSlice,
           ...freshStatisticsSlice,
           ...freshGulagSlice,
+          ...freshPropertySlice,
           gamePhase: 'welcome'
         })
       },
@@ -377,14 +382,6 @@ export const useGameStore = create<GameStore>()(
           }))
 
         set({ properties })
-      },
-
-      setPropertyCustodian: (spaceId, custodianId) => {
-        set((state) => ({
-          properties: state.properties.map((prop) =>
-            prop.spaceId === spaceId ? { ...prop, custodianId } : prop
-          )
-        }))
       },
 
       updateCollectivizationLevel: (spaceId, level) => {
@@ -826,147 +823,6 @@ export const useGameStore = create<GameStore>()(
         set((state) => ({
           stateTreasury: Math.max(0, (state.stateTreasury) + (amount))
         }))
-      },
-
-      // Property transactions
-      purchaseProperty: (playerId, spaceId, price) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (player == null || player.rubles < price) return
-
-        // TANK ABILITY: Cannot control any Collective Farm properties
-        const collectiveFarmSpaces = [6, 8, 9]
-        if (player.piece === 'tank' && collectiveFarmSpaces.includes(spaceId)) {
-          const space = getSpaceById(spaceId)
-          get().addLogEntry({
-            type: 'system',
-            message: `${player.name}'s Tank cannot control Collective Farm properties! ${space?.name ?? 'Property'} purchase blocked.`,
-            playerId
-          })
-          set({ pendingAction: null, turnPhase: 'post-turn' })
-          return
-        }
-
-        // Deduct rubles
-        get().updatePlayer(playerId, {
-          rubles: player.rubles - price,
-          properties: [...player.properties, spaceId.toString()]
-        })
-
-        // Set custodian
-        get().setPropertyCustodian(spaceId, playerId)
-
-        // Add to treasury
-        get().adjustTreasury(price)
-
-        const space = getSpaceById(spaceId)
-        get().addLogEntry({
-          type: 'property',
-          message: `${player.name} became Custodian of ${space?.name ?? 'Unknown'} for ₽${String(price)}`,
-          playerId
-        })
-      },
-
-      payQuota: (payerId, custodianId, amount) => {
-        const state = get()
-        const payer = state.players.find((p) => p.id === payerId)
-        const custodian = state.players.find((p) => p.id === custodianId)
-        if (payer == null || custodian == null) return
-
-        // Transfer rubles
-        get().updatePlayer(payerId, { rubles: payer.rubles - amount })
-        get().updatePlayer(custodianId, { rubles: custodian.rubles + amount })
-
-        get().addLogEntry({
-          type: 'payment',
-          message: `${payer.name} paid ₽${String(amount)} quota to ${custodian.name}`,
-          playerId: payerId
-        })
-      },
-
-      mortgageProperty: (spaceId) => {
-        const state = get()
-        const property = state.properties.find((p) => p.spaceId === spaceId)
-        if (property?.custodianId == null) return
-
-        const space = getSpaceById(spaceId)
-        const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5)
-
-        // Give player half the base cost
-        const player = state.players.find((p) => p.id === property.custodianId)
-        if (player != null) {
-          const newRubles: number = (player.rubles) + mortgageValue
-          get().updatePlayer(player.id, { rubles: newRubles })
-        }
-
-        // Mark as mortgaged
-        set((state) => ({
-          properties: state.properties.map((prop) =>
-            prop.spaceId === spaceId ? { ...prop, mortgaged: true } : prop
-          )
-        }))
-
-        get().addLogEntry({
-          type: 'property',
-          message: `${player?.name ?? 'Unknown'} mortgaged ${space?.name ?? 'Unknown'} for ₽${String(mortgageValue)}`,
-          playerId: property.custodianId
-        })
-      },
-
-      unmortgageProperty: (spaceId, playerId) => {
-        const state = get()
-        const property = state.properties.find((p) => p.spaceId === spaceId)
-        const player = state.players.find((p) => p.id === playerId)
-        if (property == null || player == null) return
-
-        const space = getSpaceById(spaceId)
-        const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6)
-
-        if (player.rubles < unmortgageCost) return
-
-        // Deduct cost
-        get().updatePlayer(playerId, { rubles: player.rubles - unmortgageCost })
-
-        // Unmark mortgaged
-        set((state) => ({
-          properties: state.properties.map((prop) =>
-            prop.spaceId === spaceId ? { ...prop, mortgaged: false } : prop
-          )
-        }))
-
-        get().addLogEntry({
-          type: 'property',
-          message: `${player.name} unmortgaged ${space?.name ?? 'Unknown'} for ₽${String(unmortgageCost)}`,
-          playerId
-        })
-      },
-
-      transferProperty: (propertyId, newCustodianId) => {
-        const state = get()
-        const spaceId = parseInt(propertyId)
-        const property = state.properties.find((p) => p.spaceId === spaceId)
-        if (property == null) return
-
-        const oldCustodianId = property.custodianId
-
-        // Update property custodian
-        get().setPropertyCustodian(spaceId, newCustodianId)
-
-        // Remove from old owner's properties array
-        if (oldCustodianId != null) {
-          const oldOwner = state.players.find((p) => p.id === oldCustodianId)
-          if (oldOwner != null) {
-            const updatedProperties = oldOwner.properties.filter((id) => id !== propertyId)
-            get().updatePlayer(oldCustodianId, { properties: updatedProperties })
-          }
-        }
-
-        // Add to new owner's properties array
-        const newOwner = state.players.find((p) => p.id === newCustodianId)
-        if (newOwner != null) {
-          const updatedProperties = [...newOwner.properties, propertyId]
-          get().updatePlayer(newCustodianId, { properties: updatedProperties })
-        }
       },
 
       // Pending actions
