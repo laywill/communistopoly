@@ -3,60 +3,15 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, Confession } from '../types/game'
+import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, EliminationReason, GameEndCondition, Confession } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
 import { type DirectiveCard } from '../data/partyDirectiveCards'
 import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
 import { createCardSlice, type CardSliceState, type CardSliceActions } from './slices/cardSlice'
 import { createStatisticsSlice, type StatisticsSliceState, type StatisticsSliceActions } from './slices/statisticsSlice'
+import { createGulagSlice, type GulagSliceState, type GulagSliceActions } from './slices/gulagSlice'
 
 // Helper functions
-function getGulagReasonText (reason: GulagReason, justification?: string): string {
-  const reasonTexts: Record<GulagReason, string> = {
-    enemyOfState: 'Landed on Enemy of the State',
-    threeDoubles: 'Rolled three consecutive doubles - counter-revolutionary dice behavior',
-    denouncementGuilty: 'Found guilty in tribunal',
-    debtDefault: 'Failed to pay debt within one round',
-    pilferingCaught: 'Caught stealing at STOY checkpoint',
-    stalinDecree: justification ?? 'Sent by Stalin',
-    railwayCapture: 'Caught attempting to flee the motherland via railway',
-    campLabour: 'Sent for forced labour by Siberian Camp custodian',
-    voucherConsequence: 'Voucher consequence - vouchee committed an offence'
-  }
-
-  return reasonTexts[reason]
-}
-
-function getRequiredDoublesForEscape (turnsInGulag: number): number[] {
-  switch (turnsInGulag) {
-    case 1:
-      return [6]
-    case 2:
-      return [5, 6]
-    case 3:
-      return [4, 5, 6]
-    case 4:
-      return [3, 4, 5, 6]
-    default:
-      return [1, 2, 3, 4, 5, 6] // Any doubles after turn 5
-  }
-}
-
-function shouldTriggerVoucherConsequence (reason: GulagReason): boolean {
-  // These reasons trigger voucher consequences
-  const triggeringReasons: GulagReason[] = [
-    'enemyOfState',
-    'threeDoubles',
-    'denouncementGuilty',
-    'pilferingCaught',
-    'stalinDecree',
-    'railwayCapture',
-    'campLabour'
-  ]
-
-  return triggeringReasons.includes(reason)
-}
-
 function getEliminationMessage (playerName: string, reason: EliminationReason): string {
   const messages: Record<EliminationReason, string> = {
     bankruptcy: `${playerName} has been eliminated due to bankruptcy. They have been declared an Enemy of the People.`,
@@ -123,21 +78,8 @@ interface GameActions {
   endTurn: () => void
   setTurnPhase: (phase: TurnPhase) => void
 
-  // Gulag management
-  sendToGulag: (playerId: string, reason: GulagReason, justification?: string) => void
+  // Gulag management (Note: most Gulag actions moved to gulagSlice)
   demotePlayer: (playerId: string) => void
-  handleGulagTurn: (playerId: string) => void
-  attemptGulagEscape: (playerId: string, method: GulagEscapeMethod, data?: Record<string, unknown>) => void
-  checkFor10TurnElimination: (playerId: string) => void
-
-  // Voucher system
-  createVoucher: (prisonerId: string, voucherId: string) => void
-  checkVoucherConsequences: (playerId: string, reason: GulagReason) => void
-  expireVouchers: () => void
-
-  // Bribe system
-  submitBribe: (playerId: string, amount: number, reason: string) => void
-  respondToBribe: (bribeId: string, accepted: boolean) => void
 
   // Trade system
   proposeTrade: (fromPlayerId: string, toPlayerId: string, items: { offering: import('../types/game').TradeItems, requesting: import('../types/game').TradeItems }) => void
@@ -183,7 +125,6 @@ interface GameActions {
   promotePlayer: (playerId: string) => void
 
   // Property special abilities
-  siberianCampsGulag: (custodianId: string, targetPlayerId: string) => void
   kgbPreviewTest: (custodianId: string) => void
   ministryTruthRewrite: (custodianId: string, newRule: string) => void
   pravdaPressRevote: (custodianId: string, decision: string) => void
@@ -216,7 +157,7 @@ interface GameActions {
   isHeroOfSovietUnion: (playerId: string) => boolean
 }
 
-type GameStore = GameState & GameActions & CardSliceState & CardSliceActions & StatisticsSliceState & StatisticsSliceActions
+type GameStore = GameState & GameActions & CardSliceState & CardSliceActions & StatisticsSliceState & StatisticsSliceActions & GulagSliceState & GulagSliceActions
 
 const initialState: GameState = {
   gamePhase: 'welcome',
@@ -272,10 +213,15 @@ export const useGameStore = create<GameStore>()(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       const statisticsSlice = createStatisticsSlice(set as any, get as any, undefined as any)
 
+      // Create the gulag slice
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+      const gulagSlice = createGulagSlice(set as any, get as any, undefined as any)
+
       return {
         ...initialState,
         ...cardSlice,
         ...statisticsSlice,
+        ...gulagSlice,
 
         setGamePhase: (phase) => set({ gamePhase: phase }),
 
@@ -306,11 +252,16 @@ export const useGameStore = create<GameStore>()(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
         const freshStatisticsSlice = createStatisticsSlice(set as any, get as any, undefined as any)
 
+        // Create fresh gulag state
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+        const freshGulagSlice = createGulagSlice(set as any, get as any, undefined as any)
+
         // Reset all state to initial values
         set({
           ...initialState,
           ...freshCardSlice,
           ...freshStatisticsSlice,
+          ...freshGulagSlice,
           gamePhase: 'welcome'
         })
       },
@@ -751,83 +702,6 @@ export const useGameStore = create<GameStore>()(
         })
       },
 
-      // Gulag management
-      sendToGulag: (playerId, reason, justification) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (player == null) return
-
-        // HAMMER ABILITY: Cannot be sent to Gulag by other players
-        // Blocked reasons: denouncementGuilty, threeDoubles
-        if (player.piece === 'hammer' && (reason === 'denouncementGuilty' || reason === 'threeDoubles')) {
-          get().addLogEntry({
-            type: 'system',
-            message: `${player.name}'s Hammer protects them from Gulag! (Player-initiated imprisonment blocked)`,
-            playerId
-          })
-          set({ turnPhase: 'post-turn' })
-          return
-        }
-
-        // TANK ABILITY: Immune to first Gulag sentence (return to nearest Railway Station instead)
-        if (player.piece === 'tank' && !player.hasUsedTankGulagImmunity) {
-          const railwayPositions = [5, 15, 25, 35]
-          const currentPos = player.position
-
-          // Find nearest railway station
-          let nearestRailway = railwayPositions[0]
-          let minDistance = Math.abs(currentPos - railwayPositions[0])
-
-          railwayPositions.forEach(railPos => {
-            const distance = Math.abs(currentPos - railPos)
-            if (distance < minDistance) {
-              minDistance = distance
-              nearestRailway = railPos
-            }
-          })
-
-          get().updatePlayer(playerId, {
-            position: nearestRailway,
-            hasUsedTankGulagImmunity: true
-          })
-
-          get().addLogEntry({
-            type: 'system',
-            message: `${player.name}'s Tank evades Gulag! Redirected to nearest Railway Station (immunity used)`,
-            playerId
-          })
-
-          // Still demote player (loses rank but avoids Gulag)
-          get().demotePlayer(playerId)
-
-          set({ turnPhase: 'post-turn' })
-          return
-        }
-
-        const reasonText = getGulagReasonText(reason, justification)
-
-        get().updatePlayer(playerId, {
-          inGulag: true,
-          gulagTurns: 0,
-          position: 10 // Gulag position
-        })
-
-        // Demote player
-        get().demotePlayer(playerId)
-
-        get().addLogEntry({
-          type: 'gulag',
-          message: `${player.name} sent to Gulag: ${reasonText}`,
-          playerId
-        })
-
-        // Check voucher consequences if applicable
-        get().checkVoucherConsequences(playerId, reason)
-
-        // End turn immediately
-        set({ turnPhase: 'post-turn' })
-      },
-
       demotePlayer: (playerId) => {
         const state = get()
         const player = state.players.find((p) => p.id === playerId)
@@ -1098,307 +972,6 @@ export const useGameStore = create<GameStore>()(
       // Pending actions
       setPendingAction: (action) => {
         set({ pendingAction: action })
-      },
-
-      // New Gulag system functions
-      handleGulagTurn: (playerId) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (!player?.inGulag) return
-
-        // Increment turn counter
-        const newGulagTurns: number = (player.gulagTurns) + 1
-        get().updatePlayer(playerId, { gulagTurns: newGulagTurns })
-
-        get().addLogEntry({
-          type: 'gulag',
-          message: `${player.name} begins turn ${String(newGulagTurns)} in the Gulag`,
-          playerId
-        })
-
-        // Check for 10-turn elimination
-        get().checkFor10TurnElimination(playerId)
-
-        // Show Gulag escape options if not eliminated
-        const updatedPlayer = state.players.find((p) => p.id === playerId)
-        if (updatedPlayer != null && !updatedPlayer.isEliminated) {
-          set({ pendingAction: { type: 'gulag-escape-choice', data: { playerId } } })
-        }
-      },
-
-      checkFor10TurnElimination: (playerId) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (!player?.inGulag) return
-
-        if (player.gulagTurns >= 10) {
-          get().eliminatePlayer(playerId, 'gulagTimeout')
-        }
-      },
-
-      attemptGulagEscape: (playerId, method) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (!player?.inGulag) return
-
-        switch (method) {
-          case 'roll': {
-            // This will be handled by the modal - check if doubles match requirements
-            const requiredDoubles = getRequiredDoublesForEscape(player.gulagTurns)
-            const dice = state.dice
-
-            if (dice[0] === dice[1] && requiredDoubles.includes(dice[0])) {
-              // Success! Escape the Gulag
-              get().updatePlayer(playerId, {
-                inGulag: false,
-                gulagTurns: 0
-              })
-
-              const diceValue: number = dice[0]
-              get().addLogEntry({
-                type: 'gulag',
-                message: `${player.name} rolled double ${String(diceValue)}s and escaped the Gulag!`,
-                playerId
-              })
-
-              set({ turnPhase: 'post-turn', pendingAction: null })
-            } else {
-              // Failed escape
-              get().addLogEntry({
-                type: 'gulag',
-                message: `${player.name} failed to escape the Gulag`,
-                playerId
-              })
-
-              set({ turnPhase: 'post-turn', pendingAction: null })
-            }
-            break
-          }
-
-          case 'pay': {
-            // Pay 500₽ and lose one rank
-            if (player.rubles >= 500) {
-              get().updatePlayer(playerId, {
-                rubles: player.rubles - 500,
-                inGulag: false,
-                gulagTurns: 0
-              })
-
-              get().adjustTreasury(500)
-              get().demotePlayer(playerId)
-
-              get().addLogEntry({
-                type: 'gulag',
-                message: `${player.name} paid ₽500 for rehabilitation and was released (with demotion)`,
-                playerId
-              })
-
-              set({ turnPhase: 'post-turn', pendingAction: null })
-            }
-            break
-          }
-
-          case 'vouch': {
-            // Set up voucher request
-            set({ pendingAction: { type: 'voucher-request', data: { prisonerId: playerId } } })
-            break
-          }
-
-          case 'inform': {
-            // Set up inform modal
-            set({ pendingAction: { type: 'inform-on-player', data: { informerId: playerId } } })
-            break
-          }
-
-          case 'bribe': {
-            // Set up bribe modal
-            set({ pendingAction: { type: 'bribe-stalin', data: { playerId, reason: 'gulag-escape' } } })
-            break
-          }
-
-          case 'card': {
-            // Use "Get out of Gulag free" card
-            if (player.hasFreeFromGulagCard) {
-              get().updatePlayer(playerId, {
-                inGulag: false,
-                gulagTurns: 0,
-                hasFreeFromGulagCard: false // Remove the card
-              })
-
-              get().addLogEntry({
-                type: 'gulag',
-                message: `${player.name} used "Get out of Gulag free" card and was immediately released!`,
-                playerId
-              })
-
-              set({ turnPhase: 'post-turn', pendingAction: null })
-            }
-            break
-          }
-        }
-      },
-
-      createVoucher: (prisonerId, voucherId) => {
-        const state = get()
-        const voucher: VoucherAgreement = {
-          id: `voucher-${String(Date.now())}`,
-          prisonerId,
-          voucherId,
-          expiresAtRound: (state.roundNumber) + 3,
-          isActive: true
-        }
-
-        const prisoner = state.players.find((p) => p.id === prisonerId)
-        const voucherPlayer = state.players.find((p) => p.id === voucherId)
-
-        if (prisoner == null || voucherPlayer == null) return
-
-        // Release prisoner immediately
-        get().updatePlayer(prisonerId, {
-          inGulag: false,
-          gulagTurns: 0
-        })
-
-        // Update voucher's state
-        get().updatePlayer(voucherId, {
-          vouchingFor: prisonerId,
-          vouchedByRound: voucher.expiresAtRound
-        })
-
-        set((state) => ({
-          activeVouchers: [...state.activeVouchers, voucher],
-          pendingAction: null
-        }))
-
-        get().addLogEntry({
-          type: 'gulag',
-          message: `${voucherPlayer.name} vouched for ${prisoner.name}'s release. WARNING: If ${prisoner.name} commits ANY offence in the next 3 rounds, ${voucherPlayer.name} goes to Gulag too!`
-        })
-
-        set({ turnPhase: 'post-turn' })
-      },
-
-      checkVoucherConsequences: (playerId, reason) => {
-        const state = get()
-
-        // Find active voucher where this player is the prisoner
-        const activeVoucher = state.activeVouchers.find(
-          (v) => v.prisonerId === playerId && v.isActive && state.roundNumber <= v.expiresAtRound
-        )
-
-        if (activeVoucher != null && shouldTriggerVoucherConsequence(reason)) {
-          const voucherPlayer = state.players.find((p) => p.id === activeVoucher.voucherId)
-          const player = state.players.find((p) => p.id === playerId)
-
-          if (voucherPlayer != null && player != null) {
-            // Voucher must also go to Gulag!
-            get().sendToGulag(activeVoucher.voucherId, 'voucherConsequence')
-
-            // Deactivate voucher
-            set((state) => ({
-              activeVouchers: state.activeVouchers.map((v) =>
-                v.id === activeVoucher.id ? { ...v, isActive: false } : v
-              )
-            }))
-
-            get().addLogEntry({
-              type: 'gulag',
-              message: `${voucherPlayer.name} sent to Gulag due to ${player.name}'s offence within voucher period!`
-            })
-          }
-        }
-      },
-
-      expireVouchers: () => {
-        const state = get()
-        const expiredVouchers = state.activeVouchers.filter(
-          (v) => v.isActive && state.roundNumber > v.expiresAtRound
-        )
-
-        expiredVouchers.forEach((voucher) => {
-          const voucherPlayer = state.players.find((p) => p.id === voucher.voucherId)
-          if (voucherPlayer != null) {
-            get().updatePlayer(voucher.voucherId, {
-              vouchingFor: null,
-              vouchedByRound: null
-            })
-          }
-        })
-
-        if (expiredVouchers.length > 0) {
-          set((state) => ({
-            activeVouchers: state.activeVouchers.map((v) =>
-              expiredVouchers.some((ev) => ev.id === v.id) ? { ...v, isActive: false } : v
-            )
-          }))
-        }
-      },
-
-      submitBribe: (playerId, amount, reason) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (player == null || player.rubles < amount) return
-
-        const bribe: BribeRequest = {
-          id: `bribe-${String(Date.now())}`,
-          playerId,
-          amount,
-          reason,
-          timestamp: new Date()
-        }
-
-        set((state) => ({
-          pendingBribes: [...state.pendingBribes, bribe]
-        }))
-
-        get().addLogEntry({
-          type: 'system',
-          message: `${player.name} has submitted a bribe of ₽${String(amount)} to Stalin`,
-          playerId
-        })
-      },
-
-      respondToBribe: (bribeId, accepted) => {
-        const state = get()
-        const bribe = state.pendingBribes.find((b) => b.id === bribeId)
-        if (bribe == null) return
-
-        const player = state.players.find((p) => p.id === bribe.playerId)
-        if (player == null) return
-
-        // Always take the money
-        get().updatePlayer(bribe.playerId, { rubles: player.rubles - bribe.amount })
-        get().adjustTreasury(bribe.amount)
-
-        if (accepted) {
-          // Release from Gulag or grant favour
-          if (bribe.reason === 'gulag-escape' && player.inGulag) {
-            get().updatePlayer(bribe.playerId, {
-              inGulag: false,
-              gulagTurns: 0
-            })
-
-            get().addLogEntry({
-              type: 'gulag',
-              message: `Stalin accepted ${player.name}'s bribe of ₽${String(bribe.amount)} and released them from the Gulag`,
-              playerId: bribe.playerId
-            })
-
-            set({ turnPhase: 'post-turn', pendingAction: null })
-          }
-        } else {
-          // Rejected - money confiscated anyway
-          get().addLogEntry({
-            type: 'payment',
-            message: `Stalin rejected ${player.name}'s bribe of ₽${String(bribe.amount)} and confiscated it as contraband`,
-            playerId: bribe.playerId
-          })
-        }
-
-        // Remove bribe from pending
-        set((state) => ({
-          pendingBribes: state.pendingBribes.filter((b) => b.id !== bribeId)
-        }))
       },
 
       // Trade system
@@ -2097,50 +1670,6 @@ export const useGameStore = create<GameStore>()(
       },
 
       // Property special abilities
-      siberianCampsGulag: (custodianId, targetPlayerId) => {
-        const state = get()
-        const custodian = state.players.find(p => p.id === custodianId)
-        const target = state.players.find(p => p.id === targetPlayerId)
-
-        if ((custodian == null) || (target == null)) return
-        if (custodian.hasUsedSiberianCampsGulag) return
-
-        // Check if custodian owns both Siberian Camps (spaces 1 and 3)
-        const ownsCampVorkuta = state.properties.find(p => p.spaceId === 1 && p.custodianId === custodianId)
-        const ownsCampKolyma = state.properties.find(p => p.spaceId === 3 && p.custodianId === custodianId)
-
-        if ((ownsCampVorkuta == null) || (ownsCampKolyma == null)) {
-          get().addLogEntry({
-            type: 'system',
-            message: `${custodian.name} must control both Siberian Camps to use this ability!`
-          })
-          return
-        }
-
-        // Ask Stalin for approval (in real game, this would be a modal)
-        const approved = window.confirm(
-          `STALIN'S APPROVAL REQUIRED\n\n${custodian.name} wants to send ${target.name} to the Gulag for "labour needs".\n\nDo you approve?`
-        )
-
-        if (approved) {
-          get().sendToGulag(targetPlayerId, 'campLabour')
-          get().updatePlayer(custodianId, { hasUsedSiberianCampsGulag: true })
-
-          get().addLogEntry({
-            type: 'gulag',
-            message: `${custodian.name} sent ${target.name} to the Gulag for forced labour! (Siberian Camps ability)`,
-            playerId: custodianId
-          })
-        } else {
-          get().addLogEntry({
-            type: 'system',
-            message: `Stalin denied ${custodian.name}'s request to send ${target.name} to the Gulag`
-          })
-        }
-
-        set({ pendingAction: null })
-      },
-
       kgbPreviewTest: (custodianId) => {
         const state = get()
         const custodian = state.players.find(p => p.id === custodianId)
@@ -2786,7 +2315,7 @@ export const useGameStore = create<GameStore>()(
         activeGreatPurge: state.activeGreatPurge,
         activeFiveYearPlan: state.activeFiveYearPlan,
         heroesOfSovietUnion: state.heroesOfSovietUnion
-      })
+      }) as GameStore
     }
   )
 )
