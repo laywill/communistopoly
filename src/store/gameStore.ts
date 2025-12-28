@@ -179,7 +179,8 @@ export const useGameStore = create<GameStore>()(
           })
 
           // Initialize properties
-          state.initializeProperties?.()
+          const initProps = state.initializeProperties
+          if (initProps) initProps()
         },
 
         // Old API: startNewGame
@@ -289,7 +290,7 @@ export const useGameStore = create<GameStore>()(
           // Stub - directive effects not implemented in new architecture yet
         },
 
-        ironCurtainDisappear: (playerId: string, propertyId: number) => {
+        ironCurtainDisappear: (playerId: string, _propertyId: number) => {
           // Delegate to piece ability marker
           get().markIronCurtainDisappearUsed(playerId)
         },
@@ -307,7 +308,7 @@ export const useGameStore = create<GameStore>()(
           // Stub
         },
 
-        sickleHarvest: (playerId: string, propertyId: number) => {
+        sickleHarvest: (playerId: string, _propertyId: number) => {
           get().markSickleHarvestUsed(playerId)
         },
 
@@ -317,7 +318,8 @@ export const useGameStore = create<GameStore>()(
             state.addMoney(playerId, 100)
             state.removeFromStateTreasury(100)
           } else {
-            state.sendToGulag?.(playerId, 'stalinDecree', 'Caught pilfering')
+            const sendToGulag = state.sendToGulag
+            if (sendToGulag) sendToGulag(playerId, 'stalinDecree', 'Caught pilfering')
           }
         },
 
