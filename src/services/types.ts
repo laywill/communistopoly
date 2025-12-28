@@ -4,17 +4,17 @@
 import type { GameState } from '../types/game'
 
 /**
- * Base interface for game services.
- * Services contain business logic and coordinate between slices.
- * They are stateless and depend on the game store.
- */
-export interface GameService {
-  /** Reference to the game store */
-  store: GameState
-}
-
-/**
  * Type-safe store getter for services.
- * Services use this to access the current state.
+ * Services use this to access the current live state.
  */
 export type StoreGetter = () => GameState
+
+/**
+ * Base interface for game services.
+ * Services contain business logic and coordinate between slices.
+ * They are stateless and depend on the game store through a getter function.
+ */
+export interface GameService {
+  /** Getter function to access the live game store */
+  getStore: StoreGetter
+}

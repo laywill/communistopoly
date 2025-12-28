@@ -2,7 +2,7 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import type { GameState } from '../types/game'
-import type { GameService } from './types'
+import type { GameService, StoreGetter } from './types'
 
 /**
  * TurnManager Service
@@ -14,14 +14,14 @@ import type { GameService } from './types'
  * - Player turn skipping
  */
 export class TurnManager implements GameService {
-  constructor(public store: GameState) {}
+  constructor(public getStore: StoreGetter) {}
 
   /**
    * Ends the current player's turn and advances to the next player.
    * Handles doubles, round completion, and player skipping.
    */
   endTurn(): void {
-    const state = this.store
+    const state = this.getStore()
     const { currentPlayerIndex, players, doublesCount } = state
 
     // If player rolled doubles and not in gulag, they get another turn

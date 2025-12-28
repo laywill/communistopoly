@@ -13,6 +13,7 @@ import { createGulagSlice, type GulagSliceState, type GulagSliceActions } from '
 import { createPropertySlice, type PropertySliceState, type PropertySliceActions } from './slices/propertySlice'
 import { createTribunalSlice, type TribunalSliceState, type TribunalSliceActions } from './slices/tribunalSlice'
 import { TurnManager } from '../services/TurnManager'
+import { StoyService } from '../services/StoyService'
 
 // Helper functions
 function getEliminationMessage (playerName: string, reason: EliminationReason): string {
@@ -210,8 +211,8 @@ export const useGameStore = create<GameStore>()(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       const tribunalSlice = createTribunalSlice(set as any, get as any, undefined as any)
 
-      // Compose the base store from slices
-      const baseStore = {
+      // Compose the base store from slices (partial - will add service methods below)
+      const partialStore = {
         ...initialState,
         ...cardSlice,
         ...statisticsSlice,
@@ -684,56 +685,6 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      // STOY handling
-      handleStoyPassing: (playerId) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (player == null) return
-
-        // Deduct 200₽ travel tax
-        get().updatePlayer(playerId, { rubles: player.rubles - 200 })
-        get().adjustTreasury(200)
-
-        get().addLogEntry({
-          type: 'payment',
-          message: `${player.name} paid ₽200 travel tax at STOY`,
-          playerId
-        })
-
-        // HAMMER ABILITY: +50₽ bonus when passing STOY
-        if (player.piece === 'hammer') {
-          get().updatePlayer(playerId, { rubles: player.rubles - 200 + 50 }) // Net: -150₽
-          get().addLogEntry({
-            type: 'payment',
-            message: `${player.name}'s Hammer earns +₽50 bonus at STOY!`,
-            playerId
-          })
-        }
-      },
-
-      handleStoyPilfer: (playerId, diceRoll) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (player == null) return
-
-        if (diceRoll >= 4) {
-          // Success! Steal 100₽ from State
-          const newRubles: number = player.rubles + 100
-          get().updatePlayer(playerId, { rubles: newRubles })
-          get().adjustTreasury(-100)
-
-          get().addLogEntry({
-            type: 'payment',
-            message: `${player.name} successfully pilfered ₽100 from the State Treasury!`,
-            playerId
-          })
-        } else {
-          // Caught! Go to Gulag
-          get().sendToGulag(playerId, 'pilferingCaught')
-        }
-
-        set({ pendingAction: null, turnPhase: 'post-turn' })
-      },
 
       // Piece abilities
       tankRequisition: (tankPlayerId, targetPlayerId) => {
@@ -1837,17 +1788,25 @@ export const useGameStore = create<GameStore>()(
       }
       }
 
-      // Create services after store is composed (eliminates circular dependencies)
+      // Create services after partial store is composed (eliminates circular dependencies)
+      // Services use the get() function to access live state
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const turnManager = new TurnManager(baseStore as any as GameState)
+      const turnManager = new TurnManager(get as any)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const stoyService = new StoyService(get as any)
 
-      // Return store with service methods
-      return {
-        ...baseStore,
+      // Complete the store by adding service-delegated methods
+      // These are added before the return so that get() can access them
+      const completeStore = {
+        ...partialStore,
 
         // Coordinated actions delegate to services
-        endTurn: () => { turnManager.endTurn(); }
+        endTurn: () => { turnManager.endTurn(); },
+        handleStoyPassing: (playerId: string) => { stoyService.handlePassing(playerId); },
+        handleStoyPilfer: (playerId: string, diceRoll: number) => { stoyService.handlePilfer(playerId, diceRoll); }
       }
+
+      return completeStore
     },
     {
       name: 'communistopoly-save',
