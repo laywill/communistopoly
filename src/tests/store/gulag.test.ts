@@ -662,7 +662,7 @@ describe('Gulag System', () => {
     })
 
     it('should swap places if accused is found guilty', () => {
-      const { initializePlayers, sendToGulag, initiateDenouncement, renderTribunalVerdict } = useGameStore.getState()
+      const { initializePlayers, sendToGulag, denouncePlayer, renderVerdict } = useGameStore.getState()
 
       initializePlayers([
         { name: 'Prisoner', piece: 'sickle', isStalin: false },
@@ -673,10 +673,10 @@ describe('Gulag System', () => {
       sendToGulag(prisoner.id, 'enemyOfState')
 
       // Prisoner informs on target, triggering tribunal
-      initiateDenouncement(prisoner.id, target.id, 'Counter-revolutionary activities')
+      denouncePlayer(prisoner.id, target.id, 'Counter-revolutionary activities')
 
       // Render guilty verdict
-      renderTribunalVerdict('guilty')
+      renderVerdict('guilty')
 
       const updatedTarget = useGameStore.getState().players.find(p => p.id === target.id)
 
@@ -689,7 +689,7 @@ describe('Gulag System', () => {
     })
 
     it('should add 2 turns to sentence if accused is innocent', () => {
-      const { initializePlayers, sendToGulag, initiateDenouncement, renderTribunalVerdict, updatePlayer } = useGameStore.getState()
+      const { initializePlayers, sendToGulag, denouncePlayer, renderVerdict, updatePlayer } = useGameStore.getState()
 
       initializePlayers([
         { name: 'Prisoner', piece: 'sickle', isStalin: false },
@@ -703,10 +703,10 @@ describe('Gulag System', () => {
       const initialTurns = 3
 
       // Prisoner informs on target, triggering tribunal
-      initiateDenouncement(prisoner.id, target.id, 'Counter-revolutionary activities')
+      denouncePlayer(prisoner.id, target.id, 'Counter-revolutionary activities')
 
       // Render innocent verdict - should add 2 turns for false accusation
-      renderTribunalVerdict('innocent')
+      renderVerdict('innocent')
 
       const updatedPrisoner = useGameStore.getState().players.find(p => p.id === prisoner.id)
 

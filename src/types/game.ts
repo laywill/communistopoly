@@ -110,6 +110,7 @@ export interface Player {
   correctTestAnswers: number
   consecutiveFailedTests: number
   underSuspicion: boolean
+  denouncementsMadeThisRound: number
 
   // Property system
   skipNextTurn: boolean // For Industrial Centers conscripted labour
@@ -420,10 +421,6 @@ export interface GameState {
 
   // Rehabilitation confessions
   confessions: Confession[]
-
-  // Denouncement and Tribunal System
-  denouncementsThisRound: Denouncement[] // Track who denounced whom this round
-  activeTribunal: ActiveTribunal | null // Current ongoing tribunal
 
   // Special Decrees
   greatPurgeUsed: boolean

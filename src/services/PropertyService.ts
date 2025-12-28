@@ -203,7 +203,7 @@ export function createPropertyService(get: StoreGetter<GameState>): PropertyServ
 
         // Add collectivization bonus
         const bonus = getCollectivizationBonus(property.collectivizationLevel);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+         
         quota = Math.floor(quota * (1 + bonus))
 
         // Sickle: Halved farm quotas
@@ -282,7 +282,7 @@ export function createPropertyService(get: StoreGetter<GameState>): PropertyServ
       const property = state.getProperty(spaceId)
       const space = BOARD_SPACES.find((s) => s.id === spaceId)
 
-      if (!property || !space || space.type !== 'property') return false
+      if (!property || space?.type !== 'property') return false
       if (property.collectivizationLevel >= 5) return false
       if (property.mortgaged) return false
       if (!property.custodianId) return false
@@ -291,7 +291,7 @@ export function createPropertyService(get: StoreGetter<GameState>): PropertyServ
       if (!custodian) return false
 
       // Check even building rule
-      const groupProperties = state.getPropertiesInGroup(space.group as PropertyGroup)
+      const groupProperties = state.getPropertiesInGroup(space.group!)
       const levels = groupProperties.map((p) => p.collectivizationLevel)
       const minLevel = levels.length > 0 ? Math.min(...levels) : 0
 
