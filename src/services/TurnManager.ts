@@ -46,23 +46,32 @@ export function createTurnManager (get: StoreGetter<GameState>): TurnManager {
       const state = get()
 
       // Get non-Stalin, non-eliminated players
-      const activePlayers = state.getActivePlayers()
+      const getActive = state.getActivePlayers
+      const activePlayers = getActive ? getActive() : []
 
       // Randomize turn order
       const turnOrder = activePlayers
         .map((p) => p.id)
         .sort(() => Math.random() - 0.5)
 
-      state.setTurnOrder(turnOrder)
-      state.setCurrentTurnIndex(0)
-      state.setGamePhase('playing')
-      state.setRound(1)
-      state.setDoublesCount(0)
+      const setTurnOrder = state.setTurnOrder
+      const setCurrentTurnIndex = state.setCurrentTurnIndex
+      const setGamePhase = state.setGamePhase
+      const setRound = state.setRound
+      const setDoublesCount = state.setDoublesCount
+      const shuffleDeck = state.shufflePartyDirectiveDeck
+      const addLog = state.addGameLogEntry
+
+      if (setTurnOrder) setTurnOrder(turnOrder)
+      if (setCurrentTurnIndex) setCurrentTurnIndex(0)
+      if (setGamePhase) setGamePhase('playing')
+      if (setRound) setRound(1)
+      if (setDoublesCount) setDoublesCount(0)
 
       // Shuffle card decks
-      state.shufflePartyDirectiveDeck?.()
+      if (shuffleDeck) shuffleDeck()
 
-      state.addGameLogEntry('☭ The game begins! Glory to the Motherland! ☭')
+      if (addLog) addLog('☭ The game begins! Glory to the Motherland! ☭')
     },
 
     rollDice: () => {
@@ -72,32 +81,44 @@ export function createTurnManager (get: StoreGetter<GameState>): TurnManager {
       const die2 = Math.floor(Math.random() * 6) + 1
       const roll: [number, number] = [die1, die2]
 
-      state.setDiceRoll(roll)
+      const setDiceRoll = state.setDiceRoll
+      if (setDiceRoll) setDiceRoll(roll)
 
       const isDoubles = die1 === die2
 
       if (isDoubles) {
-        state.incrementDoublesCount()
+        const incrementDoubles = state.incrementDoublesCount
+        if (incrementDoubles) incrementDoubles()
 
         // Three doubles = Gulag
         if (state.doublesCount >= 3) {
-          const currentPlayer = state.getCurrentPlayer?.() ??
+          const getCurrent = state.getCurrentPlayer
+          const currentPlayer = getCurrent ? getCurrent() :
             state.players.find(p => p.id === state.turnOrder[state.currentTurnIndex])
 
           if (currentPlayer) {
-            state.addGameLogEntry(
-              `${currentPlayer.name} rolled three doubles! Counter-revolutionary dice manipulation!`
-            )
-            state.sendToGulag?.(
-              currentPlayer.id,
-              'threeDoubles',
-              'Rolled three consecutive doubles'
-            )
+            const addLog = state.addGameLogEntry
+            const sendToGulag = state.sendToGulag
+            const setDoublesCount = state.setDoublesCount
+            const playerName = currentPlayer.name
+            if (addLog) {
+              addLog(
+                `${playerName} rolled three doubles! Counter-revolutionary dice manipulation!`
+              )
+            }
+            if (sendToGulag) {
+              sendToGulag(
+                currentPlayer.id,
+                'threeDoubles',
+                'Rolled three consecutive doubles'
+              )
+            }
+            if (setDoublesCount) setDoublesCount(0)
           }
-          state.setDoublesCount(0)
         }
       } else {
-        state.setDoublesCount(0)
+        const setDoublesCount = state.setDoublesCount
+        if (setDoublesCount) setDoublesCount(0)
       }
 
       return roll
@@ -112,27 +133,35 @@ export function createTurnManager (get: StoreGetter<GameState>): TurnManager {
 
     startTurn: () => {
       const state = get()
-      const currentPlayerId = state.getCurrentPlayerId()
+      const getCurrentId = state.getCurrentPlayerId
+      const currentPlayerId = getCurrentId ? getCurrentId() : undefined
       const player = state.players.find(p => p.id === currentPlayerId)
 
       if (!player) return
 
-      state.addGameLogEntry(`──── ${player.name}'s Turn ────`)
+      const addLog = state.addGameLogEntry
+      const playerName = player.name
+      if (addLog) addLog(`──── ${playerName}'s Turn ────`)
 
       // Check voucher liability countdown
-      state.checkVoucherLiability?.(player.id)
+      const checkVoucher = state.checkVoucherLiability
+      if (checkVoucher) checkVoucher(player.id)
 
       // Increment Gulag turn if imprisoned
       if (player.inGulag) {
-        state.incrementGulagTurns(player.id)
-        state.addGameLogEntry(
-          `${player.name} begins turn ${player.gulagTurns + 1} in the Gulag`
-        )
+        const incrementGulag = state.incrementGulagTurns
+        if (incrementGulag) incrementGulag(player.id)
+        const gulagTurns = player.gulagTurns + 1
+        if (addLog) {
+          addLog(
+            `${playerName} begins turn ${String(gulagTurns)} in the Gulag`
+          )
+        }
       }
 
       // Bread Loaf starving check
       if (player.piece === 'breadLoaf' && player.rubles < 100) {
-        state.addGameLogEntry(`${player.name} is starving! Must beg for food.`)
+        if (addLog) addLog(`${playerName} is starving! Must beg for food.`)
       }
     },
 
@@ -145,28 +174,35 @@ export function createTurnManager (get: StoreGetter<GameState>): TurnManager {
 
       // If doubles and not in Gulag, player goes again
       if (die1 === die2 && die1 > 0 && !currentPlayer?.inGulag && state.doublesCount < 3) {
-        state.addGameLogEntry('Doubles! Roll again, comrade.')
-        state.setDiceRoll(null)
+        const addLog = state.addGameLogEntry
+        const setDiceRoll = state.setDiceRoll
+        if (addLog) addLog('Doubles! Roll again, comrade.')
+        if (setDiceRoll) setDiceRoll(null)
         return // Don't advance to next player
       }
 
       // Reset dice for next player
-      state.setDiceRoll(null)
-      state.setDoublesCount(0)
+      const setDiceRoll = state.setDiceRoll
+      const setDoublesCount = state.setDoublesCount
+      if (setDiceRoll) setDiceRoll(null)
+      if (setDoublesCount) setDoublesCount(0)
 
       // Advance to next player
       const { turnOrder, currentTurnIndex } = state
-      let nextIndex = (currentTurnIndex + 1) % turnOrder.length
+      const turnOrderLength = turnOrder.length
+      let nextIndex = (currentTurnIndex + 1) % turnOrderLength
 
       // Check for round completion
       if (nextIndex === 0) {
-        state.incrementRound()
-        state.resetDenouncementCounts()
+        const incrementRound = state.incrementRound
+        const resetDenouncements = state.resetDenouncementCounts
+        if (incrementRound) incrementRound()
+        if (resetDenouncements) resetDenouncements()
       }
 
       // Skip eliminated players
       let attempts = 0
-      while (attempts < turnOrder.length) {
+      while (attempts < turnOrderLength) {
         const nextPlayerId = turnOrder[nextIndex]
         const nextPlayer = state.players.find(p => p.id === nextPlayerId)
 
@@ -174,39 +210,53 @@ export function createTurnManager (get: StoreGetter<GameState>): TurnManager {
           break
         }
 
-        nextIndex = (nextIndex + 1) % turnOrder.length
+        nextIndex = (nextIndex + 1) % turnOrderLength
         attempts++
 
         // Check for round completion when skipping
         if (nextIndex === 0) {
-          state.incrementRound()
-          state.resetDenouncementCounts()
+          const incrementRound = state.incrementRound
+          const resetDenouncements = state.resetDenouncementCounts
+          if (incrementRound) incrementRound()
+          if (resetDenouncements) resetDenouncements()
         }
       }
 
-      state.setCurrentTurnIndex(nextIndex)
+      const setCurrentTurnIndex = state.setCurrentTurnIndex
+      if (setCurrentTurnIndex) setCurrentTurnIndex(nextIndex)
     },
 
     checkGameEnd: () => {
       const state = get()
-      const activePlayers = state.getActivePlayers()
+      const getActive = state.getActivePlayers
+      const activePlayers = getActive ? getActive() : []
+      const activeCount = activePlayers.length
 
-      if (activePlayers.length === 1) {
+      if (activeCount === 1) {
         // Survivor victory
         const winner = activePlayers[0]
-        state.setWinner(winner.id, 'Last survivor - there are no winners, only survivors')
-        state.addGameLogEntry(`🏆 ${winner.name} has survived! Glory to the survivor!`)
-      } else if (activePlayers.length === 0) {
+        const setWinner = state.setWinner
+        const addLog = state.addGameLogEntry
+        if (winner) {
+          const winnerName = winner.name
+          if (setWinner) setWinner(winner.id, 'Last survivor - there are no winners, only survivors')
+          if (addLog) addLog(`🏆 ${winnerName} has survived! Glory to the survivor!`)
+        }
+      } else if (activeCount === 0) {
         // Stalin victory
-        state.setWinner(null, 'The State wins - all comrades eliminated')
-        state.addGameLogEntry('☭ The State is victorious! All comrades have been eliminated.')
+        const setWinner = state.setWinner
+        const addLog = state.addGameLogEntry
+        if (setWinner) setWinner(null, 'The State wins - all comrades eliminated')
+        if (addLog) addLog('☭ The State is victorious! All comrades have been eliminated.')
       }
     },
 
     getCurrentPlayer: () => {
       const state = get()
-      const currentPlayerId = state.getCurrentPlayerId()
-      return currentPlayerId ? state.getPlayer(currentPlayerId) : undefined
+      const getCurrentId = state.getCurrentPlayerId
+      const getPlayer = state.getPlayer
+      const currentPlayerId = getCurrentId ? getCurrentId() : undefined
+      return (currentPlayerId && getPlayer) ? getPlayer(currentPlayerId) : undefined
     },
   }
 }
