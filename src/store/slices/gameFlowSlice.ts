@@ -5,7 +5,7 @@ import type { GameState, LogEntry, LogEntryType } from '../../types/game'
 // TYPES
 // ============================================
 
-export type GamePhase = 'setup' | 'playing' | 'paused' | 'ended'
+export type GamePhase = 'welcome' | 'setup' | 'playing' | 'paused' | 'ended' | 'pre-roll' | 'moving' | 'post-turn' | 'rolling' | 'resolving'
 
 // Re-export LogEntry type for convenience
 export type GameLogEntry = LogEntry

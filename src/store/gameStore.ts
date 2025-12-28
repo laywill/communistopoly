@@ -55,9 +55,10 @@ interface CompatibilityLayer {
   activeFiveYearPlan: any
   heroesOfSovietUnion: any[]
   stalinPlayerId: string | null
+  winnerId: string | null
 
   // Old methods
-  initializePlayers: (playerSetups: Array<{ name: string, piece: any, isStalin: boolean }>) => void
+  initializePlayers: (playerSetups: { name: string, piece: any, isStalin: boolean }[]) => void
   startNewGame: () => void
   updatePlayer: (playerId: string, updates: any) => void
   setCurrentPlayer: (index: number) => void
@@ -76,6 +77,19 @@ interface CompatibilityLayer {
   ironCurtainDisappear: (playerId: string, propertyId: number) => void
   leninSpeech: (playerId: string, applauders: string[]) => void
   submitConfession: (prisonerId: string, confession: string) => void
+  reviewConfession: (confession: any, approved: boolean) => void
+  sickleHarvest: (playerId: string, propertyId: number) => void
+  handleStoyPilfer: (playerId: string, success: boolean) => void
+  demotePlayer: (playerId: string) => void
+  promotePlayer: (playerId: string) => void
+  proposeTrade: (fromId: string, toId: string, offer: any) => void
+  acceptTrade: (tradeId: string) => void
+  rejectTrade: (tradeId: string) => void
+  tankRequisition: (playerId: string, targetId: string) => void
+  respondToBribe: (bribeId: string, accepted: boolean) => void
+  initiateGreatPurge: () => void
+  initiateFiveYearPlan: () => void
+  grantHeroOfSovietUnion: (playerId: string) => void
 }
 
 type GameStore =
@@ -288,6 +302,84 @@ export const useGameStore = create<GameStore>()(
 
         submitConfession: (prisonerId: string, confession: string) => {
           // Stub - confession system not implemented in new architecture yet
+        },
+
+        reviewConfession: (confession: any, approved: boolean) => {
+          // Stub
+        },
+
+        sickleHarvest: (playerId: string, propertyId: number) => {
+          get().markSickleHarvestUsed(playerId)
+        },
+
+        handleStoyPilfer: (playerId: string, success: boolean) => {
+          const state = get()
+          if (success) {
+            state.addMoney(playerId, 100)
+            state.removeFromStateTreasury(100)
+          } else {
+            state.sendToGulag?.(playerId, 'stalinDecree', 'Caught pilfering')
+          }
+        },
+
+        demotePlayer: (playerId: string) => {
+          const player = get().getPlayer(playerId)
+          if (!player) return
+
+          const ranks: import('../../types/game').PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+          const currentIdx = ranks.indexOf(player.rank)
+          if (currentIdx > 0) {
+            get().setPlayerRank(playerId, ranks[currentIdx - 1])
+          }
+        },
+
+        promotePlayer: (playerId: string) => {
+          const player = get().getPlayer(playerId)
+          if (!player) return
+
+          const ranks: import('../../types/game').PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+          const currentIdx = ranks.indexOf(player.rank)
+          if (currentIdx < ranks.length - 1) {
+            get().setPlayerRank(playerId, ranks[currentIdx + 1])
+          }
+        },
+
+        proposeTrade: (fromId: string, toId: string, offer: any) => {
+          // Stub
+        },
+
+        acceptTrade: (tradeId: string) => {
+          // Stub
+        },
+
+        rejectTrade: (tradeId: string) => {
+          // Stub
+        },
+
+        tankRequisition: (playerId: string, targetId: string) => {
+          const state = get()
+          state.removeMoney(targetId, 50)
+          state.addMoney(playerId, 50)
+        },
+
+        respondToBribe: (bribeId: string, accepted: boolean) => {
+          // Stub
+        },
+
+        initiateGreatPurge: () => {
+          // Stub
+        },
+
+        initiateFiveYearPlan: () => {
+          // Stub
+        },
+
+        grantHeroOfSovietUnion: (playerId: string) => {
+          // Stub
+        },
+
+        get winnerId() {
+          return get().winner
         },
       }
 
