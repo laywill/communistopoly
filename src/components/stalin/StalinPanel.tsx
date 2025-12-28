@@ -17,8 +17,8 @@ export default function StalinPanel() {
   const initiateGreatPurge = useGameStore((state) => state.initiateGreatPurge);
   const initiateFiveYearPlan = useGameStore((state) => state.initiateFiveYearPlan);
   const grantHeroOfSovietUnion = useGameStore((state) => state.grantHeroOfSovietUnion);
-  const greatPurgeUsed = useGameStore((state) => state.greatPurgeUsed) as boolean;
-  const activeFiveYearPlan = useGameStore((state) => state.activeFiveYearPlan) as import('../../types/game').FiveYearPlan | null;
+  const greatPurgeUsed = useGameStore((state) => state.greatPurgeUsed);
+  const activeFiveYearPlan = useGameStore((state) => state.activeFiveYearPlan);
 
   const [selectedPlayer, setSelectedPlayer] = useState<string>('');
   const [justification, setJustification] = useState('');

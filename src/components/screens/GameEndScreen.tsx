@@ -5,10 +5,10 @@ import { useGameStore } from '../../store/gameStore';
 import './GameEndScreen.css';
 
 export default function GameEndScreen() {
-  const gameEndCondition = useGameStore((state) => state.gameEndCondition) as import('../../types/game').GameEndCondition | null;
+  const gameEndCondition = useGameStore((state) => state.gameEndCondition);
   const winnerId = useGameStore((state) => state.winnerId);
   const players = useGameStore((state) => state.players);
-  const gameStatistics = useGameStore((state) => state.gameStatistics) as import('../../types/game').GameStatistics;
+  const gameStatistics = useGameStore((state) => state.gameStatistics);
   const startNewGame = useGameStore((state) => state.startNewGame);
   const resetGame = useGameStore((state) => state.resetGame);
 
@@ -20,7 +20,7 @@ export default function GameEndScreen() {
   };
 
   const formatDuration = (): string => {
-    if (!gameStatistics?.gameEndTime) return 'Unknown';
+    if (!gameStatistics.gameEndTime) return 'Unknown';
     const startTime = gameStatistics.gameStartTime instanceof Date ? gameStatistics.gameStartTime : new Date(gameStatistics.gameStartTime);
     const endTime = gameStatistics.gameEndTime instanceof Date ? gameStatistics.gameEndTime : new Date(gameStatistics.gameEndTime);
     const duration = endTime.getTime() - startTime.getTime();
