@@ -17,7 +17,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
   const players = useGameStore((state) => state.players);
   const properties = useGameStore((state) => state.properties);
   const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const updateCollectivizationLevel = useGameStore((state) => state.updateCollectivizationLevel);
+  const setCollectivizationLevel = useGameStore((state) => state.setCollectivizationLevel);
   const addLogEntry = useGameStore((state) => state.addLogEntry);
 
   const [, setSelectedProperty] = useState<number | null>(null);
@@ -118,7 +118,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
     updatePlayer(playerId, { rubles: player.rubles - cost });
 
     // Increase collectivization level
-    updateCollectivizationLevel(spaceId, newLevel);
+    setCollectivizationLevel(spaceId, newLevel);
 
     addLogEntry({
       type: 'property',

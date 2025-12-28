@@ -24,7 +24,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
     players,
     properties,
     updatePlayer,
-    updateCollectivizationLevel,
+    setCollectivizationLevel,
     mortgageProperty,
     setPendingAction,
     addLogEntry,
@@ -100,7 +100,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
     }
 
     // Update property level
-    updateCollectivizationLevel(spaceId, newLevel);
+    setCollectivizationLevel(spaceId, newLevel);
 
     // Add funds to player
     updatePlayer(playerId, {

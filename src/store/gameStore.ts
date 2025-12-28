@@ -15,13 +15,18 @@ import {
   type CardSlice,
   createGulagSlice,
   initialGulagState,
-  type GulagSlice
+  type GulagSlice,
+  createPropertySlice,
+  initialPropertyState,
+  type PropertySlice
 } from './slices'
 
 // Import services
 import {
   createGulagService,
-  type GulagService
+  type GulagService,
+  createPropertyService,
+  type PropertyService
 } from '../services'
 
 // Helper functions
@@ -136,16 +141,6 @@ interface GameActions {
   setCurrentPlayer: (index: number) => void
   updatePlayer: (playerId: string, updates: Partial<Player>) => void
 
-  // Property management
-  initializeProperties: () => void
-  setPropertyCustodian: (spaceId: number, custodianId: string | null) => void
-  updateCollectivizationLevel: (spaceId: number, level: number) => void
-  purchaseProperty: (playerId: string, spaceId: number, price: number) => void
-  payQuota: (payerId: string, custodianId: string, amount: number) => void
-  mortgageProperty: (spaceId: number) => void
-  unmortgageProperty: (spaceId: number, playerId: string) => void
-  transferProperty: (propertyId: string, newCustodianId: string) => void
-
   // Turn management
   rollDice: () => void
   rollVodka3Dice: () => void
@@ -247,14 +242,13 @@ interface GameActions {
   isHeroOfSovietUnion: (playerId: string) => boolean
 }
 
-type GameStore = GameState & GameActions & CardSlice & GulagSlice & GulagService
+type GameStore = GameState & GameActions & CardSlice & GulagSlice & PropertySlice & GulagService & PropertyService
 
 const initialState: GameState = {
   gamePhase: 'welcome',
   players: [],
   stalinPlayerId: null,
   currentPlayerIndex: 0,
-  properties: [],
   stateTreasury: 0,
   turnPhase: 'pre-roll',
   doublesCount: 0,
@@ -314,11 +308,13 @@ export const useGameStore = create<GameStore>()(
       // ----------------------------------------
       const cardSlice = createCardSlice(set, get, api)
       const gulagSlice = createGulagSlice(set, get, api)
+      const propertySlice = createPropertySlice(set, get, api)
 
       // ----------------------------------------
       // STEP 2: Create services (with getter to access store)
       // ----------------------------------------
       const gulagService = createGulagService(() => get())
+      const propertyService = createPropertyService(() => get())
 
       // ----------------------------------------
       // STEP 3: Compose complete store
@@ -327,11 +323,13 @@ export const useGameStore = create<GameStore>()(
         ...initialState,
         ...cardSlice,
         ...gulagSlice,
+        ...propertySlice,
         ...gulagService,
+        ...propertyService,
 
         setGamePhase: (phase) => set({ gamePhase: phase }),
 
-      startNewGame: () => set({ ...initialState, ...initialCardState, ...initialGulagState, gamePhase: 'setup' }),
+      startNewGame: () => set({ ...initialState, ...initialCardState, ...initialGulagState, ...initialPropertyState, gamePhase: 'setup' }),
 
       resetGame: () => {
         // Clear localStorage save
@@ -342,6 +340,7 @@ export const useGameStore = create<GameStore>()(
           ...initialState,
           ...initialCardState,
           ...initialGulagState,
+          ...initialPropertyState,
           gamePhase: 'welcome'
         })
       },
@@ -417,8 +416,7 @@ export const useGameStore = create<GameStore>()(
           }
         })
 
-        // Initialize properties
-        get().initializeProperties()
+        // Properties are initialized by PropertySlice
       },
 
       setCurrentPlayer: (index) => set({ currentPlayerIndex: index }),
@@ -449,35 +447,6 @@ export const useGameStore = create<GameStore>()(
             )
           }
         })
-      },
-
-      initializeProperties: () => {
-        const properties: Property[] = BOARD_SPACES
-          .filter((space) => space.type === 'property' || space.type === 'railway' || space.type === 'utility')
-          .map((space) => ({
-            spaceId: space.id,
-            custodianId: null, // All start owned by the STATE
-            collectivizationLevel: 0,
-            mortgaged: false
-          }))
-
-        set({ properties })
-      },
-
-      setPropertyCustodian: (spaceId, custodianId) => {
-        set((state) => ({
-          properties: state.properties.map((prop) =>
-            prop.spaceId === spaceId ? { ...prop, custodianId } : prop
-          )
-        }))
-      },
-
-      updateCollectivizationLevel: (spaceId, level) => {
-        set((state) => ({
-          properties: state.properties.map((prop) =>
-            prop.spaceId === spaceId ? { ...prop, collectivizationLevel: level } : prop
-          )
-        }))
       },
 
       // Turn management
@@ -990,147 +959,6 @@ export const useGameStore = create<GameStore>()(
         }))
       },
 
-      // Property transactions
-      purchaseProperty: (playerId, spaceId, price) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (player == null || player.rubles < price) return
-
-        // TANK ABILITY: Cannot control any Collective Farm properties
-        const collectiveFarmSpaces = [6, 8, 9]
-        if (player.piece === 'tank' && collectiveFarmSpaces.includes(spaceId)) {
-          const space = getSpaceById(spaceId)
-          get().addLogEntry({
-            type: 'system',
-            message: `${player.name}'s Tank cannot control Collective Farm properties! ${space?.name ?? 'Property'} purchase blocked.`,
-            playerId
-          })
-          set({ pendingAction: null, turnPhase: 'post-turn' })
-          return
-        }
-
-        // Deduct rubles
-        get().updatePlayer(playerId, {
-          rubles: player.rubles - price,
-          properties: [...player.properties, spaceId.toString()]
-        })
-
-        // Set custodian
-        get().setPropertyCustodian(spaceId, playerId)
-
-        // Add to treasury
-        get().adjustTreasury(price)
-
-        const space = getSpaceById(spaceId)
-        get().addLogEntry({
-          type: 'property',
-          message: `${player.name} became Custodian of ${space?.name ?? 'Unknown'} for ₽${String(price)}`,
-          playerId
-        })
-      },
-
-      payQuota: (payerId, custodianId, amount) => {
-        const state = get()
-        const payer = state.players.find((p) => p.id === payerId)
-        const custodian = state.players.find((p) => p.id === custodianId)
-        if (payer == null || custodian == null) return
-
-        // Transfer rubles
-        get().updatePlayer(payerId, { rubles: payer.rubles - amount })
-        get().updatePlayer(custodianId, { rubles: custodian.rubles + amount })
-
-        get().addLogEntry({
-          type: 'payment',
-          message: `${payer.name} paid ₽${String(amount)} quota to ${custodian.name}`,
-          playerId: payerId
-        })
-      },
-
-      mortgageProperty: (spaceId) => {
-        const state = get()
-        const property = state.properties.find((p) => p.spaceId === spaceId)
-        if (property?.custodianId == null) return
-
-        const space = getSpaceById(spaceId)
-        const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5)
-
-        // Give player half the base cost
-        const player = state.players.find((p) => p.id === property.custodianId)
-        if (player != null) {
-          const newRubles: number = (player.rubles) + mortgageValue
-          get().updatePlayer(player.id, { rubles: newRubles })
-        }
-
-        // Mark as mortgaged
-        set((state) => ({
-          properties: state.properties.map((prop) =>
-            prop.spaceId === spaceId ? { ...prop, mortgaged: true } : prop
-          )
-        }))
-
-        get().addLogEntry({
-          type: 'property',
-          message: `${player?.name ?? 'Unknown'} mortgaged ${space?.name ?? 'Unknown'} for ₽${String(mortgageValue)}`,
-          playerId: property.custodianId
-        })
-      },
-
-      unmortgageProperty: (spaceId, playerId) => {
-        const state = get()
-        const property = state.properties.find((p) => p.spaceId === spaceId)
-        const player = state.players.find((p) => p.id === playerId)
-        if (property == null || player == null) return
-
-        const space = getSpaceById(spaceId)
-        const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6)
-
-        if (player.rubles < unmortgageCost) return
-
-        // Deduct cost
-        get().updatePlayer(playerId, { rubles: player.rubles - unmortgageCost })
-
-        // Unmark mortgaged
-        set((state) => ({
-          properties: state.properties.map((prop) =>
-            prop.spaceId === spaceId ? { ...prop, mortgaged: false } : prop
-          )
-        }))
-
-        get().addLogEntry({
-          type: 'property',
-          message: `${player.name} unmortgaged ${space?.name ?? 'Unknown'} for ₽${String(unmortgageCost)}`,
-          playerId
-        })
-      },
-
-      transferProperty: (propertyId, newCustodianId) => {
-        const state = get()
-        const spaceId = parseInt(propertyId)
-        const property = state.properties.find((p) => p.spaceId === spaceId)
-        if (property == null) return
-
-        const oldCustodianId = property.custodianId
-
-        // Update property custodian
-        get().setPropertyCustodian(spaceId, newCustodianId)
-
-        // Remove from old owner's properties array
-        if (oldCustodianId != null) {
-          const oldOwner = state.players.find((p) => p.id === oldCustodianId)
-          if (oldOwner != null) {
-            const updatedProperties = oldOwner.properties.filter((id) => id !== propertyId)
-            get().updatePlayer(oldCustodianId, { properties: updatedProperties })
-          }
-        }
-
-        // Add to new owner's properties array
-        const newOwner = state.players.find((p) => p.id === newCustodianId)
-        if (newOwner != null) {
-          const updatedProperties = [...newOwner.properties, propertyId]
-          get().updatePlayer(newCustodianId, { properties: updatedProperties })
-        }
-      },
-
       // Pending actions
       setPendingAction: (action) => {
         set({ pendingAction: action })
@@ -1613,8 +1441,8 @@ export const useGameStore = create<GameStore>()(
 
         // Return all properties to State (with improvements removed)
         player.properties.forEach((propId) => {
-          get().setPropertyCustodian(parseInt(propId), null)
-          get().updateCollectivizationLevel(parseInt(propId), 0)
+          get().setCustodian(parseInt(propId), null)
+          get().setCollectivizationLevel(parseInt(propId), 0)
         })
 
         // Update player with elimination details
@@ -2062,7 +1890,7 @@ export const useGameStore = create<GameStore>()(
 
         // Transfer property
         const oldCustodian = state.players.find(p => p.id === property.custodianId)
-        get().setPropertyCustodian(targetPropertyId, sicklePlayerId)
+        get().setCustodian(targetPropertyId, sicklePlayerId)
 
         get().updatePlayer(sicklePlayerId, { hasUsedSickleHarvest: true })
 
@@ -2088,7 +1916,7 @@ export const useGameStore = create<GameStore>()(
         const victimPlayer = state.players.find(p => p.id === property.custodianId)
 
         // Return property to State
-        get().setPropertyCustodian(targetPropertyId, null)
+        get().setCustodian(targetPropertyId, null)
 
         get().updatePlayer(ironCurtainPlayer.id, { hasUsedIronCurtainDisappear: true })
 

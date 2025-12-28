@@ -8,7 +8,11 @@ export type { CardSlice, CardSliceState, CardSliceActions } from './cardSlice'
 export { createGulagSlice, initialGulagState } from './gulagSlice'
 export type { GulagSlice, GulagSliceState, GulagSliceActions } from './gulagSlice'
 
+export { createPropertySlice, initialPropertyState } from './propertySlice'
+export type { PropertySlice, PropertySliceState, PropertySliceActions } from './propertySlice'
+
 // Combined slice type (will grow as slices are added)
 import type { CardSlice } from './cardSlice'
 import type { GulagSlice } from './gulagSlice'
-export type AllSlices = CardSlice & GulagSlice
+import type { PropertySlice } from './propertySlice'
+export type AllSlices = CardSlice & GulagSlice & PropertySlice
