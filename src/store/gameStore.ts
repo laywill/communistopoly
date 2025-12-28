@@ -41,8 +41,8 @@ interface CompatibilityLayer {
   turnPhase: import('./slices/gameFlowSlice').GamePhase
   hasRolled: boolean
   isRolling: boolean
-  pendingAction: any
-  activeTradeOffers: any[]
+  pendingAction: import('../types/game').PendingAction | null
+  activeTradeOffers: import('../types/game').TradeOffer[]
   gameEndCondition: any
   showEndScreen: boolean
   gameStatistics: any
