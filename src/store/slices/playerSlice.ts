@@ -66,7 +66,7 @@ export type PlayerSlice = PlayerSliceState & PlayerSliceActions
 // ============================================
 
 function generatePlayerId (): string {
-  return `player-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  return `player-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
 }
 
 function createInitialPlayer (name: string, piece: PieceType): Player {
@@ -164,7 +164,6 @@ export const createPlayerSlice: StateCreator<
 
         // Bread Loaf: Cap at 1000₽
         if (p.piece === 'breadLoaf' && newRubles > 1000) {
-          const excess = newRubles - 1000
           // Excess goes to state (handled by caller)
           newRubles = 1000
           // Note: Caller should call addToStateTreasury(excess)
@@ -233,8 +232,10 @@ export const createPlayerSlice: StateCreator<
       ),
     }))
 
-    get().addGameLogEntry?.(`☠️ ${player?.name} eliminated: ${reason}`)
-    get().checkGameEnd?.()
+    const addLog = get().addGameLogEntry
+    const checkEnd = get().checkGameEnd
+    if (addLog) addLog(`☠️ ${player?.name ?? 'Unknown'} eliminated: ${reason}`)
+    if (checkEnd) checkEnd()
   },
 
   // Piece ability markers
@@ -278,7 +279,7 @@ export const createPlayerSlice: StateCreator<
     }))
   },
 
-  setHammerAbilityLost: (playerId, lost) => {
+  setHammerAbilityLost: (_playerId, _lost) => {
     // Note: This field doesn't exist in the Player type
     // Keeping as no-op for compatibility
   },
