@@ -24,9 +24,10 @@ export interface GameFlowSliceActions {
   setGamePhase: (phase: GamePhase) => void
   startNewGame: () => void
 
-  // Turn management
+  // Turn management (simple setters)
   setTurnPhase: (phase: TurnPhase) => void
-  endTurn: () => void
+  setDoublesCount: (count: number) => void
+  setHasRolled: (rolled: boolean) => void
 
   // Dice rolling
   rollDice: () => void
@@ -76,59 +77,15 @@ export const createGameFlowSlice: StateCreator<
 > = (set, get) => ({
   ...initialGameFlowState,
 
-  setGamePhase: (phase) => set({ gamePhase: phase }),
+  setGamePhase: (phase) => { set({ gamePhase: phase }); },
 
-  startNewGame: () => set({ ...initialGameFlowState, gamePhase: 'setup' }),
+  startNewGame: () => { set({ ...initialGameFlowState, gamePhase: 'setup' }); },
 
-  setTurnPhase: (phase) => set({ turnPhase: phase }),
+  setTurnPhase: (phase) => { set({ turnPhase: phase }); },
 
-  endTurn: () => {
-    const state = get()
-    const { currentPlayerIndex, players, doublesCount } = state
+  setDoublesCount: (count) => { set({ doublesCount: count }); },
 
-    // If player rolled doubles and not in gulag, they get another turn
-    if ((doublesCount) > 0 && !players[currentPlayerIndex]?.inGulag) {
-      set({
-        turnPhase: 'pre-roll',
-        hasRolled: false,
-        pendingAction: null
-      })
-      return
-    }
-
-    // Find next player (skip Stalin and eliminated players, but include Gulag players)
-    let nextIndex: number = (currentPlayerIndex + 1) % players.length
-    let attempts = 0
-
-    while (
-      (players[nextIndex].isStalin || players[nextIndex].isEliminated) &&
-      attempts < players.length
-    ) {
-      nextIndex = (nextIndex + 1) % players.length
-      attempts++
-    }
-
-    // Check if we've completed a round (cycling back to first non-Stalin player)
-    const firstNonStalinIndex: number = players.findIndex((p) => !p.isStalin && !p.isEliminated)
-    if (nextIndex === firstNonStalinIndex && currentPlayerIndex !== firstNonStalinIndex) {
-      get().incrementRound()
-    }
-
-    set({
-      currentPlayerIndex: nextIndex,
-      turnPhase: 'pre-roll',
-      doublesCount: 0,
-      hasRolled: false,
-      pendingAction: null
-    })
-
-    const nextPlayer = players[nextIndex]
-    get().addLogEntry({
-      type: 'system',
-      message: `${nextPlayer.name}'s turn`,
-      playerId: nextPlayer.id
-    })
-  },
+  setHasRolled: (rolled) => { set({ hasRolled: rolled }); },
 
   rollDice: () => {
     const die1 = Math.floor(Math.random() * 6) + 1

@@ -12,6 +12,7 @@ import { createStatisticsSlice, type StatisticsSliceState, type StatisticsSliceA
 import { createGulagSlice, type GulagSliceState, type GulagSliceActions } from './slices/gulagSlice'
 import { createPropertySlice, type PropertySliceState, type PropertySliceActions } from './slices/propertySlice'
 import { createTribunalSlice, type TribunalSliceState, type TribunalSliceActions } from './slices/tribunalSlice'
+import { TurnManager } from '../services/TurnManager'
 
 // Helper functions
 function getEliminationMessage (playerName: string, reason: EliminationReason): string {
@@ -209,7 +210,8 @@ export const useGameStore = create<GameStore>()(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
       const tribunalSlice = createTribunalSlice(set as any, get as any, undefined as any)
 
-      return {
+      // Compose the base store from slices
+      const baseStore = {
         ...initialState,
         ...cardSlice,
         ...statisticsSlice,
@@ -649,54 +651,9 @@ export const useGameStore = create<GameStore>()(
 
       setTurnPhase: (phase) => set({ turnPhase: phase }),
 
-      endTurn: () => {
-        const state = get()
-        const { currentPlayerIndex, players, doublesCount } = state
+      setDoublesCount: (count) => set({ doublesCount: count }),
 
-        // If player rolled doubles and not in gulag, they get another turn
-        if ((doublesCount) > 0 && !players[currentPlayerIndex]?.inGulag) {
-          set({
-            turnPhase: 'pre-roll',
-            hasRolled: false,
-            pendingAction: null
-          })
-          return
-        }
-
-        // Find next player (skip Stalin and eliminated players, but include Gulag players)
-        let nextIndex: number = (currentPlayerIndex + 1) % players.length
-        let attempts = 0
-
-        while (
-          (players[nextIndex].isStalin || players[nextIndex].isEliminated) &&
-          attempts < players.length
-        ) {
-          nextIndex = (nextIndex + 1) % players.length
-          attempts++
-        }
-
-        // Check if we've completed a round (cycling back to first non-Stalin player)
-        // First non-Stalin player is typically at index 1
-        const firstNonStalinIndex: number = players.findIndex((p) => !p.isStalin && !p.isEliminated)
-        if (nextIndex === firstNonStalinIndex && currentPlayerIndex !== firstNonStalinIndex) {
-          get().incrementRound()
-        }
-
-        set({
-          currentPlayerIndex: nextIndex,
-          turnPhase: 'pre-roll',
-          doublesCount: 0,
-          hasRolled: false,
-          pendingAction: null
-        })
-
-        const nextPlayer = players[nextIndex]
-        get().addLogEntry({
-          type: 'system',
-          message: `${nextPlayer.name}'s turn`,
-          playerId: nextPlayer.id
-        })
-      },
+      setHasRolled: (rolled) => set({ hasRolled: rolled }),
 
       demotePlayer: (playerId) => {
         const state = get()
@@ -1878,6 +1835,18 @@ export const useGameStore = create<GameStore>()(
           message: `Round ${String(newRound)} begins`
         })
       }
+      }
+
+      // Create services after store is composed (eliminates circular dependencies)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const turnManager = new TurnManager(baseStore as any as GameState)
+
+      // Return store with service methods
+      return {
+        ...baseStore,
+
+        // Coordinated actions delegate to services
+        endTurn: () => { turnManager.endTurn(); }
       }
     },
     {
