@@ -2365,7 +2365,7 @@ export const useGameStore = create<GameStore>()(
           if (player.kgbTestPreviewsUsedThisRound > 0) {
             updates.kgbTestPreviewsUsedThisRound = 0
           }
-          if ((player.denouncementsMadeThisRound ?? 0) > 0) {
+          if ((player.denouncementsMadeThisRound || 0) > 0) {
             updates.denouncementsMadeThisRound = 0
           }
           if (Object.keys(updates).length > 0) {

@@ -37,7 +37,7 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
 
   // Check denouncement limit for this round
   const limit = accuser.rank === 'commissar' || accuser.rank === 'innerCircle' ? 2 : 1;
-  const denouncementsMade = accuser.denouncementsMadeThisRound ?? 0;
+  const denouncementsMade = accuser.denouncementsMadeThisRound || 0;
   const canDenounceThisRound = denouncementsMade < limit;
   const denounceCheck = {
     canDenounce: canDenounceThisRound,

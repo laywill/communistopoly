@@ -132,7 +132,7 @@ export const createTribunalSlice: StateCreator<
 
     // Check denouncement limit per round
     const limit = accuser.rank === 'commissar' || accuser.rank === 'innerCircle' ? 2 : 1
-    const denouncementsMade = accuser.denouncementsMadeThisRound ?? 0
+    const denouncementsMade = accuser.denouncementsMadeThisRound || 0
     if (denouncementsMade >= limit) {
       return { allowed: false, reason: 'Denouncement limit reached for this round' }
     }
@@ -188,7 +188,7 @@ export const createTribunalSlice: StateCreator<
     set((s) => ({
       players: s.players.map((p) =>
         p.id === accuserId
-          ? { ...p, denouncementsMadeThisRound: (p.denouncementsMadeThisRound ?? 0) + 1 }
+          ? { ...p, denouncementsMadeThisRound: (p.denouncementsMadeThisRound || 0) + 1 }
           : p
       ),
     }))
@@ -283,7 +283,7 @@ export const createTribunalSlice: StateCreator<
       if (!s.currentTribunal) return s
       const currentIndex = phases.indexOf(s.currentTribunal.phase)
       const nextPhase = phases[currentIndex + 1]
-      if (!nextPhase) return s
+      if (nextPhase === undefined) return s
 
       return {
         currentTribunal: { ...s.currentTribunal, phase: nextPhase },

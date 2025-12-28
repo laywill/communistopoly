@@ -330,7 +330,7 @@ export const TribunalModal: React.FC = () => {
                       ⚠️ WITNESS REQUIREMENT NOT MET
                     </p>
                     <p style={{ margin: '4px 0 0 0', fontSize: '12px' }}>
-                      {accused && getWitnessRequirement(accused.rank) !== -1
+                      {getWitnessRequirement(accused.rank) !== -1
                         ? `Need ${String(getWitnessRequirement(accused.rank))} witness(es) for accuser, currently have ${String(currentTribunal.witnesses.prosecution.length)}`
                         : 'Need unanimous agreement from all players'}
                     </p>
