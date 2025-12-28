@@ -43,53 +43,53 @@ interface CompatibilityLayer {
   isRolling: boolean
   pendingAction: import('../types/game').PendingAction | null
   activeTradeOffers: import('../types/game').TradeOffer[]
-  gameEndCondition: any
+  gameEndCondition: import('../types/game').GameEndCondition | null
   showEndScreen: boolean
-  gameStatistics: any
+  gameStatistics: import('../types/game').GameStatistics
   endVoteInProgress: boolean
   endVoteInitiator: string | null
   endVotes: Record<string, boolean>
-  confessions: any[]
+  confessions: import('../types/game').Confession[]
   greatPurgeUsed: boolean
-  activeGreatPurge: any
-  activeFiveYearPlan: any
-  heroesOfSovietUnion: any[]
+  activeGreatPurge: import('../types/game').GreatPurge | null
+  activeFiveYearPlan: import('../types/game').FiveYearPlan | null
+  heroesOfSovietUnion: import('../types/game').HeroOfSovietUnion[]
   stalinPlayerId: string | null
   winnerId: string | null
 
   // Old methods
-  initializePlayers: (playerSetups: { name: string, piece: any, isStalin: boolean }[]) => void
+  initializePlayers: (playerSetups: { name: string, piece: import('../types/game').PieceType, isStalin: boolean }[]) => void
   startNewGame: () => void
-  updatePlayer: (playerId: string, updates: any) => void
+  updatePlayer: (playerId: string, updates: Partial<import('../types/game').Player>) => void
   setCurrentPlayer: (index: number) => void
   rollDice: () => void
   finishRolling: () => void
   movePlayer: (playerId: string, spaces: number) => void
   finishMoving: () => void
-  setTurnPhase: (phase: any) => void
-  setPendingAction: (action: any) => void
-  addLogEntry: (entry: any) => void
+  setTurnPhase: (phase: import('../types/game').TurnPhase) => void
+  setPendingAction: (action: import('../types/game').PendingAction | null) => void
+  addLogEntry: (entry: string | { message: string }) => void
   adjustTreasury: (amount: number) => void
-  createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => void
-  submitBribe: (playerId: string, amount: number, reason: string) => void
-  answerCommunistTest: (question: any, answer: string, readerId: string) => void
-  applyDirectiveEffect: (card: any, playerId: string) => void
+  createDebt: (_debtorId: string, _creditorId: string, _amount: number, _reason: string) => void
+  submitBribe: (_playerId: string, _amount: number, _reason: string) => void
+  answerCommunistTest: (_question: string, _answer: string, _readerId: string) => void
+  applyDirectiveEffect: (_card: string, _playerId: string) => void
   ironCurtainDisappear: (playerId: string, propertyId: number) => void
-  leninSpeech: (playerId: string, applauders: string[]) => void
-  submitConfession: (prisonerId: string, confession: string) => void
-  reviewConfession: (confession: any, approved: boolean) => void
+  leninSpeech: (playerId: string, _applauders: string[]) => void
+  submitConfession: (_prisonerId: string, _confession: string) => void
+  reviewConfession: (_confessionId: string, _approved: boolean) => void
   sickleHarvest: (playerId: string, propertyId: number) => void
   handleStoyPilfer: (playerId: string, success: boolean) => void
   demotePlayer: (playerId: string) => void
   promotePlayer: (playerId: string) => void
-  proposeTrade: (fromId: string, toId: string, offer: any) => void
-  acceptTrade: (tradeId: string) => void
-  rejectTrade: (tradeId: string) => void
+  proposeTrade: (_fromId: string, _toId: string, _offer: import('../types/game').TradeOffer) => void
+  acceptTrade: (_tradeId: string) => void
+  rejectTrade: (_tradeId: string) => void
   tankRequisition: (playerId: string, targetId: string) => void
-  respondToBribe: (bribeId: string, accepted: boolean) => void
+  respondToBribe: (_bribeId: string, _accepted: boolean) => void
   initiateGreatPurge: () => void
   initiateFiveYearPlan: () => void
-  grantHeroOfSovietUnion: (playerId: string) => void
+  grantHeroOfSovietUnion: (_playerId: string) => void
 }
 
 type GameStore =
@@ -164,7 +164,7 @@ export const useGameStore = create<GameStore>()(
         // ─────────────────────────────────────────
 
         // Old API: initializePlayers
-        initializePlayers: (playerSetups: { name: string, piece: any, isStalin: boolean }[]) => {
+        initializePlayers: (playerSetups: { name: string, piece: import('../types/game').PieceType, isStalin: boolean }[]) => {
           const state = get()
 
           // Clear existing players
@@ -198,7 +198,7 @@ export const useGameStore = create<GameStore>()(
         get dice() { return get().diceRoll ?? [1, 1] },
 
         // Stub properties
-        turnPhase: 'playing' as any,
+        turnPhase: 'playing' as import('../types/game').TurnPhase,
         hasRolled: false,
         isRolling: false,
         pendingAction: null,
@@ -249,15 +249,15 @@ export const useGameStore = create<GameStore>()(
           // Stub - handle movement completion
         },
 
-        setTurnPhase: (phase: any) => {
+        setTurnPhase: (_phase: import('../types/game').TurnPhase) => {
           // Stub - old turn phase system
         },
 
-        setPendingAction: (action: any) => {
+        setPendingAction: (action: import('../types/game').PendingAction | null) => {
           set({ pendingAction: action })
         },
 
-        addLogEntry: (entry: any) => {
+        addLogEntry: (entry: string | { message: string }) => {
           if (typeof entry === 'string') {
             get().addGameLogEntry(entry)
           } else if (entry?.message) {
@@ -266,7 +266,6 @@ export const useGameStore = create<GameStore>()(
         },
 
         adjustTreasury: (amount: number) => {
-          const current = get().stateTreasury
           if (amount > 0) {
             get().addToStateTreasury(amount)
           } else {
@@ -274,19 +273,19 @@ export const useGameStore = create<GameStore>()(
           }
         },
 
-        createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => {
+        createDebt: (_debtorId: string, _creditorId: string, _amount: number, _reason: string) => {
           // Stub - debt system not implemented in new architecture yet
         },
 
-        submitBribe: (playerId: string, amount: number, reason: string) => {
+        submitBribe: (_playerId: string, _amount: number, _reason: string) => {
           // Stub - bribe system not implemented in new architecture yet
         },
 
-        answerCommunistTest: (question: any, answer: string, readerId: string) => {
+        answerCommunistTest: (_question: string, _answer: string, _readerId: string) => {
           // Stub - test answering not implemented in new architecture yet
         },
 
-        applyDirectiveEffect: (card: any, playerId: string) => {
+        applyDirectiveEffect: (_card: string, _playerId: string) => {
           // Stub - directive effects not implemented in new architecture yet
         },
 
@@ -295,16 +294,16 @@ export const useGameStore = create<GameStore>()(
           get().markIronCurtainDisappearUsed(playerId)
         },
 
-        leninSpeech: (playerId: string, applauders: string[]) => {
+        leninSpeech: (playerId: string, _applauders: string[]) => {
           // Delegate to piece ability marker
           get().markLeninSpeechUsed(playerId)
         },
 
-        submitConfession: (prisonerId: string, confession: string) => {
+        submitConfession: (_prisonerId: string, _confession: string) => {
           // Stub - confession system not implemented in new architecture yet
         },
 
-        reviewConfession: (confession: any, approved: boolean) => {
+        reviewConfession: (_confessionId: string, _approved: boolean) => {
           // Stub
         },
 
@@ -326,7 +325,7 @@ export const useGameStore = create<GameStore>()(
           const player = get().getPlayer(playerId)
           if (!player) return
 
-          const ranks: import('../../types/game').PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+          const ranks: import('../types/game').PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
           const currentIdx = ranks.indexOf(player.rank)
           if (currentIdx > 0) {
             get().setPlayerRank(playerId, ranks[currentIdx - 1])
@@ -337,22 +336,22 @@ export const useGameStore = create<GameStore>()(
           const player = get().getPlayer(playerId)
           if (!player) return
 
-          const ranks: import('../../types/game').PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+          const ranks: import('../types/game').PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
           const currentIdx = ranks.indexOf(player.rank)
           if (currentIdx < ranks.length - 1) {
             get().setPlayerRank(playerId, ranks[currentIdx + 1])
           }
         },
 
-        proposeTrade: (fromId: string, toId: string, offer: any) => {
+        proposeTrade: (_fromId: string, _toId: string, _offer: import('../types/game').TradeOffer) => {
           // Stub
         },
 
-        acceptTrade: (tradeId: string) => {
+        acceptTrade: (_tradeId: string) => {
           // Stub
         },
 
-        rejectTrade: (tradeId: string) => {
+        rejectTrade: (_tradeId: string) => {
           // Stub
         },
 
@@ -362,7 +361,7 @@ export const useGameStore = create<GameStore>()(
           state.addMoney(playerId, 50)
         },
 
-        respondToBribe: (bribeId: string, accepted: boolean) => {
+        respondToBribe: (_bribeId: string, _accepted: boolean) => {
           // Stub
         },
 
@@ -374,7 +373,7 @@ export const useGameStore = create<GameStore>()(
           // Stub
         },
 
-        grantHeroOfSovietUnion: (playerId: string) => {
+        grantHeroOfSovietUnion: (_playerId: string) => {
           // Stub
         },
 
