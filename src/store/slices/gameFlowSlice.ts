@@ -124,8 +124,11 @@ export const createGameFlowSlice: StateCreator<
   },
 
   incrementRound: () => {
-    set((state) => ({ currentRound: state.currentRound + 1 }))
-    get().addGameLogEntry(`═══ Round ${get().currentRound} begins ═══`)
+    const state = get()
+    const newRound = state.currentRound + 1
+    set({ currentRound: newRound })
+    const addLog = state.addGameLogEntry
+    if (addLog) addLog(`═══ Round ${newRound} begins ═══`)
   },
 
   setRound: (round) => {
@@ -145,7 +148,7 @@ export const createGameFlowSlice: StateCreator<
 
   addGameLogEntry: (message) => {
     const entry: LogEntry = {
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       message,
       timestamp: new Date(),
       type: 'system' as LogEntryType,
@@ -162,10 +165,13 @@ export const createGameFlowSlice: StateCreator<
 
   getCurrentPlayerId: () => {
     const state = get()
-    return state.turnOrder[state.currentTurnIndex]
+    const playerId = state.turnOrder[state.currentTurnIndex]
+    return playerId
   },
 
   isPlayersTurn: (playerId) => {
-    return get().getCurrentPlayerId() === playerId
+    const state = get()
+    const currentPlayerId = state.getCurrentPlayerId?.()
+    return currentPlayerId === playerId
   },
 })
