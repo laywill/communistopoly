@@ -32,6 +32,52 @@ import { createStoyService, type StoyService } from '../services/StoyService'
 // COMBINED STORE TYPE
 // ============================================
 
+// Compatibility interface for old API
+interface CompatibilityLayer {
+  // Old property names
+  currentPlayerIndex: number
+  roundNumber: number
+  dice: [number, number]
+  turnPhase: import('./slices/gameFlowSlice').GamePhase
+  hasRolled: boolean
+  isRolling: boolean
+  pendingAction: any
+  activeTradeOffers: any[]
+  gameEndCondition: any
+  showEndScreen: boolean
+  gameStatistics: any
+  endVoteInProgress: boolean
+  endVoteInitiator: string | null
+  endVotes: Record<string, boolean>
+  confessions: any[]
+  greatPurgeUsed: boolean
+  activeGreatPurge: any
+  activeFiveYearPlan: any
+  heroesOfSovietUnion: any[]
+  stalinPlayerId: string | null
+
+  // Old methods
+  initializePlayers: (playerSetups: Array<{ name: string, piece: any, isStalin: boolean }>) => void
+  startNewGame: () => void
+  updatePlayer: (playerId: string, updates: any) => void
+  setCurrentPlayer: (index: number) => void
+  rollDice: () => void
+  finishRolling: () => void
+  movePlayer: (playerId: string, spaces: number) => void
+  finishMoving: () => void
+  setTurnPhase: (phase: any) => void
+  setPendingAction: (action: any) => void
+  addLogEntry: (entry: any) => void
+  adjustTreasury: (amount: number) => void
+  createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => void
+  submitBribe: (playerId: string, amount: number, reason: string) => void
+  answerCommunistTest: (question: any, answer: string, readerId: string) => void
+  applyDirectiveEffect: (card: any, playerId: string) => void
+  ironCurtainDisappear: (playerId: string, propertyId: number) => void
+  leninSpeech: (playerId: string, applauders: string[]) => void
+  submitConfession: (prisonerId: string, confession: string) => void
+}
+
 type GameStore =
   // Slices
   & CardSlice
@@ -45,6 +91,8 @@ type GameStore =
   & PropertyService
   & TurnManager
   & StoyService
+  // Compatibility
+  & CompatibilityLayer
   // Reset
   & { resetGame: () => void }
 
@@ -124,6 +172,122 @@ export const useGameStore = create<GameStore>()(
         startNewGame: () => {
           get().resetGame()
           get().setGamePhase('setup')
+        },
+
+        // ─────────────────────────────────────────
+        // COMPATIBILITY LAYER (old API)
+        // ─────────────────────────────────────────
+
+        // Properties
+        get currentPlayerIndex() { return get().currentTurnIndex },
+        get roundNumber() { return get().currentRound },
+        get dice() { return get().diceRoll ?? [1, 1] },
+
+        // Stub properties
+        turnPhase: 'playing' as any,
+        hasRolled: false,
+        isRolling: false,
+        pendingAction: null,
+        activeTradeOffers: [],
+        gameEndCondition: null,
+        showEndScreen: false,
+        gameStatistics: {
+          gameStartTime: new Date(),
+          totalTurns: 0,
+          playerStats: {},
+          totalDenouncements: 0,
+          totalTribunals: 0,
+          totalGulagSentences: 0,
+          stateTreasuryPeak: 0,
+        },
+        endVoteInProgress: false,
+        endVoteInitiator: null,
+        endVotes: {},
+        confessions: [],
+        greatPurgeUsed: false,
+        activeGreatPurge: null,
+        activeFiveYearPlan: null,
+        heroesOfSovietUnion: [],
+        get stalinPlayerId() {
+          const stalin = get().getStalin()
+          return stalin?.id ?? null
+        },
+
+        // Methods (delegate to new architecture or stub)
+        setCurrentPlayer: (index: number) => {
+          set({ currentTurnIndex: index })
+        },
+
+        finishRolling: () => {
+          // Stub - handle dice roll completion
+        },
+
+        movePlayer: (playerId: string, spaces: number) => {
+          const state = get()
+          const player = state.getPlayer(playerId)
+          if (!player) return
+
+          const newPosition = (player.position + spaces) % 40
+          state.setPlayerPosition(playerId, newPosition)
+        },
+
+        finishMoving: () => {
+          // Stub - handle movement completion
+        },
+
+        setTurnPhase: (phase: any) => {
+          // Stub - old turn phase system
+        },
+
+        setPendingAction: (action: any) => {
+          set({ pendingAction: action })
+        },
+
+        addLogEntry: (entry: any) => {
+          if (typeof entry === 'string') {
+            get().addGameLogEntry(entry)
+          } else if (entry?.message) {
+            get().addGameLogEntry(entry.message)
+          }
+        },
+
+        adjustTreasury: (amount: number) => {
+          const current = get().stateTreasury
+          if (amount > 0) {
+            get().addToStateTreasury(amount)
+          } else {
+            get().removeFromStateTreasury(Math.abs(amount))
+          }
+        },
+
+        createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => {
+          // Stub - debt system not implemented in new architecture yet
+        },
+
+        submitBribe: (playerId: string, amount: number, reason: string) => {
+          // Stub - bribe system not implemented in new architecture yet
+        },
+
+        answerCommunistTest: (question: any, answer: string, readerId: string) => {
+          // Stub - test answering not implemented in new architecture yet
+        },
+
+        applyDirectiveEffect: (card: any, playerId: string) => {
+          // Stub - directive effects not implemented in new architecture yet
+        },
+
+        ironCurtainDisappear: (playerId: string, propertyId: number) => {
+          // Delegate to piece ability marker
+          get().markIronCurtainDisappearUsed(playerId)
+        },
+
+        leninSpeech: (playerId: string, applauders: string[]) => {
+          // Delegate to piece ability marker
+          get().markLeninSpeechUsed(playerId)
+        },
+
+        submitConfession: (prisonerId: string, confession: string) => {
+          // Stub - confession system not implemented in new architecture yet
         },
       }
 

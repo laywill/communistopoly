@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand'
-import type { GameState } from '../../types/game'
+import type { GameState, LogEntry, LogEntryType } from '../../types/game'
 
 // ============================================
 // TYPES
@@ -7,12 +7,8 @@ import type { GameState } from '../../types/game'
 
 export type GamePhase = 'setup' | 'playing' | 'paused' | 'ended'
 
-export interface GameLogEntry {
-  id: string
-  message: string
-  timestamp: string
-  round: number
-}
+// Re-export LogEntry type for convenience
+export type GameLogEntry = LogEntry
 
 // ============================================
 // STATE
@@ -25,7 +21,7 @@ export interface GameFlowSliceState {
   currentTurnIndex: number
   diceRoll: [number, number] | null
   doublesCount: number
-  gameLog: GameLogEntry[]
+  gameLog: LogEntry[]
   winner: string | null
   winReason: string | null
   stateTreasury: number
@@ -148,11 +144,11 @@ export const createGameFlowSlice: StateCreator<
   },
 
   addGameLogEntry: (message) => {
-    const entry: GameLogEntry = {
+    const entry: LogEntry = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       message,
-      timestamp: new Date().toISOString(),
-      round: get().currentRound,
+      timestamp: new Date(),
+      type: 'system' as LogEntryType,
     }
 
     set((state) => ({
