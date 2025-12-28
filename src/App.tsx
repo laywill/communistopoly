@@ -14,7 +14,7 @@ import './App.css';
 function App() {
   const [showRules, setShowRules] = useState(false);
   const gamePhase = useGameStore((state) => state.gamePhase);
-  const activeTribunal = useGameStore((state) => state.activeTribunal);
+  const activeTribunal = useGameStore((state) => state.currentTribunal);
 
   return (
     <div className="app">
