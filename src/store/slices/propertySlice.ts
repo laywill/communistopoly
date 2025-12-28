@@ -117,7 +117,7 @@ export const createPropertySlice: StateCreator<
     const player = state.players?.find((p: any) => p.id === playerId)
     const property = state.properties?.find((p: Property) => p.spaceId === spaceId)
 
-    if (!player || !property || property.custodianId !== playerId) return
+    if (!player || property?.custodianId !== playerId) return
 
     const space = getSpaceById(spaceId)
     const saleValue = Math.floor((space?.baseCost ?? 0) * 0.5)
@@ -204,7 +204,7 @@ export const createPropertySlice: StateCreator<
     const custodian = state.players?.find((p: any) => p.id === custodianId)
     const space = getSpaceById(spaceId)
 
-    if (!property || !custodian || !space || space.type !== 'property') return false
+    if (!property || !custodian || space?.type !== 'property') return false
     if (property.custodianId !== custodianId) return false
 
     // Check if can improve

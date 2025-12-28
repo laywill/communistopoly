@@ -133,7 +133,7 @@ export const createPlayerSlice: StateCreator<
     })
   },
 
-  setCurrentPlayer: (index) => set({ currentPlayerIndex: index }),
+  setCurrentPlayer: (index) => { set({ currentPlayerIndex: index }); },
 
   promotePlayer: (playerId) => {
     const state = get()
