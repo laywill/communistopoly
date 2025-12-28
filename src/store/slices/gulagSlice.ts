@@ -1,7 +1,7 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-empty-object-type */
+/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return */
 
 import { StateCreator } from 'zustand'
 import type { GameState, GulagReason } from '../../types/game'
@@ -10,15 +10,18 @@ import type { GameState, GulagReason } from '../../types/game'
 // STATE
 // ============================================
 
-// Note: Gulag state lives on Player objects, not separate state.
-// This slice provides actions to modify that state.
+// Note: Most Gulag state lives on Player objects.
+// This slice stores voucher and bribe state.
 
 export interface GulagSliceState {
-  // No separate state - Gulag info is on Player objects
-  // This interface exists for consistency with other slices
+  activeVouchers: import('../../types/game').VoucherAgreement[]
+  pendingBribes: import('../../types/game').BribeRequest[]
 }
 
-export const initialGulagState: GulagSliceState = {}
+export const initialGulagState: GulagSliceState = {
+  activeVouchers: [],
+  pendingBribes: [],
+}
 
 // ============================================
 // ACTIONS
