@@ -26,7 +26,7 @@ const PREDEFINED_CRIMES = [
 ];
 
 export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose }) => {
-  const { players, stalinPlayerId, initiateDenouncement, canPlayerDenounce } = useGameStore();
+  const { players, stalinPlayerId, denouncePlayer } = useGameStore();
   const accuser = players.find((p) => p.id === accuserId);
 
   const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);
@@ -35,8 +35,14 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
 
   if (!accuser) return null;
 
-  // Check if player can denounce this round
-  const denounceCheck = canPlayerDenounce(accuserId);
+  // Check denouncement limit for this round
+  const limit = accuser.rank === 'commissar' || accuser.rank === 'innerCircle' ? 2 : 1;
+  const denouncementsMade = accuser.denouncementsMadeThisRound ?? 0;
+  const canDenounceThisRound = denouncementsMade < limit;
+  const denounceCheck = {
+    canDenounce: canDenounceThisRound,
+    reason: canDenounceThisRound ? undefined : 'Denouncement limit reached for this round'
+  };
 
   // Get eligible targets (not in Gulag, not eliminated, not Stalin, not self)
   const eligibleTargets = players.filter(
@@ -71,7 +77,7 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
     if (!crime.trim()) return;
 
     // Initiate denouncement (this will create a tribunal)
-    initiateDenouncement(accuserId, selectedTargetId, crime);
+    denouncePlayer(accuserId, selectedTargetId, crime);
     onClose();
   };
 
