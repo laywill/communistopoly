@@ -12,8 +12,17 @@ import { getRandomDifficulty, getRandomQuestionByDifficulty, isAnswerCorrect, ty
 import {
   createCardSlice,
   initialCardState,
-  type CardSlice
+  type CardSlice,
+  createGulagSlice,
+  initialGulagState,
+  type GulagSlice
 } from './slices'
+
+// Import services
+import {
+  createGulagService,
+  type GulagService
+} from '../services'
 
 // Helper functions
 function getGulagReasonText (reason: GulagReason, justification?: string): string {
@@ -146,17 +155,12 @@ interface GameActions {
   endTurn: () => void
   setTurnPhase: (phase: TurnPhase) => void
 
-  // Gulag management
-  sendToGulag: (playerId: string, reason: GulagReason, justification?: string) => void
-  demotePlayer: (playerId: string) => void
-  handleGulagTurn: (playerId: string) => void
-  attemptGulagEscape: (playerId: string, method: GulagEscapeMethod, data?: Record<string, unknown>) => void
-  checkFor10TurnElimination: (playerId: string) => void
+  // Gulag management (moved to GulagService)
+  // sendToGulag, handleGulagTurn, attemptGulagEscape, checkFor10TurnElimination,
+  // createVoucher, checkVoucherConsequences, expireVouchers
 
-  // Voucher system
-  createVoucher: (prisonerId: string, voucherId: string) => void
-  checkVoucherConsequences: (playerId: string, reason: GulagReason) => void
-  expireVouchers: () => void
+  // Still in GameActions:
+  demotePlayer: (playerId: string) => void
 
   // Bribe system
   submitBribe: (playerId: string, amount: number, reason: string) => void
@@ -243,7 +247,7 @@ interface GameActions {
   isHeroOfSovietUnion: (playerId: string) => boolean
 }
 
-type GameStore = GameState & GameActions & CardSlice
+type GameStore = GameState & GameActions & CardSlice & GulagSlice & GulagService
 
 const initialState: GameState = {
   gamePhase: 'welcome',
@@ -309,17 +313,25 @@ export const useGameStore = create<GameStore>()(
       // STEP 1: Create slices
       // ----------------------------------------
       const cardSlice = createCardSlice(set, get, api)
+      const gulagSlice = createGulagSlice(set, get, api)
 
       // ----------------------------------------
-      // STEP 2: Compose complete store
+      // STEP 2: Create services (with getter to access store)
+      // ----------------------------------------
+      const gulagService = createGulagService(() => get())
+
+      // ----------------------------------------
+      // STEP 3: Compose complete store
       // ----------------------------------------
       return {
         ...initialState,
         ...cardSlice,
+        ...gulagSlice,
+        ...gulagService,
 
         setGamePhase: (phase) => set({ gamePhase: phase }),
 
-      startNewGame: () => set({ ...initialState, ...initialCardState, gamePhase: 'setup' }),
+      startNewGame: () => set({ ...initialState, ...initialCardState, ...initialGulagState, gamePhase: 'setup' }),
 
       resetGame: () => {
         // Clear localStorage save
@@ -329,6 +341,7 @@ export const useGameStore = create<GameStore>()(
         set({
           ...initialState,
           ...initialCardState,
+          ...initialGulagState,
           gamePhase: 'welcome'
         })
       },
