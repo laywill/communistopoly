@@ -3,8 +3,8 @@
 
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, PlayerStatistics, Confession } from '../types/game'
-import { BOARD_SPACES, getSpaceById } from '../data/spaces'
+import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, EliminationReason, GameEndCondition, PlayerStatistics, Confession } from '../types/game'
+import { getSpaceById } from '../data/spaces'
 import { type DirectiveCard } from '../data/partyDirectiveCards'
 import { getRandomDifficulty, getRandomQuestionByDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
 

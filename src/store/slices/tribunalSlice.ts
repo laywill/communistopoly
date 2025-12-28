@@ -282,8 +282,8 @@ export const createTribunalSlice: StateCreator<
     set((s) => {
       if (!s.currentTribunal) return s
       const currentIndex = phases.indexOf(s.currentTribunal.phase)
+      if (currentIndex >= phases.length - 1) return s // Already at last phase
       const nextPhase = phases[currentIndex + 1]
-      if (nextPhase === undefined) return s
 
       return {
         currentTribunal: { ...s.currentTribunal, phase: nextPhase },
@@ -403,7 +403,7 @@ export const createTribunalSlice: StateCreator<
 
         // If Gulag inform, add 2 turns to informer's sentence
         if (tribunal.isGulagInform === true && accuser) {
-          const currentTurns = accuser.gulagTurns ?? 0
+          const currentTurns = accuser.gulagTurns || 0
           updatePlayer?.(tribunal.accuserId, { gulagTurns: currentTurns + 2 })
           addLogEntry?.({
             type: 'tribunal',
