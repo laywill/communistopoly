@@ -2,11 +2,18 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, PlayerStatistics, Confession } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
-import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck, type DirectiveCard } from '../data/partyDirectiveCards'
-import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
+import { type DirectiveCard } from '../data/partyDirectiveCards'
+import { getRandomDifficulty, getRandomQuestionByDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
+
+// Import slices
+import {
+  createCardSlice,
+  initialCardState,
+  type CardSlice
+} from './slices'
 
 // Helper functions
 function getGulagReasonText (reason: GulagReason, justification?: string): string {
@@ -191,9 +198,7 @@ interface GameActions {
   handleStoyPassing: (playerId: string) => void
   handleStoyPilfer: (playerId: string, diceRoll: number) => void
 
-  // Card system
-  drawPartyDirective: () => DirectiveCard
-  drawCommunistTest: (difficulty?: 'easy' | 'medium' | 'hard' | 'trick') => TestQuestion
+  // Card system (drawing moved to CardSlice)
   applyDirectiveEffect: (card: DirectiveCard, playerId: string) => void
   answerCommunistTest: (question: TestQuestion, answer: string, readerId: string) => void
 
@@ -238,7 +243,7 @@ interface GameActions {
   isHeroOfSovietUnion: (playerId: string) => boolean
 }
 
-type GameStore = GameState & GameActions
+type GameStore = GameState & GameActions & CardSlice
 
 const initialState: GameState = {
   gamePhase: 'welcome',
@@ -258,9 +263,9 @@ const initialState: GameState = {
   activeVouchers: [],
   pendingBribes: [],
   activeTradeOffers: [],
-  partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
-  partyDirectiveDiscard: [],
-  communistTestUsedQuestions: new Set(),
+
+  // Card state (overridden by CardSlice, but needed for type compatibility)
+  ...initialCardState,
 
   // Game end tracking
   gameEndCondition: null,
@@ -299,12 +304,22 @@ const initialState: GameState = {
 
 export const useGameStore = create<GameStore>()(
   persist(
-    (set, get) => ({
-      ...initialState,
+    (set, get, api) => {
+      // ----------------------------------------
+      // STEP 1: Create slices
+      // ----------------------------------------
+      const cardSlice = createCardSlice(set, get, api)
 
-      setGamePhase: (phase) => set({ gamePhase: phase }),
+      // ----------------------------------------
+      // STEP 2: Compose complete store
+      // ----------------------------------------
+      return {
+        ...initialState,
+        ...cardSlice,
 
-      startNewGame: () => set({ ...initialState, gamePhase: 'setup' }),
+        setGamePhase: (phase) => set({ gamePhase: phase }),
+
+      startNewGame: () => set({ ...initialState, ...initialCardState, gamePhase: 'setup' }),
 
       resetGame: () => {
         // Clear localStorage save
@@ -313,6 +328,7 @@ export const useGameStore = create<GameStore>()(
         // Reset all state to initial values
         set({
           ...initialState,
+          ...initialCardState,
           gamePhase: 'welcome'
         })
       },
@@ -376,9 +392,7 @@ export const useGameStore = create<GameStore>()(
           stalinPlayerId: stalinPlayer?.id ?? null,
           currentPlayerIndex: 1, // Start with first non-Stalin player
           stateTreasury,
-          partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
-          partyDirectiveDiscard: [],
-          communistTestUsedQuestions: new Set(),
+          ...initialCardState, // Card state from card slice
           gameStatistics: {
             gameStartTime: new Date(),
             totalTurns: 0,
@@ -1815,51 +1829,8 @@ export const useGameStore = create<GameStore>()(
         set({ pendingAction: null })
       },
 
-      // Card system
-      drawPartyDirective: () => {
-        const state = get()
-        let { partyDirectiveDeck, partyDirectiveDiscard } = state
-
-        // If deck is empty, reshuffle discard pile
-        if (partyDirectiveDeck.length === 0) {
-          partyDirectiveDeck = [...partyDirectiveDiscard].sort(() => Math.random() - 0.5)
-          partyDirectiveDiscard = []
-          get().addLogEntry({
-            type: 'system',
-            message: 'Party Directive deck reshuffled'
-          })
-        }
-
-        const cardId = partyDirectiveDeck[0]
-        const card = PARTY_DIRECTIVE_CARDS.find(c => c.id === cardId)
-
-        if (card == null) {
-          // Fallback if card not found
-          return PARTY_DIRECTIVE_CARDS[0]
-        }
-
-        // Update deck state
-        set({
-          partyDirectiveDeck: partyDirectiveDeck.slice(1),
-          partyDirectiveDiscard: [...partyDirectiveDiscard, cardId]
-        })
-
-        return card
-      },
-
-      drawCommunistTest: (difficulty) => {
-        const state = get()
-        const selectedDifficulty = difficulty ?? getRandomDifficulty()
-        const question = getRandomQuestionByDifficulty(selectedDifficulty)
-
-        // Mark question as used
-        const newUsedQuestions = new Set(state.communistTestUsedQuestions)
-        newUsedQuestions.add(question.id)
-
-        set({ communistTestUsedQuestions: newUsedQuestions })
-
-        return question
-      },
+      // Card system - drawing functions moved to CardSlice
+      // applyDirectiveEffect and answerCommunistTest remain here (cross-cutting concerns)
 
       applyDirectiveEffect: (card, playerId) => {
         const state = get()
@@ -2792,10 +2763,18 @@ export const useGameStore = create<GameStore>()(
           message: `Round ${String(newRound)} begins`
         })
       }
-    }),
+      }
+    },
     {
       name: 'communistopoly-save',
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
+        // Card slice state
+        partyDirectiveDeck: state.partyDirectiveDeck,
+        partyDirectiveDiscard: state.partyDirectiveDiscard,
+        communistTestUsedQuestions: Array.from(state.communistTestUsedQuestions),
+
+        // Game state
         gamePhase: state.gamePhase,
         players: state.players,
         stalinPlayerId: state.stalinPlayerId,
@@ -2810,9 +2789,6 @@ export const useGameStore = create<GameStore>()(
         gameLog: state.gameLog,
         activeVouchers: state.activeVouchers,
         pendingBribes: state.pendingBribes,
-        partyDirectiveDeck: state.partyDirectiveDeck,
-        partyDirectiveDiscard: state.partyDirectiveDiscard,
-        communistTestUsedQuestions: state.communistTestUsedQuestions,
         gameEndCondition: state.gameEndCondition,
         winnerId: state.winnerId,
         showEndScreen: state.showEndScreen,
@@ -2827,7 +2803,15 @@ export const useGameStore = create<GameStore>()(
         activeGreatPurge: state.activeGreatPurge,
         activeFiveYearPlan: state.activeFiveYearPlan,
         heroesOfSovietUnion: state.heroesOfSovietUnion
-      })
+      }),
+      onRehydrateStorage: () => (state) => {
+        // Convert Set back from array after loading
+        if (state && Array.isArray(state.communistTestUsedQuestions)) {
+          state.communistTestUsedQuestions = new Set(
+            state.communistTestUsedQuestions as unknown as string[]
+          )
+        }
+      }
     }
   )
 )
