@@ -1,9 +1,22 @@
 import { StateCreator } from 'zustand'
-import type { PartyRank } from '../../types/game'
+import type { PartyRank, Player, LogEntry } from '../../types/game'
 
 // ============================================
 // TYPES
 // ============================================
+
+// Dependencies this slice needs from the store
+interface TribunalDependencies {
+  players: Player[]
+  currentTribunal: Tribunal | null
+  sendToGulag?: (playerId: string, reason: string, justification?: string) => void
+  releaseFromGulag?: (playerId: string, reason: string) => void
+  updatePlayer?: (playerId: string, updates: Partial<Player>) => void
+  addLogEntry?: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void
+  canDenounce: (accuserId: string, accusedId: string) => { allowed: boolean; reason?: string }
+  startTribunal: (config: { accuserId: string; accusedId: string; crime: string; isGulagInform?: boolean }) => void
+  getWitnessRequirement: (accusedRank: PartyRank) => number
+}
 
 export type TribunalVerdict = 'guilty' | 'innocent' | 'bothGuilty' | 'insufficientEvidence'
 
@@ -86,7 +99,7 @@ function demoteRank(rank: PartyRank): PartyRank {
 // ============================================
 
 export const createTribunalSlice: StateCreator<
-  any, // Will be composed with full GameStore type
+  TribunalDependencies & TribunalSlice,
   [],
   [],
   TribunalSlice
@@ -95,8 +108,8 @@ export const createTribunalSlice: StateCreator<
 
   canDenounce: (accuserId, accusedId) => {
     const state = get()
-    const accuser = state.players.find((p: any) => p.id === accuserId)
-    const accused = state.players.find((p: any) => p.id === accusedId)
+    const accuser = state.players.find((p) => p.id === accuserId)
+    const accused = state.players.find((p) => p.id === accusedId)
 
     if (!accuser || !accused) {
       return { allowed: false, reason: 'Invalid player' }
@@ -150,13 +163,13 @@ export const createTribunalSlice: StateCreator<
       const addLogEntry = (get()).addLogEntry
       addLogEntry?.({
         type: 'system',
-        message: `Denouncement blocked: ${canDo.reason}`
+        message: `Denouncement blocked: ${canDo.reason ?? 'Unknown reason'}`
       })
       return false
     }
 
-    const accuser = state.players.find((p: any) => p.id === accuserId)
-    const accused = state.players.find((p: any) => p.id === accusedId)
+    const accuser = state.players.find((p) => p.id === accuserId)
+    const accused = state.players.find((p) => p.id === accusedId)
 
     // Special case: Trying to denounce Stalin (though canDenounce should prevent this)
     if (accused?.isStalin) {
@@ -166,14 +179,14 @@ export const createTribunalSlice: StateCreator<
       sendToGulag?.(accuserId, 'stalinDecree', 'Attempted to denounce Comrade Stalin')
       addLogEntry?.({
         type: 'tribunal',
-        message: `${accuser?.name} foolishly attempted to denounce Stalin! Sent to Gulag.`
+        message: `${accuser?.name ?? 'Someone'} foolishly attempted to denounce Stalin! Sent to Gulag.`
       })
       return false
     }
 
     // Increment denouncement count
-    set((s: any) => ({
-      players: s.players.map((p: any) =>
+    set((s) => ({
+      players: s.players.map((p) =>
         p.id === accuserId
           ? { ...p, denouncementsMadeThisRound: (p.denouncementsMadeThisRound ?? 0) + 1 }
           : p
@@ -187,8 +200,8 @@ export const createTribunalSlice: StateCreator<
 
   startTribunal: (config) => {
     const state = get()
-    const accuser = state.players.find((p: any) => p.id === config.accuserId)
-    const accused = state.players.find((p: any) => p.id === config.accusedId)
+    const accuser = state.players.find((p) => p.id === config.accuserId)
+    const accused = state.players.find((p) => p.id === config.accusedId)
 
     set({
       currentTribunal: {
@@ -201,22 +214,22 @@ export const createTribunalSlice: StateCreator<
     const addLogEntry = (get()).addLogEntry
     addLogEntry?.({
       type: 'tribunal',
-      message: `⚖️ TRIBUNAL: ${accuser?.name} denounces ${accused?.name} for "${config.crime}"!`
+      message: `⚖️ TRIBUNAL: ${accuser?.name ?? 'Accuser'} denounces ${accused?.name ?? 'Accused'} for "${config.crime}"!`
     })
   },
 
   submitAccusation: (statement) => {
-    set((s: any) => ({
+    set((s) => ({
       currentTribunal: s.currentTribunal
-        ? { ...s.currentTribunal, accusationStatement: statement, phase: 'defense' }
+        ? { ...s.currentTribunal, accusationStatement: statement, phase: 'defense' as const }
         : null,
     }))
   },
 
   submitDefense: (statement) => {
-    set((s: any) => ({
+    set((s) => ({
       currentTribunal: s.currentTribunal
-        ? { ...s.currentTribunal, defenseStatement: statement, phase: 'witnesses' }
+        ? { ...s.currentTribunal, defenseStatement: statement, phase: 'witnesses' as const }
         : null,
     }))
   },
@@ -242,7 +255,7 @@ export const createTribunalSlice: StateCreator<
       return false
     }
 
-    set((s: any) => ({
+    set((s) => ({
       currentTribunal: s.currentTribunal
         ? {
             ...s.currentTribunal,
@@ -254,11 +267,11 @@ export const createTribunalSlice: StateCreator<
         : null,
     }))
 
-    const witness = state.players.find((p: any) => p.id === playerId)
+    const witness = state.players.find((p) => p.id === playerId)
     const addLogEntry = (get()).addLogEntry
     addLogEntry?.({
       type: 'tribunal',
-      message: `${witness?.name} stands as witness for the ${side}`
+      message: `${witness?.name ?? 'Someone'} stands as witness for the ${side}`
     })
     return true
   },
@@ -266,7 +279,7 @@ export const createTribunalSlice: StateCreator<
   advancePhase: () => {
     const phases: Tribunal['phase'][] = ['accusation', 'defense', 'witnesses', 'verdict']
 
-    set((s: any) => {
+    set((s) => {
       if (!s.currentTribunal) return s
       const currentIndex = phases.indexOf(s.currentTribunal.phase)
       const nextPhase = phases[currentIndex + 1]
@@ -303,7 +316,7 @@ export const createTribunalSlice: StateCreator<
     const tribunal = state.currentTribunal
     if (!tribunal) return false
 
-    const accused = state.players.find((p: any) => p.id === tribunal.accusedId)
+    const accused = state.players.find((p) => p.id === tribunal.accusedId)
     if (!accused) return false
 
     // If accused is under suspicion, no witnesses needed
@@ -316,7 +329,7 @@ export const createTribunalSlice: StateCreator<
     if (requirement === -1) {
       // Unanimous: all eligible players must be prosecution witnesses
       const eligiblePlayers = state.players.filter(
-        (p: any) =>
+        (p) =>
           !p.inGulag &&
           !p.isStalin &&
           !p.isEliminated &&
@@ -345,8 +358,8 @@ export const createTribunalSlice: StateCreator<
     const tribunal = state.currentTribunal
     if (!tribunal) return
 
-    const accuser = state.players.find((p: any) => p.id === tribunal.accuserId)
-    const accused = state.players.find((p: any) => p.id === tribunal.accusedId)
+    const accuser = state.players.find((p) => p.id === tribunal.accuserId)
+    const accused = state.players.find((p) => p.id === tribunal.accusedId)
 
     const addLogEntry = (get()).addLogEntry
     const sendToGulag = (get()).sendToGulag
@@ -373,7 +386,7 @@ export const createTribunalSlice: StateCreator<
         }
 
         // If this was a Gulag inform, release the informer
-        if (tribunal.isGulagInform) {
+        if (tribunal.isGulagInform === true) {
           releaseFromGulag?.(tribunal.accuserId, 'successful informing')
         }
         break
@@ -385,11 +398,11 @@ export const createTribunalSlice: StateCreator<
         updatePlayer?.(tribunal.accuserId, { rank: newRank })
         addLogEntry?.({
           type: 'tribunal',
-          message: `${accuser?.name} demoted to ${newRank} for wasting the Party's time!`
+          message: `${accuser?.name ?? 'Accuser'} demoted to ${newRank} for wasting the Party's time!`
         })
 
         // If Gulag inform, add 2 turns to informer's sentence
-        if (tribunal.isGulagInform && accuser) {
+        if (tribunal.isGulagInform === true && accuser) {
           const currentTurns = accuser.gulagTurns ?? 0
           updatePlayer?.(tribunal.accuserId, { gulagTurns: currentTurns + 2 })
           addLogEntry?.({
@@ -409,14 +422,14 @@ export const createTribunalSlice: StateCreator<
 
       case 'insufficientEvidence': {
         // No punishment, but accused is now "under suspicion"
-        set((s: any) => ({
-          players: s.players.map((p: any) =>
+        set((s) => ({
+          players: s.players.map((p) =>
             p.id === tribunal.accusedId ? { ...p, underSuspicion: true } : p
           ),
         }))
         addLogEntry?.({
           type: 'tribunal',
-          message: `${accused?.name} is now under suspicion (next denouncement needs no witnesses)`
+          message: `${accused?.name ?? 'Accused'} is now under suspicion (next denouncement needs no witnesses)`
         })
         break
       }
