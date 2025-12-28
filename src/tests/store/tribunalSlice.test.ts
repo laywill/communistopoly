@@ -24,7 +24,9 @@ describe('Tribunal Slice', () => {
   describe('Denouncement Eligibility', () => {
     it('should prevent denouncing yourself', () => {
       const players = setupTestPlayers()
-      const player = players.find(p => !p.isStalin)!
+      const player = players.find(p => !p.isStalin)
+      expect(player).toBeDefined()
+      if (!player) throw new Error('Player not found')
 
       const store = useGameStore.getState()
       const result = store.canDenounce(player.id, player.id)
@@ -35,8 +37,13 @@ describe('Tribunal Slice', () => {
 
     it('should prevent denouncing Stalin', () => {
       const players = setupTestPlayers()
-      const player = players.find(p => !p.isStalin)!
-      const stalin = players.find(p => p.isStalin)!
+      const player = players.find(p => !p.isStalin)
+      expect(player).toBeDefined()
+      if (!player) throw new Error('Player not found')
+
+      const stalin = players.find(p => p.isStalin)
+      expect(stalin).toBeDefined()
+      if (!stalin) throw new Error('Stalin not found')
 
       const store = useGameStore.getState()
       const result = store.canDenounce(player.id, stalin.id)
@@ -215,7 +222,9 @@ describe('Tribunal Slice', () => {
 
       // Check accused is in Gulag - get fresh state
       const updatedStore = useGameStore.getState()
-      const updatedPlayer2 = updatedStore.players.find(p => p.id === player2.id)!
+      const updatedPlayer2 = updatedStore.players.find(p => p.id === player2.id)
+      expect(updatedPlayer2).toBeDefined()
+      if (!updatedPlayer2) throw new Error('Player 2 not found')
       expect(updatedPlayer2.inGulag).toBe(true)
     })
 
@@ -238,7 +247,9 @@ describe('Tribunal Slice', () => {
 
       // Check accuser gets +100₽ - get fresh state
       const updatedStore = useGameStore.getState()
-      const updatedPlayer1 = updatedStore.players.find(p => p.id === player1.id)!
+      const updatedPlayer1 = updatedStore.players.find(p => p.id === player1.id)
+      expect(updatedPlayer1).toBeDefined()
+      if (!updatedPlayer1) throw new Error('Player 1 not found')
       expect(updatedPlayer1.rubles).toBe(initialRubles + 100)
     })
 
@@ -259,7 +270,9 @@ describe('Tribunal Slice', () => {
       store.renderVerdict('innocent')
 
       // Check accuser was demoted
-      const updatedPlayer1 = store.players.find(p => p.id === player1.id)!
+      const updatedPlayer1 = store.players.find(p => p.id === player1.id)
+      expect(updatedPlayer1).toBeDefined()
+      if (!updatedPlayer1) throw new Error('Player 1 not found')
       expect(updatedPlayer1.rank).toBe('proletariat')
     })
 
@@ -281,8 +294,14 @@ describe('Tribunal Slice', () => {
 
       // Check both are in Gulag - get fresh state
       const updatedStore = useGameStore.getState()
-      const updatedPlayer1 = updatedStore.players.find(p => p.id === player1.id)!
-      const updatedPlayer2 = updatedStore.players.find(p => p.id === player2.id)!
+      const updatedPlayer1 = updatedStore.players.find(p => p.id === player1.id)
+      expect(updatedPlayer1).toBeDefined()
+      if (!updatedPlayer1) throw new Error('Player 1 not found')
+
+      const updatedPlayer2 = updatedStore.players.find(p => p.id === player2.id)
+      expect(updatedPlayer2).toBeDefined()
+      if (!updatedPlayer2) throw new Error('Player 2 not found')
+
       expect(updatedPlayer1.inGulag).toBe(true)
       expect(updatedPlayer2.inGulag).toBe(true)
     })
@@ -305,7 +324,9 @@ describe('Tribunal Slice', () => {
 
       // Check accused is under suspicion - get fresh state
       const updatedStore = useGameStore.getState()
-      const updatedPlayer2 = updatedStore.players.find(p => p.id === player2.id)!
+      const updatedPlayer2 = updatedStore.players.find(p => p.id === player2.id)
+      expect(updatedPlayer2).toBeDefined()
+      if (!updatedPlayer2) throw new Error('Player 2 not found')
       expect(updatedPlayer2.underSuspicion).toBe(true)
     })
 
@@ -461,7 +482,9 @@ describe('Tribunal Slice', () => {
 
       // Check counter is incremented - get fresh state
       store = useGameStore.getState()
-      let updatedPlayer1 = store.players.find(p => p.id === player1.id)!
+      let updatedPlayer1 = store.players.find(p => p.id === player1.id)
+      expect(updatedPlayer1).toBeDefined()
+      if (!updatedPlayer1) throw new Error('Player 1 not found')
       expect(updatedPlayer1.denouncementsMadeThisRound).toBe(1)
 
       // Cancel tribunal
@@ -479,7 +502,9 @@ describe('Tribunal Slice', () => {
 
       // Check counter is reset - get fresh state
       store = useGameStore.getState()
-      updatedPlayer1 = store.players.find(p => p.id === player1.id)!
+      updatedPlayer1 = store.players.find(p => p.id === player1.id)
+      expect(updatedPlayer1).toBeDefined()
+      if (!updatedPlayer1) throw new Error('Player 1 not found')
       expect(updatedPlayer1.denouncementsMadeThisRound).toBe(0)
 
       // Should be able to denounce again
