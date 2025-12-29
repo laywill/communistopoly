@@ -232,10 +232,8 @@ export const createPlayerSlice: StateCreator<
       ),
     }))
 
-    const addLog = get().addGameLogEntry
-    const checkEnd = get().checkGameEnd
-    if (addLog) addLog(`☠️ ${player?.name ?? 'Unknown'} eliminated: ${reason}`)
-    if (checkEnd) checkEnd()
+    get().addGameLogEntry(`☠️ ${player?.name ?? 'Unknown'} eliminated: ${reason}`)
+    get().checkGameEnd()
   },
 
   // Piece ability markers
@@ -279,6 +277,7 @@ export const createPlayerSlice: StateCreator<
     }))
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setHammerAbilityLost: (_playerId, _lost) => {
     // Note: This field doesn't exist in the Player type
     // Keeping as no-op for compatibility
