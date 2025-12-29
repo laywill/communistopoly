@@ -4,6 +4,7 @@
 import type { StoreGetter, GameService, SlicesStore } from './types'
 import type { PartyRank } from '../types/game'
 import { BOARD_SPACES } from '../data/spaces'
+import { getCollectivizationMultiplier } from '../data/properties'
 
 export interface PropertyService extends GameService {
   /**
@@ -65,12 +66,6 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
       case 'innerCircle': return 0.50
       default: return 0
     }
-  }
-
-  const getCollectivizationBonus = (level: number): number => {
-    // Level 0: 0%, Level 1: +50%, Level 2: +100%, Level 3: +150%, Level 4: +200%, Level 5: +300%
-    const bonuses = [0, 0.50, 1.00, 1.50, 2.00, 3.00]
-    return bonuses[level] ?? 0
   }
 
   const getCollectivizationCost = (currentLevel: number): number => {
@@ -193,9 +188,9 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
         // Base quota
         quota = space.baseQuota ?? 0
 
-        // Add collectivization bonus
-        const bonus = getCollectivizationBonus(property.collectivizationLevel)
-        quota = Math.floor(quota * (1 + bonus))
+        // Apply collectivization multiplier (uses correct values from properties.ts)
+        const multiplier = getCollectivizationMultiplier(property.collectivizationLevel)
+        quota = Math.floor(quota * multiplier)
 
         // Sickle: Halved farm quotas
         if (landingPlayer?.piece === 'sickle' && space.group === 'collective') {

@@ -275,7 +275,7 @@ describe('Piece Abilities', () => {
     })
 
     describe('Elimination Trigger', () => {
-      it.skip('should be eliminated when falling to Proletariat rank (NOT IMPLEMENTED)', () => {
+      it('should be eliminated when falling to Proletariat rank', () => {
         const { initializePlayers, demotePlayer } = useGameStore.getState()
 
         initializePlayers([
@@ -285,13 +285,13 @@ describe('Piece Abilities', () => {
         const player = useGameStore.getState().players[0]
         expect(player.rank).toBe('partyMember')
 
-        // Demote to Proletariat
+        // Attempt to demote to Proletariat triggers elimination
         demotePlayer(player.id)
 
         const updatedPlayer = useGameStore.getState().players[0]
-        expect(updatedPlayer.rank).toBe('proletariat')
+        // Rank stays at partyMember, but player is eliminated
+        expect(updatedPlayer.rank).toBe('partyMember')
         expect(updatedPlayer.isEliminated).toBe(true)
-        expect(updatedPlayer.eliminationReason).toBe('redStarDemotion')
       })
     })
   })

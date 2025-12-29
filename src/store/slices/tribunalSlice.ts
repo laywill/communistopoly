@@ -98,6 +98,19 @@ function demoteRank(rank: PartyRank): PartyRank {
 // SLICE CREATOR
 // ============================================
 
+// TODO: ARCHITECTURAL REFACTOR NEEDED
+// This slice violates the architecture by calling cross-slice methods.
+// The following methods should be moved to a new TribunalService:
+//   - denouncePlayer (calls sendToGulag, addLogEntry)
+//   - renderVerdict (calls sendToGulag, updatePlayer, releaseFromGulag, addLogEntry)
+//
+// TribunalSlice should contain ONLY:
+//   - State management (currentTribunal)
+//   - Pure mutations (startTribunal, addWitness, advancePhase, etc.)
+//   - Queries (canDenounce, hasEnoughWitnesses, etc.)
+//
+// See architectural review for details.
+
 export const createTribunalSlice: StateCreator<
   TribunalDependencies & TribunalSlice,
   [],
