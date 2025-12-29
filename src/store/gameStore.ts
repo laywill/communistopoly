@@ -278,18 +278,22 @@ export const useGameStore = create<GameStore>()(
           }
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         createDebt: (_debtorId: string, _creditorId: string, _amount: number, _reason: string) => {
           // Stub - debt system not implemented in new architecture yet
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         submitBribe: (_playerId: string, _amount: number, _reason: string) => {
           // Stub - bribe system not implemented in new architecture yet
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         answerCommunistTest: (_question: string, _answer: string, _readerId: string) => {
           // Stub - test answering not implemented in new architecture yet
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         applyDirectiveEffect: (_card: string, _playerId: string) => {
           // Stub - directive effects not implemented in new architecture yet
         },
@@ -304,10 +308,12 @@ export const useGameStore = create<GameStore>()(
           get().markLeninSpeechUsed(playerId)
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         submitConfession: (_prisonerId: string, _confession: string) => {
           // Stub - confession system not implemented in new architecture yet
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         reviewConfession: (_confessionId: string, _approved: boolean) => {
           // Stub
         },
@@ -349,14 +355,17 @@ export const useGameStore = create<GameStore>()(
           }
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         proposeTrade: (_fromId: string, _toId: string, _offer: import('../types/game').TradeOffer) => {
           // Stub
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         acceptTrade: (_tradeId: string) => {
           // Stub
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         rejectTrade: (_tradeId: string) => {
           // Stub
         },
@@ -367,6 +376,7 @@ export const useGameStore = create<GameStore>()(
           state.addMoney(playerId, 50)
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         respondToBribe: (_bribeId: string, _accepted: boolean) => {
           // Stub
         },
@@ -379,6 +389,7 @@ export const useGameStore = create<GameStore>()(
           // Stub
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         grantHeroOfSovietUnion: (_playerId: string) => {
           // Stub
         },
