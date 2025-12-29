@@ -137,6 +137,10 @@ export const createGameFlowSlice: StateCreator<
         gameLog: [entry, ...(state.gameLog)].slice(0, MAX_LOG_ENTRIES),
       }
     })
+
+    // Reset denouncement counters for all players at start of new round
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    get().resetDenouncementCounts()
   },
 
   setRound: (round) => {
