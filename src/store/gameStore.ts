@@ -390,24 +390,40 @@ export const useGameStore = create<GameStore>()(
           // Stub
         },
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        sickleHarvest: (playerId: string, _propertyId: number) => {
-          // TODO: IMPLEMENT - Sickle Harvest Ability
-          // Allows Sickle to steal one property worth less than 150₽
-          //
-          // Implementation Requirements:
+        sickleHarvest: (playerId: string, propertyId: number) => {
+          const state = get()
+          const player = state.players.find((p) => p.id === playerId)
+          const property = state.getProperty(propertyId)
+          const space = BOARD_SPACES.find((s) => s.id === propertyId)
+
           // 1. Validate player has sickle piece
+          if (player?.piece !== 'sickle') return
+
           // 2. Validate hasUsedSickleHarvest is false (once per game)
+          if (player.hasUsedSickleHarvest) return
+
           // 3. Validate propertyId exists and has a custodian (not State-owned)
-          // 4. Validate property baseCost < 150₽ (check BOARD_SPACES[propertyId].baseCost)
-          // 5. Validate property has no collectivization (collectivizationLevel === 0)
-          // 6. Transfer property: setCustodian(propertyId, playerId)
-          // 7. Mark ability as used: markSickleHarvestUsed(playerId)
-          // 8. Add log entry: "${player.name} harvested ${property.name} from ${victim.name}"
-          //
-          // Tests: pieceAbilities.test.ts:163 (1 test)
-          // Note: This is essentially property theft, limited to cheap properties
-          get().markSickleHarvestUsed(playerId)
+          if (!property || !space) return
+          if (property.custodianId === null) return
+
+          // 4. Validate property baseCost < 150₽
+          if (space.type !== 'property' || !space.baseCost || space.baseCost >= 150) return
+
+          // 5. Validate property has no collectivization
+          if (property.collectivizationLevel !== 0) return
+
+          // Find the victim (current owner)
+          const victim = state.players.find((p) => p.id === property.custodianId)
+          if (!victim) return
+
+          // 6. Transfer property to Sickle player
+          state.setCustodian(propertyId, playerId)
+
+          // 7. Mark ability as used
+          state.markSickleHarvestUsed(playerId)
+
+          // 8. Add log entry
+          state.addLogEntry(`${player.name} harvested ${space.name} from ${victim.name}`)
         },
 
         handleStoyPilfer: (playerId: string, success: boolean) => {

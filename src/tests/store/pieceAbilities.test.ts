@@ -160,7 +160,7 @@ describe('Piece Abilities', () => {
     })
 
     describe('Harvest Ability', () => {
-      it.skip('should allow stealing property worth less than 150₽ (NOT IMPLEMENTED)', () => {
+      it('should allow stealing property worth less than 150₽', () => {
         const { initializePlayers, sickleHarvest } = useGameStore.getState()
 
         initializePlayers([
