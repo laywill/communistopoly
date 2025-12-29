@@ -58,7 +58,6 @@ export function createTurnManager (get: StoreGetter<SlicesStore>): TurnManager {
       const setGamePhase = state.setGamePhase
       const setRound = state.setRound
       const setDoublesCount = state.setDoublesCount
-      const shuffleDeck = state.shufflePartyDirectiveDeck
       const addLog = state.addGameLogEntry
 
       if (setTurnOrder) setTurnOrder(turnOrder)
@@ -67,8 +66,7 @@ export function createTurnManager (get: StoreGetter<SlicesStore>): TurnManager {
       if (setRound) setRound(1)
       if (setDoublesCount) setDoublesCount(0)
 
-      // Shuffle card decks
-      if (shuffleDeck) shuffleDeck()
+      // Note: Card deck shuffling should be done by CardSlice or a separate service
 
       if (addLog) addLog('☭ The game begins! Glory to the Motherland! ☭')
     },
@@ -91,27 +89,32 @@ export function createTurnManager (get: StoreGetter<SlicesStore>): TurnManager {
 
         // Three doubles = Gulag
         if (state.doublesCount >= 3) {
-          const getCurrent = state.getCurrentPlayer
-          const currentPlayer = getCurrent ? getCurrent() :
-            state.players.find(p => p.id === state.turnOrder[state.currentTurnIndex])
+          // Get current player using slice methods
+          const getCurrentId = state.getCurrentPlayerId
+          const getPlayer = state.getPlayer
+          const currentPlayerId = getCurrentId ? getCurrentId() : undefined
+          const currentPlayer = currentPlayerId && getPlayer ? getPlayer(currentPlayerId) : undefined
 
           if (currentPlayer) {
             const addLog = state.addGameLogEntry
-            const sendToGulag = state.sendToGulag
+            const setPlayerInGulag = state.setPlayerInGulag
+            const setGulagTurns = state.setGulagTurns
             const setDoublesCount = state.setDoublesCount
             const playerName = currentPlayer.name
+
             if (addLog) {
               addLog(
                 `${playerName} rolled three doubles! Counter-revolutionary dice manipulation!`
               )
             }
-            if (sendToGulag) {
-              sendToGulag(
-                currentPlayer.id,
-                'threeDoubles',
-                'Rolled three consecutive doubles'
-              )
+
+            // Send to Gulag using slice methods directly (business logic moved here)
+            if (setPlayerInGulag && setGulagTurns) {
+              setPlayerInGulag(currentPlayer.id, true)
+              setGulagTurns(currentPlayer.id, 0)
+              if (addLog) addLog(`${playerName} sent to Gulag: Rolled three consecutive doubles`)
             }
+
             if (setDoublesCount) setDoublesCount(0)
           }
         }
@@ -142,9 +145,7 @@ export function createTurnManager (get: StoreGetter<SlicesStore>): TurnManager {
       const playerName = player.name
       if (addLog) addLog(`──── ${playerName}'s Turn ────`)
 
-      // Check voucher liability countdown
-      const checkVoucher = state.checkVoucherLiability
-      if (checkVoucher) checkVoucher(player.id)
+      // Note: Voucher liability check should be handled by GulagService or UI layer
 
       // Increment Gulag turn if imprisoned
       if (player.inGulag) {
