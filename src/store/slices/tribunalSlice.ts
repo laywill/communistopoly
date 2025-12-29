@@ -9,9 +9,6 @@ import type { PartyRank, Player, LogEntry } from '../../types/game'
 interface TribunalDependencies {
   players: Player[]
   currentTribunal: Tribunal | null
-  sendToGulag?: (playerId: string, reason: string, justification?: string) => void
-  releaseFromGulag?: (playerId: string, reason: string) => void
-  updatePlayer?: (playerId: string, updates: Partial<Player>) => void
   addLogEntry?: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void
   canDenounce: (accuserId: string, accusedId: string) => { allowed: boolean; reason?: string }
   startTribunal: (config: { accuserId: string; accusedId: string; crime: string; isGulagInform?: boolean }) => void
@@ -51,11 +48,13 @@ export const initialTribunalState: TribunalSliceState = {
 // ============================================
 
 export interface TribunalSliceActions {
-  // Denouncement
+  // Queries
   canDenounce: (accuserId: string, accusedId: string) => { allowed: boolean; reason?: string }
-  denouncePlayer: (accuserId: string, accusedId: string, crime: string) => boolean
+  getWitnessRequirement: (accusedRank: PartyRank) => number
+  hasEnoughWitnesses: () => boolean
+  isPlayerInvolvedInTribunal: (playerId: string) => boolean
 
-  // Tribunal flow
+  // Pure mutations
   startTribunal: (config: {
     accuserId: string
     accusedId: string
@@ -67,14 +66,9 @@ export interface TribunalSliceActions {
   addWitness: (playerId: string, side: 'prosecution' | 'defense') => boolean
   advancePhase: () => void
   cancelTribunal: () => void
-
-  // Verdict
-  renderVerdict: (verdict: TribunalVerdict) => void
-
-  // Queries
-  getWitnessRequirement: (accusedRank: PartyRank) => number
-  hasEnoughWitnesses: () => boolean
-  isPlayerInvolvedInTribunal: (playerId: string) => boolean
+  clearTribunal: () => void
+  markUnderSuspicion: (playerId: string) => void
+  incrementDenouncementCount: (playerId: string) => void
 }
 
 export type TribunalSlice = TribunalSliceState & TribunalSliceActions
@@ -89,27 +83,16 @@ function getRankIndex(rank: PartyRank): number {
   return RANK_ORDER.indexOf(rank)
 }
 
-function demoteRank(rank: PartyRank): PartyRank {
-  const index = getRankIndex(rank)
-  return RANK_ORDER[Math.max(0, index - 1)]
-}
-
 // ============================================
 // SLICE CREATOR
 // ============================================
 
-// TODO: ARCHITECTURAL REFACTOR NEEDED
-// This slice violates the architecture by calling cross-slice methods.
-// The following methods should be moved to a new TribunalService:
-//   - denouncePlayer (calls sendToGulag, addLogEntry)
-//   - renderVerdict (calls sendToGulag, updatePlayer, releaseFromGulag, addLogEntry)
-//
-// TribunalSlice should contain ONLY:
+// ARCHITECTURE: Pure Slice
+// This slice now contains ONLY:
 //   - State management (currentTribunal)
-//   - Pure mutations (startTribunal, addWitness, advancePhase, etc.)
-//   - Queries (canDenounce, hasEnoughWitnesses, etc.)
-//
-// See architectural review for details.
+//   - Pure mutations (state changes only)
+//   - Queries (read-only checks)
+// Business logic moved to TribunalService (see src/services/TribunalService.ts)
 
 export const createTribunalSlice: StateCreator<
   TribunalDependencies & TribunalSlice,
@@ -167,48 +150,14 @@ export const createTribunalSlice: StateCreator<
     return { allowed: true }
   },
 
-  denouncePlayer: (accuserId, accusedId, crime) => {
-    const state = get()
-
-    // Check eligibility using the current implementation
-    const canDo = get().canDenounce(accuserId, accusedId)
-    if (!canDo.allowed) {
-      const addLogEntry = (get()).addLogEntry
-      addLogEntry?.({
-        type: 'system',
-        message: `Denouncement blocked: ${canDo.reason ?? 'Unknown reason'}`
-      })
-      return false
-    }
-
-    const accuser = state.players.find((p) => p.id === accuserId)
-    const accused = state.players.find((p) => p.id === accusedId)
-
-    // Special case: Trying to denounce Stalin (though canDenounce should prevent this)
-    if (accused?.isStalin) {
-      // Send the accuser to Gulag for this counter-revolutionary act
-      const sendToGulag = (get()).sendToGulag
-      const addLogEntry = (get()).addLogEntry
-      sendToGulag?.(accuserId, 'stalinDecree', 'Attempted to denounce Comrade Stalin')
-      addLogEntry?.({
-        type: 'tribunal',
-        message: `${accuser?.name ?? 'Someone'} foolishly attempted to denounce Stalin! Sent to Gulag.`
-      })
-      return false
-    }
-
-    // Increment denouncement count
+  incrementDenouncementCount: (playerId) => {
     set((s) => ({
       players: s.players.map((p) =>
-        p.id === accuserId
+        p.id === playerId
           ? { ...p, denouncementsMadeThisRound: (p.denouncementsMadeThisRound || 0) + 1 }
           : p
       ),
     }))
-
-    // Start tribunal - call it through get() to ensure it's the composed method
-    get().startTribunal({ accuserId, accusedId, crime })
-    return true
   },
 
   startTribunal: (config) => {
@@ -313,6 +262,18 @@ export const createTribunalSlice: StateCreator<
     })
   },
 
+  clearTribunal: () => {
+    set({ currentTribunal: null })
+  },
+
+  markUnderSuspicion: (playerId) => {
+    set((s) => ({
+      players: s.players.map((p) =>
+        p.id === playerId ? { ...p, underSuspicion: true } : p
+      ),
+    }))
+  },
+
   getWitnessRequirement: (accusedRank) => {
     switch (accusedRank) {
       case 'commissar':
@@ -366,89 +327,4 @@ export const createTribunalSlice: StateCreator<
     )
   },
 
-  renderVerdict: (verdict) => {
-    const state = get()
-    const tribunal = state.currentTribunal
-    if (!tribunal) return
-
-    const accuser = state.players.find((p) => p.id === tribunal.accuserId)
-    const accused = state.players.find((p) => p.id === tribunal.accusedId)
-
-    const addLogEntry = (get()).addLogEntry
-    const sendToGulag = (get()).sendToGulag
-    const updatePlayer = (get()).updatePlayer
-    const releaseFromGulag = (get()).releaseFromGulag
-
-    addLogEntry?.({
-      type: 'tribunal',
-      message: `⚖️ VERDICT: ${verdict.toUpperCase()}`
-    })
-
-    switch (verdict) {
-      case 'guilty': {
-        // Accused → Gulag
-        sendToGulag?.(tribunal.accusedId, 'denouncementGuilty', tribunal.crime)
-
-        // Accuser gets 100₽ informant bonus
-        if (accuser) {
-          updatePlayer?.(tribunal.accuserId, { rubles: accuser.rubles + 100 })
-          addLogEntry?.({
-            type: 'tribunal',
-            message: `${accuser.name} receives 100₽ informant bonus`
-          })
-        }
-
-        // If this was a Gulag inform, release the informer
-        if (tribunal.isGulagInform === true) {
-          releaseFromGulag?.(tribunal.accuserId, 'successful informing')
-        }
-        break
-      }
-
-      case 'innocent': {
-        // Accuser loses rank for wasting Party's time
-        const newRank = demoteRank(accuser?.rank ?? 'proletariat')
-        updatePlayer?.(tribunal.accuserId, { rank: newRank })
-        addLogEntry?.({
-          type: 'tribunal',
-          message: `${accuser?.name ?? 'Accuser'} demoted to ${newRank} for wasting the Party's time!`
-        })
-
-        // If Gulag inform, add 2 turns to informer's sentence
-        if (tribunal.isGulagInform === true && accuser) {
-          const currentTurns = accuser.gulagTurns || 0
-          updatePlayer?.(tribunal.accuserId, { gulagTurns: currentTurns + 2 })
-          addLogEntry?.({
-            type: 'tribunal',
-            message: `${accuser.name}'s Gulag sentence extended by 2 turns for false accusation`
-          })
-        }
-        break
-      }
-
-      case 'bothGuilty': {
-        // Both go to Gulag
-        sendToGulag?.(tribunal.accuserId, 'denouncementGuilty', 'Both found guilty')
-        sendToGulag?.(tribunal.accusedId, 'denouncementGuilty', tribunal.crime)
-        break
-      }
-
-      case 'insufficientEvidence': {
-        // No punishment, but accused is now "under suspicion"
-        set((s) => ({
-          players: s.players.map((p) =>
-            p.id === tribunal.accusedId ? { ...p, underSuspicion: true } : p
-          ),
-        }))
-        addLogEntry?.({
-          type: 'tribunal',
-          message: `${accused?.name ?? 'Accused'} is now under suspicion (next denouncement needs no witnesses)`
-        })
-        break
-      }
-    }
-
-    // Clear the tribunal
-    set({ currentTribunal: null })
-  },
 })

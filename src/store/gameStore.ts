@@ -27,6 +27,7 @@ import { createGulagService, type GulagService } from '../services/GulagService'
 import { createPropertyService, type PropertyService } from '../services/PropertyService'
 import { createTurnManager, type TurnManager } from '../services/TurnManager'
 import { createStoyService, type StoyService } from '../services/StoyService'
+import { createTribunalService, type TribunalService } from '../services/TribunalService'
 
 // ============================================
 // COMBINED STORE TYPE
@@ -108,6 +109,7 @@ type GameStore =
   & PropertyService
   & TurnManager
   & StoyService
+  & TribunalService
   // Compatibility
   & CompatibilityLayer
   // Reset
@@ -141,6 +143,7 @@ export const useGameStore = create<GameStore>()(
       const propertyService = createPropertyService(() => get() as unknown as SlicesStore)
       const turnManager = createTurnManager(() => get() as unknown as SlicesStore)
       const stoyService = createStoyService(() => get() as unknown as SlicesStore)
+      const tribunalService = createTribunalService(() => get() as unknown as SlicesStore)
 
       // ─────────────────────────────────────────
       // STEP 3: Compose complete store
@@ -151,6 +154,7 @@ export const useGameStore = create<GameStore>()(
         ...propertyService,
         ...turnManager,
         ...stoyService,
+        ...tribunalService,
 
         resetGame: () => {
           set({
