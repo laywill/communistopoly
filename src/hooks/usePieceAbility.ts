@@ -138,8 +138,7 @@ export function usePieceAbility (player: Player | undefined) {
   }
 
   const useVodka3Dice = () => {
-    const rollVodka = gameStore.rollVodka3Dice
-    if (rollVodka) rollVodka()
+    gameStore.rollVodka3Dice()
   }
 
   return {
