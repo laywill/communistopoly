@@ -244,6 +244,21 @@ export const useGameStore = create<GameStore>()(
         },
 
         movePlayer: (playerId: string, spaces: number) => {
+          // TODO: INTEGRATE WITH STOYSERVICE - Hammer Stoy Bonus
+          // This stub moves the player but doesn't trigger Stoy events
+          //
+          // Implementation Requirements:
+          // 1. Detect if player passes position 0 (Stoy)
+          //    - oldPosition = player.position
+          //    - newPosition = (oldPosition + spaces) % 40
+          //    - If oldPosition + spaces >= 40, player passed Stoy
+          // 2. Call StoyService.handlePassingStoy(playerId) if passing
+          // 3. Update position: state.setPlayerPosition(playerId, newPosition)
+          // 4. Detect lap completion for Tank requisition reset
+          //    - If passed position 0, reset tankRequisitionUsedThisLap
+          //
+          // Tests: pieceAbilities.test.ts:34 (Hammer Stoy Bonus)
+          // Related: Tank lap tracking for requisition ability
           const state = get()
           const player = state.getPlayer(playerId)
           if (!player) return
@@ -303,13 +318,39 @@ export const useGameStore = create<GameStore>()(
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         ironCurtainDisappear: (playerId: string, _propertyId: number) => {
-          // Delegate to piece ability marker
+          // TODO: IMPLEMENT - Iron Curtain Disappear Property
+          // This ability allows Iron Curtain to return one property to State ownership
+          //
+          // Implementation Requirements:
+          // 1. Validate player has Iron Curtain piece
+          // 2. Validate hasUsedIronCurtainDisappear is false (once per game)
+          // 3. Validate propertyId exists and has a custodian
+          // 4. Transfer property: setCustodian(propertyId, null)
+          // 5. Mark ability as used: markIronCurtainDisappearUsed(playerId)
+          // 6. Add log entry: "${player.name} used Iron Curtain to disappear ${property.name}"
+          //
+          // Tests: pieceAbilities.test.ts:569 (1 test)
+          // Related: Tank cannot control disappeared properties
           get().markIronCurtainDisappearUsed(playerId)
         },
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         leninSpeech: (playerId: string, _applauders: string[]) => {
-          // Delegate to piece ability marker
+          // TODO: IMPLEMENT - Lenin Statue Inspiring Speech
+          // Allows Lenin to give inspiring speech and receive donations from players
+          //
+          // Implementation Requirements:
+          // 1. Validate player has leninStatue piece
+          // 2. Validate hasUsedLeninSpeech is false (once per game)
+          // 3. For each applauder in applauders array:
+          //    - Validate applauder has >= 100₽
+          //    - removeMoney(applauderId, 100)
+          //    - addMoney(playerId, 100)
+          // 4. Mark ability as used: markLeninSpeechUsed(playerId)
+          // 5. Add log entry: "${lenin.name} gave inspiring speech, received ${amount}₽ from ${count} comrades"
+          //
+          // Tests: pieceAbilities.test.ts:715 (1 test)
+          // Note: Players choose whether to applaud (UI decision)
           get().markLeninSpeechUsed(playerId)
         },
 
@@ -325,6 +366,21 @@ export const useGameStore = create<GameStore>()(
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         sickleHarvest: (playerId: string, _propertyId: number) => {
+          // TODO: IMPLEMENT - Sickle Harvest Ability
+          // Allows Sickle to steal one property worth less than 150₽
+          //
+          // Implementation Requirements:
+          // 1. Validate player has sickle piece
+          // 2. Validate hasUsedSickleHarvest is false (once per game)
+          // 3. Validate propertyId exists and has a custodian (not State-owned)
+          // 4. Validate property baseCost < 150₽ (check BOARD_SPACES[propertyId].baseCost)
+          // 5. Validate property has no collectivization (collectivizationLevel === 0)
+          // 6. Transfer property: setCustodian(propertyId, playerId)
+          // 7. Mark ability as used: markSickleHarvestUsed(playerId)
+          // 8. Add log entry: "${player.name} harvested ${property.name} from ${victim.name}"
+          //
+          // Tests: pieceAbilities.test.ts:163 (1 test)
+          // Note: This is essentially property theft, limited to cheap properties
           get().markSickleHarvestUsed(playerId)
         },
 
@@ -378,6 +434,25 @@ export const useGameStore = create<GameStore>()(
         },
 
         tankRequisition: (playerId: string, targetId: string) => {
+          // TODO: IMPLEMENT PROPERLY - Tank Requisition Ability
+          // Currently missing: per-lap limit, partial payment handling
+          //
+          // Implementation Requirements:
+          // 1. Validate player has tank piece
+          // 2. Validate tankRequisitionUsedThisLap is false (resets each lap)
+          // 3. Calculate amount to take: min(50, target.rubles)
+          // 4. If target has < 50₽, only take what they have
+          // 5. removeMoney(targetId, amount)
+          // 6. addMoney(playerId, amount)
+          // 7. Update player: { tankRequisitionUsedThisLap: true }
+          // 8. Add log entry: "${tank.name} requisitioned ${amount}₽ from ${target.name}"
+          //
+          // Lap Reset Logic:
+          // - In movePlayer/setPlayerPosition, detect when position wraps (>= 40)
+          // - Reset tankRequisitionUsedThisLap to false
+          // - Increment lapsCompleted
+          //
+          // Tests: pieceAbilities.test.ts:301, 325, 354, 380 (4 tests)
           const state = get()
           state.removeMoney(targetId, 50)
           state.addMoney(playerId, 50)
