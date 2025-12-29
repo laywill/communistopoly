@@ -254,6 +254,7 @@ export const useGameStore = create<GameStore>()(
           // Stub - handle movement completion
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         setTurnPhase: (_phase: import('../types/game').TurnPhase) => {
           // Stub - old turn phase system
         },
@@ -265,7 +266,7 @@ export const useGameStore = create<GameStore>()(
         addLogEntry: (entry: string | { message: string }) => {
           if (typeof entry === 'string') {
             get().addGameLogEntry(entry)
-          } else if (entry?.message) {
+          } else if (entry.message) {
             get().addGameLogEntry(entry.message)
           }
         },
@@ -298,11 +299,13 @@ export const useGameStore = create<GameStore>()(
           // Stub - directive effects not implemented in new architecture yet
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         ironCurtainDisappear: (playerId: string, _propertyId: number) => {
           // Delegate to piece ability marker
           get().markIronCurtainDisappearUsed(playerId)
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         leninSpeech: (playerId: string, _applauders: string[]) => {
           // Delegate to piece ability marker
           get().markLeninSpeechUsed(playerId)
@@ -318,6 +321,7 @@ export const useGameStore = create<GameStore>()(
           // Stub
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         sickleHarvest: (playerId: string, _propertyId: number) => {
           get().markSickleHarvestUsed(playerId)
         },
@@ -328,8 +332,9 @@ export const useGameStore = create<GameStore>()(
             state.addMoney(playerId, 100)
             state.removeFromStateTreasury(100)
           } else {
-            const sendToGulag = state.sendToGulag
-            if (sendToGulag) sendToGulag(playerId, 'stalinDecree', 'Caught pilfering')
+            // Note: sendToGulag is a service method, but this is a compatibility layer
+            // In new code, use slice methods directly: setPlayerInGulag + setGulagTurns
+            state.sendToGulag(playerId, 'stalinDecree', 'Caught pilfering')
           }
         },
 
