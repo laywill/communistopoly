@@ -90,7 +90,7 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
     return names[level] ?? 'Unknown'
   }
 
-  return {
+  const service: PropertyService = {
     name: 'PropertyService',
 
     canPurchase: (playerId, spaceId) => {
@@ -144,7 +144,7 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
       if (!player || !space) return false
 
       // Check eligibility
-      const canBuy = get().canPurchase?.(playerId, spaceId) ?? { allowed: true }
+      const canBuy = service.canPurchase(playerId, spaceId)
       if (!canBuy.allowed) {
         const reason = canBuy.reason ?? 'Unknown reason';
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/restrict-template-expressions
@@ -240,7 +240,7 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
       if (!property.custodianId) return true // No one to pay
       if (property.custodianId === payerId) return true // Own property
 
-      const quota = get().calculateQuota?.(spaceId, payerId, diceRoll) ?? 0
+      const quota = service.calculateQuota(spaceId, payerId, diceRoll)
       if (quota === 0) return true
 
       const custodian = state.players.find((p) => p.id === property.custodianId)
@@ -424,7 +424,7 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
       if (!property || !space || !toPlayer) return false
 
       // Check if recipient can own this property
-      const canOwn = get().canPurchase?.(toPlayerId, spaceId) ?? { allowed: true }
+      const canOwn = service.canPurchase(toPlayerId, spaceId)
       if (!canOwn.allowed) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (state as any).addLogEntry?.({ type: 'system', message: `Transfer blocked: ${String(canOwn.reason ?? 'Unknown reason')}` });
@@ -444,4 +444,6 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
       return true
     },
   }
+
+  return service
 }

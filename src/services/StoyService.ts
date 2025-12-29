@@ -95,13 +95,20 @@ export function createStoyService (get: StoreGetter<SlicesStore>): StoyService {
       } else {
         // Failed: Caught, sent to Gulag
         const addLog = state.addGameLogEntry
-        const sendToGulag = state.sendToGulag
         if (addLog) {
           addLog(
             `${playerName} was caught attempting to pilfer! (rolled ${String(pilferRoll)})`
           )
         }
-        if (sendToGulag) sendToGulag(playerId, 'stalinDecree', 'Caught pilfering at STOY checkpoint')
+
+        // Send to Gulag using slice methods directly
+        const setPlayerInGulag = state.setPlayerInGulag
+        const setGulagTurns = state.setGulagTurns
+        if (setPlayerInGulag && setGulagTurns) {
+          setPlayerInGulag(playerId, true)
+          setGulagTurns(playerId, 0)
+          if (addLog) addLog(`${playerName} sent to Gulag: Caught pilfering at STOY checkpoint`)
+        }
         return { success: false, amount: 0 }
       }
     },
