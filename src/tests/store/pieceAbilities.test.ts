@@ -566,7 +566,7 @@ describe('Piece Abilities', () => {
     })
 
     describe('Disappear Property', () => {
-      it.skip('should return one property to State ownership (NOT IMPLEMENTED)', () => {
+      it('should return one property to State ownership', () => {
         const { initializePlayers, ironCurtainDisappear } = useGameStore.getState()
 
         initializePlayers([
@@ -804,7 +804,7 @@ describe('Piece Abilities', () => {
       expect(quota3).toBe(100)
     })
 
-    it.skip('should allow Iron Curtain to disappear property from any player (NOT IMPLEMENTED)', () => {
+    it('should allow Iron Curtain to disappear property from any player', () => {
       const { initializePlayers, ironCurtainDisappear } = useGameStore.getState()
 
       initializePlayers([

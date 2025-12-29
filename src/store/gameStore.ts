@@ -22,6 +22,9 @@ import {
 import { createPlayerSlice, initialPlayerState, type PlayerSlice } from './slices/playerSlice'
 import { createGameFlowSlice, initialGameFlowState, type GameFlowSlice } from './slices/gameFlowSlice'
 
+// Data
+import { BOARD_SPACES } from '../data/spaces'
+
 // Services
 import { createGulagService, type GulagService } from '../services/GulagService'
 import { createPropertyService, type PropertyService } from '../services/PropertyService'
@@ -316,22 +319,30 @@ export const useGameStore = create<GameStore>()(
           // Stub - directive effects not implemented in new architecture yet
         },
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        ironCurtainDisappear: (playerId: string, _propertyId: number) => {
-          // TODO: IMPLEMENT - Iron Curtain Disappear Property
-          // This ability allows Iron Curtain to return one property to State ownership
-          //
-          // Implementation Requirements:
+        ironCurtainDisappear: (playerId: string, propertyId: number) => {
+          const state = get()
+          const player = state.players.find((p) => p.id === playerId)
+          const property = state.getProperty(propertyId)
+          const space = BOARD_SPACES.find((s) => s.id === propertyId)
+
           // 1. Validate player has Iron Curtain piece
+          if (player?.piece !== 'ironCurtain') return
+
           // 2. Validate hasUsedIronCurtainDisappear is false (once per game)
+          if (player.hasUsedIronCurtainDisappear) return
+
           // 3. Validate propertyId exists and has a custodian
-          // 4. Transfer property: setCustodian(propertyId, null)
-          // 5. Mark ability as used: markIronCurtainDisappearUsed(playerId)
-          // 6. Add log entry: "${player.name} used Iron Curtain to disappear ${property.name}"
-          //
-          // Tests: pieceAbilities.test.ts:569 (1 test)
-          // Related: Tank cannot control disappeared properties
-          get().markIronCurtainDisappearUsed(playerId)
+          if (!property || !space) return
+          if (property.custodianId === null) return
+
+          // 4. Transfer property to State: setCustodian(propertyId, null)
+          state.setCustodian(propertyId, null)
+
+          // 5. Mark ability as used
+          state.markIronCurtainDisappearUsed(playerId)
+
+          // 6. Add log entry
+          state.addLogEntry(`${player.name} used Iron Curtain to disappear ${space.name}`)
         },
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
