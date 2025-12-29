@@ -20,7 +20,7 @@ export function createStoyService (get: StoreGetter<SlicesStore>): StoyService {
 
     handlePassingStoy: (playerId) => {
       const state = get()
-      const player = state.getPlayer?.(playerId)
+      const player = state.getPlayer(playerId)
 
       if (!player) return
 
@@ -33,33 +33,26 @@ export function createStoyService (get: StoreGetter<SlicesStore>): StoyService {
       }
 
       // Deduct tax
-      const removeMoney = state.removeMoney
-      const addToTreasury = state.addToStateTreasury
-      const addMoney = state.addMoney
-      const addLog = state.addGameLogEntry
-
-      if (removeMoney) removeMoney(playerId, tax)
-      if (addToTreasury) addToTreasury(tax)
+      state.removeMoney(playerId, tax)
+      state.addToStateTreasury(tax)
 
       // Add Hammer bonus
-      if (bonus > 0 && addMoney) {
-        addMoney(playerId, bonus)
+      if (bonus > 0) {
+        state.addMoney(playerId, bonus)
       }
 
       const netCost = tax - bonus
       const playerName = player.name
-      if (addLog) {
-        addLog(
-          bonus > 0
-            ? `${playerName} passed STOY: paid ${String(tax)}₽ tax, received ${String(bonus)}₽ bonus (net: ${String(netCost)}₽)`
-            : `${playerName} passed STOY: paid ${String(tax)}₽ travel tax`
-        )
-      }
+      state.addGameLogEntry(
+        bonus > 0
+          ? `${playerName} passed STOY: paid ${String(tax)}₽ tax, received ${String(bonus)}₽ bonus (net: ${String(netCost)}₽)`
+          : `${playerName} passed STOY: paid ${String(tax)}₽ travel tax`
+      )
     },
 
     handleLandingOnStoy: (playerId) => {
       const state = get()
-      const player = state.getPlayer?.(playerId)
+      const player = state.getPlayer(playerId)
 
       if (!player) return { success: false, amount: 0 }
 
@@ -70,45 +63,30 @@ export function createStoyService (get: StoreGetter<SlicesStore>): StoyService {
       if (pilferRoll >= 4) {
         // Success: Steal 100₽ from State
         const amount = 100
-        const removeFromTreasury = state.removeFromStateTreasury
-        const stolen = removeFromTreasury ? removeFromTreasury(amount) : false
+        const stolen = state.removeFromStateTreasury(amount)
 
         if (stolen) {
-          const addMoney = state.addMoney
-          const addLog = state.addGameLogEntry
-          if (addMoney) addMoney(playerId, amount)
-          if (addLog) {
-            addLog(
-              `${playerName} landed on STOY and successfully pilfered ${String(amount)}₽! (rolled ${String(pilferRoll)})`
-            )
-          }
+          state.addMoney(playerId, amount)
+          state.addGameLogEntry(
+            `${playerName} landed on STOY and successfully pilfered ${String(amount)}₽! (rolled ${String(pilferRoll)})`
+          )
           return { success: true, amount }
         } else {
-          const addLog = state.addGameLogEntry
-          if (addLog) {
-            addLog(
-              `${playerName} tried to pilfer but the State coffers are empty!`
-            )
-          }
+          state.addGameLogEntry(
+            `${playerName} tried to pilfer but the State coffers are empty!`
+          )
           return { success: false, amount: 0 }
         }
       } else {
         // Failed: Caught, sent to Gulag
-        const addLog = state.addGameLogEntry
-        if (addLog) {
-          addLog(
-            `${playerName} was caught attempting to pilfer! (rolled ${String(pilferRoll)})`
-          )
-        }
+        state.addGameLogEntry(
+          `${playerName} was caught attempting to pilfer! (rolled ${String(pilferRoll)})`
+        )
 
         // Send to Gulag using slice methods directly
-        const setPlayerInGulag = state.setPlayerInGulag
-        const setGulagTurns = state.setGulagTurns
-        if (setPlayerInGulag && setGulagTurns) {
-          setPlayerInGulag(playerId, true)
-          setGulagTurns(playerId, 0)
-          if (addLog) addLog(`${playerName} sent to Gulag: Caught pilfering at STOY checkpoint`)
-        }
+        state.setPlayerInGulag(playerId, true)
+        state.setGulagTurns(playerId, 0)
+        state.addGameLogEntry(`${playerName} sent to Gulag: Caught pilfering at STOY checkpoint`)
         return { success: false, amount: 0 }
       }
     },
