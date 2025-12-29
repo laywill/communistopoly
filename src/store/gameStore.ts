@@ -345,24 +345,39 @@ export const useGameStore = create<GameStore>()(
           state.addLogEntry(`${player.name} used Iron Curtain to disappear ${space.name}`)
         },
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        leninSpeech: (playerId: string, _applauders: string[]) => {
-          // TODO: IMPLEMENT - Lenin Statue Inspiring Speech
-          // Allows Lenin to give inspiring speech and receive donations from players
-          //
-          // Implementation Requirements:
+        leninSpeech: (playerId: string, applauders: string[]) => {
+          const state = get()
+          const player = state.players.find((p) => p.id === playerId)
+
           // 1. Validate player has leninStatue piece
+          if (player?.piece !== 'statueOfLenin') return
+
           // 2. Validate hasUsedLeninSpeech is false (once per game)
-          // 3. For each applauder in applauders array:
-          //    - Validate applauder has >= 100₽
-          //    - removeMoney(applauderId, 100)
-          //    - addMoney(playerId, 100)
-          // 4. Mark ability as used: markLeninSpeechUsed(playerId)
-          // 5. Add log entry: "${lenin.name} gave inspiring speech, received ${amount}₽ from ${count} comrades"
-          //
-          // Tests: pieceAbilities.test.ts:715 (1 test)
-          // Note: Players choose whether to applaud (UI decision)
-          get().markLeninSpeechUsed(playerId)
+          if (player.hasUsedLeninSpeech) return
+
+          // 3. For each applauder in applauders array
+          let totalReceived = 0
+          let successfulApplauders = 0
+
+          for (const applauderId of applauders) {
+            const applauder = state.players.find((p) => p.id === applauderId)
+            if (!applauder) continue
+
+            // Validate applauder has >= 100₽
+            if (applauder.rubles >= 100) {
+              // Transfer money: remove from applauder, add to Lenin
+              state.removeMoney(applauderId, 100)
+              state.addMoney(playerId, 100)
+              totalReceived += 100
+              successfulApplauders++
+            }
+          }
+
+          // 4. Mark ability as used
+          state.markLeninSpeechUsed(playerId)
+
+          // 5. Add log entry
+          state.addLogEntry(`${player.name} gave inspiring speech, received ${String(totalReceived)}₽ from ${String(successfulApplauders)} comrades`)
         },
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

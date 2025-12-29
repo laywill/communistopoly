@@ -712,7 +712,7 @@ describe('Piece Abilities', () => {
     })
 
     describe('Inspiring Speech', () => {
-      it.skip('should receive 100₽ from each applauding player (NOT IMPLEMENTED)', () => {
+      it('should receive 100₽ from each applauding player', () => {
         const { initializePlayers, leninSpeech } = useGameStore.getState()
 
         initializePlayers([
