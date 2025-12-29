@@ -298,7 +298,7 @@ describe('Piece Abilities', () => {
 
   describe('Tank Piece', () => {
     describe('Requisition', () => {
-      it.skip('should allow taking 50₽ from any player (NOT IMPLEMENTED)', () => {
+      it('should allow taking 50₽ from any player', () => {
         const { initializePlayers, tankRequisition } = useGameStore.getState()
 
         initializePlayers([
@@ -322,7 +322,7 @@ describe('Piece Abilities', () => {
         expect(updatedTank.tankRequisitionUsedThisLap).toBe(true)
       })
 
-      it.skip('should only take available money if target has less than 50₽ (NOT IMPLEMENTED)', () => {
+      it('should only take available money if target has less than 50₽', () => {
         const { initializePlayers, tankRequisition } = useGameStore.getState()
 
         initializePlayers([
@@ -351,7 +351,7 @@ describe('Piece Abilities', () => {
         expect(updatedTarget.rubles).toBe(0)
       })
 
-      it.skip('should only allow once per lap around the board (NOT IMPLEMENTED)', () => {
+      it('should only allow once per lap around the board', () => {
         const { initializePlayers, tankRequisition } = useGameStore.getState()
 
         initializePlayers([
@@ -377,7 +377,7 @@ describe('Piece Abilities', () => {
         expect(targetAfterSecond).toBe(targetRublesAfterFirst)
       })
 
-      it.skip('should reset requisition after completing a lap (NOT IMPLEMENTED)', () => {
+      it('should reset requisition after completing a lap', () => {
         const { initializePlayers, tankRequisition, movePlayer } = useGameStore.getState()
 
         initializePlayers([

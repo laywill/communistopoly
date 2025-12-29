@@ -480,28 +480,31 @@ export const useGameStore = create<GameStore>()(
         },
 
         tankRequisition: (playerId: string, targetId: string) => {
-          // TODO: IMPLEMENT PROPERLY - Tank Requisition Ability
-          // Currently missing: per-lap limit, partial payment handling
-          //
-          // Implementation Requirements:
-          // 1. Validate player has tank piece
-          // 2. Validate tankRequisitionUsedThisLap is false (resets each lap)
-          // 3. Calculate amount to take: min(50, target.rubles)
-          // 4. If target has < 50₽, only take what they have
-          // 5. removeMoney(targetId, amount)
-          // 6. addMoney(playerId, amount)
-          // 7. Update player: { tankRequisitionUsedThisLap: true }
-          // 8. Add log entry: "${tank.name} requisitioned ${amount}₽ from ${target.name}"
-          //
-          // Lap Reset Logic:
-          // - In movePlayer/setPlayerPosition, detect when position wraps (>= 40)
-          // - Reset tankRequisitionUsedThisLap to false
-          // - Increment lapsCompleted
-          //
-          // Tests: pieceAbilities.test.ts:301, 325, 354, 380 (4 tests)
           const state = get()
-          state.removeMoney(targetId, 50)
-          state.addMoney(playerId, 50)
+          const player = state.getPlayer(playerId)
+          const target = state.getPlayer(targetId)
+
+          // 1. Validate player has tank piece
+          if (player?.piece !== 'tank') return
+
+          // 2. Validate tankRequisitionUsedThisLap is false (resets each lap)
+          if (player.tankRequisitionUsedThisLap) return
+
+          // 3. Validate target exists
+          if (!target) return
+
+          // 4. Calculate amount to take: min(50, target.rubles)
+          const amount = Math.min(50, target.rubles)
+
+          // 5. Transfer money
+          state.removeMoney(targetId, amount)
+          state.addMoney(playerId, amount)
+
+          // 6. Mark requisition as used this lap
+          state.updatePlayer(playerId, { tankRequisitionUsedThisLap: true })
+
+          // 7. Add log entry
+          state.addLogEntry(`${player.name} requisitioned ${String(amount)}₽ from ${target.name}`)
         },
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
