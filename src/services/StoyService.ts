@@ -1,5 +1,4 @@
-import type { StoreGetter, GameService } from './types'
-import type { GameState } from '../types/game'
+import type { StoreGetter, GameService, SlicesStore } from './types'
 
 const TRAVEL_TAX = 200
 
@@ -15,7 +14,7 @@ export interface StoyService extends GameService {
   handleLandingOnStoy: (playerId: string) => { success: boolean, amount: number }
 }
 
-export function createStoyService (get: StoreGetter<GameState>): StoyService {
+export function createStoyService (get: StoreGetter<SlicesStore>): StoyService {
   return {
     name: 'StoyService',
 

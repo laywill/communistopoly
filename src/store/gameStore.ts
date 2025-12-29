@@ -32,6 +32,9 @@ import { createStoyService, type StoyService } from '../services/StoyService'
 // COMBINED STORE TYPE
 // ============================================
 
+import type { AllSlices } from './slices'
+type SlicesStore = AllSlices
+
 // Compatibility interface for old API
 interface CompatibilityLayer {
   // Old property names
@@ -132,11 +135,12 @@ export const useGameStore = create<GameStore>()(
       // ─────────────────────────────────────────
       // STEP 2: Create services with store getter
       // Services get live access to complete store
+      // Cast to SlicesStore to provide proper typing without circular dependency
       // ─────────────────────────────────────────
-      const gulagService = createGulagService(() => get())
-      const propertyService = createPropertyService(() => get())
-      const turnManager = createTurnManager(() => get())
-      const stoyService = createStoyService(() => get())
+      const gulagService = createGulagService(() => get() as unknown as SlicesStore)
+      const propertyService = createPropertyService(() => get() as unknown as SlicesStore)
+      const turnManager = createTurnManager(() => get() as unknown as SlicesStore)
+      const stoyService = createStoyService(() => get() as unknown as SlicesStore)
 
       // ─────────────────────────────────────────
       // STEP 3: Compose complete store

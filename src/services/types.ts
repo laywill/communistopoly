@@ -22,3 +22,10 @@ export type StoreGetter<T> = () => T
 export type ServiceFactory<TStore, TService> = (
   get: StoreGetter<TStore>
 ) => TService
+
+/**
+ * Type representing all slices combined (without services).
+ * This type is used by services to access slice methods without circular dependency.
+ * It includes all slice state and actions that services need to access.
+ */
+export type SlicesStore = import('../store/slices').AllSlices

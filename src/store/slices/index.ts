@@ -14,9 +14,17 @@ export type { PropertySlice, PropertySliceState, PropertySliceActions } from './
 export { createTribunalSlice, initialTribunalState } from './tribunalSlice'
 export type { TribunalSlice, TribunalSliceState, TribunalSliceActions, Tribunal, TribunalVerdict } from './tribunalSlice'
 
-// Combined slice type (will grow as slices are added)
+export { createPlayerSlice, initialPlayerState } from './playerSlice'
+export type { PlayerSlice, PlayerSliceState, PlayerSliceActions } from './playerSlice'
+
+export { createGameFlowSlice, initialGameFlowState } from './gameFlowSlice'
+export type { GameFlowSlice, GameFlowSliceState, GameFlowSliceActions } from './gameFlowSlice'
+
+// Combined slice type (all slices together)
 import type { CardSlice } from './cardSlice'
 import type { GulagSlice } from './gulagSlice'
 import type { PropertySlice } from './propertySlice'
 import type { TribunalSlice } from './tribunalSlice'
-export type AllSlices = CardSlice & GulagSlice & PropertySlice & TribunalSlice
+import type { PlayerSlice } from './playerSlice'
+import type { GameFlowSlice } from './gameFlowSlice'
+export type AllSlices = CardSlice & GulagSlice & PropertySlice & TribunalSlice & PlayerSlice & GameFlowSlice

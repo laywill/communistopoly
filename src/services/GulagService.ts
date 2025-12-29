@@ -1,10 +1,8 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
-
-import type { StoreGetter, GameService } from './types'
-import type { GameState, GulagReason } from '../types/game'
+import type { StoreGetter, GameService, SlicesStore } from './types'
+import type { GulagReason } from '../types/game'
 
 const GULAG_POSITION = 10
 const REHABILITATION_COST = 500
@@ -109,7 +107,7 @@ function shouldTriggerVoucherConsequence(reason: GulagReason): boolean {
   return triggeringReasons.includes(reason)
 }
 
-export function createGulagService(get: StoreGetter<GameState>): GulagService {
+export function createGulagService(get: StoreGetter<SlicesStore>): GulagService {
   return {
     name: 'GulagService',
 

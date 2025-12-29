@@ -1,10 +1,8 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-/* eslint-disable @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
-
-import type { StoreGetter, GameService } from './types'
-import type { GameState, PartyRank } from '../types/game'
+import type { StoreGetter, GameService, SlicesStore } from './types'
+import type { PartyRank } from '../types/game'
 import { BOARD_SPACES } from '../data/spaces'
 
 export interface PropertyService extends GameService {
@@ -58,7 +56,7 @@ export interface PropertyService extends GameService {
   transferProperty: (spaceId: number, toPlayerId: string) => boolean
 }
 
-export function createPropertyService(get: StoreGetter<GameState>): PropertyService {
+export function createPropertyService(get: StoreGetter<SlicesStore>): PropertyService {
 
   const getRankDiscount = (rank: PartyRank): number => {
     switch (rank) {

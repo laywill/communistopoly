@@ -1,5 +1,4 @@
-import type { StoreGetter, GameService } from './types'
-import type { GameState } from '../types/game'
+import type { StoreGetter, GameService, SlicesStore } from './types'
 
 export interface TurnManager extends GameService {
   /**
@@ -35,10 +34,10 @@ export interface TurnManager extends GameService {
   /**
    * Get current player
    */
-  getCurrentPlayer: () => ReturnType<GameState['getPlayer']>
+  getCurrentPlayer: () => ReturnType<SlicesStore['getPlayer']>
 }
 
-export function createTurnManager (get: StoreGetter<GameState>): TurnManager {
+export function createTurnManager (get: StoreGetter<SlicesStore>): TurnManager {
   return {
     name: 'TurnManager',
 
