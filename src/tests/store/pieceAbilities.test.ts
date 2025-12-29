@@ -31,7 +31,7 @@ describe('Piece Abilities', () => {
 
   describe('Hammer Piece', () => {
     describe('Stoy Bonus', () => {
-      it.skip('should give +50₽ when passing Stoy (NOT IMPLEMENTED)', () => {
+      it('should give +50₽ when passing Stoy', () => {
         const { initializePlayers, movePlayer } = useGameStore.getState()
 
         initializePlayers([

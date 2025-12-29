@@ -247,27 +247,31 @@ export const useGameStore = create<GameStore>()(
         },
 
         movePlayer: (playerId: string, spaces: number) => {
-          // TODO: INTEGRATE WITH STOYSERVICE - Hammer Stoy Bonus
-          // This stub moves the player but doesn't trigger Stoy events
-          //
-          // Implementation Requirements:
-          // 1. Detect if player passes position 0 (Stoy)
-          //    - oldPosition = player.position
-          //    - newPosition = (oldPosition + spaces) % 40
-          //    - If oldPosition + spaces >= 40, player passed Stoy
-          // 2. Call StoyService.handlePassingStoy(playerId) if passing
-          // 3. Update position: state.setPlayerPosition(playerId, newPosition)
-          // 4. Detect lap completion for Tank requisition reset
-          //    - If passed position 0, reset tankRequisitionUsedThisLap
-          //
-          // Tests: pieceAbilities.test.ts:34 (Hammer Stoy Bonus)
-          // Related: Tank lap tracking for requisition ability
           const state = get()
           const player = state.getPlayer(playerId)
           if (!player) return
 
-          const newPosition = (player.position + spaces) % 40
+          const oldPosition = player.position
+          const newPosition = (oldPosition + spaces) % 40
+
+          // 1. Detect if player passes position 0 (Stoy)
+          const passedStoy = oldPosition + spaces >= 40
+
+          // 2. Call StoyService if passing Stoy
+          if (passedStoy) {
+            state.handlePassingStoy(playerId)
+          }
+
+          // 3. Update player position
           state.setPlayerPosition(playerId, newPosition)
+
+          // 4. Reset Tank requisition and increment lap counter if passed Stoy
+          if (passedStoy && player.piece === 'tank') {
+            state.updatePlayer(playerId, {
+              tankRequisitionUsedThisLap: false,
+              lapsCompleted: player.lapsCompleted + 1
+            })
+          }
         },
 
         finishMoving: () => {
