@@ -124,11 +124,19 @@ export const createGameFlowSlice: StateCreator<
   },
 
   incrementRound: () => {
-    const state = get()
-    const newRound = state.currentRound + 1
-    set({ currentRound: newRound })
-    const addLog = state.addGameLogEntry
-    if (addLog) addLog(`═══ Round ${newRound} begins ═══`)
+    set((state: GameFlowSliceState) => {
+      const newRound = (state.currentRound) + 1
+      const entry: LogEntry = {
+        id: `${String(Date.now())}-${Math.random().toString(36).substring(2, 11)}`,
+        message: `═══ Round ${String(newRound)} begins ═══`,
+        timestamp: new Date(),
+        type: 'system' as LogEntryType,
+      }
+      return {
+        currentRound: newRound,
+        gameLog: [entry, ...(state.gameLog)].slice(0, MAX_LOG_ENTRIES),
+      }
+    })
   },
 
   setRound: (round) => {
@@ -148,7 +156,7 @@ export const createGameFlowSlice: StateCreator<
 
   addGameLogEntry: (message) => {
     const entry: LogEntry = {
-      id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+      id: `${String(Date.now())}-${Math.random().toString(36).substring(2, 11)}`,
       message,
       timestamp: new Date(),
       type: 'system' as LogEntryType,
@@ -164,14 +172,13 @@ export const createGameFlowSlice: StateCreator<
   },
 
   getCurrentPlayerId: () => {
-    const state = get()
-    const playerId = state.turnOrder[state.currentTurnIndex]
-    return playerId
+    const state = get() as GameFlowSliceState
+    return state.turnOrder[state.currentTurnIndex] ?? undefined
   },
 
   isPlayersTurn: (playerId) => {
-    const state = get()
-    const currentPlayerId = state.getCurrentPlayerId?.()
+    const state = get() as GameFlowSliceState
+    const currentPlayerId = state.turnOrder[state.currentTurnIndex]
     return currentPlayerId === playerId
   },
 })

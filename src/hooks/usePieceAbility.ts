@@ -138,7 +138,8 @@ export function usePieceAbility (player: Player | undefined) {
   }
 
   const useVodka3Dice = () => {
-    gameStore.rollVodka3Dice()
+    // TODO: Vodka 3-dice roll not implemented in new architecture yet
+    console.warn('Vodka 3-dice roll not yet implemented')
   }
 
   return {

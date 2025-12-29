@@ -182,9 +182,7 @@ export const useGameStore = create<GameStore>()(
             }
           })
 
-          // Initialize properties
-          const initProps = state.initializeProperties
-          if (initProps) initProps()
+          // Properties are already initialized in initialPropertyState
         },
 
         // Old API: startNewGame

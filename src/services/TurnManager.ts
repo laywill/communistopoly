@@ -196,14 +196,13 @@ export function createTurnManager (get: StoreGetter<SlicesStore>): TurnManager {
       const activePlayers = state.getActivePlayers()
       const activeCount = activePlayers.length
 
-      if (activeCount === 1) {
+      if (activeCount === 1 && activePlayers[0]) {
         // Survivor victory
+         
         const winner = activePlayers[0]
-        if (winner) {
-          const winnerName = winner.name
-          state.setWinner(winner.id, 'Last survivor - there are no winners, only survivors')
-          state.addGameLogEntry(`🏆 ${winnerName} has survived! Glory to the survivor!`)
-        }
+        const winnerName = winner.name
+        state.setWinner(winner.id, 'Last survivor - there are no winners, only survivors')
+        state.addGameLogEntry(`🏆 ${winnerName} has survived! Glory to the survivor!`)
       } else if (activeCount === 0) {
         // Stalin victory
         state.setWinner(null, 'The State wins - all comrades eliminated')

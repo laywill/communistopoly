@@ -66,7 +66,7 @@ export type PlayerSlice = PlayerSliceState & PlayerSliceActions
 // ============================================
 
 function generatePlayerId (): string {
-  return `player-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+  return `player-${String(Date.now())}-${Math.random().toString(36).substring(2, 11)}`
 }
 
 function createInitialPlayer (name: string, piece: PieceType): Player {
@@ -212,7 +212,13 @@ export const createPlayerSlice: StateCreator<
 
     // Red Star elimination check
     if (player?.piece === 'redStar' && rank === 'proletariat') {
-      get().eliminatePlayer(playerId, 'Red Star fell to Proletariat')
+      // Inline elimination logic to avoid circular dependency
+      set((state) => ({
+        players: state.players.map((p) =>
+          p.id === playerId ? { ...p, isEliminated: true } : p
+        ),
+      }))
+      // Note: Logging should be done by caller (service layer)
       return
     }
 
@@ -232,8 +238,10 @@ export const createPlayerSlice: StateCreator<
       ),
     }))
 
-    get().addGameLogEntry(`☠️ ${player?.name ?? 'Unknown'} eliminated: ${reason}`)
-    get().checkGameEnd()
+    // Note: Logging and game end checking should be done by caller (service layer)
+    // addGameLogEntry and checkGameEnd are service methods, not slice methods
+    void player
+    void reason
   },
 
   // Piece ability markers
