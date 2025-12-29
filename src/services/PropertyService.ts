@@ -146,9 +146,8 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
       // Check eligibility
       const canBuy = service.canPurchase(playerId, spaceId)
       if (!canBuy.allowed) {
-        const reason = canBuy.reason ?? 'Unknown reason';
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/restrict-template-expressions
-        (state as any).addLogEntry?.({ type: 'system', message: `Purchase blocked: ${reason}` });
+        const reason = canBuy.reason ?? 'Unknown reason'
+        state.addGameLogEntry(`Purchase blocked: ${reason}`)
         return false
       }
 
@@ -158,24 +157,19 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
 
       // Check funds
       if (player.rubles < finalPrice) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (state as any).addLogEntry?.({ type: 'system', message: `${player.name} cannot afford ${String(finalPrice)}₽` });
+        state.addGameLogEntry(`${player.name} cannot afford ${String(finalPrice)}₽`)
         return false
       }
 
       // Execute purchase
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).updatePlayer?.(playerId, { rubles: player.rubles - finalPrice });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).adjustTreasury?.(finalPrice);
+      state.removeMoney(playerId, finalPrice)
+      state.addToStateTreasury(finalPrice)
       state.setCustodian(spaceId, playerId)
 
-      const discountText = discount > 0 ? ` (${String(discount * 100)}% discount)` : '';
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).addLogEntry?.({
-        type: 'property',
-        message: `${player.name} became Custodian of ${space.name} for ${String(finalPrice)}₽${discountText}`
-      });
+      const discountText = discount > 0 ? ` (${String(discount * 100)}% discount)` : ''
+      state.addGameLogEntry(
+        `${player.name} became Custodian of ${space.name} for ${String(finalPrice)}₽${discountText}`
+      )
 
       return true
     },
@@ -200,7 +194,7 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
         quota = space.baseQuota ?? 0
 
         // Add collectivization bonus
-        const bonus = getCollectivizationBonus(property.collectivizationLevel as number)
+        const bonus = getCollectivizationBonus(property.collectivizationLevel)
         quota = Math.floor(quota * (1 + bonus))
 
         // Sickle: Halved farm quotas
@@ -247,29 +241,20 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
 
       // Check if payer can afford
       if (payer.rubles < quota) {
-        // Create debt
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (state as any).createDebt?.(payerId, property.custodianId, quota, 'quota');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (state as any).addLogEntry?.({
-          type: 'debt',
-          message: `${payer.name} cannot pay ${String(quota)}₽ quota to ${custodian?.name ?? 'Unknown'}! Debt created.`
-        });
+        // TODO: Debt system not implemented in new architecture yet
+        state.addGameLogEntry(
+          `${payer.name} cannot pay ${String(quota)}₽ quota to ${custodian?.name ?? 'Unknown'}! Debt created.`
+        )
         return false
       }
 
       // Transfer money
-      const custodianRubles = custodian?.rubles ?? 0;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).updatePlayer?.(payerId, { rubles: payer.rubles - quota });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/restrict-plus-operands
-      (state as any).updatePlayer?.(property.custodianId, { rubles: custodianRubles + quota });
+      state.removeMoney(payerId, quota)
+      state.addMoney(property.custodianId, quota)
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).addLogEntry?.({
-        type: 'property',
-        message: `${payer.name} paid ${String(quota)}₽ quota to ${custodian?.name ?? 'Unknown'} for ${space.name}`
-      });
+      state.addGameLogEntry(
+        `${payer.name} paid ${String(quota)}₽ quota to ${custodian?.name ?? 'Unknown'} for ${space.name}`
+      )
 
       return true
     },
@@ -289,37 +274,31 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
 
       // Check even building rule
       const groupProperties = space.group ? state.getPropertiesInGroup(space.group) : []
-      const levels: number[] = groupProperties.map((p) => p.collectivizationLevel as number)
+      const levels: number[] = groupProperties.map((p) => p.collectivizationLevel)
       const minLevel = levels.length > 0 ? Math.min(...levels) : 0
 
       if (property.collectivizationLevel > minLevel) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (state as any).addLogEntry?.({ type: 'system', message: 'Must build evenly across property group (communist equality!)' })
+        state.addGameLogEntry('Must build evenly across property group (communist equality!)')
         return false
       }
 
       // Check cost
-      const cost = getCollectivizationCost(property.collectivizationLevel as number)
+      const cost = getCollectivizationCost(property.collectivizationLevel)
       if (custodian.rubles < cost) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (state as any).addLogEntry?.({ type: 'system', message: `${custodian.name} cannot afford ${String(cost)}₽ for collectivization` })
+        state.addGameLogEntry(`${custodian.name} cannot afford ${String(cost)}₽ for collectivization`)
         return false
       }
 
       // Execute
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).updatePlayer?.(custodian.id, { rubles: custodian.rubles - cost });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).adjustTreasury?.(cost);
+      state.removeMoney(custodian.id, cost)
+      state.addToStateTreasury(cost)
       state.incrementCollectivization(spaceId)
 
-      const newLevel = (property.collectivizationLevel as number) + 1
-      const levelName = getCollectivizationLevelName(newLevel);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).addLogEntry?.({
-        type: 'property',
-        message: `${custodian.name} improved ${space.name} to ${levelName} for ${String(cost)}₽`
-      })
+      const newLevel = property.collectivizationLevel + 1
+      const levelName = getCollectivizationLevelName(newLevel)
+      state.addGameLogEntry(
+        `${custodian.name} improved ${space.name} to ${levelName} for ${String(cost)}₽`
+      )
 
       return true
     },
@@ -337,17 +316,14 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
       if (!custodian) return false
 
       // Get half the build cost
-      const refund = Math.floor(getCollectivizationCost((property.collectivizationLevel as number) - 1) / 2)
+      const refund = Math.floor(getCollectivizationCost(property.collectivizationLevel - 1) / 2)
 
-      state.decrementCollectivization(spaceId);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).updatePlayer?.(property.custodianId, { rubles: custodian.rubles + refund });
+      state.decrementCollectivization(spaceId)
+      state.addMoney(property.custodianId, refund)
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).addLogEntry?.({
-        type: 'property',
-        message: `${custodian.name} sold collectivization on ${space.name} for ${String(refund)}₽`
-      })
+      state.addGameLogEntry(
+        `${custodian.name} sold collectivization on ${space.name} for ${String(refund)}₽`
+      )
 
       return true
     },
@@ -367,15 +343,12 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
 
       const mortgageValue = Math.floor((space.baseCost ?? 0) / 2)
 
-      state.setMortgaged(spaceId, true);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).updatePlayer?.(property.custodianId, { rubles: custodian.rubles + mortgageValue });
+      state.setMortgaged(spaceId, true)
+      state.addMoney(property.custodianId, mortgageValue)
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).addLogEntry?.({
-        type: 'property',
-        message: `${custodian.name} mortgaged ${space.name} for ${String(mortgageValue)}₽`
-      })
+      state.addGameLogEntry(
+        `${custodian.name} mortgaged ${space.name} for ${String(mortgageValue)}₽`
+      )
 
       return true
     },
@@ -400,17 +373,13 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
         return false
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).updatePlayer?.(custodian.id, { rubles: custodian.rubles - unmortgageCost });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).adjustTreasury?.(unmortgageCost);
-      state.setMortgaged(spaceId, false);
+      state.removeMoney(custodian.id, unmortgageCost)
+      state.addToStateTreasury(unmortgageCost)
+      state.setMortgaged(spaceId, false)
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).addLogEntry?.({
-        type: 'property',
-        message: `${custodian.name} unmortgaged ${space.name} for ${String(unmortgageCost)}₽`
-      })
+      state.addGameLogEntry(
+        `${custodian.name} unmortgaged ${space.name} for ${String(unmortgageCost)}₽`
+      )
 
       return true
     },
@@ -426,20 +395,17 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
       // Check if recipient can own this property
       const canOwn = service.canPurchase(toPlayerId, spaceId)
       if (!canOwn.allowed) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (state as any).addLogEntry?.({ type: 'system', message: `Transfer blocked: ${String(canOwn.reason ?? 'Unknown reason')}` });
+        state.addGameLogEntry(`Transfer blocked: ${canOwn.reason ?? 'Unknown reason'}`)
         return false
       }
 
       const fromPlayer = state.players.find((p) => p.id === property.custodianId)
 
-      state.setCustodian(spaceId, toPlayerId);
+      state.setCustodian(spaceId, toPlayerId)
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (state as any).addLogEntry?.({
-        type: 'property',
-        message: `${space.name} transferred from ${fromPlayer?.name ?? 'State'} to ${toPlayer.name}`
-      })
+      state.addGameLogEntry(
+        `${space.name} transferred from ${fromPlayer?.name ?? 'State'} to ${toPlayer.name}`
+      )
 
       return true
     },
