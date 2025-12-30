@@ -46,9 +46,8 @@ export interface GulagService extends GameService {
   /**
    * Check if voucher should trigger consequence when vouchee commits offense
    * @param playerId Player committing offense
-   * @param reason Reason for Gulag entry
    */
-  checkVoucherConsequences: (playerId: string, reason: GulagReason) => void
+  checkVoucherConsequences: (playerId: string) => void
 
   /**
    * Expire old vouchers (called each round)
@@ -195,7 +194,7 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
       state.addGameLogEntry(`${player.name} sent to Gulag: ${reasonText}`)
 
       // Check voucher consequences - voucher goes to Gulag if vouchee offends
-      service.checkVoucherConsequences(playerId, reason)
+      service.checkVoucherConsequences(playerId)
 
       return true
     },
@@ -372,7 +371,7 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
       )
     },
 
-    checkVoucherConsequences: (playerId, reason) => {
+    checkVoucherConsequences: (playerId) => {
       const state = get()
       const player = state.getPlayer(playerId)
 
@@ -412,7 +411,11 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
 
       // Expire each voucher
       vouchersToExpire.forEach((voucher) => {
-        const vouchee = state.getPlayer(voucher.vouchingFor!)
+        // vouchingFor is guaranteed to be non-null by the filter above
+        const voucheeId = voucher.vouchingFor
+        if (!voucheeId) return
+
+        const vouchee = state.getPlayer(voucheeId)
 
         if (vouchee) {
           state.addGameLogEntry(
@@ -452,8 +455,9 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
       state.addToStateTreasury(amount)
 
       // Create bribe request
+      const randomId = Math.random().toString(36).substring(2, 11)
       const bribe = {
-        id: `bribe-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+        id: `bribe-${String(Date.now())}-${randomId}`,
         playerId,
         amount,
         reason,

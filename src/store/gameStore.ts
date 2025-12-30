@@ -39,7 +39,6 @@ import { createTribunalService, type TribunalService } from '../services/Tribuna
 // COMBINED STORE TYPE
 // ============================================
 
-import type { AllSlices } from './slices'
 import type { SlicesStore } from '../services/types'
 
 type GameStore =
@@ -115,7 +114,7 @@ export const useGameStore = create<GameStore>()(
         // GAME INITIALIZATION AND SETUP
         // ─────────────────────────────────────────
 
-        initializePlayers: (playerSetups: Array<{ name: string; piece: import('../types/game').PieceType; isStalin: boolean }>) => {
+        initializePlayers: (playerSetups: { name: string; piece: import('../types/game').PieceType; isStalin: boolean }[]) => {
           const state = get()
           set({ players: [] })
           playerSetups.forEach((setup) => {
