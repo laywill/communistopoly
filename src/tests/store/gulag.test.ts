@@ -512,7 +512,7 @@ describe('Gulag System', () => {
       const [prisoner, voucher] = useGameStore.getState().players
       sendToGulag(prisoner.id, 'enemyOfState')
 
-      const currentRound = useGameStore.getState().roundNumber
+      const currentRound = useGameStore.getState().currentRound
       createVoucher(prisoner.id, voucher.id)
 
       const updatedVoucher = useGameStore.getState().players[1]
@@ -552,7 +552,7 @@ describe('Gulag System', () => {
       createVoucher(prisoner.id, voucher.id)
 
       // Advance rounds past expiration
-      useGameStore.setState({ roundNumber: 10 })
+      useGameStore.setState({ currentRound: 10 })
       expireVouchers()
 
       const updatedVoucher = useGameStore.getState().players[1]

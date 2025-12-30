@@ -93,7 +93,7 @@ export const createGameFlowSlice: StateCreator<
   ...initialGameFlowState,
 
   setGamePhase: (phase) => {
-    set({ gamePhase: phase } as Partial<GameState>)
+    set({ gamePhase: phase })
   },
 
   setWinner: (playerId, reason) => {
@@ -101,19 +101,19 @@ export const createGameFlowSlice: StateCreator<
       winner: playerId,
       winReason: reason,
       gamePhase: 'ended',
-    } as Partial<GameState>)
+    })
   },
 
   setTurnOrder: (playerIds) => {
-    set({ turnOrder: playerIds } as Partial<GameState>)
+    set({ turnOrder: playerIds })
   },
 
   setCurrentTurnIndex: (index) => {
-    set({ currentTurnIndex: index } as Partial<GameState>)
+    set({ currentTurnIndex: index })
   },
 
   setDiceRoll: (roll) => {
-    set({ diceRoll: roll } as Partial<GameState>)
+    set({ diceRoll: roll })
   },
 
   setDoublesCount: (count) => {
@@ -137,7 +137,7 @@ export const createGameFlowSlice: StateCreator<
       return {
         currentRound: newRound,
         gameLog: [entry, ...(flowState.gameLog)].slice(0, MAX_LOG_ENTRIES),
-      } as Partial<GameState>
+      }
     })
 
     // Reset denouncement counters for all players at start of new round
@@ -148,7 +148,7 @@ export const createGameFlowSlice: StateCreator<
   },
 
   setRound: (round) => {
-    set({ currentRound: round } as Partial<GameState>)
+    set({ currentRound: round })
   },
 
   addToStateTreasury: (amount) => {

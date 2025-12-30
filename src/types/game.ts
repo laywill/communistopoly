@@ -96,6 +96,7 @@ export interface Player {
   properties: string[] // property IDs
   inGulag: boolean
   gulagTurns: number
+  gulagReason: GulagReason | null
   isEliminated: boolean
   isStalin: boolean
 
@@ -311,9 +312,9 @@ export interface Confession {
 }
 
 // Denouncement and Tribunal System
-export type TribunalPhase = 'accusation' | 'defence' | 'witnesses' | 'judgement'
+export type TribunalPhase = 'accusation' | 'defense' | 'witnesses' | 'verdict'
 
-export type TribunalVerdict = 'guilty' | 'innocent' | 'bothGuilty' | 'insufficient'
+export type TribunalVerdict = 'guilty' | 'innocent' | 'bothGuilty' | 'insufficientEvidence'
 
 export interface Denouncement {
   id: string
@@ -321,7 +322,7 @@ export interface Denouncement {
   accusedId: string
   crime: string
   timestamp: Date
-  roundNumber: number
+  currentRound: number
 }
 
 export interface ActiveTribunal {
@@ -370,7 +371,7 @@ export interface GameState {
   // Players
   players: Player[]
   stalinPlayerId: string | null
-  currentPlayerIndex: number
+  currentTurnIndex: number
 
   // Board
   properties: Property[]
@@ -382,10 +383,10 @@ export interface GameState {
   turnPhase: TurnPhase
   doublesCount: number
   hasRolled: boolean
-  roundNumber: number // Track rounds for voucher expiration and debt
+  currentRound: number // Track rounds for voucher expiration and debt
 
   // Dice
-  dice: [number, number]
+  diceRoll: [number, number] | null
   isRolling: boolean
 
   // Game log

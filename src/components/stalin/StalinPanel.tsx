@@ -11,7 +11,7 @@ export default function StalinPanel() {
   const respondToBribe = useGameStore((state) => state.respondToBribe);
   const pendingBribes = useGameStore((state) => state.pendingBribes);
   const stateTreasury = useGameStore((state) => state.stateTreasury);
-  const roundNumber = useGameStore((state) => state.roundNumber);
+  const roundNumber = useGameStore((state) => state.currentRound);
   const promotePlayer = useGameStore((state) => state.promotePlayer);
   const demotePlayer = useGameStore((state) => state.demotePlayer);
   const initiateGreatPurge = useGameStore((state) => state.initiateGreatPurge);

@@ -37,67 +37,7 @@ import { createTribunalService, type TribunalService } from '../services/Tribuna
 // ============================================
 
 import type { AllSlices } from './slices'
-type SlicesStore = AllSlices
-
-// Compatibility interface for old API
-interface CompatibilityLayer {
-  // Old property names
-  currentPlayerIndex: number
-  roundNumber: number
-  dice: [number, number]
-  turnPhase: import('./slices/gameFlowSlice').GamePhase
-  hasRolled: boolean
-  isRolling: boolean
-  pendingAction: import('../types/game').PendingAction | null
-  activeTradeOffers: import('../types/game').TradeOffer[]
-  gameEndCondition: import('../types/game').GameEndCondition | null
-  showEndScreen: boolean
-  gameStatistics: import('../types/game').GameStatistics
-  endVoteInProgress: boolean
-  endVoteInitiator: string | null
-  endVotes: Record<string, boolean>
-  confessions: import('../types/game').Confession[]
-  greatPurgeUsed: boolean
-  activeGreatPurge: import('../types/game').GreatPurge | null
-  activeFiveYearPlan: import('../types/game').FiveYearPlan | null
-  heroesOfSovietUnion: import('../types/game').HeroOfSovietUnion[]
-  stalinPlayerId: string | null
-  winnerId: string | null
-
-  // Old methods
-  initializePlayers: (playerSetups: { name: string, piece: import('../types/game').PieceType, isStalin: boolean }[]) => void
-  startNewGame: () => void
-  updatePlayer: (playerId: string, updates: Partial<import('../types/game').Player>) => void
-  setCurrentPlayer: (index: number) => void
-  rollDice: () => void
-  finishRolling: () => void
-  movePlayer: (playerId: string, spaces: number) => void
-  finishMoving: () => void
-  setTurnPhase: (phase: import('../types/game').TurnPhase) => void
-  setPendingAction: (action: import('../types/game').PendingAction | null) => void
-  addLogEntry: (entry: string | { message: string }) => void
-  adjustTreasury: (amount: number) => void
-  createDebt: (_debtorId: string, _creditorId: string, _amount: number, _reason: string) => void
-  // submitBribe: Implemented in GulagService
-  answerCommunistTest: (_question: string, _answer: string, _readerId: string) => void
-  applyDirectiveEffect: (_card: string, _playerId: string) => void
-  ironCurtainDisappear: (playerId: string, propertyId: number) => void
-  leninSpeech: (playerId: string, _applauders: string[]) => void
-  submitConfession: (_prisonerId: string, _confession: string) => void
-  reviewConfession: (_confessionId: string, _approved: boolean) => void
-  sickleHarvest: (playerId: string, propertyId: number) => void
-  handleStoyPilfer: (playerId: string, success: boolean) => void
-  demotePlayer: (playerId: string) => void
-  promotePlayer: (playerId: string) => void
-  proposeTrade: (_fromId: string, _toId: string, _offer: import('../types/game').TradeOffer) => void
-  acceptTrade: (_tradeId: string) => void
-  rejectTrade: (_tradeId: string) => void
-  tankRequisition: (playerId: string, targetId: string) => void
-  // respondToBribe: Implemented in GulagService
-  initiateGreatPurge: () => void
-  initiateFiveYearPlan: () => void
-  grantHeroOfSovietUnion: (_playerId: string) => void
-}
+import type { SlicesStore } from '../services/types'
 
 type GameStore =
   // Slices
@@ -113,8 +53,6 @@ type GameStore =
   & TurnManager
   & StoyService
   & TribunalService
-  // Compatibility
-  & CompatibilityLayer
   // Reset
   & { resetGame: () => void }
 
@@ -129,12 +67,12 @@ export const useGameStore = create<GameStore>()(
       // STEP 1: Create all slices
       // ─────────────────────────────────────────
       const slices = {
-        ...createCardSlice(set as any, get as any, api as any),
-        ...createGulagSlice(set as any, get as any, api as any),
-        ...createPropertySlice(set as any, get as any, api as any),
-        ...createTribunalSlice(set as any, get as any, api as any),
-        ...createPlayerSlice(set as any, get as any, api as any),
-        ...createGameFlowSlice(set as any, get as any, api as any),
+        ...createCardSlice(set, get, api),
+        ...createGulagSlice(set, get, api),
+        ...createPropertySlice(set, get, api),
+        ...createTribunalSlice(set, get, api),
+        ...createPlayerSlice(set, get, api),
+        ...createGameFlowSlice(set, get, api),
       }
 
       // ─────────────────────────────────────────
@@ -171,101 +109,111 @@ export const useGameStore = create<GameStore>()(
         },
 
         // ─────────────────────────────────────────
-        // COMPATIBILITY SHIMS (for tests/old code)
+        // GAME INITIALIZATION AND SETUP
         // ─────────────────────────────────────────
 
-        // Old API: initializePlayers
-        initializePlayers: (playerSetups: { name: string, piece: import('../types/game').PieceType, isStalin: boolean }[]) => {
+        initializePlayers: (playerSetups: Array<{ name: string; piece: import('../types/game').PieceType; isStalin: boolean }>) => {
           const state = get()
-
-          // Clear existing players
           set({ players: [] })
-
-          // Add each player
           playerSetups.forEach((setup) => {
             const playerId = state.addPlayer(setup.name, setup.piece)
             if (setup.isStalin) {
               state.setStalin(playerId)
             }
           })
-
-          // Properties are already initialized in initialPropertyState
         },
 
-        // Old API: startNewGame
         startNewGame: () => {
           get().resetGame()
           get().setGamePhase('setup')
         },
 
         // ─────────────────────────────────────────
-        // COMPATIBILITY LAYER (old API)
+        // PIECE ABILITIES
         // ─────────────────────────────────────────
 
-        // Properties
-        get currentPlayerIndex() { return get().currentTurnIndex },
-        get roundNumber() { return get().currentRound },
-        get dice() { return get().diceRoll ?? [1, 1] },
-
-        // Stub properties
-        turnPhase: 'playing' as import('../types/game').TurnPhase,
-        hasRolled: false,
-        isRolling: false,
-        pendingAction: null,
-        activeTradeOffers: [],
-        gameEndCondition: null,
-        showEndScreen: false,
-        gameStatistics: {
-          gameStartTime: new Date(),
-          totalTurns: 0,
-          playerStats: {},
-          totalDenouncements: 0,
-          totalTribunals: 0,
-          totalGulagSentences: 0,
-          stateTreasuryPeak: 0,
-        },
-        endVoteInProgress: false,
-        endVoteInitiator: null,
-        endVotes: {},
-        confessions: [],
-        greatPurgeUsed: false,
-        activeGreatPurge: null,
-        activeFiveYearPlan: null,
-        heroesOfSovietUnion: [],
-        get stalinPlayerId() {
-          const stalin = get().getStalin()
-          return stalin?.id ?? null
+        tankRequisition: (playerId: string, targetId: string) => {
+          const state = get()
+          const player = state.getPlayer(playerId)
+          const target = state.getPlayer(targetId)
+          if (player?.piece !== 'tank') return
+          if (player.tankRequisitionUsedThisLap) return
+          if (!target) return
+          const amount = Math.min(50, target.rubles)
+          state.removeMoney(targetId, amount)
+          state.addMoney(playerId, amount)
+          state.updatePlayer(playerId, { tankRequisitionUsedThisLap: true })
+          state.addGameLogEntry(`${player.name} requisitioned ${String(amount)}₽ from ${target.name}`)
         },
 
-        // Methods (delegate to new architecture or stub)
-        setCurrentPlayer: (index: number) => {
-          set({ currentTurnIndex: index })
+        sickleHarvest: (playerId: string, propertyId: number) => {
+          const state = get()
+          const player = state.players.find((p) => p.id === playerId)
+          const property = state.getProperty(propertyId)
+          const space = BOARD_SPACES.find((s) => s.id === propertyId)
+          if (player?.piece !== 'sickle') return
+          if (player.hasUsedSickleHarvest) return
+          if (!property || !space) return
+          if (property.custodianId === null) return
+          if (space.type !== 'property' || !space.baseCost || space.baseCost >= 150) return
+          if (property.collectivizationLevel !== 0) return
+          const victim = state.players.find((p) => p.id === property.custodianId)
+          if (!victim) return
+          state.setCustodian(propertyId, playerId)
+          state.markSickleHarvestUsed(playerId)
+          state.addGameLogEntry(`${player.name} harvested ${space.name} from ${victim.name}`)
         },
 
-        finishRolling: () => {
-          // Stub - handle dice roll completion
+        ironCurtainDisappear: (playerId: string, propertyId: number) => {
+          const state = get()
+          const player = state.players.find((p) => p.id === playerId)
+          const property = state.getProperty(propertyId)
+          const space = BOARD_SPACES.find((s) => s.id === propertyId)
+          if (player?.piece !== 'ironCurtain') return
+          if (player.hasUsedIronCurtainDisappear) return
+          if (!property || !space) return
+          if (property.custodianId === null) return
+          state.setCustodian(propertyId, null)
+          state.markIronCurtainDisappearUsed(playerId)
+          state.addGameLogEntry(`${player.name} used Iron Curtain to disappear ${space.name}`)
         },
+
+        leninSpeech: (playerId: string, applauders: string[]) => {
+          const state = get()
+          const player = state.players.find((p) => p.id === playerId)
+          if (player?.piece !== 'statueOfLenin') return
+          if (player.hasUsedLeninSpeech) return
+          let totalReceived = 0
+          let successfulApplauders = 0
+          for (const applauderId of applauders) {
+            const applauder = state.players.find((p) => p.id === applauderId)
+            if (!applauder) continue
+            if (applauder.rubles >= 100) {
+              state.removeMoney(applauderId, 100)
+              state.addMoney(playerId, 100)
+              totalReceived += 100
+              successfulApplauders++
+            }
+          }
+          state.markLeninSpeechUsed(playerId)
+          state.addGameLogEntry(`${player.name} gave inspiring speech, received ${String(totalReceived)}₽ from ${String(successfulApplauders)} comrades`)
+        },
+
+        // ─────────────────────────────────────────
+        // MOVEMENT AND POSITION
+        // ─────────────────────────────────────────
 
         movePlayer: (playerId: string, spaces: number) => {
           const state = get()
           const player = state.getPlayer(playerId)
           if (!player) return
-
           const oldPosition = player.position
           const newPosition = (oldPosition + spaces) % 40
-
-          // 1. Detect if player passes position 0 (Stoy)
           const passedStoy = oldPosition + spaces >= 40
-
-          // 2. Call StoyService if passing Stoy
           if (passedStoy) {
             state.handlePassingStoy(playerId)
           }
-
-          // 3. Update player position
           state.setPlayerPosition(playerId, newPosition)
-
-          // 4. Reset Tank requisition and increment lap counter if passed Stoy
           if (passedStoy && player.piece === 'tank') {
             state.updatePlayer(playerId, {
               tankRequisitionUsedThisLap: false,
@@ -274,175 +222,33 @@ export const useGameStore = create<GameStore>()(
           }
         },
 
-        finishMoving: () => {
-          // Stub - handle movement completion
-        },
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        setTurnPhase: (_phase: import('../types/game').TurnPhase) => {
-          // Stub - old turn phase system
-        },
-
-        setPendingAction: (action: import('../types/game').PendingAction | null) => {
-          set({ pendingAction: action })
-        },
-
-        addLogEntry: (entry: string | { message: string }) => {
-          if (typeof entry === 'string') {
-            get().addGameLogEntry(entry)
-          } else if (entry.message) {
-            get().addGameLogEntry(entry.message)
-          }
-        },
-
-        adjustTreasury: (amount: number) => {
-          if (amount > 0) {
-            get().addToStateTreasury(amount)
-          } else {
-            get().removeFromStateTreasury(Math.abs(amount))
-          }
-        },
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        createDebt: (_debtorId: string, _creditorId: string, _amount: number, _reason: string) => {
-          // Stub - debt system not implemented in new architecture yet
-        },
-
-        // submitBribe: Implemented in GulagService
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        answerCommunistTest: (_question: string, _answer: string, _readerId: string) => {
-          // Stub - test answering not implemented in new architecture yet
-        },
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        applyDirectiveEffect: (_card: string, _playerId: string) => {
-          // Stub - directive effects not implemented in new architecture yet
-        },
-
-        ironCurtainDisappear: (playerId: string, propertyId: number) => {
-          const state = get()
-          const player = state.players.find((p) => p.id === playerId)
-          const property = state.getProperty(propertyId)
-          const space = BOARD_SPACES.find((s) => s.id === propertyId)
-
-          // 1. Validate player has Iron Curtain piece
-          if (player?.piece !== 'ironCurtain') return
-
-          // 2. Validate hasUsedIronCurtainDisappear is false (once per game)
-          if (player.hasUsedIronCurtainDisappear) return
-
-          // 3. Validate propertyId exists and has a custodian
-          if (!property || !space) return
-          if (property.custodianId === null) return
-
-          // 4. Transfer property to State: setCustodian(propertyId, null)
-          state.setCustodian(propertyId, null)
-
-          // 5. Mark ability as used
-          state.markIronCurtainDisappearUsed(playerId)
-
-          // 6. Add log entry
-          state.addLogEntry(`${player.name} used Iron Curtain to disappear ${space.name}`)
-        },
-
-        leninSpeech: (playerId: string, applauders: string[]) => {
-          const state = get()
-          const player = state.players.find((p) => p.id === playerId)
-
-          // 1. Validate player has leninStatue piece
-          if (player?.piece !== 'statueOfLenin') return
-
-          // 2. Validate hasUsedLeninSpeech is false (once per game)
-          if (player.hasUsedLeninSpeech) return
-
-          // 3. For each applauder in applauders array
-          let totalReceived = 0
-          let successfulApplauders = 0
-
-          for (const applauderId of applauders) {
-            const applauder = state.players.find((p) => p.id === applauderId)
-            if (!applauder) continue
-
-            // Validate applauder has >= 100₽
-            if (applauder.rubles >= 100) {
-              // Transfer money: remove from applauder, add to Lenin
-              state.removeMoney(applauderId, 100)
-              state.addMoney(playerId, 100)
-              totalReceived += 100
-              successfulApplauders++
-            }
-          }
-
-          // 4. Mark ability as used
-          state.markLeninSpeechUsed(playerId)
-
-          // 5. Add log entry
-          state.addLogEntry(`${player.name} gave inspiring speech, received ${String(totalReceived)}₽ from ${String(successfulApplauders)} comrades`)
-        },
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        submitConfession: (_prisonerId: string, _confession: string) => {
-          // Stub - confession system not implemented in new architecture yet
-        },
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        reviewConfession: (_confessionId: string, _approved: boolean) => {
-          // Stub
-        },
-
-        sickleHarvest: (playerId: string, propertyId: number) => {
-          const state = get()
-          const player = state.players.find((p) => p.id === playerId)
-          const property = state.getProperty(propertyId)
-          const space = BOARD_SPACES.find((s) => s.id === propertyId)
-
-          // 1. Validate player has sickle piece
-          if (player?.piece !== 'sickle') return
-
-          // 2. Validate hasUsedSickleHarvest is false (once per game)
-          if (player.hasUsedSickleHarvest) return
-
-          // 3. Validate propertyId exists and has a custodian (not State-owned)
-          if (!property || !space) return
-          if (property.custodianId === null) return
-
-          // 4. Validate property baseCost < 150₽
-          if (space.type !== 'property' || !space.baseCost || space.baseCost >= 150) return
-
-          // 5. Validate property has no collectivization
-          if (property.collectivizationLevel !== 0) return
-
-          // Find the victim (current owner)
-          const victim = state.players.find((p) => p.id === property.custodianId)
-          if (!victim) return
-
-          // 6. Transfer property to Sickle player
-          state.setCustodian(propertyId, playerId)
-
-          // 7. Mark ability as used
-          state.markSickleHarvestUsed(playerId)
-
-          // 8. Add log entry
-          state.addLogEntry(`${player.name} harvested ${space.name} from ${victim.name}`)
-        },
-
         handleStoyPilfer: (playerId: string, success: boolean) => {
           const state = get()
           if (success) {
             state.addMoney(playerId, 100)
             state.removeFromStateTreasury(100)
           } else {
-            // Note: sendToGulag is a service method, but this is a compatibility layer
-            // In new code, use slice methods directly: setPlayerInGulag + setGulagTurns
             state.sendToGulag(playerId, 'stalinDecree', 'Caught pilfering')
           }
         },
 
+        // ─────────────────────────────────────────
+        // PENDING ACTIONS
+        // ─────────────────────────────────────────
+
+        pendingAction: null as import('../types/game').PendingAction | null,
+
+        setPendingAction: (action: import('../types/game').PendingAction | null) => {
+          set({ pendingAction: action })
+        },
+
+        // ─────────────────────────────────────────
+        // RANK MANAGEMENT
+        // ─────────────────────────────────────────
+
         demotePlayer: (playerId: string) => {
           const player = get().getPlayer(playerId)
           if (!player) return
-
           const ranks: import('../types/game').PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
           const currentIdx = ranks.indexOf(player.rank)
           if (currentIdx > 0) {
@@ -453,74 +259,11 @@ export const useGameStore = create<GameStore>()(
         promotePlayer: (playerId: string) => {
           const player = get().getPlayer(playerId)
           if (!player) return
-
           const ranks: import('../types/game').PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
           const currentIdx = ranks.indexOf(player.rank)
           if (currentIdx < ranks.length - 1) {
             get().setPlayerRank(playerId, ranks[currentIdx + 1])
           }
-        },
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        proposeTrade: (_fromId: string, _toId: string, _offer: import('../types/game').TradeOffer) => {
-          // Stub
-        },
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        acceptTrade: (_tradeId: string) => {
-          // Stub
-        },
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        rejectTrade: (_tradeId: string) => {
-          // Stub
-        },
-
-        tankRequisition: (playerId: string, targetId: string) => {
-          const state = get()
-          const player = state.getPlayer(playerId)
-          const target = state.getPlayer(targetId)
-
-          // 1. Validate player has tank piece
-          if (player?.piece !== 'tank') return
-
-          // 2. Validate tankRequisitionUsedThisLap is false (resets each lap)
-          if (player.tankRequisitionUsedThisLap) return
-
-          // 3. Validate target exists
-          if (!target) return
-
-          // 4. Calculate amount to take: min(50, target.rubles)
-          const amount = Math.min(50, target.rubles)
-
-          // 5. Transfer money
-          state.removeMoney(targetId, amount)
-          state.addMoney(playerId, amount)
-
-          // 6. Mark requisition as used this lap
-          state.updatePlayer(playerId, { tankRequisitionUsedThisLap: true })
-
-          // 7. Add log entry
-          state.addLogEntry(`${player.name} requisitioned ${String(amount)}₽ from ${target.name}`)
-        },
-
-        // respondToBribe: Implemented in GulagService
-
-        initiateGreatPurge: () => {
-          // Stub
-        },
-
-        initiateFiveYearPlan: () => {
-          // Stub
-        },
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        grantHeroOfSovietUnion: (_playerId: string) => {
-          // Stub
-        },
-
-        get winnerId() {
-          return get().winner
         },
       }
 

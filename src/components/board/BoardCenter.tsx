@@ -8,9 +8,9 @@ import styles from './BoardCenter.module.css';
 
 const BoardCenter = () => {
   const players = useGameStore((state) => state.players);
-  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex);
+  const currentPlayerIndex = useGameStore((state) => state.currentTurnIndex);
   const turnPhase = useGameStore((state) => state.turnPhase);
-  const dice = useGameStore((state) => state.dice);
+  const dice = useGameStore((state) => state.diceRoll ?? [1, 1]);
   const isRolling = useGameStore((state) => state.isRolling);
   const hasRolled = useGameStore((state) => state.hasRolled);
   const rollDice = useGameStore((state) => state.rollDice);

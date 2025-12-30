@@ -369,7 +369,7 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
       state.setGulagTurns(prisonerId, 0)
 
       // Mark voucher as liable for 3 rounds
-      const currentRound = state.roundNumber
+      const currentRound = state.currentRound
       state.setVoucher(voucherId, prisonerId, currentRound + 3)
 
       state.addGameLogEntry(
@@ -391,7 +391,7 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
       if (!voucher) return
 
       // Check if voucher is still active (hasn't expired)
-      const currentRound = state.roundNumber
+      const currentRound = state.currentRound
       if (voucher.vouchedByRound && currentRound <= voucher.vouchedByRound) {
         // Voucher consequence triggered - send voucher to Gulag
         state.addGameLogEntry(
@@ -408,7 +408,7 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
 
     expireVouchers: () => {
       const state = get()
-      const currentRound = state.roundNumber
+      const currentRound = state.currentRound
 
       // Find all players with active vouchers
       const vouchersToExpire = state.players.filter(
