@@ -96,7 +96,7 @@ export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalSe
 
           // If this was a Gulag inform, release the informer
           if (tribunal.isGulagInform === true) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+             
             state.releaseFromGulag(tribunal.accuserId, 'successful informing')
           }
           break

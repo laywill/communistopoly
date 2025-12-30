@@ -1,3 +1,6 @@
+// Copyright © 2025 William Lay
+// Licensed under the PolyForm Noncommercial License 1.0.0
+
 import type { StoreGetter, GameService, SlicesStore } from './types'
 
 export interface TurnManager extends GameService {
@@ -166,6 +169,7 @@ export function createTurnManager (get: StoreGetter<SlicesStore>): TurnManager {
       if (nextIndex === 0) {
         state.incrementRound()
         state.resetDenouncementCounts()
+        state.expireVouchers()
       }
 
       // Skip eliminated players
@@ -185,6 +189,7 @@ export function createTurnManager (get: StoreGetter<SlicesStore>): TurnManager {
         if (nextIndex === 0) {
           state.incrementRound()
           state.resetDenouncementCounts()
+          state.expireVouchers()
         }
       }
 

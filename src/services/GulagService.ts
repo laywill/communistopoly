@@ -6,6 +6,7 @@ import type { GulagReason, PartyRank } from '../types/game'
 
 const GULAG_POSITION = 10
 const REHABILITATION_COST = 500
+const MIN_BRIBE_AMOUNT = 200
 const RAILWAY_POSITIONS = [5, 15, 25, 35]
 
 export interface GulagService extends GameService {
@@ -63,10 +64,10 @@ export interface GulagService extends GameService {
 
   /**
    * Stalin responds to a bribe (accept or reject)
-   * @param brideId Bribe ID
+   * @param bribeId Bribe ID
    * @param accepted Whether Stalin accepts the bribe
    */
-  respondToBribe: (brideId: string, accepted: boolean) => void
+  respondToBribe: (bribeId: string, accepted: boolean) => void
 }
 
 /**
@@ -105,8 +106,6 @@ function formatGulagReason(reason: GulagReason, justification?: string): string 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return reasons[reason] ?? reason
 }
-
-// Removed: shouldTriggerVoucherConsequence - no longer needed since voucher system not implemented
 
 export function createGulagService(get: StoreGetter<SlicesStore>): GulagService {
   // Helper function to get required doubles for escape based on turns in Gulag
@@ -281,9 +280,12 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
         }
 
         case 'vouch': {
-          // TODO: Voucher system not implemented in new architecture yet
-          // Would set up voucher request via pending action
-          state.addGameLogEntry(`${player.name} requested voucher (not yet implemented)`)
+          // Set up pending action for voucher selection
+          state.setPendingAction({
+            type: 'voucher-request',
+            data: { prisonerId: playerId }
+          })
+          state.addGameLogEntry(`${player.name} is requesting a voucher`)
           break
         }
 
@@ -298,9 +300,12 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
         }
 
         case 'bribe': {
-          // TODO: Bribe system not implemented in new architecture yet
-          // Would set up bribe modal via pending action
-          state.addGameLogEntry(`${player.name} attempted bribe (not yet implemented)`)
+          // Set up pending action for bribe submission
+          state.setPendingAction({
+            type: 'bribe-stalin',
+            data: { playerId }
+          })
+          state.addGameLogEntry(`${player.name} is preparing a bribe for Stalin`)
           break
         }
 
@@ -333,6 +338,29 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
 
       if (!prisoner.inGulag) {
         console.warn(`GulagService.createVoucher: Prisoner ${prisoner.name} not in Gulag`)
+        return
+      }
+
+      // Check voucher eligibility
+      if (voucherPlayer.inGulag) {
+        state.addGameLogEntry(
+          `${voucherPlayer.name} cannot vouch while imprisoned!`
+        )
+        return
+      }
+
+      if (voucherPlayer.isEliminated) {
+        state.addGameLogEntry(
+          `${voucherPlayer.name} cannot vouch while eliminated!`
+        )
+        return
+      }
+
+      if (voucherPlayer.vouchingFor !== null) {
+        const currentVouchee = state.getPlayer(voucherPlayer.vouchingFor)
+        state.addGameLogEntry(
+          `${voucherPlayer.name} is already vouching for ${currentVouchee?.name ?? 'another player'}!`
+        )
         return
       }
 
@@ -410,6 +438,14 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
         return
       }
 
+      // Validate minimum bribe amount
+      if (amount < MIN_BRIBE_AMOUNT) {
+        state.addGameLogEntry(
+          `${player.name}'s bribe of ₽${String(amount)} rejected - Stalin demands at least ₽${String(MIN_BRIBE_AMOUNT)}!`
+        )
+        return
+      }
+
       // Check if player has enough money
       if (player.rubles < amount) {
         state.addGameLogEntry(`${player.name} cannot afford bribe of ₽${String(amount)}`)
@@ -435,12 +471,12 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
       )
     },
 
-    respondToBribe: (brideId, accepted) => {
+    respondToBribe: (bribeId, accepted) => {
       const state = get()
-      const bribe = state.getBribe(brideId)
+      const bribe = state.getBribe(bribeId)
 
       if (!bribe) {
-        console.warn(`GulagService.respondToBribe: Bribe ${brideId} not found`)
+        console.warn(`GulagService.respondToBribe: Bribe ${bribeId} not found`)
         return
       }
 
@@ -448,7 +484,7 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
 
       if (!player) {
         console.warn(`GulagService.respondToBribe: Player ${bribe.playerId} not found`)
-        state.removeBribe(brideId)
+        state.removeBribe(bribeId)
         return
       }
 
@@ -467,7 +503,7 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
       }
 
       // Remove bribe from pending
-      state.removeBribe(brideId)
+      state.removeBribe(bribeId)
     }
   }
 

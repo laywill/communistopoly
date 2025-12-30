@@ -559,6 +559,83 @@ describe('Gulag System', () => {
       expect(updatedVoucher.vouchingFor).toBe(null)
       expect(updatedVoucher.vouchedByRound).toBe(null)
     })
+
+    it('should not allow imprisoned player to vouch', () => {
+      const { initializePlayers, sendToGulag, createVoucher } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Prisoner 1', piece: 'sickle', isStalin: false },
+        { name: 'Prisoner 2', piece: 'hammer', isStalin: false }
+      ])
+
+      const [prisoner1, prisoner2] = useGameStore.getState().players
+      sendToGulag(prisoner1.id, 'enemyOfState')
+      sendToGulag(prisoner2.id, 'enemyOfState')
+
+      // Try to make imprisoned player vouch
+      createVoucher(prisoner1.id, prisoner2.id)
+
+      // Prisoner 1 should still be in Gulag (voucher failed)
+      const updatedPrisoner1 = useGameStore.getState().players[0]
+      expect(updatedPrisoner1.inGulag).toBe(true)
+
+      // Prisoner 2 should not be vouching
+      const updatedPrisoner2 = useGameStore.getState().players[1]
+      expect(updatedPrisoner2.vouchingFor).toBe(null)
+    })
+
+    it('should not allow eliminated player to vouch', () => {
+      const { initializePlayers, sendToGulag, createVoucher, eliminatePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Prisoner', piece: 'sickle', isStalin: false },
+        { name: 'Eliminated Player', piece: 'hammer', isStalin: false }
+      ])
+
+      const [prisoner, eliminatedPlayer] = useGameStore.getState().players
+      sendToGulag(prisoner.id, 'enemyOfState')
+      eliminatePlayer(eliminatedPlayer.id, 'Test elimination')
+
+      // Try to make eliminated player vouch
+      createVoucher(prisoner.id, eliminatedPlayer.id)
+
+      // Prisoner should still be in Gulag (voucher failed)
+      const updatedPrisoner = useGameStore.getState().players[0]
+      expect(updatedPrisoner.inGulag).toBe(true)
+
+      // Eliminated player should not be vouching
+      const updatedEliminated = useGameStore.getState().players[1]
+      expect(updatedEliminated.vouchingFor).toBe(null)
+    })
+
+    it('should not allow player already vouching to vouch for another', () => {
+      const { initializePlayers, sendToGulag, createVoucher } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Prisoner 1', piece: 'sickle', isStalin: false },
+        { name: 'Prisoner 2', piece: 'hammer', isStalin: false },
+        { name: 'Voucher', piece: 'tank', isStalin: false }
+      ])
+
+      const [prisoner1, prisoner2, voucher] = useGameStore.getState().players
+      sendToGulag(prisoner1.id, 'enemyOfState')
+      sendToGulag(prisoner2.id, 'enemyOfState')
+
+      // Voucher vouches for prisoner 1
+      createVoucher(prisoner1.id, voucher.id)
+
+      // Try to make same voucher vouch for prisoner 2
+      createVoucher(prisoner2.id, voucher.id)
+
+      // Prisoner 2 should still be in Gulag (voucher failed)
+      const updatedPrisoner2 = useGameStore.getState().players.find(p => p.id === prisoner2.id)
+      expect(updatedPrisoner2?.inGulag).toBe(true)
+
+      // Voucher should still be vouching for prisoner 1 only
+      const updatedVoucher = useGameStore.getState().players.find(p => p.id === voucher.id)
+      expect(updatedVoucher?.vouchingFor).toBe(prisoner1.id)
+    })
+
   })
 
   describe('Gulag Escape - Bribe', () => {
@@ -637,6 +714,74 @@ describe('Gulag System', () => {
 
       const bribes = useGameStore.getState().pendingBribes
       expect(bribes.length).toBe(0) // Bribe not submitted
+    })
+
+    it('should accept bribe at exactly minimum amount (200₽)', () => {
+      const { initializePlayers, sendToGulag, submitBribe, respondToBribe } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const player = useGameStore.getState().players[0]
+      sendToGulag(player.id, 'enemyOfState')
+
+      submitBribe(player.id, 200, 'gulag-escape')
+
+      const bribes = useGameStore.getState().pendingBribes
+      expect(bribes.length).toBe(1) // Bribe submitted successfully
+
+      respondToBribe(bribes[0].id, true)
+      const updatedPlayer = useGameStore.getState().players[0]
+      expect(updatedPlayer.inGulag).toBe(false)
+    })
+
+    it('should reject bribe below minimum amount (199₽)', () => {
+      const { initializePlayers, sendToGulag, submitBribe } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const player = useGameStore.getState().players[0]
+      sendToGulag(player.id, 'enemyOfState')
+
+      submitBribe(player.id, 199, 'gulag-escape')
+
+      const bribes = useGameStore.getState().pendingBribes
+      expect(bribes.length).toBe(0) // Bribe rejected for being too low
+    })
+
+    it('should reject bribe with amount 0', () => {
+      const { initializePlayers, sendToGulag, submitBribe } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const player = useGameStore.getState().players[0]
+      sendToGulag(player.id, 'enemyOfState')
+
+      submitBribe(player.id, 0, 'gulag-escape')
+
+      const bribes = useGameStore.getState().pendingBribes
+      expect(bribes.length).toBe(0) // Bribe rejected
+    })
+
+    it('should reject bribe with negative amount', () => {
+      const { initializePlayers, sendToGulag, submitBribe } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const player = useGameStore.getState().players[0]
+      sendToGulag(player.id, 'enemyOfState')
+
+      submitBribe(player.id, -100, 'gulag-escape')
+
+      const bribes = useGameStore.getState().pendingBribes
+      expect(bribes.length).toBe(0) // Bribe rejected
     })
   })
 
