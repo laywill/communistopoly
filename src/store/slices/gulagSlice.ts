@@ -54,8 +54,6 @@ export interface GulagSliceActions {
 
   // Queries
   getPlayersInGulag: () => string[]
-  getGulagEscapeRequirement: (turnsInGulag: number) => number[]
-  isValidEscapeRoll: (turnsInGulag: number, roll: [number, number]) => boolean
 }
 
 export type GulagSlice = GulagSliceState & GulagSliceActions
@@ -202,37 +200,5 @@ export const createGulagSlice: StateCreator<
 
   getPlayersInGulag: () => {
     return get().players.filter((p) => p.inGulag).map((p) => p.id)
-  },
-
-  getGulagEscapeRequirement: (turnsInGulag) => {
-    // Returns array of acceptable die values for doubles to escape
-    // Turn 1: Need 6s (just arrived, turn 0)
-    // Turn 2: Need 5s or 6s (turn 1)
-    // Turn 3: Need 4, 5, or 6s (turn 2)
-    // Turn 4: Need 3, 4, 5, or 6s (turn 3)
-    // Turn 5+: Any doubles (turn 4+)
-    switch (turnsInGulag) {
-      case 0:
-      case 1:
-        return [6]
-      case 2:
-        return [5, 6]
-      case 3:
-        return [4, 5, 6]
-      case 4:
-        return [3, 4, 5, 6]
-      default:
-        return [1, 2, 3, 4, 5, 6] // Any doubles after turn 5
-    }
-  },
-
-  isValidEscapeRoll: (turnsInGulag, roll) => {
-    const [die1, die2] = roll
-    if (die1 !== die2) return false // Must be doubles
-
-    // Call getGulagEscapeRequirement from the same slice
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const requirements = (get() as any).getGulagEscapeRequirement(turnsInGulag)
-    return requirements.includes(die1)
   }
 })
