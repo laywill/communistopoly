@@ -127,6 +127,32 @@ export function createTurnManager (
       const playerName = player.name
       state.addGameLogEntry(`──── ${playerName}'s Turn ────`)
 
+      // Check for overdue debt
+      if (player.debt && player.debtCreatedAtRound !== null) {
+        const currentRound = state.currentRound
+        const debtAge = currentRound - player.debtCreatedAtRound
+
+        if (debtAge > 1) {
+          // Debt is overdue (more than 1 round old)
+          const creditor = state.getPlayer(player.debt.creditorId)
+          state.addGameLogEntry(
+            `${playerName} failed to pay debt of ${String(player.debt.amount)}₽ to ${creditor?.name ?? 'Unknown'} within one round!`
+          )
+
+          // Clear the debt
+          state.updatePlayer(player.id, { debt: null, debtCreatedAtRound: null })
+
+          // Send to Gulag for debt default
+          gulagService.sendToGulag(player.id, 'debtDefault', player.debt.reason)
+          return // Don't continue with turn
+        } else if (player.rubles >= player.debt.amount) {
+          // Player can now pay the debt
+          state.addGameLogEntry(
+            `${playerName} can now pay their debt of ${String(player.debt.amount)}₽. Pay before the round ends!`
+          )
+        }
+      }
+
       // Note: Voucher liability check should be handled by GulagService or UI layer
 
       // Increment Gulag turn if imprisoned

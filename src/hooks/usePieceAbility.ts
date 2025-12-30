@@ -138,8 +138,27 @@ export function usePieceAbility (player: Player | undefined) {
   }
 
   const useVodka3Dice = () => {
-    // TODO: Vodka 3-dice roll not implemented in new architecture yet
-    console.warn('Vodka 3-dice roll not yet implemented')
+    // Roll 3 dice and automatically pick the best 2 (highest sum)
+    const threeDice = gameStore.rollThreeDice()
+
+    // Find the best 2 dice combination
+    const combos = [
+      { dice: [threeDice[0], threeDice[1]], sum: threeDice[0] + threeDice[1], excluded: 2 },
+      { dice: [threeDice[0], threeDice[2]], sum: threeDice[0] + threeDice[2], excluded: 1 },
+      { dice: [threeDice[1], threeDice[2]], sum: threeDice[1] + threeDice[2], excluded: 0 }
+    ]
+    const best = combos.reduce((a, b) => a.sum > b.sum ? a : b)
+
+    // Set the chosen 2 dice as the roll
+    gameStore.setDiceRoll([best.dice[0], best.dice[1]])
+
+    // Increment vodka use count
+    gameStore.updatePlayer(player.id, { vodkaUseCount: player.vodkaUseCount + 1 })
+
+    // Log the roll
+    gameStore.addGameLogEntry(
+      `${player.name} used Vodka ability: rolled [${threeDice.join(', ')}], chose [${best.dice.join(', ')}] (excluded ${threeDice[best.excluded]})`
+    )
   }
 
   return {

@@ -236,9 +236,27 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
 
       // Check if payer can afford
       if (payer.rubles < quota) {
-        // TODO: Debt system not implemented in new architecture yet
+        // Create debt if player cannot pay
+        const currentRound = state.currentRound
+        const creditorId = property.custodianId
+
+        const debt: import('../types/game').Debt = {
+          id: `debt-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+          debtorId: payerId,
+          creditorId,
+          amount: quota,
+          createdAtRound: currentRound,
+          reason: `Quota payment to ${custodian?.name ?? 'Unknown'}`
+        }
+
+        // Store debt on player
+        state.updatePlayer(payerId, {
+          debt,
+          debtCreatedAtRound: currentRound
+        })
+
         state.addGameLogEntry(
-          `${payer.name} cannot pay ${String(quota)}₽ quota to ${custodian?.name ?? 'Unknown'}! Debt created.`
+          `${payer.name} cannot pay ${String(quota)}₽ quota to ${custodian?.name ?? 'Unknown'}! Debt created. Must pay by round ${String(currentRound + 1)}.`
         )
         return false
       }

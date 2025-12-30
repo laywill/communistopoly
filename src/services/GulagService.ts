@@ -149,7 +149,6 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
         state.addGameLogEntry(
           `${player.name}'s Hammer protects them from Gulag! (Player-initiated imprisonment blocked)`
         )
-        // TODO: Turn phase system not implemented in new architecture yet
         return false
       }
 
@@ -171,7 +170,6 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
           state.setPlayerRank(playerId, newRank)
         }
 
-        // TODO: Turn phase system not implemented in new architecture yet
         return false
       }
 
@@ -211,8 +209,7 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
       // Check for 10-turn elimination
       service.checkFor10TurnElimination(playerId)
 
-      // TODO: Pending actions not implemented in new architecture yet
-      // Set pending action for escape choice
+      // Escape choice is handled through attemptGulagEscape method
     },
 
     checkFor10TurnElimination: (playerId) => {
@@ -313,7 +310,6 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
             state.addGameLogEntry(
               `${player.name} used "Get out of Gulag free" card and was immediately released!`
             )
-            // TODO: Turn phase system not implemented in new architecture yet
           }
           break
         }
