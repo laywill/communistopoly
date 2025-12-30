@@ -39,6 +39,7 @@ export interface GulagSliceActions {
   clearVoucher: (playerId: string) => void
   addVoucher: (voucher: import('../../types/game').VoucherAgreement) => void
   removeVoucher: (voucherId: string) => void
+  expireVouchers: () => void
 
   // Bribe state
   addBribe: (bribe: import('../../types/game').BribeRequest) => void
@@ -134,6 +135,30 @@ export const createGulagSlice: StateCreator<
     const state = get()
     set({
       activeVouchers: state.activeVouchers.filter((v) => v.id !== voucherId)
+    })
+  },
+
+  expireVouchers: () => {
+    const state = get()
+    const currentRound = state.currentRound
+
+    // Find all players with expired vouchers
+    const expiredVouchers = state.players.filter(
+      (p) => p.vouchingFor !== null && p.vouchedByRound !== null && currentRound > p.vouchedByRound
+    )
+
+    // Clear each expired voucher
+    expiredVouchers.forEach((voucher) => {
+      const vouchee = state.players.find(p => p.id === voucher.vouchingFor)
+
+      if (vouchee) {
+        state.addGameLogEntry(
+          `${voucher.name}'s voucher for ${vouchee.name} has expired (3 rounds passed without incident)`
+        )
+      }
+
+      // Use the clearVoucher method to clear the voucher
+      get().clearVoucher(voucher.id)
     })
   },
 

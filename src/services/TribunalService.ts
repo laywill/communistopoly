@@ -29,11 +29,7 @@ export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalSe
       // Check eligibility
       const canDo = state.canDenounce(accuserId, accusedId)
       if (!canDo.allowed) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        state.addLogEntry({
-          type: 'system',
-          message: `Denouncement blocked: ${canDo.reason ?? 'Unknown reason'}`
-        })
+        state.addGameLogEntry(`Denouncement blocked: ${canDo.reason ?? 'Unknown reason'}`)
         return false
       }
 
@@ -43,13 +39,10 @@ export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalSe
       // Special case: Trying to denounce Stalin (though canDenounce should prevent this)
       if (accused?.isStalin) {
         // Send the accuser to Gulag for this counter-revolutionary act
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        state.sendToGulag(accuserId, 'stalinDecree', 'Attempted to denounce Comrade Stalin')
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        state.addLogEntry({
-          type: 'tribunal',
-          message: `${accuser?.name ?? 'Someone'} foolishly attempted to denounce Stalin! Sent to Gulag.`
-        })
+        state.setPlayerInGulag(accuserId, true)
+        state.setGulagTurns(accuserId, 0)
+        state.setPlayerPosition(accuserId, 10) // Gulag position
+        state.addGameLogEntry(`${accuser?.name ?? 'Someone'} foolishly attempted to denounce Stalin! Sent to Gulag.`)
         return false
       }
 
@@ -72,31 +65,33 @@ export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalSe
       const accuser = state.players.find((p) => p.id === tribunal.accuserId)
       const accused = state.players.find((p) => p.id === tribunal.accusedId)
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      state.addLogEntry({
-        type: 'tribunal',
-        message: `⚖️ VERDICT: ${verdict.toUpperCase()}`
-      })
+      state.addGameLogEntry(`⚖️ VERDICT: ${verdict.toUpperCase()}`)
 
       switch (verdict) {
         case 'guilty': {
           // Accused → Gulag
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          state.sendToGulag(tribunal.accusedId, 'denouncementGuilty', tribunal.crime)
+          state.setPlayerInGulag(tribunal.accusedId, true)
+          state.setGulagTurns(tribunal.accusedId, 0)
+          state.setPlayerPosition(tribunal.accusedId, 10) // Gulag position
+
+          // Demote accused player
+          if (accused) {
+            const ranks: ('proletariat' | 'partyMember' | 'commissar' | 'innerCircle')[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+            const currentIdx = ranks.indexOf(accused.rank)
+            if (currentIdx > 0) {
+              state.setPlayerRank(tribunal.accusedId, ranks[currentIdx - 1])
+            }
+          }
 
           // Accuser gets 100₽ informant bonus
           if (accuser) {
             state.updatePlayer(tribunal.accuserId, { rubles: accuser.rubles + 100 })
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            state.addLogEntry({
-              type: 'tribunal',
-              message: `${accuser.name} receives 100₽ informant bonus`
-            })
+            state.addGameLogEntry(`${accuser.name} receives 100₽ informant bonus`)
           }
 
           // If this was a Gulag inform, release the informer
           if (tribunal.isGulagInform === true) {
-             
+
             state.releaseFromGulag(tribunal.accuserId, 'successful informing')
           }
           break
@@ -104,44 +99,56 @@ export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalSe
 
         case 'innocent': {
           // Accuser loses rank for wasting Party's time
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          state.demotePlayer(tribunal.accuserId)
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          state.addLogEntry({
-            type: 'tribunal',
-            message: `${accuser?.name ?? 'Accuser'} demoted for wasting the Party's time!`
-          })
+          if (accuser) {
+            const ranks: ('proletariat' | 'partyMember' | 'commissar' | 'innerCircle')[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+            const currentIdx = ranks.indexOf(accuser.rank)
+            if (currentIdx > 0) {
+              state.setPlayerRank(tribunal.accuserId, ranks[currentIdx - 1])
+            }
+          }
+          state.addGameLogEntry(`${accuser?.name ?? 'Accuser'} demoted for wasting the Party's time!`)
 
           // If Gulag inform, add 2 turns to informer's sentence
           if (tribunal.isGulagInform === true && accuser) {
             const currentTurns = accuser.gulagTurns || 0
             state.updatePlayer(tribunal.accuserId, { gulagTurns: currentTurns + 2 })
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            state.addLogEntry({
-              type: 'tribunal',
-              message: `${accuser.name}'s Gulag sentence extended by 2 turns for false accusation`
-            })
+            state.addGameLogEntry(`${accuser.name}'s Gulag sentence extended by 2 turns for false accusation`)
           }
           break
         }
 
         case 'bothGuilty': {
           // Both go to Gulag
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          state.sendToGulag(tribunal.accuserId, 'denouncementGuilty', 'Both found guilty')
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          state.sendToGulag(tribunal.accusedId, 'denouncementGuilty', tribunal.crime)
+          state.setPlayerInGulag(tribunal.accuserId, true)
+          state.setGulagTurns(tribunal.accuserId, 0)
+          state.setPlayerPosition(tribunal.accuserId, 10)
+
+          state.setPlayerInGulag(tribunal.accusedId, true)
+          state.setGulagTurns(tribunal.accusedId, 0)
+          state.setPlayerPosition(tribunal.accusedId, 10)
+
+          // Demote both players
+          if (accuser) {
+            const ranks: ('proletariat' | 'partyMember' | 'commissar' | 'innerCircle')[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+            const currentIdx = ranks.indexOf(accuser.rank)
+            if (currentIdx > 0) {
+              state.setPlayerRank(tribunal.accuserId, ranks[currentIdx - 1])
+            }
+          }
+          if (accused) {
+            const ranks: ('proletariat' | 'partyMember' | 'commissar' | 'innerCircle')[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+            const currentIdx = ranks.indexOf(accused.rank)
+            if (currentIdx > 0) {
+              state.setPlayerRank(tribunal.accusedId, ranks[currentIdx - 1])
+            }
+          }
           break
         }
 
         case 'insufficientEvidence': {
           // Mark accused as under suspicion
           state.markUnderSuspicion(tribunal.accusedId)
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          state.addLogEntry({
-            type: 'tribunal',
-            message: `${accused?.name ?? 'Accused'} is now under suspicion (next denouncement needs no witnesses)`
-          })
+          state.addGameLogEntry(`${accused?.name ?? 'Accused'} is now under suspicion (next denouncement needs no witnesses)`)
           break
         }
       }
