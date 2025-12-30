@@ -84,7 +84,6 @@ type GameStore =
     createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => void
     answerCommunistTest: (playerId: string, correct: boolean) => void
     applyDirectiveEffect: (directiveId: string, playerId: string) => void
-    addLogEntry: (entry: string | { type?: string; message: string; playerId?: string }) => void // Alias for addGameLogEntry
   }
 
 // ============================================
@@ -150,13 +149,12 @@ export const useGameStore = create<GameStore>()(
         // ─────────────────────────────────────────
 
         initializePlayers: (playerSetups: { name: string; piece: import('../types/game').PieceType; isStalin: boolean }[]) => {
-          const state = get()
           set({ players: [] })
           playerSetups.forEach((setup) => {
-            const playerId = state.addPlayer(setup.name, setup.piece)
+            const playerId = get().addPlayer(setup.name, setup.piece)
             if (setup.isStalin) {
-              state.setStalin(playerId)
-              state.setStalinPlayerId(playerId)
+              get().setStalin(playerId)
+              get().setStalinPlayerId(playerId)
             }
           })
         },
@@ -370,15 +368,6 @@ export const useGameStore = create<GameStore>()(
         applyDirectiveEffect: () => {
           // This would need to be implemented based on directive effects
           // For now, leaving as a stub
-        },
-
-        // ─────────────────────────────────────────
-        // ALIASES FOR BACKWARD COMPATIBILITY
-        // ─────────────────────────────────────────
-
-        addLogEntry: (entry: string | { type?: string; message: string; playerId?: string }) => {
-          const message = typeof entry === 'string' ? entry : entry.message
-          get().addGameLogEntry(message)
         },
       }
 

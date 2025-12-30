@@ -11,7 +11,7 @@ interface InformOnPlayerModalProps {
 }
 
 export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ informerId }) => {
-  const { players, stalinPlayerId, updatePlayer, sendToGulag, setPendingAction, addLogEntry } = useGameStore();
+  const { players, stalinPlayerId, updatePlayer, sendToGulag, setPendingAction, addGameLogEntry } = useGameStore();
   const informer = players.find((p) => p.id === informerId);
 
   const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);
@@ -76,10 +76,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
 
       sendToGulag(selectedTargetId, 'denouncementGuilty');
 
-      addLogEntry({
-        type: 'gulag',
-        message: `${informer.name} informed on ${target.name}. Stalin found ${target.name} GUILTY. They have swapped places!`,
-      });
+      addGameLogEntry(`${informer.name} informed on ${target.name}. Stalin found ${target.name} GUILTY. They have swapped places!`);
 
       // Close modal after delay
       setTimeout(() => {
@@ -93,10 +90,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
         gulagTurns: informer.gulagTurns + 2,
       });
 
-      addLogEntry({
-        type: 'gulag',
-        message: `${informer.name} falsely accused ${target.name}. Stalin found them INNOCENT. ${informer.name}'s sentence extended by 2 turns!`,
-      });
+      addGameLogEntry(`${informer.name} falsely accused ${target.name}. Stalin found them INNOCENT. ${informer.name}'s sentence extended by 2 turns!`);
 
       // Close modal after delay
       setTimeout(() => {

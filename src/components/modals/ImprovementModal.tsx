@@ -18,7 +18,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
   const properties = useGameStore((state) => state.properties);
   const updatePlayer = useGameStore((state) => state.updatePlayer);
   const setCollectivizationLevel = useGameStore((state) => state.setCollectivizationLevel);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
+  const addGameLogEntry = useGameStore((state) => state.addGameLogEntry);
 
   const [, setSelectedProperty] = useState<number | null>(null);
 
@@ -120,11 +120,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
     // Increase collectivization level
     setCollectivizationLevel(spaceId, newLevel);
 
-    addLogEntry({
-      type: 'property',
-      message: `${player.name} improved ${space.name} to ${levelInfo.name} for ₽${String(cost)}`,
-      playerId,
-    });
+    addGameLogEntry(`${player.name} improved ${space.name} to ${levelInfo.name} for ₽${String(cost)}`);
 
     setSelectedProperty(null);
   };

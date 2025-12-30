@@ -27,7 +27,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
     setCollectivizationLevel,
     mortgageProperty,
     setPendingAction,
-    addLogEntry,
+    addGameLogEntry,
     createDebt,
     adjustTreasury,
     setTurnPhase,
@@ -109,11 +109,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
     setLiquidatedValue(liquidatedValue + sellValue);
 
-    addLogEntry({
-      type: 'property',
-      message: `${player.name} sold improvements on ${space.name} for ₽${String(sellValue)}`,
-      playerId,
-    });
+    addGameLogEntry(`${player.name} sold improvements on ${space.name} for ₽${String(sellValue)}`);
 
     // Check if debt is now paid
     if (player.rubles + sellValue >= remainingDebt) {
@@ -140,11 +136,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
     setLiquidatedValue(liquidatedValue + mortgageValue);
 
-    addLogEntry({
-      type: 'property',
-      message: `${player.name} mortgaged ${space.name} for ₽${String(mortgageValue)}`,
-      playerId,
-    });
+    addGameLogEntry(`${player.name} mortgaged ${space.name} for ₽${String(mortgageValue)}`);
 
     // Check if debt is now paid
     if (player.rubles + mortgageValue >= remainingDebt) {
@@ -177,11 +169,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
     const creditorName = creditorId === 'state' ? 'the State' : players.find((p) => p.id === creditorId)?.name ?? 'unknown';
 
-    addLogEntry({
-      type: 'payment',
-      message: `${player.name} paid ₽${String(remainingDebt)} to ${creditorName} by liquidating assets`,
-      playerId,
-    });
+    addGameLogEntry(`${player.name} paid ₽${String(remainingDebt)} to ${creditorName} by liquidating assets`);
 
     setPendingAction(null);
     setTurnPhase('post-turn');
@@ -193,20 +181,12 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
       // Player chose not to liquidate, create debt
       createDebt(playerId, creditorId, remainingDebt, reason);
 
-      addLogEntry({
-        type: 'payment',
-        message: `${player.name} chose not to liquidate assets. Debt of ₽${String(remainingDebt)} created. Must pay within one round!`,
-        playerId,
-      });
+      addGameLogEntry(`${player.name} chose not to liquidate assets. Debt of ₽${String(remainingDebt)} created. Must pay within one round!`);
     } else {
       // Insufficient assets, create debt anyway (will lead to Gulag)
       createDebt(playerId, creditorId, remainingDebt, reason);
 
-      addLogEntry({
-        type: 'payment',
-        message: `${player.name} has insufficient assets to pay ₽${String(remainingDebt)}. Debt created - face Gulag if not paid within one round!`,
-        playerId,
-      });
+      addGameLogEntry(`${player.name} has insufficient assets to pay ₽${String(remainingDebt)}. Debt created - face Gulag if not paid within one round!`);
     }
 
     setPendingAction(null);

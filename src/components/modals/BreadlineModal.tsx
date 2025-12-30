@@ -22,7 +22,7 @@ export function BreadlineModal({ landingPlayerId, onClose }: BreadlineModalProps
   const properties = useGameStore((state) => state.properties);
   const updatePlayer = useGameStore((state) => state.updatePlayer);
   const transferProperty = useGameStore((state) => state.transferProperty);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
+  const addGameLogEntry = useGameStore((state) => state.addGameLogEntry);
   const setPendingAction = useGameStore((state) => state.setPendingAction);
   const setTurnPhase = useGameStore((state) => state.setTurnPhase);
 
@@ -53,11 +53,7 @@ export function BreadlineModal({ landingPlayerId, onClose }: BreadlineModalProps
       updatePlayer(currentContributor.id, { rubles: currentContributor.rubles - 50 });
       updatePlayer(landingPlayerId, { rubles: landingPlayer.rubles + 50 });
 
-      addLogEntry({
-        type: 'payment',
-        message: `${currentContributor.name} contributed ₽50 to ${landingPlayer.name} at the Breadline`,
-        playerId: currentContributor.id,
-      });
+      addGameLogEntry(`${currentContributor.name} contributed ₽50 to ${landingPlayer.name} at the Breadline`);
 
       setContributions([...contributions, { playerId: currentContributor.id, type: 'rubles' }]);
     } else if (type === 'property') {
@@ -72,11 +68,7 @@ export function BreadlineModal({ landingPlayerId, onClose }: BreadlineModalProps
       const property = properties.find((p) => p.spaceId === parseInt(selectedPropertyId));
       const propertySpace = property ? getSpaceById(property.spaceId) : null;
 
-      addLogEntry({
-        type: 'property',
-        message: `${currentContributor.name} contributed ${propertySpace?.name ?? 'a property'} to ${landingPlayer.name} at the Breadline`,
-        playerId: currentContributor.id,
-      });
+      addGameLogEntry(`${currentContributor.name} contributed ${propertySpace?.name ?? 'a property'} to ${landingPlayer.name} at the Breadline`);
 
       setContributions([...contributions, { playerId: currentContributor.id, type: 'property', propertyId: selectedPropertyId }]);
       setSelectedPropertyId('');
@@ -85,20 +77,12 @@ export function BreadlineModal({ landingPlayerId, onClose }: BreadlineModalProps
       const updatedOwesFavour = [...currentContributor.owesFavourTo, landingPlayerId];
       updatePlayer(currentContributor.id, { owesFavourTo: updatedOwesFavour });
 
-      addLogEntry({
-        type: 'system',
-        message: `${currentContributor.name} owes a favour to ${landingPlayer.name} from the Breadline`,
-        playerId: currentContributor.id,
-      });
+      addGameLogEntry(`${currentContributor.name} owes a favour to ${landingPlayer.name} from the Breadline`);
 
       setContributions([...contributions, { playerId: currentContributor.id, type: 'favour' }]);
     } else {
       // type === 'refuse'
-      addLogEntry({
-        type: 'system',
-        message: `${currentContributor.name} REFUSED to contribute at the Breadline - subject to denouncement!`,
-        playerId: currentContributor.id,
-      });
+      addGameLogEntry(`${currentContributor.name} REFUSED to contribute at the Breadline - subject to denouncement!`);
 
       setContributions([...contributions, { playerId: currentContributor.id, type: 'refuse' }]);
     }

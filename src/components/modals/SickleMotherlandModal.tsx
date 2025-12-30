@@ -12,7 +12,7 @@ interface SickleMotherlandModalProps {
 export function SickleMotherlandModal({ playerId, onClose }: SickleMotherlandModalProps) {
   const players = useGameStore((state) => state.players);
   const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
+  const addGameLogEntry = useGameStore((state) => state.addGameLogEntry);
   const rollDice = useGameStore((state) => state.rollDice);
 
   const player = players.find((p) => p.id === playerId);
@@ -22,11 +22,7 @@ export function SickleMotherlandModal({ playerId, onClose }: SickleMotherlandMod
   }
 
   const handleAnnounce = () => {
-    addLogEntry({
-      type: 'system',
-      message: `${player.name} announces: "FOR THE MOTHERLAND!" 🌾`,
-      playerId: player.id,
-    });
+    addGameLogEntry(`${player.name} announces: "FOR THE MOTHERLAND!" 🌾`);
     updatePlayer(player.id, { sickleMotherlandForgotten: false });
     onClose();
     // Roll dice after announcement
@@ -39,17 +35,9 @@ export function SickleMotherlandModal({ playerId, onClose }: SickleMotherlandMod
         rubles: player.rubles - 25,
         sickleMotherlandForgotten: true
       });
-      addLogEntry({
-        type: 'payment',
-        message: `${player.name} forgot to announce "For the Motherland!" and paid ₽25 fine`,
-        playerId: player.id,
-      });
+      addGameLogEntry(`${player.name} forgot to announce "For the Motherland!" and paid ₽25 fine`);
     } else {
-      addLogEntry({
-        type: 'system',
-        message: `${player.name} cannot afford the ₽25 fine for forgetting the announcement - Sickle ability penalty!`,
-        playerId: player.id,
-      });
+      addGameLogEntry(`${player.name} cannot afford the ₽25 fine for forgetting the announcement - Sickle ability penalty!`);
       updatePlayer(player.id, { sickleMotherlandForgotten: true });
     }
     onClose();
