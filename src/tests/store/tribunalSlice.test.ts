@@ -119,7 +119,7 @@ describe('Tribunal Slice', () => {
       const store = useGameStore.getState()
 
       // Set player2 as Lenin Statue at Party Member rank
-      store.updatePlayer(player2.id, { piece: 'leninStatue', rank: 'partyMember' })
+      store.updatePlayer(player2.id, { piece: 'statueOfLenin', rank: 'partyMember' })
 
       // player1 (Proletariat) tries to denounce Lenin Statue - should fail
       const result1 = store.canDenounce(player1.id, player2.id)

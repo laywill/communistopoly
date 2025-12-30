@@ -129,12 +129,12 @@ export const useGameStore = create<GameStore>()(
       // STEP 1: Create all slices
       // ─────────────────────────────────────────
       const slices = {
-        ...createCardSlice(set, get, api),
-        ...createGulagSlice(set, get, api),
-        ...createPropertySlice(set, get, api),
-        ...createTribunalSlice(set, get, api),
-        ...createPlayerSlice(set, get, api),
-        ...createGameFlowSlice(set, get, api),
+        ...createCardSlice(set as any, get as any, api as any),
+        ...createGulagSlice(set as any, get as any, api as any),
+        ...createPropertySlice(set as any, get as any, api as any),
+        ...createTribunalSlice(set as any, get as any, api as any),
+        ...createPlayerSlice(set as any, get as any, api as any),
+        ...createGameFlowSlice(set as any, get as any, api as any),
       }
 
       // ─────────────────────────────────────────

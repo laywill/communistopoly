@@ -2,16 +2,14 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import { StateCreator } from 'zustand'
-import type { GameState, LogEntry, LogEntryType } from '../../types/game'
+import type { GameState, LogEntry, LogEntryType, GamePhase } from '../../types/game'
 
 // ============================================
 // TYPES
 // ============================================
 
-export type GamePhase = 'welcome' | 'setup' | 'playing' | 'paused' | 'ended' | 'pre-roll' | 'moving' | 'post-turn' | 'rolling' | 'resolving'
-
-// Re-export LogEntry type for convenience
-export type GameLogEntry = LogEntry
+// Re-export for convenience
+export type { GamePhase, LogEntry as GameLogEntry }
 
 // ============================================
 // STATE
@@ -95,7 +93,7 @@ export const createGameFlowSlice: StateCreator<
   ...initialGameFlowState,
 
   setGamePhase: (phase) => {
-    set({ gamePhase: phase })
+    set({ gamePhase: phase } as Partial<GameState>)
   },
 
   setWinner: (playerId, reason) => {
@@ -103,19 +101,19 @@ export const createGameFlowSlice: StateCreator<
       winner: playerId,
       winReason: reason,
       gamePhase: 'ended',
-    })
+    } as Partial<GameState>)
   },
 
   setTurnOrder: (playerIds) => {
-    set({ turnOrder: playerIds })
+    set({ turnOrder: playerIds } as Partial<GameState>)
   },
 
   setCurrentTurnIndex: (index) => {
-    set({ currentTurnIndex: index })
+    set({ currentTurnIndex: index } as Partial<GameState>)
   },
 
   setDiceRoll: (roll) => {
-    set({ diceRoll: roll })
+    set({ diceRoll: roll } as Partial<GameState>)
   },
 
   setDoublesCount: (count) => {
@@ -127,8 +125,9 @@ export const createGameFlowSlice: StateCreator<
   },
 
   incrementRound: () => {
-    set((state: GameFlowSliceState) => {
-      const newRound = (state.currentRound) + 1
+    set((state) => {
+      const flowState = state as unknown as GameFlowSliceState
+      const newRound = (flowState.currentRound) + 1
       const entry: LogEntry = {
         id: `${String(Date.now())}-${Math.random().toString(36).substring(2, 11)}`,
         message: `═══ Round ${String(newRound)} begins ═══`,
@@ -137,17 +136,19 @@ export const createGameFlowSlice: StateCreator<
       }
       return {
         currentRound: newRound,
-        gameLog: [entry, ...(state.gameLog)].slice(0, MAX_LOG_ENTRIES),
-      }
+        gameLog: [entry, ...(flowState.gameLog)].slice(0, MAX_LOG_ENTRIES),
+      } as Partial<GameState>
     })
 
     // Reset denouncement counters for all players at start of new round
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    get().resetDenouncementCounts()
+    const fullState = get() as unknown as { resetDenouncementCounts?: () => void }
+    if (fullState.resetDenouncementCounts) {
+      fullState.resetDenouncementCounts()
+    }
   },
 
   setRound: (round) => {
-    set({ currentRound: round })
+    set({ currentRound: round } as Partial<GameState>)
   },
 
   addToStateTreasury: (amount) => {

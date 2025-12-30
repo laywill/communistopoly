@@ -137,7 +137,7 @@ export const createTribunalSlice: StateCreator<
     }
 
     // Lenin Statue: Cannot be denounced by lower ranks
-    if (accused.piece === 'leninStatue') {
+    if (accused.piece === 'statueOfLenin') {
       const accuserRankIndex = getRankIndex(accuser.rank)
       const accusedRankIndex = getRankIndex(accused.rank)
       if (accuserRankIndex < accusedRankIndex) {
