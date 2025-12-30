@@ -16,7 +16,7 @@ export default function StalinPanel() {
   const demotePlayer = useGameStore((state) => state.demotePlayer);
   const initiateGreatPurge = useGameStore((state) => state.initiateGreatPurge);
   const initiateFiveYearPlan = useGameStore((state) => state.initiateFiveYearPlan);
-  const grantHeroOfSovietUnion = useGameStore((state) => state.grantHeroOfSovietUnion);
+  const grantHeroOfSovietUnion = useGameStore((state) => state.greatHeroOfSovietUnion);
   const greatPurgeUsed = useGameStore((state) => state.greatPurgeUsed);
   const activeFiveYearPlan = useGameStore((state) => state.activeFiveYearPlan);
 
@@ -84,7 +84,8 @@ export default function StalinPanel() {
     const target = parseInt(fiveYearTarget);
     const duration = parseInt(fiveYearDuration);
     if (!isNaN(target) && !isNaN(duration) && target > 0 && duration > 0) {
-      initiateFiveYearPlan(target, duration);
+      const deadline = new Date(Date.now() + duration * 60 * 60 * 1000); // Convert hours to milliseconds
+      initiateFiveYearPlan(target, deadline);
     }
   };
 

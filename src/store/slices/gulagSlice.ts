@@ -1,8 +1,6 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-
 import { StateCreator } from 'zustand'
 import type { GameState, GulagReason } from '../../types/game'
 
@@ -147,16 +145,14 @@ export const createGulagSlice: StateCreator<
 
     // Clear each expired voucher
     expiredVouchers.forEach((voucher) => {
-      const vouchee = state.players.find(p => p.id === voucher.vouchingFor)
-
-      if (vouchee) {
-        state.addGameLogEntry(
-          `${voucher.name}'s voucher for ${vouchee.name} has expired (3 rounds passed without incident)`
+      // Clear the voucher (logging should be done by calling service layer)
+      set((s) => ({
+        players: s.players.map((p) =>
+          p.id === voucher.id
+            ? { ...p, vouchingFor: null, vouchedByRound: null }
+            : p
         )
-      }
-
-      // Use the clearVoucher method to clear the voucher
-      get().clearVoucher(voucher.id)
+      }))
     })
   },
 

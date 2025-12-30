@@ -11,16 +11,16 @@ interface ReviewConfessionModalProps {
 export default function ReviewConfessionModal({ confessionId }: ReviewConfessionModalProps) {
   const confession = useGameStore((state) => state.confessions.find((c: import('../../types/game').Confession) => c.id === confessionId));
   const prisoner = useGameStore((state) => state.players.find((p: import('../../types/game').Player) => p.id === confession?.prisonerId));
-  const reviewConfession = useGameStore((state) => state.reviewConfession);
+  const reviewConfessions = useGameStore((state) => state.reviewConfessions);
 
   if (!confession || !prisoner) return null;
 
   const handleAccept = () => {
-    reviewConfession(confessionId, true);
+    reviewConfessions(confessionId, true);
   };
 
   const handleReject = () => {
-    reviewConfession(confessionId, false);
+    reviewConfessions(confessionId, false);
   };
 
   return (

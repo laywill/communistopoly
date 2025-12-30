@@ -83,6 +83,7 @@ function createInitialPlayer (name: string, piece: PieceType): Player {
     properties: [],
     inGulag: false,
     gulagTurns: 0,
+    gulagReason: null,
     isEliminated: false,
     isStalin: false,
     correctTestAnswers: 0,

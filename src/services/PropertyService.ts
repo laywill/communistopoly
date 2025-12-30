@@ -241,7 +241,7 @@ export function createPropertyService(get: StoreGetter<SlicesStore>): PropertySe
         const creditorId = property.custodianId
 
         const debt: import('../types/game').Debt = {
-          id: `debt-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+          id: `debt-${String(Date.now())}-${Math.random().toString(36).substring(2, 11)}`,
           debtorId: payerId,
           creditorId,
           amount: quota,

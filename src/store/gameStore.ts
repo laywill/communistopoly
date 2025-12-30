@@ -17,7 +17,16 @@ import {
   type PropertySlice,
   createTribunalSlice,
   initialTribunalState,
-  type TribunalSlice
+  type TribunalSlice,
+  createTurnPhaseSlice,
+  initialTurnPhaseState,
+  type TurnPhaseSlice,
+  createStalinSlice,
+  initialStalinState,
+  type StalinSlice,
+  createTradeSlice,
+  initialTradeState,
+  type TradeSlice
 } from './slices'
 import { createPlayerSlice, initialPlayerState, type PlayerSlice } from './slices/playerSlice'
 import { createGameFlowSlice, initialGameFlowState, type GameFlowSlice } from './slices/gameFlowSlice'
@@ -49,14 +58,34 @@ type GameStore =
   & TribunalSlice
   & PlayerSlice
   & GameFlowSlice
+  & TurnPhaseSlice
+  & StalinSlice
+  & TradeSlice
   // Services
   & GulagService
   & PropertyService
   & TurnManager
   & StoyService
   & TribunalService
-  // Reset
-  & { resetGame: () => void }
+  // Additional methods
+  & {
+    resetGame: () => void
+    initializePlayers: (playerSetups: { name: string; piece: import('../types/game').PieceType; isStalin: boolean }[]) => void
+    startNewGame: () => void
+    tankRequisition: (playerId: string, targetId: string) => void
+    sickleHarvest: (playerId: string, propertyId: number) => void
+    ironCurtainDisappear: (playerId: string, propertyId: number) => void
+    leninSpeech: (playerId: string, applauders: string[]) => void
+    movePlayer: (playerId: string, spaces: number) => void
+    handleStoyPilfer: (playerId: string, success: boolean) => void
+    demotePlayer: (playerId: string) => void
+    promotePlayer: (playerId: string) => void
+    adjustTreasury: (amount: number, reason?: string) => void
+    createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => void
+    answerCommunistTest: (playerId: string, correct: boolean) => void
+    applyDirectiveEffect: (directiveId: string, playerId: string) => void
+    addLogEntry: (entry: string | { type?: string; message: string; playerId?: string }) => void // Alias for addGameLogEntry
+  }
 
 // ============================================
 // STORE CREATION
@@ -75,6 +104,9 @@ export const useGameStore = create<GameStore>()(
         ...createTribunalSlice(set, get, api),
         ...createPlayerSlice(set, get, api),
         ...createGameFlowSlice(set, get, api),
+        ...createTurnPhaseSlice(set, get, api),
+        ...createStalinSlice(set, get, api),
+        ...createTradeSlice(set, get, api),
       }
 
       // ─────────────────────────────────────────
@@ -107,6 +139,9 @@ export const useGameStore = create<GameStore>()(
             ...initialTribunalState,
             ...initialPlayerState,
             ...initialGameFlowState,
+            ...initialTurnPhaseState,
+            ...initialStalinState,
+            ...initialTradeState,
           })
         },
 
@@ -121,6 +156,7 @@ export const useGameStore = create<GameStore>()(
             const playerId = state.addPlayer(setup.name, setup.piece)
             if (setup.isStalin) {
               state.setStalin(playerId)
+              state.setStalinPlayerId(playerId)
             }
           })
         },
@@ -235,16 +271,6 @@ export const useGameStore = create<GameStore>()(
         },
 
         // ─────────────────────────────────────────
-        // PENDING ACTIONS
-        // ─────────────────────────────────────────
-
-        pendingAction: null as import('../types/game').PendingAction | null,
-
-        setPendingAction: (action: import('../types/game').PendingAction | null) => {
-          set({ pendingAction: action })
-        },
-
-        // ─────────────────────────────────────────
         // RANK MANAGEMENT
         // ─────────────────────────────────────────
 
@@ -264,6 +290,95 @@ export const useGameStore = create<GameStore>()(
           if (newRank !== player.rank) {
             get().setPlayerRank(playerId, newRank)
           }
+        },
+
+        // ─────────────────────────────────────────
+        // TREASURY MANAGEMENT
+        // ─────────────────────────────────────────
+
+        adjustTreasury: (amount: number, reason?: string) => {
+          if (amount > 0) {
+            get().addToStateTreasury(amount)
+          } else {
+            get().removeFromStateTreasury(Math.abs(amount))
+          }
+          if (reason) {
+            get().addGameLogEntry(reason)
+          }
+        },
+
+        // ─────────────────────────────────────────
+        // DEBT MANAGEMENT
+        // ─────────────────────────────────────────
+
+        createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => {
+          const debtor = get().getPlayer(debtorId)
+          if (!debtor) return
+
+          const debt: import('../types/game').Debt = {
+            id: `debt-${String(Date.now())}-${Math.random().toString(36).substring(2, 11)}`,
+            debtorId,
+            creditorId,
+            amount,
+            createdAtRound: get().currentRound,
+            reason,
+          }
+
+          get().updatePlayer(debtorId, {
+            debt,
+            debtCreatedAtRound: get().currentRound,
+          })
+        },
+
+        // ─────────────────────────────────────────
+        // CARD EFFECTS
+        // ─────────────────────────────────────────
+
+        answerCommunistTest: (playerId: string, correct: boolean) => {
+          const player = get().getPlayer(playerId)
+          if (!player) return
+
+          if (correct) {
+            const newCorrect = player.correctTestAnswers + 1
+            get().updatePlayer(playerId, {
+              correctTestAnswers: newCorrect,
+              consecutiveFailedTests: 0,
+            })
+            get().addGameLogEntry(`${player.name} passed the Communist Test!`)
+
+            // Check for rank promotion (3 correct = promotion)
+            if (newCorrect >= 3 && player.rank !== 'innerCircle') {
+              get().promotePlayer(playerId)
+              get().updatePlayer(playerId, { correctTestAnswers: 0 })
+            }
+          } else {
+            const newFailed = player.consecutiveFailedTests + 1
+            get().updatePlayer(playerId, {
+              consecutiveFailedTests: newFailed,
+              correctTestAnswers: 0,
+            })
+            get().addGameLogEntry(`${player.name} failed the Communist Test!`)
+
+            // Check for demotion (3 consecutive fails = demotion)
+            if (newFailed >= 3) {
+              get().demotePlayer(playerId)
+              get().updatePlayer(playerId, { consecutiveFailedTests: 0 })
+            }
+          }
+        },
+
+        applyDirectiveEffect: () => {
+          // This would need to be implemented based on directive effects
+          // For now, leaving as a stub
+        },
+
+        // ─────────────────────────────────────────
+        // ALIASES FOR BACKWARD COMPATIBILITY
+        // ─────────────────────────────────────────
+
+        addLogEntry: (entry: string | { type?: string; message: string; playerId?: string }) => {
+          const message = typeof entry === 'string' ? entry : entry.message
+          get().addGameLogEntry(message)
         },
       }
 
@@ -287,11 +402,30 @@ export const useGameStore = create<GameStore>()(
         stateTreasury: state.stateTreasury,
         winner: state.winner,
         winReason: state.winReason,
+        winnerId: state.winnerId,
+        gameEndCondition: state.gameEndCondition,
         diceRoll: state.diceRoll,
         doublesCount: state.doublesCount,
 
+        // Turn phase
+        turnPhase: state.turnPhase,
+        hasRolled: state.hasRolled,
+        isRolling: state.isRolling,
+        pendingAction: state.pendingAction,
+
+        // Stalin
+        stalinPlayerId: state.stalinPlayerId,
+        greatPurgeUsed: state.greatPurgeUsed,
+        activeGreatPurge: state.activeGreatPurge,
+        activeFiveYearPlan: state.activeFiveYearPlan,
+        heroesOfSovietUnion: state.heroesOfSovietUnion,
+
+        // Trade
+        activeTradeOffers: state.activeTradeOffers,
+
         // Cards
         partyDirectiveDeck: state.partyDirectiveDeck,
+        partyDirectiveDiscard: state.partyDirectiveDiscard,
         communistTestUsedQuestions: Array.from(state.communistTestUsedQuestions),
 
         // Log (limited)
@@ -299,6 +433,10 @@ export const useGameStore = create<GameStore>()(
 
         // Tribunal (if in progress)
         currentTribunal: state.currentTribunal,
+        confessions: state.confessions,
+
+        // Gulag
+        activeVouchers: state.activeVouchers,
       }),
       onRehydrateStorage: () => (state) => {
         if (state && Array.isArray(state.communistTestUsedQuestions)) {

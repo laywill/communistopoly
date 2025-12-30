@@ -157,7 +157,7 @@ export function usePieceAbility (player: Player | undefined) {
 
     // Log the roll
     gameStore.addGameLogEntry(
-      `${player.name} used Vodka ability: rolled [${threeDice.join(', ')}], chose [${best.dice.join(', ')}] (excluded ${threeDice[best.excluded]})`
+      `${player.name} used Vodka ability: rolled [${threeDice.join(', ')}], chose [${best.dice.join(', ')}] (excluded ${String(threeDice[best.excluded])})`
     )
   }
 

@@ -2,7 +2,14 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import { StateCreator } from 'zustand'
-import type { GameState, LogEntry, LogEntryType, GamePhase } from '../../types/game'
+import type {
+  GameState,
+  LogEntry,
+  LogEntryType,
+  GamePhase,
+  GameEndCondition,
+  GameStatistics
+} from '../../types/game'
 
 // ============================================
 // TYPES
@@ -26,6 +33,19 @@ export interface GameFlowSliceState {
   winner: string | null
   winReason: string | null
   stateTreasury: number
+
+  // Game end state
+  gameEndCondition: GameEndCondition | null
+  winnerId: string | null
+  showEndScreen: boolean
+
+  // Unanimous end vote
+  endVoteInProgress: boolean
+  endVoteInitiator: string | null
+  endVotes: Record<string, boolean>
+
+  // Statistics
+  gameStatistics: GameStatistics
 }
 
 export const initialGameFlowState: GameFlowSliceState = {
@@ -39,6 +59,27 @@ export const initialGameFlowState: GameFlowSliceState = {
   winner: null,
   winReason: null,
   stateTreasury: 0,
+
+  // Game end state
+  gameEndCondition: null,
+  winnerId: null,
+  showEndScreen: false,
+
+  // Unanimous end vote
+  endVoteInProgress: false,
+  endVoteInitiator: null,
+  endVotes: {},
+
+  // Statistics
+  gameStatistics: {
+    gameStartTime: new Date(),
+    totalTurns: 0,
+    playerStats: {},
+    totalDenouncements: 0,
+    totalTribunals: 0,
+    totalGulagSentences: 0,
+    stateTreasuryPeak: 0,
+  },
 }
 
 const MAX_LOG_ENTRIES = 100
@@ -73,6 +114,19 @@ export interface GameFlowSliceActions {
   addGameLogEntry: (message: string) => void
   clearGameLog: () => void
 
+  // Game end
+  setGameEndCondition: (condition: GameEndCondition | null) => void
+  setWinnerId: (winnerId: string | null) => void
+  setShowEndScreen: (show: boolean) => void
+
+  // Unanimous end vote
+  startEndVote: (initiatorId: string) => void
+  recordEndVote: (playerId: string, vote: boolean) => void
+  clearEndVote: () => void
+
+  // Statistics
+  updateStatistics: (updates: Partial<GameStatistics>) => void
+
   // Queries
   getCurrentPlayerId: () => string | undefined
   isPlayersTurn: (playerId: string) => boolean
@@ -99,13 +153,14 @@ export const createGameFlowSlice: StateCreator<
   setWinner: (playerId, reason) => {
     set({
       winner: playerId,
+      winnerId: playerId,
       winReason: reason,
       gamePhase: 'ended',
-    })
+    } as Partial<GameState>)
   },
 
   setTurnOrder: (playerIds) => {
-    set({ turnOrder: playerIds })
+    set({ turnOrder: playerIds } as Partial<GameState>)
   },
 
   setCurrentTurnIndex: (index) => {
@@ -180,13 +235,62 @@ export const createGameFlowSlice: StateCreator<
   },
 
   getCurrentPlayerId: () => {
-    const state = get() as GameFlowSliceState
+    const state = get() as unknown as GameFlowSliceState
     return state.turnOrder[state.currentTurnIndex] ?? undefined
   },
 
   isPlayersTurn: (playerId) => {
-    const state = get() as GameFlowSliceState
+    const state = get() as unknown as GameFlowSliceState
     const currentPlayerId = state.turnOrder[state.currentTurnIndex]
     return currentPlayerId === playerId
+  },
+
+  // Game end
+  setGameEndCondition: (condition) => {
+    set({ gameEndCondition: condition })
+  },
+
+  setWinnerId: (winnerId) => {
+    set({ winnerId })
+  },
+
+  setShowEndScreen: (show) => {
+    set({ showEndScreen: show })
+  },
+
+  // Unanimous end vote
+  startEndVote: (initiatorId) => {
+    set({
+      endVoteInProgress: true,
+      endVoteInitiator: initiatorId,
+      endVotes: {},
+    })
+  },
+
+  recordEndVote: (playerId, vote) => {
+    set((state) => ({
+      endVotes: {
+        ...state.endVotes,
+        [playerId]: vote,
+      },
+    }))
+  },
+
+  clearEndVote: () => {
+    set({
+      endVoteInProgress: false,
+      endVoteInitiator: null,
+      endVotes: {},
+    })
+  },
+
+  // Statistics
+  updateStatistics: (updates) => {
+    set((state) => ({
+      gameStatistics: {
+        ...state.gameStatistics,
+        ...updates,
+      },
+    }))
   },
 })

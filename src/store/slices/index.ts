@@ -20,6 +20,15 @@ export type { PlayerSlice, PlayerSliceState, PlayerSliceActions } from './player
 export { createGameFlowSlice, initialGameFlowState } from './gameFlowSlice'
 export type { GameFlowSlice, GameFlowSliceState, GameFlowSliceActions } from './gameFlowSlice'
 
+export { createTurnPhaseSlice, initialTurnPhaseState } from './turnPhaseSlice'
+export type { TurnPhaseSlice, TurnPhaseSliceState, TurnPhaseSliceActions } from './turnPhaseSlice'
+
+export { createStalinSlice, initialStalinState } from './stalinSlice'
+export type { StalinSlice, StalinSliceState, StalinSliceActions } from './stalinSlice'
+
+export { createTradeSlice, initialTradeState } from './tradeSlice'
+export type { TradeSlice, TradeSliceState, TradeSliceActions } from './tradeSlice'
+
 // Combined slice type (all slices together)
 import type { CardSlice } from './cardSlice'
 import type { GulagSlice } from './gulagSlice'
@@ -27,4 +36,7 @@ import type { PropertySlice } from './propertySlice'
 import type { TribunalSlice } from './tribunalSlice'
 import type { PlayerSlice } from './playerSlice'
 import type { GameFlowSlice } from './gameFlowSlice'
-export type AllSlices = CardSlice & GulagSlice & PropertySlice & TribunalSlice & PlayerSlice & GameFlowSlice
+import type { TurnPhaseSlice } from './turnPhaseSlice'
+import type { StalinSlice } from './stalinSlice'
+import type { TradeSlice } from './tradeSlice'
+export type AllSlices = CardSlice & GulagSlice & PropertySlice & TribunalSlice & PlayerSlice & GameFlowSlice & TurnPhaseSlice & StalinSlice & TradeSlice

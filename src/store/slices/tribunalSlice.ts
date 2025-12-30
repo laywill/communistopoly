@@ -40,10 +40,12 @@ export interface Tribunal {
 
 export interface TribunalSliceState {
   currentTribunal: Tribunal | null
+  confessions: import('../../types/game').Confession[]
 }
 
 export const initialTribunalState: TribunalSliceState = {
   currentTribunal: null,
+  confessions: [],
 }
 
 // ============================================
@@ -72,6 +74,12 @@ export interface TribunalSliceActions {
   clearTribunal: () => void
   markUnderSuspicion: (playerId: string) => void
   incrementDenouncementCount: (playerId: string) => void
+
+  // Confessions
+  submitConfession: (confession: import('../../types/game').Confession) => void
+  reviewConfessions: (confessionId: string, accepted: boolean) => void
+  clearConfession: (confessionId: string) => void
+  getPendingConfessions: () => import('../../types/game').Confession[]
 }
 
 export type TribunalSlice = TribunalSliceState & TribunalSliceActions
@@ -328,6 +336,33 @@ export const createTribunalSlice: StateCreator<
       tribunal.witnesses.prosecution.includes(playerId) ||
       tribunal.witnesses.defense.includes(playerId)
     )
+  },
+
+  // Confessions
+  submitConfession: (confession) => {
+    set((state) => ({
+      confessions: [...state.confessions, confession],
+    }))
+  },
+
+  reviewConfessions: (confessionId, accepted) => {
+    set((state) => ({
+      confessions: state.confessions.map((c) =>
+        c.id === confessionId
+          ? { ...c, reviewed: true, accepted }
+          : c
+      ),
+    }))
+  },
+
+  clearConfession: (confessionId) => {
+    set((state) => ({
+      confessions: state.confessions.filter((c) => c.id !== confessionId),
+    }))
+  },
+
+  getPendingConfessions: () => {
+    return get().confessions.filter((c) => !c.reviewed)
   },
 
 })
