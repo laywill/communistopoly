@@ -2,9 +2,10 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import type { StoreGetter, GameService, SlicesStore } from './types'
-import type { GulagReason, PartyRank } from '../types/game'
+import type { GulagReason } from '../types/game'
+import { GULAG_POSITION } from '../data/spaces'
+import { demoteRank } from '../utils/rankUtils'
 
-const GULAG_POSITION = 10
 const REHABILITATION_COST = 500
 const MIN_BRIBE_AMOUNT = 200
 const RAILWAY_POSITIONS = [5, 15, 25, 35]
@@ -166,11 +167,9 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
         )
 
         // Still demote player (loses rank but avoids Gulag)
-        const ranks: PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-        const currentIdx = ranks.indexOf(player.rank)
-        if (currentIdx > 0 && currentIdx <= ranks.length - 1) {
-           
-          state.setPlayerRank(playerId, ranks[currentIdx - 1])
+        const newRank = demoteRank(player.rank)
+        if (newRank !== player.rank) {
+          state.setPlayerRank(playerId, newRank)
         }
 
         // TODO: Turn phase system not implemented in new architecture yet
@@ -187,11 +186,9 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
       state.setPlayerPosition(playerId, GULAG_POSITION)
 
       // Demote player
-      const ranks: PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-      const currentIdx = ranks.indexOf(player.rank)
-      if (currentIdx > 0 && currentIdx <= ranks.length - 1) {
-         
-        state.setPlayerRank(playerId, ranks[currentIdx - 1])
+      const newRank = demoteRank(player.rank)
+      if (newRank !== player.rank) {
+        state.setPlayerRank(playerId, newRank)
       }
 
       // Add log entry
@@ -265,11 +262,9 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
             state.setGulagTurns(playerId, 0)
 
             // Demote player
-            const ranks: PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-            const currentIdx = ranks.indexOf(player.rank)
-            if (currentIdx > 0 && currentIdx <= ranks.length - 1) {
-               
-              state.setPlayerRank(playerId, ranks[currentIdx - 1])
+            const newRank = demoteRank(player.rank)
+            if (newRank !== player.rank) {
+              state.setPlayerRank(playerId, newRank)
             }
 
             state.addGameLogEntry(

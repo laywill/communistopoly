@@ -25,6 +25,9 @@ import { createGameFlowSlice, initialGameFlowState, type GameFlowSlice } from '.
 // Data
 import { BOARD_SPACES } from '../data/spaces'
 
+// Utils
+import { demoteRank, promoteRank } from '../utils/rankUtils'
+
 // Services
 import { createGulagService, type GulagService } from '../services/GulagService'
 import { createPropertyService, type PropertyService } from '../services/PropertyService'
@@ -84,7 +87,7 @@ export const useGameStore = create<GameStore>()(
       const propertyService = createPropertyService(() => get() as unknown as SlicesStore)
       const turnManager = createTurnManager(() => get() as unknown as SlicesStore)
       const stoyService = createStoyService(() => get() as unknown as SlicesStore)
-      const tribunalService = createTribunalService(() => get() as unknown as SlicesStore)
+      const tribunalService = createTribunalService(() => get() as unknown as SlicesStore, gulagService)
 
       // ─────────────────────────────────────────
       // STEP 3: Compose complete store
@@ -249,20 +252,18 @@ export const useGameStore = create<GameStore>()(
         demotePlayer: (playerId: string) => {
           const player = get().getPlayer(playerId)
           if (!player) return
-          const ranks: import('../types/game').PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-          const currentIdx = ranks.indexOf(player.rank)
-          if (currentIdx > 0) {
-            get().setPlayerRank(playerId, ranks[currentIdx - 1])
+          const newRank = demoteRank(player.rank)
+          if (newRank !== player.rank) {
+            get().setPlayerRank(playerId, newRank)
           }
         },
 
         promotePlayer: (playerId: string) => {
           const player = get().getPlayer(playerId)
           if (!player) return
-          const ranks: import('../types/game').PartyRank[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-          const currentIdx = ranks.indexOf(player.rank)
-          if (currentIdx < ranks.length - 1) {
-            get().setPlayerRank(playerId, ranks[currentIdx + 1])
+          const newRank = promoteRank(player.rank)
+          if (newRank !== player.rank) {
+            get().setPlayerRank(playerId, newRank)
           }
         },
       }

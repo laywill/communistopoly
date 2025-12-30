@@ -3,6 +3,12 @@
 
 import { BoardSpace } from '../types/game'
 
+// Board position constants
+export const GULAG_POSITION = 10
+export const STOY_POSITION = 0
+export const BREADLINE_POSITION = 20
+export const ENEMY_OF_STATE_POSITION = 30
+
 export const BOARD_SPACES: BoardSpace[] = [
   // Position 0 - Corner: STOY (GO)
   {

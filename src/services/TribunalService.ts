@@ -3,6 +3,8 @@
 
 import type { StoreGetter, GameService, SlicesStore } from './types'
 import type { TribunalVerdict } from '../store/slices/tribunalSlice'
+import type { GulagService } from './GulagService'
+import { demoteRank } from '../utils/rankUtils'
 
 export interface TribunalService extends GameService {
   /**
@@ -19,7 +21,10 @@ export interface TribunalService extends GameService {
   renderVerdict: (verdict: TribunalVerdict) => void
 }
 
-export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalService {
+export function createTribunalService(
+  get: StoreGetter<SlicesStore>,
+  gulagService: GulagService
+): TribunalService {
   const service: TribunalService = {
     name: 'TribunalService',
 
@@ -38,11 +43,9 @@ export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalSe
 
       // Special case: Trying to denounce Stalin (though canDenounce should prevent this)
       if (accused?.isStalin) {
-        // Send the accuser to Gulag for this counter-revolutionary act
-        state.setPlayerInGulag(accuserId, true)
-        state.setGulagTurns(accuserId, 0)
-        state.setPlayerPosition(accuserId, 10) // Gulag position
-        state.addGameLogEntry(`${accuser?.name ?? 'Someone'} foolishly attempted to denounce Stalin! Sent to Gulag.`)
+        // Use GulagService instead of calling slices directly
+        gulagService.sendToGulag(accuserId, 'stalinDecree', 'Attempted to denounce Stalin')
+        state.addGameLogEntry(`${accuser?.name ?? 'Someone'} foolishly attempted to denounce Stalin!`)
         return false
       }
 
@@ -69,19 +72,8 @@ export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalSe
 
       switch (verdict) {
         case 'guilty': {
-          // Accused → Gulag
-          state.setPlayerInGulag(tribunal.accusedId, true)
-          state.setGulagTurns(tribunal.accusedId, 0)
-          state.setPlayerPosition(tribunal.accusedId, 10) // Gulag position
-
-          // Demote accused player
-          if (accused) {
-            const ranks: ('proletariat' | 'partyMember' | 'commissar' | 'innerCircle')[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-            const currentIdx = ranks.indexOf(accused.rank)
-            if (currentIdx > 0) {
-              state.setPlayerRank(tribunal.accusedId, ranks[currentIdx - 1])
-            }
-          }
+          // Use GulagService to send accused to Gulag
+          gulagService.sendToGulag(tribunal.accusedId, 'denouncementGuilty', tribunal.crime)
 
           // Accuser gets 100₽ informant bonus
           if (accuser) {
@@ -100,10 +92,9 @@ export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalSe
         case 'innocent': {
           // Accuser loses rank for wasting Party's time
           if (accuser) {
-            const ranks: ('proletariat' | 'partyMember' | 'commissar' | 'innerCircle')[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-            const currentIdx = ranks.indexOf(accuser.rank)
-            if (currentIdx > 0) {
-              state.setPlayerRank(tribunal.accuserId, ranks[currentIdx - 1])
+            const newRank = demoteRank(accuser.rank)
+            if (newRank !== accuser.rank) {
+              state.setPlayerRank(tribunal.accuserId, newRank)
             }
           }
           state.addGameLogEntry(`${accuser?.name ?? 'Accuser'} demoted for wasting the Party's time!`)
@@ -118,30 +109,9 @@ export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalSe
         }
 
         case 'bothGuilty': {
-          // Both go to Gulag
-          state.setPlayerInGulag(tribunal.accuserId, true)
-          state.setGulagTurns(tribunal.accuserId, 0)
-          state.setPlayerPosition(tribunal.accuserId, 10)
-
-          state.setPlayerInGulag(tribunal.accusedId, true)
-          state.setGulagTurns(tribunal.accusedId, 0)
-          state.setPlayerPosition(tribunal.accusedId, 10)
-
-          // Demote both players
-          if (accuser) {
-            const ranks: ('proletariat' | 'partyMember' | 'commissar' | 'innerCircle')[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-            const currentIdx = ranks.indexOf(accuser.rank)
-            if (currentIdx > 0) {
-              state.setPlayerRank(tribunal.accuserId, ranks[currentIdx - 1])
-            }
-          }
-          if (accused) {
-            const ranks: ('proletariat' | 'partyMember' | 'commissar' | 'innerCircle')[] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-            const currentIdx = ranks.indexOf(accused.rank)
-            if (currentIdx > 0) {
-              state.setPlayerRank(tribunal.accusedId, ranks[currentIdx - 1])
-            }
-          }
+          // Both go to Gulag using GulagService
+          gulagService.sendToGulag(tribunal.accuserId, 'denouncementGuilty', 'Both parties guilty')
+          gulagService.sendToGulag(tribunal.accusedId, 'denouncementGuilty', tribunal.crime)
           break
         }
 
