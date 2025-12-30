@@ -8,7 +8,7 @@ import { getRequiredDoublesForEscape } from '../helpers/gameStateHelpers'
 describe('Gulag System', () => {
   beforeEach(() => {
     // Reset store before each test
-    useGameStore.setState(useGameStore.getState())
+    useGameStore.getState().resetGame()
   })
 
   describe('Gulag Entry', () => {
@@ -482,7 +482,7 @@ describe('Gulag System', () => {
     })
   })
 
-  describe.skip('Gulag Escape - Vouching (NOT IMPLEMENTED)', () => {
+  describe('Gulag Escape - Vouching', () => {
     it('should release prisoner when another player vouches', () => {
       const { initializePlayers, sendToGulag, createVoucher } = useGameStore.getState()
 
@@ -561,7 +561,7 @@ describe('Gulag System', () => {
     })
   })
 
-  describe.skip('Gulag Escape - Bribe (NOT IMPLEMENTED)', () => {
+  describe('Gulag Escape - Bribe', () => {
     it('should release player when Stalin accepts bribe', () => {
       const { initializePlayers, sendToGulag, submitBribe, respondToBribe } = useGameStore.getState()
 
@@ -640,7 +640,7 @@ describe('Gulag System', () => {
     })
   })
 
-  describe.skip('Gulag Escape - Informing (NOT IMPLEMENTED)', () => {
+  describe('Gulag Escape - Informing', () => {
     it('should trigger tribunal when informing on another player', () => {
       const { initializePlayers, sendToGulag, attemptGulagEscape } = useGameStore.getState()
 

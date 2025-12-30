@@ -56,8 +56,11 @@ export function createTribunalService(get: StoreGetter<SlicesStore>): TribunalSe
       // Increment denouncement count
       state.incrementDenouncementCount(accuserId)
 
+      // Check if accuser is in Gulag (informing)
+      const isGulagInform = accuser?.inGulag ?? false
+
       // Start tribunal
-      state.startTribunal({ accuserId, accusedId, crime })
+      state.startTribunal({ accuserId, accusedId, crime, isGulagInform })
       return true
     },
 

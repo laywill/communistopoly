@@ -52,6 +52,21 @@ export interface GulagService extends GameService {
    * Expire old vouchers (called each round)
    */
   expireVouchers: () => void
+
+  /**
+   * Submit a bribe to Stalin for Gulag release
+   * @param playerId Player bribing
+   * @param amount Bribe amount
+   * @param reason Reason for bribe
+   */
+  submitBribe: (playerId: string, amount: number, reason: string) => void
+
+  /**
+   * Stalin responds to a bribe (accept or reject)
+   * @param brideId Bribe ID
+   * @param accepted Whether Stalin accepts the bribe
+   */
+  respondToBribe: (brideId: string, accepted: boolean) => void
 }
 
 /**
@@ -183,10 +198,8 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
       // Add log entry
       state.addGameLogEntry(`${player.name} sent to Gulag: ${reasonText}`)
 
-      // TODO: Voucher system not implemented in new architecture yet
-      // if (shouldTriggerVoucherConsequence(reason)) {
-      //   service.checkVoucherConsequences(playerId, reason)
-      // }
+      // Check voucher consequences - voucher goes to Gulag if vouchee offends
+      service.checkVoucherConsequences(playerId, reason)
 
       return true
     },
@@ -275,9 +288,12 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
         }
 
         case 'inform': {
-          // TODO: Inform system not implemented in new architecture yet
-          // Would set up inform modal via pending action
-          state.addGameLogEntry(`${player.name} attempted to inform (not yet implemented)`)
+          // Set up pending action for player to select who to inform on
+          state.setPendingAction({
+            type: 'inform-on-player',
+            data: { informerId: playerId }
+          })
+          state.addGameLogEntry(`${player.name} is attempting to inform on another player`)
           break
         }
 
@@ -306,34 +322,152 @@ export function createGulagService(get: StoreGetter<SlicesStore>): GulagService 
     },
 
     createVoucher: (prisonerId, voucherId) => {
-      // TODO: Voucher system not implemented in new architecture yet
-      // This would require:
-      // - activeVouchers state array in GulagSlice
-      // - vouchingFor field in Player type
-      // - vouchedByRound field in Player type
       const state = get()
       const prisoner = state.getPlayer(prisonerId)
       const voucherPlayer = state.getPlayer(voucherId)
 
-      if (!prisoner || !voucherPlayer) return
+      if (!prisoner || !voucherPlayer) {
+        console.warn(`GulagService.createVoucher: Player not found`)
+        return
+      }
+
+      if (!prisoner.inGulag) {
+        console.warn(`GulagService.createVoucher: Prisoner ${prisoner.name} not in Gulag`)
+        return
+      }
+
+      // Release the prisoner
+      state.setPlayerInGulag(prisonerId, false)
+      state.setGulagTurns(prisonerId, 0)
+
+      // Mark voucher as liable for 3 rounds
+      const currentRound = state.roundNumber
+      state.setVoucher(voucherId, prisonerId, currentRound + 3)
 
       state.addGameLogEntry(
-        `Voucher system not implemented: ${voucherPlayer.name} would vouch for ${prisoner.name}`
+        `${voucherPlayer.name} vouched for ${prisoner.name} - Released from Gulag! (Voucher liable for 3 rounds)`
       )
     },
 
     checkVoucherConsequences: (playerId, reason) => {
-      // TODO: Voucher system not implemented in new architecture yet
-      // This would check if playerId has an active voucher and send voucher to Gulag
-      // Stub for now - no-op
-      void playerId
-      void reason
+      const state = get()
+      const player = state.getPlayer(playerId)
+
+      if (!player) return
+
+      // Find if anyone vouched for this player
+      const voucher = state.players.find(
+        (p) => p.vouchingFor === playerId && p.vouchedByRound !== null
+      )
+
+      if (!voucher) return
+
+      // Check if voucher is still active (hasn't expired)
+      const currentRound = state.roundNumber
+      if (voucher.vouchedByRound && currentRound <= voucher.vouchedByRound) {
+        // Voucher consequence triggered - send voucher to Gulag
+        state.addGameLogEntry(
+          `${player.name} committed an offense within 3 rounds of being vouched for by ${voucher.name}`
+        )
+
+        // Clear the voucher relationship
+        state.clearVoucher(voucher.id)
+
+        // Send voucher to Gulag
+        service.sendToGulag(voucher.id, 'voucherConsequence')
+      }
     },
 
     expireVouchers: () => {
-      // TODO: Voucher system not implemented in new architecture yet
-      // This would iterate through activeVouchers and expire old ones
-      // Stub for now - no-op
+      const state = get()
+      const currentRound = state.roundNumber
+
+      // Find all players with active vouchers
+      const vouchersToExpire = state.players.filter(
+        (p) => p.vouchingFor !== null && p.vouchedByRound !== null && currentRound > p.vouchedByRound
+      )
+
+      // Expire each voucher
+      vouchersToExpire.forEach((voucher) => {
+        const vouchee = state.getPlayer(voucher.vouchingFor!)
+
+        if (vouchee) {
+          state.addGameLogEntry(
+            `${voucher.name}'s voucher for ${vouchee.name} has expired (3 rounds passed without incident)`
+          )
+        }
+
+        state.clearVoucher(voucher.id)
+      })
+    },
+
+    submitBribe: (playerId, amount, reason) => {
+      const state = get()
+      const player = state.players.find((p) => p.id === playerId)
+
+      if (!player) {
+        console.warn(`GulagService.submitBribe: Player ${playerId} not found`)
+        return
+      }
+
+      // Check if player has enough money
+      if (player.rubles < amount) {
+        state.addGameLogEntry(`${player.name} cannot afford bribe of ₽${String(amount)}`)
+        return
+      }
+
+      // Deduct money immediately
+      state.removeMoney(playerId, amount)
+      state.addToStateTreasury(amount)
+
+      // Create bribe request
+      const bribe = {
+        id: `bribe-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+        playerId,
+        amount,
+        reason,
+        timestamp: new Date()
+      }
+
+      state.addBribe(bribe)
+      state.addGameLogEntry(
+        `${player.name} submitted a bribe of ₽${String(amount)} to Stalin for ${reason}`
+      )
+    },
+
+    respondToBribe: (brideId, accepted) => {
+      const state = get()
+      const bribe = state.getBribe(brideId)
+
+      if (!bribe) {
+        console.warn(`GulagService.respondToBribe: Bribe ${brideId} not found`)
+        return
+      }
+
+      const player = state.players.find((p) => p.id === bribe.playerId)
+
+      if (!player) {
+        console.warn(`GulagService.respondToBribe: Player ${bribe.playerId} not found`)
+        state.removeBribe(brideId)
+        return
+      }
+
+      if (accepted) {
+        // Stalin accepts - release prisoner
+        state.setPlayerInGulag(bribe.playerId, false)
+        state.setGulagTurns(bribe.playerId, 0)
+        state.addGameLogEntry(
+          `Stalin accepted ${player.name}'s bribe of ₽${String(bribe.amount)} - Released from Gulag!`
+        )
+      } else {
+        // Stalin rejects - money already taken, prisoner stays
+        state.addGameLogEntry(
+          `Stalin rejected ${player.name}'s bribe of ₽${String(bribe.amount)} - Money confiscated, prisoner remains in Gulag`
+        )
+      }
+
+      // Remove bribe from pending
+      state.removeBribe(brideId)
     }
   }
 

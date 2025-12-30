@@ -78,7 +78,7 @@ interface CompatibilityLayer {
   addLogEntry: (entry: string | { message: string }) => void
   adjustTreasury: (amount: number) => void
   createDebt: (_debtorId: string, _creditorId: string, _amount: number, _reason: string) => void
-  submitBribe: (_playerId: string, _amount: number, _reason: string) => void
+  // submitBribe: Implemented in GulagService
   answerCommunistTest: (_question: string, _answer: string, _readerId: string) => void
   applyDirectiveEffect: (_card: string, _playerId: string) => void
   ironCurtainDisappear: (playerId: string, propertyId: number) => void
@@ -93,7 +93,7 @@ interface CompatibilityLayer {
   acceptTrade: (_tradeId: string) => void
   rejectTrade: (_tradeId: string) => void
   tankRequisition: (playerId: string, targetId: string) => void
-  respondToBribe: (_bribeId: string, _accepted: boolean) => void
+  // respondToBribe: Implemented in GulagService
   initiateGreatPurge: () => void
   initiateFiveYearPlan: () => void
   grantHeroOfSovietUnion: (_playerId: string) => void
@@ -308,10 +308,7 @@ export const useGameStore = create<GameStore>()(
           // Stub - debt system not implemented in new architecture yet
         },
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        submitBribe: (_playerId: string, _amount: number, _reason: string) => {
-          // Stub - bribe system not implemented in new architecture yet
-        },
+        // submitBribe: Implemented in GulagService
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         answerCommunistTest: (_question: string, _answer: string, _readerId: string) => {
@@ -507,10 +504,7 @@ export const useGameStore = create<GameStore>()(
           state.addLogEntry(`${player.name} requisitioned ${String(amount)}₽ from ${target.name}`)
         },
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        respondToBribe: (_bribeId: string, _accepted: boolean) => {
-          // Stub
-        },
+        // respondToBribe: Implemented in GulagService
 
         initiateGreatPurge: () => {
           // Stub

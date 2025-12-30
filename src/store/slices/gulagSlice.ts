@@ -37,9 +37,19 @@ export interface GulagSliceActions {
   // Voucher state
   setVoucher: (playerId: string, vouchingFor: string | null, vouchedByRound: number | null) => void
   clearVoucher: (playerId: string) => void
+  addVoucher: (voucher: import('../../types/game').VoucherAgreement) => void
+  removeVoucher: (voucherId: string) => void
+
+  // Bribe state
+  addBribe: (bribe: import('../../types/game').BribeRequest) => void
+  removeBribe: (brideId: string) => void
+  getBribe: (brideId: string) => import('../../types/game').BribeRequest | undefined
 
   // Tank immunity
   markTankImmunityUsed: (playerId: string) => void
+
+  // Release from Gulag (used by tribunal informing)
+  releaseFromGulag: (playerId: string, reason: string) => void
 
   // Queries
   getPlayersInGulag: () => string[]
@@ -113,12 +123,56 @@ export const createGulagSlice: StateCreator<
     }))
   },
 
+  addVoucher: (voucher) => {
+    const state = get()
+    set({
+      activeVouchers: [...state.activeVouchers, voucher]
+    })
+  },
+
+  removeVoucher: (voucherId) => {
+    const state = get()
+    set({
+      activeVouchers: state.activeVouchers.filter((v) => v.id !== voucherId)
+    })
+  },
+
+  addBribe: (bribe) => {
+    const state = get()
+    set({
+      pendingBribes: [...state.pendingBribes, bribe]
+    })
+  },
+
+  removeBribe: (brideId) => {
+    const state = get()
+    set({
+      pendingBribes: state.pendingBribes.filter((b) => b.id !== brideId)
+    })
+  },
+
+  getBribe: (brideId) => {
+    return get().pendingBribes.find((b) => b.id === brideId)
+  },
+
   markTankImmunityUsed: (playerId) => {
     set((state) => ({
       players: state.players.map((p) =>
         p.id === playerId ? { ...p, hasUsedTankGulagImmunity: true } : p
       )
     }))
+  },
+
+  releaseFromGulag: (playerId, reason) => {
+    set((state) => ({
+      players: state.players.map((p) =>
+        p.id === playerId
+          ? { ...p, inGulag: false, gulagTurns: 0 }
+          : p
+      )
+    }))
+    // Note: Log entry is handled by the calling service
+    void reason
   },
 
   getPlayersInGulag: () => {
