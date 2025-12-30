@@ -85,8 +85,8 @@ export const useGameStore = create<GameStore>()(
       // ─────────────────────────────────────────
       const gulagService = createGulagService(() => get() as unknown as SlicesStore)
       const propertyService = createPropertyService(() => get() as unknown as SlicesStore)
-      const turnManager = createTurnManager(() => get() as unknown as SlicesStore)
-      const stoyService = createStoyService(() => get() as unknown as SlicesStore)
+      const turnManager = createTurnManager(() => get() as unknown as SlicesStore, gulagService)
+      const stoyService = createStoyService(() => get() as unknown as SlicesStore, gulagService)
       const tribunalService = createTribunalService(() => get() as unknown as SlicesStore, gulagService)
 
       // ─────────────────────────────────────────

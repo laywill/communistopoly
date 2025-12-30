@@ -2,6 +2,7 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import type { StoreGetter, GameService, SlicesStore } from './types'
+import type { GulagService } from './GulagService'
 
 const TRAVEL_TAX = 200
 
@@ -17,7 +18,10 @@ export interface StoyService extends GameService {
   handleLandingOnStoy: (playerId: string) => { success: boolean, amount: number }
 }
 
-export function createStoyService (get: StoreGetter<SlicesStore>): StoyService {
+export function createStoyService (
+  get: StoreGetter<SlicesStore>,
+  gulagService: GulagService
+): StoyService {
   return {
     name: 'StoyService',
 
@@ -86,10 +90,8 @@ export function createStoyService (get: StoreGetter<SlicesStore>): StoyService {
           `${playerName} was caught attempting to pilfer! (rolled ${String(pilferRoll)})`
         )
 
-        // Send to Gulag using slice methods directly
-        state.setPlayerInGulag(playerId, true)
-        state.setGulagTurns(playerId, 0)
-        state.addGameLogEntry(`${playerName} sent to Gulag: Caught pilfering at STOY checkpoint`)
+        // Use GulagService to send to Gulag
+        gulagService.sendToGulag(playerId, 'pilferingCaught')
         return { success: false, amount: 0 }
       }
     },

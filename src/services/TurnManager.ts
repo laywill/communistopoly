@@ -2,6 +2,7 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import type { StoreGetter, GameService, SlicesStore } from './types'
+import type { GulagService } from './GulagService'
 
 export interface TurnManager extends GameService {
   /**
@@ -40,7 +41,10 @@ export interface TurnManager extends GameService {
   getCurrentPlayer: () => ReturnType<SlicesStore['getPlayer']>
 }
 
-export function createTurnManager (get: StoreGetter<SlicesStore>): TurnManager {
+export function createTurnManager (
+  get: StoreGetter<SlicesStore>,
+  gulagService: GulagService
+): TurnManager {
   return {
     name: 'TurnManager',
 
@@ -93,10 +97,8 @@ export function createTurnManager (get: StoreGetter<SlicesStore>): TurnManager {
               `${playerName} rolled three doubles! Counter-revolutionary dice manipulation!`
             )
 
-            // Send to Gulag using slice methods directly (business logic moved here)
-            state.setPlayerInGulag(currentPlayer.id, true)
-            state.setGulagTurns(currentPlayer.id, 0)
-            state.addGameLogEntry(`${playerName} sent to Gulag: Rolled three consecutive doubles`)
+            // Use GulagService to send to Gulag
+            gulagService.sendToGulag(currentPlayer.id, 'threeDoubles')
 
             state.setDoublesCount(0)
           }
