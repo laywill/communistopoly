@@ -1,6 +1,6 @@
 {
   "name": "Communistopoly Dev",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22",
   // "features": {
   //   "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   // },

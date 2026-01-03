@@ -1046,7 +1046,7 @@ Based on the design document, implement these CSS custom properties:
 // .devcontainer/devcontainer.json
 {
   "name": "Communistopoly Dev",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
@@ -1069,7 +1069,7 @@ Based on the design document, implement these CSS custom properties:
 # Dockerfile
 
 # Stage 1: Build
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -1159,7 +1159,7 @@ services:
 
   # Development service
   dev:
-    image: node:20-alpine
+    image: node:22-alpine
     working_dir: /app
     volumes:
       - .:/app
