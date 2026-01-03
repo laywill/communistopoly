@@ -94,7 +94,7 @@ This repository contains the web-based implementation built with React, TypeScri
 ## Quick Start
 
 ### Prerequisites
-- Node.js 20+ (LTS)
+- Node.js 22+ (LTS)
 - npm or yarn
 
 ### Local Development
@@ -135,7 +135,7 @@ If you use Visual Studio Code with the Dev Containers extension:
 5. Access the app at <http://localhost:5173>
 
 The devcontainer automatically:
-- Uses Node 20 LTS
+- Uses Node 22 LTS
 - Installs all dependencies
 - Sets up recommended VS Code extensions (ESLint, Prettier)
 - Configures auto-formatting on save
