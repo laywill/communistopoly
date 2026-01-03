@@ -13,7 +13,7 @@ interface BeggingModalProps {
 export function BeggingModal({ playerId, onClose }: BeggingModalProps) {
   const players = useGameStore((state) => state.players);
   const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
+  const addGameLogEntry = useGameStore((state) => state.addGameLogEntry);
 
   const [selectedTargetId, setSelectedTargetId] = useState<string>('');
   const [requestedAmount, setRequestedAmount] = useState<number>(50);
@@ -42,19 +42,11 @@ export function BeggingModal({ playerId, onClose }: BeggingModalProps) {
       updatePlayer(target.id, { rubles: target.rubles - requestedAmount });
       updatePlayer(player.id, { rubles: player.rubles + requestedAmount });
 
-      addLogEntry({
-        type: 'payment',
-        message: `${target.name} gave ₽${String(requestedAmount)} to starving ${player.name} 🍞`,
-        playerId: target.id,
-      });
+      addGameLogEntry(`${target.name} gave ₽${String(requestedAmount)} to starving ${player.name} 🍞`);
 
       setWasGranted(true);
     } else {
-      addLogEntry({
-        type: 'system',
-        message: `${target.name} refused to help starving ${player.name}`,
-        playerId: target.id,
-      });
+      addGameLogEntry(`${target.name} refused to help starving ${player.name}`);
 
       setWasGranted(false);
     }

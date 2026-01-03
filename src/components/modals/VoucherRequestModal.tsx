@@ -10,7 +10,7 @@ interface VoucherRequestModalProps {
 }
 
 export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prisonerId }) => {
-  const { players, stalinPlayerId, createVoucher, setPendingAction, addLogEntry } = useGameStore();
+  const { players, stalinPlayerId, createVoucher, setPendingAction, addGameLogEntry } = useGameStore();
   const prisoner = players.find((p) => p.id === prisonerId);
   const [selectedVoucherId, setSelectedVoucherId] = useState<string | null>(null);
   const [requestSent, setRequestSent] = useState(false);
@@ -46,10 +46,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
       createVoucher(prisonerId, selectedVoucherId);
     } else {
       setVoucherResponse('declined');
-      addLogEntry({
-        type: 'gulag',
-        message: `${voucherPlayer.name} declined to vouch for ${prisoner.name}'s release`,
-      });
+      addGameLogEntry(`${voucherPlayer.name} declined to vouch for ${prisoner.name}'s release`);
 
       // Close modal after a delay
       setTimeout(() => {

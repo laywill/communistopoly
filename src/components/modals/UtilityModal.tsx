@@ -17,7 +17,7 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
   const players = useGameStore((state) => state.players);
   const properties = useGameStore((state) => state.properties);
   const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
+  const addGameLogEntry = useGameStore((state) => state.addGameLogEntry);
   const setPendingAction = useGameStore((state) => state.setPendingAction);
   const setTurnPhase = useGameStore((state) => state.setTurnPhase);
 
@@ -66,11 +66,7 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
       updatePlayer(payerId, { rubles: payer.rubles - fee });
       updatePlayer(controller.id, { rubles: controller.rubles + fee });
 
-      addLogEntry({
-        type: 'payment',
-        message: `${payer.name} paid ₽${String(fee)} to ${controller.name} for use of ${space.name} (${String(diceTotal)} × ${String(multiplier)})`,
-        playerId: payerId,
-      });
+      addGameLogEntry(`${payer.name} paid ₽${String(fee)} to ${controller.name} for use of ${space.name} (${String(diceTotal)} × ${String(multiplier)})`);
     }
 
     setPendingAction(null);

@@ -8,7 +8,7 @@ import { getRequiredDoublesForEscape } from '../helpers/gameStateHelpers'
 describe('Gulag System', () => {
   beforeEach(() => {
     // Reset store before each test
-    useGameStore.setState(useGameStore.getState())
+    useGameStore.getState().resetGame()
   })
 
   describe('Gulag Entry', () => {
@@ -167,7 +167,7 @@ describe('Gulag System', () => {
         updatePlayer(player.id, { gulagTurns: 1 })
 
         // Set dice to double 6s
-        useGameStore.setState({ dice: [6, 6] })
+        useGameStore.setState({ diceRoll: [6, 6] })
 
         attemptGulagEscape(player.id, 'roll')
 
@@ -188,7 +188,7 @@ describe('Gulag System', () => {
         updatePlayer(player.id, { gulagTurns: 1 })
 
         // Set dice to double 5s (not enough for turn 1)
-        useGameStore.setState({ dice: [5, 5] })
+        useGameStore.setState({ diceRoll: [5, 5] })
 
         attemptGulagEscape(player.id, 'roll')
 
@@ -208,7 +208,7 @@ describe('Gulag System', () => {
         updatePlayer(player.id, { gulagTurns: 1 })
 
         // Set dice to non-doubles
-        useGameStore.setState({ dice: [3, 5] })
+        useGameStore.setState({ diceRoll: [3, 5] })
 
         attemptGulagEscape(player.id, 'roll')
 
@@ -234,7 +234,7 @@ describe('Gulag System', () => {
         sendToGulag(player.id, 'enemyOfState')
         updatePlayer(player.id, { gulagTurns: 2 })
 
-        useGameStore.setState({ dice: [5, 5] })
+        useGameStore.setState({ diceRoll: [5, 5] })
         attemptGulagEscape(player.id, 'roll')
 
         const updatedPlayer = useGameStore.getState().players[0]
@@ -252,7 +252,7 @@ describe('Gulag System', () => {
         sendToGulag(player.id, 'enemyOfState')
         updatePlayer(player.id, { gulagTurns: 2 })
 
-        useGameStore.setState({ dice: [4, 4] })
+        useGameStore.setState({ diceRoll: [4, 4] })
         attemptGulagEscape(player.id, 'roll')
 
         const updatedPlayer = useGameStore.getState().players[0]
@@ -277,7 +277,7 @@ describe('Gulag System', () => {
         sendToGulag(player.id, 'enemyOfState')
         updatePlayer(player.id, { gulagTurns: 3 })
 
-        useGameStore.setState({ dice: [4, 4] })
+        useGameStore.setState({ diceRoll: [4, 4] })
         attemptGulagEscape(player.id, 'roll')
 
         const updatedPlayer = useGameStore.getState().players[0]
@@ -295,7 +295,7 @@ describe('Gulag System', () => {
         sendToGulag(player.id, 'enemyOfState')
         updatePlayer(player.id, { gulagTurns: 3 })
 
-        useGameStore.setState({ dice: [3, 3] })
+        useGameStore.setState({ diceRoll: [3, 3] })
         attemptGulagEscape(player.id, 'roll')
 
         const updatedPlayer = useGameStore.getState().players[0]
@@ -320,7 +320,7 @@ describe('Gulag System', () => {
         sendToGulag(player.id, 'enemyOfState')
         updatePlayer(player.id, { gulagTurns: 4 })
 
-        useGameStore.setState({ dice: [3, 3] })
+        useGameStore.setState({ diceRoll: [3, 3] })
         attemptGulagEscape(player.id, 'roll')
 
         const updatedPlayer = useGameStore.getState().players[0]
@@ -338,7 +338,7 @@ describe('Gulag System', () => {
         sendToGulag(player.id, 'enemyOfState')
         updatePlayer(player.id, { gulagTurns: 4 })
 
-        useGameStore.setState({ dice: [2, 2] })
+        useGameStore.setState({ diceRoll: [2, 2] })
         attemptGulagEscape(player.id, 'roll')
 
         const updatedPlayer = useGameStore.getState().players[0]
@@ -363,7 +363,7 @@ describe('Gulag System', () => {
         sendToGulag(player.id, 'enemyOfState')
         updatePlayer(player.id, { gulagTurns: 5 })
 
-        useGameStore.setState({ dice: [1, 1] })
+        useGameStore.setState({ diceRoll: [1, 1] })
         attemptGulagEscape(player.id, 'roll')
 
         const updatedPlayer = useGameStore.getState().players[0]
@@ -381,7 +381,7 @@ describe('Gulag System', () => {
         sendToGulag(player.id, 'enemyOfState')
         updatePlayer(player.id, { gulagTurns: 7 })
 
-        useGameStore.setState({ dice: [2, 2] })
+        useGameStore.setState({ diceRoll: [2, 2] })
         attemptGulagEscape(player.id, 'roll')
 
         const updatedPlayer = useGameStore.getState().players[0]
@@ -401,7 +401,7 @@ describe('Gulag System', () => {
         sendToGulag(player.id, 'enemyOfState')
         updatePlayer(player.id, { gulagTurns: 3 })
 
-        useGameStore.setState({ dice: [6, 6] })
+        useGameStore.setState({ diceRoll: [6, 6] })
         attemptGulagEscape(player.id, 'roll')
 
         const updatedPlayer = useGameStore.getState().players[0]
@@ -512,7 +512,7 @@ describe('Gulag System', () => {
       const [prisoner, voucher] = useGameStore.getState().players
       sendToGulag(prisoner.id, 'enemyOfState')
 
-      const currentRound = useGameStore.getState().roundNumber
+      const currentRound = useGameStore.getState().currentRound
       createVoucher(prisoner.id, voucher.id)
 
       const updatedVoucher = useGameStore.getState().players[1]
@@ -552,13 +552,90 @@ describe('Gulag System', () => {
       createVoucher(prisoner.id, voucher.id)
 
       // Advance rounds past expiration
-      useGameStore.setState({ roundNumber: 10 })
+      useGameStore.setState({ currentRound: 10 })
       expireVouchers()
 
       const updatedVoucher = useGameStore.getState().players[1]
       expect(updatedVoucher.vouchingFor).toBe(null)
       expect(updatedVoucher.vouchedByRound).toBe(null)
     })
+
+    it('should not allow imprisoned player to vouch', () => {
+      const { initializePlayers, sendToGulag, createVoucher } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Prisoner 1', piece: 'sickle', isStalin: false },
+        { name: 'Prisoner 2', piece: 'hammer', isStalin: false }
+      ])
+
+      const [prisoner1, prisoner2] = useGameStore.getState().players
+      sendToGulag(prisoner1.id, 'enemyOfState')
+      sendToGulag(prisoner2.id, 'enemyOfState')
+
+      // Try to make imprisoned player vouch
+      createVoucher(prisoner1.id, prisoner2.id)
+
+      // Prisoner 1 should still be in Gulag (voucher failed)
+      const updatedPrisoner1 = useGameStore.getState().players[0]
+      expect(updatedPrisoner1.inGulag).toBe(true)
+
+      // Prisoner 2 should not be vouching
+      const updatedPrisoner2 = useGameStore.getState().players[1]
+      expect(updatedPrisoner2.vouchingFor).toBe(null)
+    })
+
+    it('should not allow eliminated player to vouch', () => {
+      const { initializePlayers, sendToGulag, createVoucher, eliminatePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Prisoner', piece: 'sickle', isStalin: false },
+        { name: 'Eliminated Player', piece: 'hammer', isStalin: false }
+      ])
+
+      const [prisoner, eliminatedPlayer] = useGameStore.getState().players
+      sendToGulag(prisoner.id, 'enemyOfState')
+      eliminatePlayer(eliminatedPlayer.id, 'Test elimination')
+
+      // Try to make eliminated player vouch
+      createVoucher(prisoner.id, eliminatedPlayer.id)
+
+      // Prisoner should still be in Gulag (voucher failed)
+      const updatedPrisoner = useGameStore.getState().players[0]
+      expect(updatedPrisoner.inGulag).toBe(true)
+
+      // Eliminated player should not be vouching
+      const updatedEliminated = useGameStore.getState().players[1]
+      expect(updatedEliminated.vouchingFor).toBe(null)
+    })
+
+    it('should not allow player already vouching to vouch for another', () => {
+      const { initializePlayers, sendToGulag, createVoucher } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Prisoner 1', piece: 'sickle', isStalin: false },
+        { name: 'Prisoner 2', piece: 'hammer', isStalin: false },
+        { name: 'Voucher', piece: 'tank', isStalin: false }
+      ])
+
+      const [prisoner1, prisoner2, voucher] = useGameStore.getState().players
+      sendToGulag(prisoner1.id, 'enemyOfState')
+      sendToGulag(prisoner2.id, 'enemyOfState')
+
+      // Voucher vouches for prisoner 1
+      createVoucher(prisoner1.id, voucher.id)
+
+      // Try to make same voucher vouch for prisoner 2
+      createVoucher(prisoner2.id, voucher.id)
+
+      // Prisoner 2 should still be in Gulag (voucher failed)
+      const updatedPrisoner2 = useGameStore.getState().players.find(p => p.id === prisoner2.id)
+      expect(updatedPrisoner2?.inGulag).toBe(true)
+
+      // Voucher should still be vouching for prisoner 1 only
+      const updatedVoucher = useGameStore.getState().players.find(p => p.id === voucher.id)
+      expect(updatedVoucher?.vouchingFor).toBe(prisoner1.id)
+    })
+
   })
 
   describe('Gulag Escape - Bribe', () => {
@@ -638,6 +715,74 @@ describe('Gulag System', () => {
       const bribes = useGameStore.getState().pendingBribes
       expect(bribes.length).toBe(0) // Bribe not submitted
     })
+
+    it('should accept bribe at exactly minimum amount (200₽)', () => {
+      const { initializePlayers, sendToGulag, submitBribe, respondToBribe } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const player = useGameStore.getState().players[0]
+      sendToGulag(player.id, 'enemyOfState')
+
+      submitBribe(player.id, 200, 'gulag-escape')
+
+      const bribes = useGameStore.getState().pendingBribes
+      expect(bribes.length).toBe(1) // Bribe submitted successfully
+
+      respondToBribe(bribes[0].id, true)
+      const updatedPlayer = useGameStore.getState().players[0]
+      expect(updatedPlayer.inGulag).toBe(false)
+    })
+
+    it('should reject bribe below minimum amount (199₽)', () => {
+      const { initializePlayers, sendToGulag, submitBribe } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const player = useGameStore.getState().players[0]
+      sendToGulag(player.id, 'enemyOfState')
+
+      submitBribe(player.id, 199, 'gulag-escape')
+
+      const bribes = useGameStore.getState().pendingBribes
+      expect(bribes.length).toBe(0) // Bribe rejected for being too low
+    })
+
+    it('should reject bribe with amount 0', () => {
+      const { initializePlayers, sendToGulag, submitBribe } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const player = useGameStore.getState().players[0]
+      sendToGulag(player.id, 'enemyOfState')
+
+      submitBribe(player.id, 0, 'gulag-escape')
+
+      const bribes = useGameStore.getState().pendingBribes
+      expect(bribes.length).toBe(0) // Bribe rejected
+    })
+
+    it('should reject bribe with negative amount', () => {
+      const { initializePlayers, sendToGulag, submitBribe } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const player = useGameStore.getState().players[0]
+      sendToGulag(player.id, 'enemyOfState')
+
+      submitBribe(player.id, -100, 'gulag-escape')
+
+      const bribes = useGameStore.getState().pendingBribes
+      expect(bribes.length).toBe(0) // Bribe rejected
+    })
   })
 
   describe('Gulag Escape - Informing', () => {
@@ -662,7 +807,7 @@ describe('Gulag System', () => {
     })
 
     it('should swap places if accused is found guilty', () => {
-      const { initializePlayers, sendToGulag, initiateDenouncement, renderTribunalVerdict } = useGameStore.getState()
+      const { initializePlayers, sendToGulag, denouncePlayer, renderVerdict } = useGameStore.getState()
 
       initializePlayers([
         { name: 'Prisoner', piece: 'sickle', isStalin: false },
@@ -673,10 +818,10 @@ describe('Gulag System', () => {
       sendToGulag(prisoner.id, 'enemyOfState')
 
       // Prisoner informs on target, triggering tribunal
-      initiateDenouncement(prisoner.id, target.id, 'Counter-revolutionary activities')
+      denouncePlayer(prisoner.id, target.id, 'Counter-revolutionary activities')
 
       // Render guilty verdict
-      renderTribunalVerdict('guilty')
+      renderVerdict('guilty')
 
       const updatedTarget = useGameStore.getState().players.find(p => p.id === target.id)
 
@@ -689,7 +834,7 @@ describe('Gulag System', () => {
     })
 
     it('should add 2 turns to sentence if accused is innocent', () => {
-      const { initializePlayers, sendToGulag, initiateDenouncement, renderTribunalVerdict, updatePlayer } = useGameStore.getState()
+      const { initializePlayers, sendToGulag, denouncePlayer, renderVerdict, updatePlayer } = useGameStore.getState()
 
       initializePlayers([
         { name: 'Prisoner', piece: 'sickle', isStalin: false },
@@ -703,10 +848,10 @@ describe('Gulag System', () => {
       const initialTurns = 3
 
       // Prisoner informs on target, triggering tribunal
-      initiateDenouncement(prisoner.id, target.id, 'Counter-revolutionary activities')
+      denouncePlayer(prisoner.id, target.id, 'Counter-revolutionary activities')
 
       // Render innocent verdict - should add 2 turns for false accusation
-      renderTribunalVerdict('innocent')
+      renderVerdict('innocent')
 
       const updatedPrisoner = useGameStore.getState().players.find(p => p.id === prisoner.id)
 

@@ -20,7 +20,7 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
   const properties = useGameStore((state) => state.properties);
   const purchaseProperty = useGameStore((state) => state.purchaseProperty);
   const setPendingAction = useGameStore((state) => state.setPendingAction);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
+  const addGameLogEntry = useGameStore((state) => state.addGameLogEntry);
   const setTurnPhase = useGameStore((state) => state.setTurnPhase);
 
   const space = getSpaceById(spaceId);
@@ -55,18 +55,10 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
             rubles: player.rubles - stalinPrice,
           });
           useGameStore.getState().adjustTreasury(stalinPrice);
-          addLogEntry({
-            type: 'payment',
-            message: `${player.name} donated ₽${String(stalinPrice)} to the State Treasury (utilities require Commissar+ rank)`,
-            playerId,
-          });
+          addGameLogEntry(`${player.name} donated ₽${String(stalinPrice)} to the State Treasury (utilities require Commissar+ rank)`);
         }
       } else {
-        addLogEntry({
-          type: 'system',
-          message: `${player.name} cannot become Custodian of ${space.name} - insufficient rank`,
-          playerId,
-        });
+        addGameLogEntry(`${player.name} cannot become Custodian of ${space.name} - insufficient rank`);
       }
     } else {
       // Purchase the property
@@ -79,11 +71,7 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
   };
 
   const handleDecline = () => {
-    addLogEntry({
-      type: 'system',
-      message: `${player.name} declined custodianship of ${space.name}`,
-      playerId,
-    });
+    addGameLogEntry(`${player.name} declined custodianship of ${space.name}`);
 
     setPendingAction(null);
     setTurnPhase('post-turn');

@@ -27,7 +27,7 @@ const PLAYER_COLORS = [
 
 export default function PlayerDashboard() {
   const players = useGameStore((state) => state.players);
-  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex);
+  const currentPlayerIndex = useGameStore((state) => state.currentTurnIndex);
   const turnPhase = useGameStore((state) => state.turnPhase);
   const endTurn = useGameStore((state) => state.endTurn);
   const finishMoving = useGameStore((state) => state.finishMoving);

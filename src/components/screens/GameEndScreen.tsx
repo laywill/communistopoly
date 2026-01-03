@@ -21,7 +21,9 @@ export default function GameEndScreen() {
 
   const formatDuration = (): string => {
     if (!gameStatistics.gameEndTime) return 'Unknown';
-    const duration = gameStatistics.gameEndTime.getTime() - gameStatistics.gameStartTime.getTime();
+    const startTime = gameStatistics.gameStartTime instanceof Date ? gameStatistics.gameStartTime : new Date(gameStatistics.gameStartTime);
+    const endTime = gameStatistics.gameEndTime instanceof Date ? gameStatistics.gameEndTime : new Date(gameStatistics.gameEndTime);
+    const duration = endTime.getTime() - startTime.getTime();
     const hours = Math.floor(duration / (1000 * 60 * 60));
     const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
     return `${String(hours)}h ${String(minutes)}m`;

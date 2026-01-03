@@ -16,7 +16,7 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
   const players = useGameStore((state) => state.players);
   const properties = useGameStore((state) => state.properties);
   const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
+  const addGameLogEntry = useGameStore((state) => state.addGameLogEntry);
   const setPendingAction = useGameStore((state) => state.setPendingAction);
   const setTurnPhase = useGameStore((state) => state.setTurnPhase);
 
@@ -62,11 +62,7 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
       updatePlayer(payerId, { rubles: payer.rubles - fee });
       updatePlayer(controller.id, { rubles: controller.rubles + fee });
 
-      addLogEntry({
-        type: 'payment',
-        message: `${payer.name} paid ₽${String(fee)} railway fee to ${controller.name} (${String(controlledStations)} station${controlledStations > 1 ? 's' : ''})`,
-        playerId: payerId,
-      });
+      addGameLogEntry(`${payer.name} paid ₽${String(fee)} railway fee to ${controller.name} (${String(controlledStations)} station${controlledStations > 1 ? 's' : ''})`);
 
       setPendingAction(null);
       setTurnPhase('post-turn');

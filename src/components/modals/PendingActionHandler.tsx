@@ -28,7 +28,7 @@ import ReviewConfessionModal from './ReviewConfessionModal';
 export function PendingActionHandler() {
   const pendingAction = useGameStore((state) => state.pendingAction);
   const setPendingAction = useGameStore((state) => state.setPendingAction);
-  const currentPlayer = useGameStore((state) => state.players[state.currentPlayerIndex]);
+  const currentPlayer = useGameStore((state) => state.players[state.currentTurnIndex]);
   const drawPartyDirective = useGameStore((state) => state.drawPartyDirective);
   const drawCommunistTest = useGameStore((state) => state.drawCommunistTest);
 

@@ -18,7 +18,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
   const updatePlayer = useGameStore((state) => state.updatePlayer);
   const demotePlayer = useGameStore((state) => state.demotePlayer);
   const adjustTreasury = useGameStore((state) => state.adjustTreasury);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
+  const addGameLogEntry = useGameStore((state) => state.addGameLogEntry);
   const setPendingAction = useGameStore((state) => state.setPendingAction);
   const setTurnPhase = useGameStore((state) => state.setTurnPhase);
 
@@ -130,11 +130,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
       updatePlayer(playerId, { rubles: player.rubles - totalPayment });
       adjustTreasury(totalPayment);
 
-      addLogEntry({
-        type: 'payment',
-        message: `${player.name} paid ₽${String(totalPayment)} Revolutionary Contribution (₽${String(actualAmount)} + ₽${String(difference)} difference + ₽${String(penalty)} audit penalty)`,
-        playerId,
-      });
+      addGameLogEntry(`${player.name} paid ₽${String(totalPayment)} Revolutionary Contribution (₽${String(actualAmount)} + ₽${String(difference)} difference + ₽${String(penalty)} audit penalty)`);
     } else {
       // No audit or player chose correctly
       // Check if player can afford it
@@ -154,11 +150,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
       updatePlayer(playerId, { rubles: player.rubles - chosenAmount });
       adjustTreasury(chosenAmount);
 
-      addLogEntry({
-        type: 'payment',
-        message: `${player.name} paid ₽${String(chosenAmount)} Revolutionary Contribution${shouldAudit ? ' (audited - no penalty)' : ''}`,
-        playerId,
-      });
+      addGameLogEntry(`${player.name} paid ₽${String(chosenAmount)} Revolutionary Contribution${shouldAudit ? ' (audited - no penalty)' : ''}`);
     }
 
     setPendingAction(null);
@@ -188,17 +180,9 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
 
     if (isWealthiestPlayer) {
       demotePlayer(playerId);
-      addLogEntry({
-        type: 'payment',
-        message: `${player.name} paid ₽${String(amount)} Bourgeois Decadence Tax as the wealthiest comrade - demoted for capitalist tendencies!`,
-        playerId,
-      });
+      addGameLogEntry(`${player.name} paid ₽${String(amount)} Bourgeois Decadence Tax as the wealthiest comrade - demoted for capitalist tendencies!`);
     } else {
-      addLogEntry({
-        type: 'payment',
-        message: `${player.name} paid ₽${String(amount)} Bourgeois Decadence Tax`,
-        playerId,
-      });
+      addGameLogEntry(`${player.name} paid ₽${String(amount)} Bourgeois Decadence Tax`);
     }
 
     setPendingAction(null);

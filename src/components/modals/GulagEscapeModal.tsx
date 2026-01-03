@@ -10,7 +10,8 @@ interface GulagEscapeModalProps {
 }
 
 export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) => {
-  const { players, dice, rollDice, finishRolling, attemptGulagEscape } = useGameStore();
+  const { players, diceRoll, rollDice, finishRolling, attemptGulagEscape } = useGameStore();
+  const dice = diceRoll ?? [1, 1];
   const player = players.find((p) => p.id === playerId);
   const [isRolling, setIsRolling] = useState(false);
 

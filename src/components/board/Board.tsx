@@ -12,7 +12,7 @@ import styles from './Board.module.css';
 
 const Board = () => {
   const players = useGameStore((state) => state.players);
-  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex);
+  const currentPlayerIndex = useGameStore((state) => state.currentTurnIndex);
 
   // Split spaces into their respective positions
   const bottomRow = BOARD_SPACES.slice(0, 11);      // 0-10: STOY to GULAG

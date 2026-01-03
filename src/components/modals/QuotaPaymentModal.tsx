@@ -19,7 +19,7 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
   const properties = useGameStore((state) => state.properties);
   const payQuota = useGameStore((state) => state.payQuota);
   const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
+  const addGameLogEntry = useGameStore((state) => state.addGameLogEntry);
   const setPendingAction = useGameStore((state) => state.setPendingAction);
   const setTurnPhase = useGameStore((state) => state.setTurnPhase);
 
@@ -46,11 +46,7 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
 
   const handleAnnouncement = () => {
     setHasAnnounced(true);
-    addLogEntry({
-      type: 'system',
-      message: `${custodian.name} announces: "The harvest is bountiful!"`,
-      playerId: custodian.id,
-    });
+    addGameLogEntry(`${custodian.name} announces: "The harvest is bountiful!"`);
   };
 
   const handlePay = () => {
@@ -58,22 +54,14 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
     if (isCollectiveFarm && !hasAnnounced && custodian.rubles >= 25) {
       // Fine the custodian ₽25 for not announcing
       updatePlayer(custodian.id, { rubles: custodian.rubles - 25 });
-      addLogEntry({
-        type: 'payment',
-        message: `${custodian.name} fined ₽25 for failing to announce "The harvest is bountiful!" at their Collective Farm`,
-        playerId: custodian.id,
-      });
+      addGameLogEntry(`${custodian.name} fined ₽25 for failing to announce "The harvest is bountiful!" at their Collective Farm`);
     }
 
     if (!canAfford) {
       // Check if Industrial Centers - conscript labour (skip next turn)
       if (space.group === 'industrial') {
         updatePlayer(payerId, { skipNextTurn: true });
-        addLogEntry({
-          type: 'system',
-          message: `${payer.name} cannot pay ₽${String(quota)} - conscripted for labour! Will miss next turn.`,
-          playerId: payerId,
-        });
+        addGameLogEntry(`${payer.name} cannot pay ₽${String(quota)} - conscripted for labour! Will miss next turn.`);
         setPendingAction(null);
         setTurnPhase('post-turn');
         onClose();

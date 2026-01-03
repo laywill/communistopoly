@@ -21,16 +21,19 @@ Build a shared-screen/hot-seat digital board game based on the Communistopoly ru
 ```
 Framework:      React 18+ with TypeScript
 Bundler:        Vite 5+
-Styling:        CSS Modules or Tailwind CSS
-State:          React Context + useReducer (or Zustand for simplicity)
+Styling:        CSS Modules
+State:          Zustand 4+ with persist middleware
 Fonts:          Google Fonts
 Audio:          Howler.js (optional, for sound effects)
 Testing:        Vitest + React Testing Library
+Linting:        ESLint with TypeScript rules
 ```
 
 **Why this stack:**
 - Vite provides fast HMR and simple configuration
 - TypeScript catches errors early in complex game logic
+- Zustand offers simple, modular state management with minimal boilerplate
+- CSS Modules provide scoped styling without build complexity
 - No backend needed - all state is client-side for shared-screen play
 - Can be containerized and served as static files
 
@@ -116,15 +119,35 @@ communistopoly/
 │   │   ├── GameScreen.tsx
 │   │   └── EndScreen.tsx
 │   │
-│   ├── game/
-│   │   ├── gameReducer.ts       # Main game state reducer
-│   │   ├── gameActions.ts       # Action creators
-│   │   ├── gameContext.tsx      # React context provider
-│   │   ├── gameTypes.ts         # TypeScript interfaces
-│   │   ├── boardData.ts         # Board space definitions
-│   │   ├── cardDecks.ts         # Card definitions
-│   │   ├── pieceAbilities.ts    # Player piece special rules
-│   │   └── spaceHandlers.ts     # Logic for landing on spaces
+│   ├── store/
+│   │   ├── gameStore.ts         # Main Zustand store composition
+│   │   └── slices/
+│   │       ├── index.ts         # Export all slices + AllSlices type
+│   │       ├── cardSlice.ts     # Card deck state & actions
+│   │       ├── gulagSlice.ts    # Gulag-related state
+│   │       ├── propertySlice.ts # Property ownership & improvements
+│   │       ├── tribunalSlice.ts # Active tribunal state
+│   │       ├── playerSlice.ts   # Player data, positions, money
+│   │       └── gameFlowSlice.ts # Game phase, turns, rounds, dice
+│   │
+│   ├── services/
+│   │   ├── types.ts             # Service type definitions
+│   │   ├── GulagService.ts      # Gulag business logic
+│   │   ├── PropertyService.ts   # Property purchase & quota logic
+│   │   ├── TurnManager.ts       # Turn flow & dice rolling
+│   │   └── StoyService.ts       # STOY checkpoint logic
+│   │
+│   ├── types/
+│   │   └── game.ts              # Game domain types (Player, Property, etc.)
+│   │
+│   ├── data/
+│   │   ├── spaces.ts            # Board space definitions
+│   │   ├── cards.ts             # Card definitions
+│   │   └── pieces.ts            # Player piece abilities
+│   │
+│   ├── hooks/
+│   │   ├── usePieceAbility.ts   # Hook for piece ability logic
+│   │   └── useSpaceLanding.ts   # Hook for landing on spaces
 │   │
 │   ├── utils/
 │   │   ├── diceRoll.ts
@@ -441,20 +464,64 @@ export const PropertySpace: React.FC<PropertySpaceProps> = ({
 
 # 5. GAME STATE ARCHITECTURE
 
-## 5.1 Core Types
+The game uses **Zustand** for state management with a modular **Slice + Service** architecture for maintainability and separation of concerns.
+
+## 5.1 Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      React Components                        │
+│              (use hooks to access store)                    │
+└───────────────────────┬─────────────────────────────────────┘
+                        │
+                        ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Zustand Game Store                        │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │   SLICES     │  │   SERVICES   │  │ COMPATIBILITY│      │
+│  │   (State +   │  │  (Business   │  │    LAYER     │      │
+│  │   Actions)   │  │   Logic)     │  │  (Old API)   │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Slices (Pure State Management)
+Each slice manages a domain of state with simple CRUD operations:
+- **CardSlice**: Card decks (Party Directive, Communist Test)
+- **GulagSlice**: Gulag-related state
+- **PropertySlice**: Properties, custodianship, collectivization
+- **TribunalSlice**: Active tribunal state
+- **PlayerSlice**: Player data, ranks, money, positions
+- **GameFlowSlice**: Game phase, turns, rounds, dice
+
+### Services (Business Logic)
+Services coordinate complex logic across multiple slices:
+- **GulagService**: Sending to Gulag, escape attempts, vouchers
+- **PropertyService**: Purchase validation, quota calculation, improvements
+- **TurnManager**: Turn flow, dice rolling, doubles, game start/end
+- **StoyService**: STOY checkpoint logic (travel tax, pilfering)
+
+### Key Architectural Principles
+
+1. **Slices don't call services** - Only state mutations
+2. **Services don't call other services** - Only slice methods
+3. **Services use `SlicesStore` type** - Access all slice methods
+4. **Components use hooks** - `useGameStore` for selectors
+
+## 5.2 Core Types
 
 ```typescript
-// gameTypes.ts
+// src/types/game.ts - Game domain types
 
-export type PartyRank = 'proletariat' | 'party-member' | 'commissar' | 'inner-circle';
+export type PartyRank = 'proletariat' | 'partyMember' | 'commissar' | 'innerCircle';
 
-export type PieceType = 
-  | 'hammer' | 'sickle' | 'red-star' | 'tank' 
-  | 'bread-loaf' | 'iron-curtain' | 'vodka-bottle' | 'lenin-statue';
+export type PieceType =
+  | 'hammer' | 'sickle' | 'redStar' | 'tank'
+  | 'breadLoaf' | 'ironCurtain' | 'vodkaBottle' | 'leninStatue';
 
-export type PropertyGroup = 
+export type PropertyGroup =
   | 'siberian' | 'collective' | 'industrial' | 'ministry'
-  | 'military' | 'media' | 'elite' | 'kremlin' | 'railroad' | 'utility';
+  | 'military' | 'media' | 'elite' | 'kremlin';
 
 export interface Player {
   id: string;
@@ -463,151 +530,276 @@ export interface Player {
   position: number;           // Board position (0-39)
   rubles: number;
   rank: PartyRank;
-  isInGulag: boolean;
+  inGulag: boolean;
   gulagTurns: number;         // Turns spent in gulag
   isEliminated: boolean;
-  isGhost: boolean;           // Eliminated but can still observe
-  communistTestStreak: number; // For tracking 2 failures in a row
-  immunities: {
-    denouncement: boolean;    // Lenin's Mausoleum protection
-    gulag: boolean;           // Tank's first gulag immunity
+  denouncementCount: number;  // Denouncements made this round
+  pieceAbilitiesUsed: {       // Track one-time abilities
+    tankImmunity: boolean;
+    ironCurtainDisappear: boolean;
+    leninSpeech: boolean;
+    sickleHarvest: boolean;
   };
-  vouchingFor: string | null; // Player ID they vouched for
-  underSuspicion: boolean;    // Next denouncement needs no witnesses
+  vodkaUseCount: number;      // Vodka Bottle ability usage
 }
 
 export interface Property {
   spaceId: number;
   custodianId: string | null;
   collectivizationLevel: number; // 0-5 (0=none, 5=People's Palace)
+  mortgaged: boolean;
 }
 
-export interface GameState {
-  phase: GamePhase;
-  players: Player[];
-  stalinId: string;           // Stalin doesn't play, just controls
-  currentPlayerId: string;
-  properties: Property[];
-  
-  // Dice state
-  dice: [number, number];
-  doublesCount: number;
-  hasRolled: boolean;
-  
-  // Turn tracking
-  turnNumber: number;
-  roundNumber: number;
-  
-  // Active modals/events
-  activeModal: ModalType | null;
-  pendingAction: PendingAction | null;
-  
-  // Tribunal state
-  tribunal: TribunalState | null;
-  
-  // Game log
-  log: LogEntry[];
-  
-  // Optional rules
-  optionalRules: {
-    secretPolice: boolean;
-    fiveYearPlans: boolean;
-    greatPurge: boolean;
-    rehabilitation: boolean;
-    personalityCult: boolean;
-  };
-  
-  // Secret police (if enabled)
-  kgbInformantId: string | null;
-}
-
-export type GamePhase = 
+export type GamePhase =
   | 'setup'
-  | 'pre-roll'           // Before dice roll
-  | 'rolling'            // Dice animation
-  | 'moving'             // Piece movement animation
-  | 'resolving-space'    // Landed on space, resolving effects
-  | 'post-roll'          // Can denounce, trade, improve
-  | 'tribunal'           // Tribunal in progress
-  | 'communist-test'     // Answering a test question
-  | 'gulag-turn'         // Player in gulag taking their turn
-  | 'game-over';
+  | 'playing'
+  | 'gameOver';
 
-export interface TribunalState {
+export interface Tribunal {
   accuserId: string;
   accusedId: string;
   crime: string;
-  phase: 'accusation' | 'defence' | 'witnesses' | 'judgement';
-  witnesses: { playerId: string; forDefence: boolean }[];
-  timerSeconds: number;
+  witnesses: Array<{ playerId: string; supporting: boolean }>;
 }
 ```
 
-## 5.2 Game Reducer Structure
+## 5.3 Service Architecture
+
+Services follow a factory pattern for dependency injection:
 
 ```typescript
-// gameReducer.ts
+// src/services/types.ts
 
-export type GameAction =
-  | { type: 'START_GAME'; players: PlayerSetup[] }
-  | { type: 'ROLL_DICE' }
-  | { type: 'DICE_RESULT'; dice: [number, number] }
-  | { type: 'MOVE_PLAYER'; playerId: string; newPosition: number }
-  | { type: 'RESOLVE_SPACE'; spaceId: number }
-  | { type: 'PURCHASE_PROPERTY'; playerId: string; spaceId: number; price: number }
-  | { type: 'DECLINE_PROPERTY' }
-  | { type: 'PAY_QUOTA'; payerId: string; amount: number; custodianId: string }
-  | { type: 'IMPROVE_PROPERTY'; spaceId: number }
-  | { type: 'START_DENOUNCEMENT'; accuserId: string; accusedId: string; crime: string }
-  | { type: 'TRIBUNAL_VERDICT'; verdict: TribunalVerdict }
-  | { type: 'SEND_TO_GULAG'; playerId: string; reason: string }
-  | { type: 'ESCAPE_GULAG'; playerId: string; method: GulagEscapeMethod }
-  | { type: 'CHANGE_RANK'; playerId: string; newRank: PartyRank; reason: string }
-  | { type: 'COMMUNIST_TEST_ANSWER'; correct: boolean }
-  | { type: 'STALIN_ACTION'; action: StalinAction }
-  | { type: 'END_TURN' }
-  | { type: 'ELIMINATE_PLAYER'; playerId: string; reason: string }
-  | { type: 'END_GAME'; reason: string };
+export interface GameService {
+  readonly name: string;  // Service identifier for debugging
+}
 
-export function gameReducer(state: GameState, action: GameAction): GameState {
-  switch (action.type) {
-    case 'ROLL_DICE':
-      return {
-        ...state,
-        phase: 'rolling',
-        hasRolled: true,
-      };
-      
-    case 'DICE_RESULT': {
-      const [d1, d2] = action.dice;
-      const isDoubles = d1 === d2;
-      const newDoublesCount = isDoubles ? state.doublesCount + 1 : 0;
-      
-      // Three doubles = counter-revolutionary behavior
-      if (newDoublesCount >= 3) {
-        return {
-          ...state,
-          dice: action.dice,
-          doublesCount: 0,
-          phase: 'resolving-space',
-          pendingAction: { type: 'send-to-gulag', reason: 'Counter-revolutionary dice behavior' },
-        };
+export type StoreGetter<T> = () => T;
+
+export type ServiceFactory<TStore, TService> = (
+  get: StoreGetter<TStore>
+) => TService;
+
+// Combined type of all slices (without services)
+export type SlicesStore = import('../store/slices').AllSlices;
+```
+
+### Example Service Implementation
+
+```typescript
+// src/services/TurnManager.ts
+
+import type { StoreGetter, GameService, SlicesStore } from './types'
+
+export interface TurnManager extends GameService {
+  startGame: () => void
+  rollDice: () => [number, number]
+  endTurn: () => void
+  checkGameEnd: () => void
+}
+
+export function createTurnManager(get: StoreGetter<SlicesStore>): TurnManager {
+  return {
+    name: 'TurnManager',
+
+    startGame: () => {
+      const state = get()
+      const activePlayers = state.getActivePlayers()
+
+      // Randomize turn order
+      const turnOrder = activePlayers
+        .map(p => p.id)
+        .sort(() => Math.random() - 0.5)
+
+      // Use slice methods directly
+      state.setTurnOrder(turnOrder)
+      state.setCurrentTurnIndex(0)
+      state.setGamePhase('playing')
+      state.setRound(1)
+      state.addGameLogEntry('☭ The game begins! Glory to the Motherland! ☭')
+    },
+
+    rollDice: () => {
+      const state = get()
+
+      const die1 = Math.floor(Math.random() * 6) + 1
+      const die2 = Math.floor(Math.random() * 6) + 1
+      const roll: [number, number] = [die1, die2]
+
+      state.setDiceRoll(roll)
+
+      if (die1 === die2) {
+        state.incrementDoublesCount()
+
+        // Three doubles = Gulag
+        if (state.doublesCount >= 3) {
+          const currentPlayerId = state.getCurrentPlayerId()
+          const currentPlayer = currentPlayerId ? state.getPlayer(currentPlayerId) : undefined
+
+          if (currentPlayer) {
+            state.setPlayerInGulag(currentPlayer.id, true)
+            state.setGulagTurns(currentPlayer.id, 0)
+            state.addGameLogEntry(`${currentPlayer.name} sent to Gulag: Rolled three consecutive doubles`)
+            state.setDoublesCount(0)
+          }
+        }
+      } else {
+        state.setDoublesCount(0)
       }
-      
-      return {
-        ...state,
-        dice: action.dice,
-        doublesCount: newDoublesCount,
-        phase: 'moving',
-      };
-    }
-    
-    // ... implement all action handlers
-    
-    default:
-      return state;
+
+      return roll
+    },
+
+    // ... other methods
   }
 }
+```
+
+## 5.4 Slice Structure
+
+Each slice exports:
+1. **State interface** - The state shape
+2. **Actions interface** - The mutation methods
+3. **Combined interface** - State + Actions
+4. **Factory function** - Creates the slice
+5. **Initial state** - Default values
+
+```typescript
+// src/store/slices/playerSlice.ts
+
+import type { StateCreator } from 'zustand'
+
+// State interface
+export interface PlayerSliceState {
+  players: Player[]
+}
+
+// Actions interface
+export interface PlayerSliceActions {
+  addPlayer: (name: string, piece: PieceType) => string
+  getPlayer: (playerId: string) => Player | undefined
+  setPlayerPosition: (playerId: string, position: number) => void
+  addMoney: (playerId: string, amount: number) => void
+  removeMoney: (playerId: string, amount: number) => void
+  setPlayerRank: (playerId: string, rank: PartyRank) => void
+  eliminatePlayer: (playerId: string, reason: string) => void
+  // ... more actions
+}
+
+// Combined slice type
+export type PlayerSlice = PlayerSliceState & PlayerSliceActions
+
+// Initial state
+export const initialPlayerState: PlayerSliceState = {
+  players: []
+}
+
+// Slice factory
+export const createPlayerSlice: StateCreator<
+  PlayerSlice,
+  [],
+  [],
+  PlayerSlice
+> = (set, get) => ({
+  ...initialPlayerState,
+
+  addPlayer: (name, piece) => {
+    const id = `player-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+    const newPlayer = createInitialPlayer(name, piece)
+    newPlayer.id = id
+
+    set((state) => ({
+      players: [...state.players, newPlayer]
+    }))
+
+    return id
+  },
+
+  getPlayer: (playerId) => {
+    return get().players.find(p => p.id === playerId)
+  },
+
+  setPlayerPosition: (playerId, position) => {
+    set((state) => ({
+      players: state.players.map(p =>
+        p.id === playerId ? { ...p, position } : p
+      )
+    }))
+  },
+
+  // ... more actions
+})
+```
+
+## 5.5 Store Composition
+
+```typescript
+// src/store/gameStore.ts
+
+import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
+
+// Import slices
+import { createCardSlice, type CardSlice } from './slices/cardSlice'
+import { createPlayerSlice, type PlayerSlice } from './slices/playerSlice'
+import { createGameFlowSlice, type GameFlowSlice } from './slices/gameFlowSlice'
+// ... other slices
+
+// Import services
+import { createTurnManager, type TurnManager } from '../services/TurnManager'
+import { createPropertyService, type PropertyService } from '../services/PropertyService'
+// ... other services
+
+type SlicesStore = CardSlice & PlayerSlice & GameFlowSlice // ... all slices
+
+type GameStore = SlicesStore & TurnManager & PropertyService // ... all services
+
+export const useGameStore = create<GameStore>()(
+  persist(
+    (set, get, api) => {
+      // Create slices
+      const slices = {
+        ...createCardSlice(set, get, api),
+        ...createPlayerSlice(set, get, api),
+        ...createGameFlowSlice(set, get, api),
+        // ... other slices
+      }
+
+      // Create services with store getter
+      const turnManager = createTurnManager(() => get() as unknown as SlicesStore)
+      const propertyService = createPropertyService(() => get() as unknown as SlicesStore)
+      // ... other services
+
+      return {
+        ...slices,
+        ...turnManager,
+        ...propertyService,
+        // ... other services
+      }
+    },
+    {
+      name: 'communistopoly-game',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        players: state.players,
+        properties: state.properties,
+        gamePhase: state.gamePhase,
+        currentRound: state.currentRound,
+        // ... select what to persist
+      })
+    }
+  )
+)
+
+// Convenience selectors
+export const useCurrentPlayer = () =>
+  useGameStore((state) => {
+    const id = state.getCurrentPlayerId()
+    return id ? state.getPlayer(id) : undefined
+  })
+
+export const useActivePlayers = () =>
+  useGameStore((state) => state.getActivePlayers())
 ```
 
 ---
@@ -1195,6 +1387,7 @@ volumes:
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "zustand": "^4.5.0",
     "howler": "^2.2.4"
   },
   "devDependencies": {
