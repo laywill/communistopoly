@@ -102,7 +102,7 @@ const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps) => {
                           <div className={styles.outcomeIcon}>✓</div>
                           <div className={styles.outcomeText}>
                             Success! You pilfered ₽100!
-                        </div>
+                          </div>
                         </>
                         )
                       : (
@@ -110,7 +110,7 @@ const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps) => {
                           <div className={styles.outcomeIcon}>✗</div>
                           <div className={styles.outcomeText}>
                             Caught! Off to the Gulag!
-                        </div>
+                          </div>
                         </>
                         )}
                   </div>

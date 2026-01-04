@@ -180,8 +180,8 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
                           <div>
                             <p style={{ margin: 0, fontWeight: 'bold', fontSize: '15px' }}>{voucher.name}</p>
                             <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gulag-grey)' }}>
-                  Rank: {getRankDisplayName(voucher.rank)} • ₽{voucher.rubles}
-                </p>
+                              Rank: {getRankDisplayName(voucher.rank)} • ₽{voucher.rubles}
+                            </p>
                           </div>
                           {selectedVoucherId === voucher.id && (
                             <span style={{ fontSize: '20px', color: 'var(--color-soviet-red)' }}>✓</span>
