@@ -10,14 +10,14 @@ interface PieceAbilityIndicatorProps {
   player: Player
 }
 
-export function PieceAbilityIndicator ({ player }: PieceAbilityIndicatorProps) {
-  if (!player.piece) return null
+export function PieceAbilityIndicator ({ player }: PieceAbilityIndicatorProps): JSX.Element | null {
+  if (player.piece === null || player.piece === undefined) return null
 
   const abilityData = PIECE_ABILITIES[player.piece]
   const statusText = getAbilityStatusText(player)
 
   // Determine ability availability class
-  const getAbilityClass = () => {
+  const getAbilityClass = (): string => {
     const baseClass = 'piece-ability-indicator'
 
     // Check if any one-time ability is still available

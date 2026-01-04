@@ -25,7 +25,7 @@ const PLAYER_COLORS = [
   '#87CEEB' // Light Blue
 ]
 
-export default function PlayerDashboard () {
+export default function PlayerDashboard (): JSX.Element {
   const players = useGameStore((state) => state.players)
   const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex)
   const turnPhase = useGameStore((state) => state.turnPhase)
@@ -44,7 +44,7 @@ export default function PlayerDashboard () {
   const [showLeninSpeech, setShowLeninSpeech] = useState(false)
   const [showDenounce, setShowDenounce] = useState(false)
 
-  const handleEndTurn = () => {
+  const handleEndTurn = (): void => {
     endTurn()
   }
 
@@ -52,13 +52,13 @@ export default function PlayerDashboard () {
   const currentPlayer = players[currentPlayerIndex] ?? null
 
   // Get player color for ownership indicator
-  const getPlayerColor = (player: typeof players[0]) => {
+  const getPlayerColor = (player: typeof players[0]): string => {
     const playerIndex = players.findIndex((p) => p.id === player.id)
     return PLAYER_COLORS[playerIndex % PLAYER_COLORS.length]
   }
 
   // Render rank stars
-  const renderRankStars = (rank: string) => {
+  const renderRankStars = (rank: string): JSX.Element => {
     const rankLevels: Record<string, number> = {
       proletariat: 0,
       partyMember: 1,
@@ -66,7 +66,7 @@ export default function PlayerDashboard () {
       innerCircle: 3
     }
 
-    const level = rankLevels[rank] || 0
+    const level = rankLevels[rank] ?? 0
     const stars = []
 
     for (let i = 0; i < 4; i++) {
@@ -81,18 +81,18 @@ export default function PlayerDashboard () {
   }
 
   // Render rank name
-  const getRankName = (rank: string) => {
+  const getRankName = (rank: string): string => {
     const rankNames: Record<string, string> = {
       proletariat: 'Proletariat',
       partyMember: 'Party Member',
       commissar: 'Commissar',
       innerCircle: 'Inner Circle'
     }
-    return rankNames[rank] || rank
+    return rankNames[rank] ?? rank
   }
 
   // Get player status
-  const getPlayerStatus = (player: typeof players[0]) => {
+  const getPlayerStatus = (player: typeof players[0]): string => {
     if (player.isEliminated) return 'Eliminated'
     if (player.inGulag) return 'In Gulag'
     return 'In Play'
@@ -128,7 +128,7 @@ export default function PlayerDashboard () {
     <div className='player-dashboard'>
       <div className='players-grid'>
         {nonStalinPlayers.map((player, index) => {
-          const pieceData = player.piece ? getPieceByType(player.piece) : null
+          const pieceData = (player.piece !== null && player.piece !== undefined) ? getPieceByType(player.piece) : null
           const isCurrentPlayer = index + 1 === currentPlayerIndex // +1 because Stalin is index 0
 
           return (
@@ -202,7 +202,7 @@ export default function PlayerDashboard () {
                 )}
 
                 {/* Piece Ability Indicator */}
-                {player.piece && (
+                {(player.piece !== null && player.piece !== undefined) && (
                   <PieceAbilityIndicator player={player} />
                 )}
 
@@ -335,7 +335,7 @@ export default function PlayerDashboard () {
       </div>
 
       {/* Modals */}
-      {showPropertyModal && selectedPlayerId && (
+      {(showPropertyModal && selectedPlayerId !== null && selectedPlayerId !== undefined) && (
         <PropertyManagementModal
           playerId={selectedPlayerId}
           onClose={() => {
@@ -345,7 +345,7 @@ export default function PlayerDashboard () {
         />
       )}
 
-      {showImproveModal && selectedPlayerId && (
+      {(showImproveModal && selectedPlayerId !== null && selectedPlayerId !== undefined) && (
         <ImprovementModal
           playerId={selectedPlayerId}
           onClose={() => {
@@ -355,7 +355,7 @@ export default function PlayerDashboard () {
         />
       )}
 
-      {showTradeModal && selectedPlayerId && (
+      {(showTradeModal && selectedPlayerId !== null && selectedPlayerId !== undefined) && (
         <TradeModal
           mode='propose'
           proposerId={selectedPlayerId}
@@ -367,7 +367,7 @@ export default function PlayerDashboard () {
       )}
 
       {/* Tank Requisition Modal */}
-      {showTankRequisition && selectedPlayerId && (
+      {(showTankRequisition && selectedPlayerId !== null && selectedPlayerId !== undefined) && (
         <div className='modal-overlay' onClick={() => { setShowTankRequisition(false) }}>
           <div className='modal-content' onClick={(e) => { e.stopPropagation() }} style={{ maxWidth: '400px' }}>
             <h2>🚛 TANK REQUISITION</h2>
@@ -405,7 +405,7 @@ export default function PlayerDashboard () {
       )}
 
       {/* Sickle Harvest Modal */}
-      {showSickleHarvest && selectedPlayerId && (
+      {(showSickleHarvest && selectedPlayerId !== null && selectedPlayerId !== undefined) && (
         <SickleHarvestModal
           sicklePlayerId={selectedPlayerId}
           onClose={() => {
@@ -416,7 +416,7 @@ export default function PlayerDashboard () {
       )}
 
       {/* Iron Curtain Disappear Modal */}
-      {showIronCurtainDisappear && selectedPlayerId && (
+      {(showIronCurtainDisappear && selectedPlayerId !== null && selectedPlayerId !== undefined) && (
         <IronCurtainDisappearModal
           ironCurtainPlayerId={selectedPlayerId}
           onClose={() => {
@@ -427,7 +427,7 @@ export default function PlayerDashboard () {
       )}
 
       {/* Lenin Speech Modal */}
-      {showLeninSpeech && selectedPlayerId && (
+      {(showLeninSpeech && selectedPlayerId !== null && selectedPlayerId !== undefined) && (
         <LeninSpeechModal
           leninPlayerId={selectedPlayerId}
           onClose={() => {
@@ -438,7 +438,7 @@ export default function PlayerDashboard () {
       )}
 
       {/* Denounce Modal */}
-      {showDenounce && selectedPlayerId && (
+      {(showDenounce && selectedPlayerId !== null && selectedPlayerId !== undefined) && (
         <DenounceModal
           accuserId={selectedPlayerId}
           onClose={() => {
