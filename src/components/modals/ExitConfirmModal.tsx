@@ -9,7 +9,7 @@ interface ExitConfirmModalProps {
   onConfirm: () => void
 }
 
-const ExitConfirmModal = ({ isOpen, onClose, onConfirm }: ExitConfirmModalProps) => {
+const ExitConfirmModal = ({ isOpen, onClose, onConfirm }: ExitConfirmModalProps): JSX.Element | null => {
   if (!isOpen) return null
 
   return (

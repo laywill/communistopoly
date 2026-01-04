@@ -58,7 +58,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
   // Calculate mortgage value (50% of base cost)
   const getMortgageValue = (spaceId: number): number => {
     const space = getSpaceById(spaceId)
-    return space?.baseCost ? Math.floor(space.baseCost * 0.5) : 0
+    return space?.baseCost != null && space.baseCost !== 0 ? Math.floor(space.baseCost * 0.5) : 0
   }
 
   // Get total available funds through liquidation
@@ -80,7 +80,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
   const totalAvailable = getTotalAvailableFunds()
 
-  const handleSellImprovement = (spaceId: number) => {
+  const handleSellImprovement = (spaceId: number): void => {
     const property = properties.find((p) => p.spaceId === spaceId)
     if ((property == null) || property.collectivizationLevel === 0) return
 
@@ -121,7 +121,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
     }
   }
 
-  const handleMortgageProperty = (spaceId: number) => {
+  const handleMortgageProperty = (spaceId: number): void => {
     const property = properties.find((p) => p.spaceId === spaceId)
     if ((property == null) || property.mortgaged || property.collectivizationLevel > 0) return
 
@@ -152,7 +152,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
     }
   }
 
-  const handlePayDebt = (currentRubles: number = player.rubles) => {
+  const handlePayDebt = (currentRubles: number = player.rubles): void => {
     if (currentRubles < remainingDebt) return
 
     // Pay the debt
@@ -187,7 +187,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
     setTurnPhase('post-turn')
   }
 
-  const handleCannotPay = () => {
+  const handleCannotPay = (): void => {
     // Create debt if total available funds can cover it
     if (totalAvailable >= remainingDebt) {
       // Player chose not to liquidate, create debt

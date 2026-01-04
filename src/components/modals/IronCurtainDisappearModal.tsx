@@ -10,7 +10,7 @@ interface IronCurtainDisappearModalProps {
   onClose: () => void
 }
 
-export function IronCurtainDisappearModal ({ ironCurtainPlayerId, onClose }: IronCurtainDisappearModalProps) {
+export function IronCurtainDisappearModal ({ ironCurtainPlayerId, onClose }: IronCurtainDisappearModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const ironCurtainDisappear = useGameStore((state) => state.ironCurtainDisappear)
@@ -29,7 +29,7 @@ export function IronCurtainDisappearModal ({ ironCurtainPlayerId, onClose }: Iro
     })
     .map((prop) => {
       const space = getSpaceById(prop.spaceId)
-      const owner = prop.custodianId
+      const owner = prop.custodianId != null && prop.custodianId !== ''
         ? players.find((p) => p.id === prop.custodianId)
         : null
       return {
@@ -40,7 +40,7 @@ export function IronCurtainDisappearModal ({ ironCurtainPlayerId, onClose }: Iro
     })
     .filter((item) => item.space)
 
-  const handleDisappear = (propertyId: number) => {
+  const handleDisappear = (propertyId: number): void => {
     ironCurtainDisappear(ironCurtainPlayerId, propertyId)
     onClose()
   }

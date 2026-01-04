@@ -10,14 +10,14 @@ interface ConfessionModalProps {
   onClose: () => void
 }
 
-export default function ConfessionModal ({ prisonerId, onClose }: ConfessionModalProps) {
+export default function ConfessionModal ({ prisonerId, onClose }: ConfessionModalProps): JSX.Element | null {
   const [confession, setConfession] = useState('')
   const submitConfession = useGameStore((state) => state.submitConfession)
   const prisoner = useGameStore((state) => state.players.find(p => p.id === prisonerId))
 
   if (prisoner == null) return null
 
-  const handleSubmit = () => {
+  const handleSubmit = (): void => {
     if (confession.trim().length < 10) {
       alert('Your confession must be at least 10 characters long, Comrade!')
       return

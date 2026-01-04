@@ -10,7 +10,7 @@ interface LeninSpeechModalProps {
   onClose: () => void
 }
 
-export function LeninSpeechModal ({ leninPlayerId, onClose }: LeninSpeechModalProps) {
+export function LeninSpeechModal ({ leninPlayerId, onClose }: LeninSpeechModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const leninSpeech = useGameStore((state) => state.leninSpeech)
 
@@ -28,7 +28,7 @@ export function LeninSpeechModal ({ leninPlayerId, onClose }: LeninSpeechModalPr
     (p) => p.id !== leninPlayerId && !p.isStalin && !p.isEliminated
   )
 
-  const toggleApplauder = (playerId: string) => {
+  const toggleApplauder = (playerId: string): void => {
     if (selectedApplauders.includes(playerId)) {
       setSelectedApplauders(selectedApplauders.filter((id) => id !== playerId))
     } else {
@@ -36,11 +36,11 @@ export function LeninSpeechModal ({ leninPlayerId, onClose }: LeninSpeechModalPr
     }
   }
 
-  const handleGiveSpeech = () => {
+  const handleGiveSpeech = (): void => {
     setSpeechGiven(true)
   }
 
-  const handleCompleteSpeech = () => {
+  const handleCompleteSpeech = (): void => {
     leninSpeech(leninPlayerId, selectedApplauders)
     onClose()
   }

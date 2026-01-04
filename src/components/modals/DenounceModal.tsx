@@ -63,20 +63,20 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
     }
   )
 
-  const handleSubmit = () => {
-    if (!selectedTargetId || !selectedCrime) return
+  const handleSubmit = (): void => {
+    if (selectedTargetId == null || selectedCrime === '') return
 
     const crime = selectedCrime === 'custom' ? customCrime : PREDEFINED_CRIMES.find(c => c.value === selectedCrime)?.label ?? selectedCrime
 
-    if (!crime.trim()) return
+    if (crime.trim() === '') return
 
     // Initiate denouncement (this will create a tribunal)
     initiateDenouncement(accuserId, selectedTargetId, crime)
     onClose()
   }
 
-  const getFinalCrime = () => {
-    if (!selectedCrime) return ''
+  const getFinalCrime = (): string => {
+    if (selectedCrime === '') return ''
     if (selectedCrime === 'custom') return customCrime
     return PREDEFINED_CRIMES.find(c => c.value === selectedCrime)?.label ?? ''
   }
@@ -111,7 +111,9 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
                 Close
               </button>
             </div>
-          ) : eligibleTargets.length === 0 ? (
+          )
+            : eligibleTargets.length === 0
+              ? (
             <div style={{ textAlign: 'center', padding: '24px' }}>
               <p style={{ fontSize: '16px', color: 'var(--color-gulag-grey)', marginBottom: '16px' }}>
                 No eligible comrades to denounce at this time.
@@ -298,9 +300,9 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
                 </button>
                 <button
                   onClick={handleSubmit}
-                  disabled={!selectedTargetId || !selectedCrime || (selectedCrime === 'custom' && !customCrime.trim())}
+                  disabled={selectedTargetId == null || selectedCrime === '' || (selectedCrime === 'custom' && customCrime.trim() === '')}
                   className={
-                    selectedTargetId && selectedCrime && (selectedCrime !== 'custom' || customCrime.trim())
+                    selectedTargetId != null && selectedCrime !== '' && (selectedCrime !== 'custom' || customCrime.trim() !== '')
                       ? styles.dangerButton
                       : styles.disabledButton
                   }
@@ -311,7 +313,7 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
               </div>
 
               {/* Preview */}
-              {selectedTargetId && getFinalCrime() && (
+              {selectedTargetId != null && getFinalCrime() !== '' && (
                 <div
                   style={{
                     marginTop: '16px',
@@ -342,5 +344,5 @@ function getRankDisplayName (rank: string): string {
     commissar: 'Commissar',
     innerCircle: 'Inner Circle'
   }
-  return rankNames[rank] || rank
+  return rankNames[rank] ?? rank
 }

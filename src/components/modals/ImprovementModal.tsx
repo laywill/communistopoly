@@ -13,7 +13,7 @@ interface ImprovementModalProps {
   onClose: () => void
 }
 
-export function ImprovementModal ({ playerId, onClose }: ImprovementModalProps) {
+export function ImprovementModal ({ playerId, onClose }: ImprovementModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const updatePlayer = useGameStore((state) => state.updatePlayer)
@@ -45,7 +45,7 @@ export function ImprovementModal ({ playerId, onClose }: ImprovementModalProps) 
   player.properties.forEach((propId) => {
     const spaceId = parseInt(propId)
     const space = getSpaceById(spaceId)
-    if (space?.group && space.type === 'property') {
+    if (space?.group != null && space.group !== '' && space.type === 'property') {
       groupedProperties[space.group].push(spaceId)
     }
   })
@@ -63,7 +63,7 @@ export function ImprovementModal ({ playerId, onClose }: ImprovementModalProps) 
     const property = properties.find((p) => p.spaceId === spaceId)
     const space = getSpaceById(spaceId)
 
-    if ((property == null) || !space?.group) {
+    if ((property == null) || space?.group == null || space.group === '') {
       return { canImprove: false, reason: 'Property not found' }
     }
 
@@ -105,7 +105,7 @@ export function ImprovementModal ({ playerId, onClose }: ImprovementModalProps) 
     return { canImprove: true, reason: '' }
   }
 
-  const handleImprove = (spaceId: number) => {
+  const handleImprove = (spaceId: number): void => {
     const property = properties.find((p) => p.spaceId === spaceId)
     const space = getSpaceById(spaceId)
 

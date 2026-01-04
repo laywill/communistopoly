@@ -12,7 +12,7 @@ interface PartyDirectiveModalProps {
   onClose: () => void
 }
 
-export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirectiveModalProps) {
+export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirectiveModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const applyDirectiveEffect = useGameStore((state) => state.applyDirectiveEffect)
@@ -26,17 +26,17 @@ export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirective
     return null
   }
 
-  const handleReveal = () => {
+  const handleReveal = (): void => {
     setIsRevealed(true)
   }
 
-  const handleApply = () => {
+  const handleApply = (): void => {
     // Apply the directive effect
     applyDirectiveEffect(card, playerId)
     setIsApplied(true)
   }
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     if (isApplied) {
       onClose()
     }
@@ -48,11 +48,11 @@ export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirective
       case 'move':
         return `Move to position ${String(card.effect.destination ?? 'unknown')}`
       case 'moveRelative':
-        return card.effect.spaces && card.effect.spaces > 0
+        return card.effect.spaces != null && card.effect.spaces !== 0 && card.effect.spaces > 0
           ? `Move forward ${String(card.effect.spaces)} spaces`
           : `Move backward ${String(Math.abs(card.effect.spaces ?? 0))} spaces`
       case 'money':
-        return card.effect.amount && card.effect.amount > 0
+        return card.effect.amount != null && card.effect.amount !== 0 && card.effect.amount > 0
           ? `Collect ₽${String(card.effect.amount)}`
           : `Pay ₽${String(Math.abs(card.effect.amount ?? 0))}`
       case 'gulag':
@@ -69,10 +69,10 @@ export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirective
         const playerProperties = properties.filter((p) => p.custodianId === playerId)
         const totalImprovements = playerProperties.reduce((sum, p) => sum + p.collectivizationLevel, 0)
         let total = 0
-        if (card.effect.perProperty) {
+        if (card.effect.perProperty != null && card.effect.perProperty !== 0) {
           total += playerProperties.length * card.effect.perProperty
         }
-        if (card.effect.perImprovement) {
+        if (card.effect.perImprovement != null && card.effect.perImprovement !== 0) {
           total += totalImprovements * card.effect.perImprovement
         }
         return `Pay ₽${String(total)} in taxes (${String(playerProperties.length)} properties, ${String(totalImprovements)} improvements)`

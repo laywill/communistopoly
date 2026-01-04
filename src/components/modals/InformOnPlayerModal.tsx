@@ -47,12 +47,12 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
     }
   )
 
-  const handleSelectTarget = (targetId: string) => {
+  const handleSelectTarget = (targetId: string): void => {
     setSelectedTargetId(targetId)
   }
 
-  const handleSubmit = () => {
-    if (!selectedTargetId || !accusation.trim()) return
+  const handleSubmit = (): void => {
+    if (selectedTargetId == null || selectedTargetId === '' || accusation.trim() === '') return
 
     setSubmitted(true)
 
@@ -105,7 +105,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
     }
   }
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setPendingAction(null)
   }
 
@@ -206,16 +206,18 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
             </p>
           </div>
 
-          {eligibleTargets.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '24px' }}>
-              <p style={{ fontSize: '16px', color: 'var(--color-gulag-grey)' }}>
-                No eligible comrades to accuse.
-              </p>
-              <button onClick={handleCancel} className={styles.primaryButton} style={{ marginTop: '16px' }}>
-                Return to Gulag Options
-              </button>
-            </div>
-          ) : (
+          {eligibleTargets.length === 0
+            ? (
+              <div style={{ textAlign: 'center', padding: '24px' }}>
+                <p style={{ fontSize: '16px', color: 'var(--color-gulag-grey)' }}>
+                  No eligible comrades to accuse.
+                </p>
+                <button onClick={handleCancel} className={styles.primaryButton} style={{ marginTop: '16px' }}>
+                  Return to Gulag Options
+                </button>
+              </div>
+              )
+            : (
             <>
               {/* Target Selection */}
               <div style={{ marginBottom: '20px' }}>
@@ -339,9 +341,9 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                 </button>
                 <button
                   onClick={handleSubmit}
-                  disabled={!selectedTargetId || !accusation.trim() || submitted}
+                  disabled={selectedTargetId == null || selectedTargetId === '' || accusation.trim() === '' || submitted}
                   className={
-                    selectedTargetId && accusation.trim() && !submitted
+                    selectedTargetId != null && selectedTargetId !== '' && accusation.trim() !== '' && !submitted
                       ? styles.dangerButton
                       : styles.disabledButton
                   }
@@ -351,7 +353,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                 </button>
               </div>
 
-              {selectedTargetId && accusation.trim() && (
+              {selectedTargetId != null && selectedTargetId !== '' && accusation.trim() !== '' && (
                 <div
                   style={{
                     marginTop: '16px',
@@ -366,7 +368,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                     &quot;{accusation}&quot;
                   </p>
                   <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: 'var(--color-gulag-grey)' }}>
-                    Accused: {players.find((p) => p.id === selectedTargetId)?.name}
+                    Accused: {selectedTargetId != null && selectedTargetId !== '' ? players.find((p) => p.id === selectedTargetId)?.name : ''}
                   </p>
                 </div>
               )}

@@ -14,11 +14,11 @@ export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) 
   const player = players.find((p) => p.id === playerId)
   const [isRolling, setIsRolling] = useState(false)
 
-  if (!player?.inGulag) return null
+  if (player?.inGulag !== true) return null
 
   const requiredDoubles = getRequiredDoublesText(player.gulagTurns)
 
-  const handleRollForEscape = () => {
+  const handleRollForEscape = (): void => {
     setIsRolling(true)
     rollDice()
 
@@ -30,25 +30,25 @@ export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) 
     }, 1500)
   }
 
-  const handlePayForEscape = () => {
+  const handlePayForEscape = (): void => {
     if (player.rubles >= 500) {
       attemptGulagEscape(playerId, 'pay')
     }
   }
 
-  const handleRequestVoucher = () => {
+  const handleRequestVoucher = (): void => {
     attemptGulagEscape(playerId, 'vouch')
   }
 
-  const handleInformOnComrade = () => {
+  const handleInformOnComrade = (): void => {
     attemptGulagEscape(playerId, 'inform')
   }
 
-  const handleBribeStalin = () => {
+  const handleBribeStalin = (): void => {
     attemptGulagEscape(playerId, 'bribe')
   }
 
-  const handleUseGulagCard = () => {
+  const handleUseGulagCard = (): void => {
     attemptGulagEscape(playerId, 'card')
   }
 
