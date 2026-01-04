@@ -2,7 +2,7 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import { BOARD_SPACES } from '../../data/spaces'
-import { BoardSpace } from '../../types/game'
+import { BoardSpace, Player } from '../../types/game'
 import { useGameStore } from '../../store/gameStore'
 import CornerSpace from './CornerSpace'
 import BoardSpaceComponent from './BoardSpace'
@@ -10,7 +10,7 @@ import BoardCenter from './BoardCenter'
 import PlayerPiece from './PlayerPiece'
 import styles from './Board.module.css'
 
-const Board = () => {
+const Board = (): JSX.Element => {
   const players = useGameStore((state) => state.players)
   const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex)
 
@@ -21,11 +21,11 @@ const Board = () => {
   const rightColumn = BOARD_SPACES.slice(31, 40) // 31-39: After ENEMY to before STOY
 
   // Get players at a specific position
-  const getPlayersAtPosition = (position: number) => {
+  const getPlayersAtPosition = (position: number): Player[] => {
     return players.filter(player => !player.isStalin && player.position === position)
   }
 
-  const renderSpace = (space: BoardSpace, edgePosition: 'top' | 'bottom' | 'left' | 'right', additionalClass?: string) => {
+  const renderSpace = (space: BoardSpace, edgePosition: 'top' | 'bottom' | 'left' | 'right', additionalClass?: string): JSX.Element => {
     const className = additionalClass ?? ''
     const playersHere = getPlayersAtPosition(space.id)
 
