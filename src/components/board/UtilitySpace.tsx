@@ -19,7 +19,7 @@ const PLAYER_COLORS = [
   '#87CEEB' // Light Blue
 ]
 
-const UtilitySpace = ({ space }: UtilitySpaceProps) => {
+const UtilitySpace = ({ space }: UtilitySpaceProps): JSX.Element => {
   const isElectric = space.id === 12
   const icon = isElectric ? '⚡' : '💧'
 
@@ -27,12 +27,12 @@ const UtilitySpace = ({ space }: UtilitySpaceProps) => {
     state.properties.find((p) => p.spaceId === space.id)
   )
   const players = useGameStore((state) => state.players)
-  const custodian = property?.custodianId
+  const custodian = (property?.custodianId !== null && property?.custodianId !== undefined)
     ? players.find((p) => p.id === property.custodianId)
     : null
 
   // Get player color for ownership indicator
-  const getPlayerColor = (custodian: typeof players[0]) => {
+  const getPlayerColor = (custodian: typeof players[0]): string => {
     const playerIndex = players.findIndex((p) => p.id === custodian.id)
     return PLAYER_COLORS[playerIndex % PLAYER_COLORS.length]
   }
