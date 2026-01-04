@@ -10,14 +10,14 @@ interface PlayerPieceProps {
   isCurrentPlayer?: boolean
 }
 
-export default function PlayerPiece ({ player, isCurrentPlayer }: PlayerPieceProps) {
-  if (!player.piece) return null
+export default function PlayerPiece ({ player, isCurrentPlayer }: PlayerPieceProps): JSX.Element | null {
+  if (player.piece === null || player.piece === undefined) return null
 
   const pieceData = getPieceByType(player.piece)
 
   return (
     <div
-      className={`player-piece ${isCurrentPlayer ? 'current-player' : ''}`}
+      className={`player-piece ${(isCurrentPlayer ?? false) ? 'current-player' : ''}`}
       title={`${player.name} (${pieceData?.name ?? ''})`}
     >
       <span className='piece-icon'>{pieceData?.icon}</span>
