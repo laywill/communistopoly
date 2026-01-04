@@ -12,7 +12,7 @@ interface CommunistTestModalProps {
   onClose: () => void
 }
 
-export function CommunistTestModal ({ question, testedPlayerId, onClose }: CommunistTestModalProps) {
+export function CommunistTestModal ({ question, testedPlayerId, onClose }: CommunistTestModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const stalinPlayerId = useGameStore((state) => state.stalinPlayerId)
   const answerCommunistTest = useGameStore((state) => state.answerCommunistTest)
@@ -28,7 +28,7 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
     return null
   }
 
-  const handleMarkAnswer = (correct: boolean) => {
+  const handleMarkAnswer = (correct: boolean): void => {
     setIsCorrect(correct)
 
     // For trick questions, show Stalin deciding
@@ -41,14 +41,14 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
     }
   }
 
-  const handleStalinDecision = (decision: 'reward' | 'punish' | 'neutral') => {
+  const handleStalinDecision = (decision: 'reward' | 'punish' | 'neutral'): void => {
     // For trick questions, Stalin decides the outcome
     const fakeCorrect = decision === 'reward'
     answerCommunistTest(question, fakeCorrect ? question.answer : 'wrong', stalinPlayerId ?? '')
     setPhase('result')
   }
 
-  const handleClose = () => {
+  const handleClose = (): void => {
     onClose()
   }
 
@@ -206,7 +206,7 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
                 <p className={styles.rewardText}>
                   {testedPlayer.name} receives <strong className={styles.rubles}>₽{reward}</strong>
                 </p>
-                {question.grantsRankUp && (
+                {question.grantsRankUp === true && (
                   <p className={styles.rankUpText}>🎖 Promoted to next rank!</p>
                 )}
               </div>

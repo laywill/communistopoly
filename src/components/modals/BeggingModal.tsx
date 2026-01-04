@@ -10,7 +10,7 @@ interface BeggingModalProps {
   onClose: () => void
 }
 
-export function BeggingModal ({ playerId, onClose }: BeggingModalProps) {
+export function BeggingModal ({ playerId, onClose }: BeggingModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const updatePlayer = useGameStore((state) => state.updatePlayer)
   const addLogEntry = useGameStore((state) => state.addLogEntry)
@@ -27,7 +27,7 @@ export function BeggingModal ({ playerId, onClose }: BeggingModalProps) {
     return null
   }
 
-  const handleBeg = (granted: boolean) => {
+  const handleBeg = (granted: boolean): void => {
     const target = players.find((p) => p.id === selectedTargetId)
     if (target == null) return
 
@@ -62,7 +62,7 @@ export function BeggingModal ({ playerId, onClose }: BeggingModalProps) {
     setShowResult(true)
   }
 
-  const handleFinish = () => {
+  const handleFinish = (): void => {
     onClose()
   }
 
@@ -102,7 +102,7 @@ export function BeggingModal ({ playerId, onClose }: BeggingModalProps) {
     )
   }
 
-  if (!selectedTargetId) {
+  if (selectedTargetId === '') {
     return (
       <div className={styles.overlay} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>

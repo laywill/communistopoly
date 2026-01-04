@@ -21,7 +21,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
   const minBribe = 200
   const maxBribe = player.rubles
 
-  const handleSubmit = () => {
+  const handleSubmit = (): void => {
     if (bribeAmount < minBribe || bribeAmount > maxBribe) return
 
     submitBribe(playerId, bribeAmount, reason)
@@ -33,7 +33,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
     }, 2000)
   }
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setPendingAction(null)
   }
 
@@ -192,5 +192,5 @@ function getReasonText (reason: string): string {
     'rank-promotion': 'Rank advancement',
     'tribunal-influence': 'Tribunal influence'
   }
-  return reasons[reason] || reason
+  return reasons[reason] ?? reason
 }

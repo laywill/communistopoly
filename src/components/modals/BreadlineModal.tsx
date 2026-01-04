@@ -17,7 +17,7 @@ interface BreadlineModalProps {
   onClose: () => void
 }
 
-export function BreadlineModal ({ landingPlayerId, onClose }: BreadlineModalProps) {
+export function BreadlineModal ({ landingPlayerId, onClose }: BreadlineModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const updatePlayer = useGameStore((state) => state.updatePlayer)
@@ -41,7 +41,7 @@ export function BreadlineModal ({ landingPlayerId, onClose }: BreadlineModalProp
 
   const currentContributorProperties = properties.filter((p) => p.custodianId === currentContributor.id && !p.mortgaged)
 
-  const handleContribution = (type: 'rubles' | 'property' | 'favour' | 'refuse') => {
+  const handleContribution = (type: 'rubles' | 'property' | 'favour' | 'refuse'): void => {
     if (type === 'rubles') {
       // Check if player can afford
       if (currentContributor.rubles < 50) {
@@ -61,7 +61,7 @@ export function BreadlineModal ({ landingPlayerId, onClose }: BreadlineModalProp
 
       setContributions([...contributions, { playerId: currentContributor.id, type: 'rubles' }])
     } else if (type === 'property') {
-      if (!selectedPropertyId) {
+      if (selectedPropertyId === '') {
         alert('Please select a property to contribute!')
         return
       }
@@ -111,7 +111,7 @@ export function BreadlineModal ({ landingPlayerId, onClose }: BreadlineModalProp
     }
   }
 
-  const handleFinish = () => {
+  const handleFinish = (): void => {
     setPendingAction(null)
     setTurnPhase('post-turn')
     onClose()
@@ -278,7 +278,7 @@ export function BreadlineModal ({ landingPlayerId, onClose }: BreadlineModalProp
                 <button
                   className={styles.propertyButton}
                   onClick={() => { handleContribution('property') }}
-                  disabled={!selectedPropertyId}
+                  disabled={selectedPropertyId === ''}
                 >
                   GIVE SELECTED PROPERTY
                 </button>
