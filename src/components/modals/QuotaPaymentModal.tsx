@@ -14,7 +14,7 @@ interface QuotaPaymentModalProps {
   onClose: () => void
 }
 
-export function QuotaPaymentModal ({ spaceId, payerId, onClose }: QuotaPaymentModalProps) {
+export function QuotaPaymentModal ({ spaceId, payerId, onClose }: QuotaPaymentModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const payQuota = useGameStore((state) => state.payQuota)
@@ -28,7 +28,7 @@ export function QuotaPaymentModal ({ spaceId, payerId, onClose }: QuotaPaymentMo
   const space = getSpaceById(spaceId)
   const property = properties.find((p) => p.spaceId === spaceId)
   const payer = players.find((p) => p.id === payerId)
-  const custodian = property?.custodianId
+  const custodian = (property?.custodianId != null && property.custodianId !== '')
     ? players.find((p) => p.id === property.custodianId)
     : null
 
@@ -44,7 +44,7 @@ export function QuotaPaymentModal ({ spaceId, payerId, onClose }: QuotaPaymentMo
 
   const canAfford = payer.rubles >= quota
 
-  const handleAnnouncement = () => {
+  const handleAnnouncement = (): void => {
     setHasAnnounced(true)
     addLogEntry({
       type: 'system',
@@ -53,7 +53,7 @@ export function QuotaPaymentModal ({ spaceId, payerId, onClose }: QuotaPaymentMo
     })
   }
 
-  const handlePay = () => {
+  const handlePay = (): void => {
     // Check if Collective Farm announcement was forgotten
     if (isCollectiveFarm && !hasAnnounced && custodian.rubles >= 25) {
       // Fine the custodian ₽25 for not announcing

@@ -14,7 +14,7 @@ interface PropertyManagementModalProps {
   onClose: () => void
 }
 
-export function PropertyManagementModal ({ playerId, onClose }: PropertyManagementModalProps) {
+export function PropertyManagementModal ({ playerId, onClose }: PropertyManagementModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const mortgageProperty = useGameStore((state) => state.mortgageProperty)
@@ -45,7 +45,7 @@ export function PropertyManagementModal ({ playerId, onClose }: PropertyManageme
   player.properties.forEach((propId) => {
     const spaceId = parseInt(propId)
     const space = getSpaceById(spaceId)
-    if (space?.group) {
+    if (space?.group != null) {
       groupedProperties[space.group].push(spaceId)
     }
   })
@@ -58,7 +58,7 @@ export function PropertyManagementModal ({ playerId, onClose }: PropertyManageme
     return ownedInGroup.length === groupInfo.properties.length
   }
 
-  const handleMortgage = (spaceId: number) => {
+  const handleMortgage = (spaceId: number): void => {
     const space = getSpaceById(spaceId)
     const property = properties.find((p) => p.spaceId === spaceId)
 

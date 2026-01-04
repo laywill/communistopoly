@@ -12,7 +12,7 @@ interface RailwayModalProps {
   onClose: () => void
 }
 
-export function RailwayModal ({ spaceId, payerId, onClose }: RailwayModalProps) {
+export function RailwayModal ({ spaceId, payerId, onClose }: RailwayModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const updatePlayer = useGameStore((state) => state.updatePlayer)
@@ -23,7 +23,7 @@ export function RailwayModal ({ spaceId, payerId, onClose }: RailwayModalProps) 
   const space = getSpaceById(spaceId)
   const property = properties.find((p) => p.spaceId === spaceId)
   const payer = players.find((p) => p.id === payerId)
-  const controller = property?.custodianId
+  const controller = (property?.custodianId != null && property.custodianId !== '')
     ? players.find((p) => p.id === property.custodianId)
     : null
 
@@ -40,12 +40,12 @@ export function RailwayModal ({ spaceId, payerId, onClose }: RailwayModalProps) 
 
   // Fee based on number of stations owned: 1=₽50, 2=₽100, 3=₽150, 4=₽200
   const fees = [50, 100, 150, 200]
-  const fee = fees[controlledStations - 1] || 0
+  const fee = fees[controlledStations - 1] ?? 0
 
   const canAfford = payer.rubles >= fee
   const ownsAllFour = controlledStations === 4
 
-  const handlePay = () => {
+  const handlePay = (): void => {
     if (!canAfford) {
       // Trigger liquidation modal
       setPendingAction({

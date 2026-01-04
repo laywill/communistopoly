@@ -10,14 +10,14 @@ interface StoyPilferModalProps {
   onClose: () => void
 }
 
-const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps) => {
+const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps): JSX.Element => {
   const [hasRolled, setHasRolled] = useState(false)
   const [diceResult, setDiceResult] = useState<number | null>(null)
   const [isRolling, setIsRolling] = useState(false)
   const handleStoyPilfer = useGameStore((state) => state.handleStoyPilfer)
   const player = useGameStore((state) => state.players.find((p) => p.id === playerId))
 
-  const handleRoll = () => {
+  const handleRoll = (): void => {
     setIsRolling(true)
     setHasRolled(true)
 
@@ -40,12 +40,12 @@ const StoyPilferModal = ({ playerId, onClose }: StoyPilferModalProps) => {
     }, 1000)
   }
 
-  const getDieFace = (value: number) => {
+  const getDieFace = (value: number): string => {
     const faces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅']
-    return faces[value - 1] || '⚀'
+    return faces[value - 1] ?? '⚀'
   }
 
-  const getOutcome = () => {
+  const getOutcome = (): 'success' | 'failure' | null => {
     if (diceResult === null) return null
     return diceResult >= 4 ? 'success' : 'failure'
   }

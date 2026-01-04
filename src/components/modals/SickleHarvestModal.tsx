@@ -10,7 +10,7 @@ interface SickleHarvestModalProps {
   onClose: () => void
 }
 
-export function SickleHarvestModal ({ sicklePlayerId, onClose }: SickleHarvestModalProps) {
+export function SickleHarvestModal ({ sicklePlayerId, onClose }: SickleHarvestModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const sickleHarvest = useGameStore((state) => state.sickleHarvest)
@@ -24,10 +24,10 @@ export function SickleHarvestModal ({ sicklePlayerId, onClose }: SickleHarvestMo
   // Get all properties owned by other players that are worth less than ₽150
   const harvestableProperties = properties
     .filter((prop) => {
-      if (!prop.custodianId || prop.custodianId === sicklePlayerId) return false
+      if ((prop.custodianId == null || prop.custodianId === '') || prop.custodianId === sicklePlayerId) return false
 
       const space = getSpaceById(prop.spaceId)
-      if (!space?.baseCost) return false
+      if (space?.baseCost == null) return false
 
       // Must be less than ₽150
       return space.baseCost < 150
@@ -43,7 +43,7 @@ export function SickleHarvestModal ({ sicklePlayerId, onClose }: SickleHarvestMo
     })
     .filter((item) => (item.space != null) && item.owner)
 
-  const handleHarvest = (propertyId: number) => {
+  const handleHarvest = (propertyId: number): void => {
     sickleHarvest(sicklePlayerId, propertyId)
     onClose()
   }

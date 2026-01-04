@@ -9,7 +9,7 @@ interface SickleMotherlandModalProps {
   onClose: () => void
 }
 
-export function SickleMotherlandModal ({ playerId, onClose }: SickleMotherlandModalProps) {
+export function SickleMotherlandModal ({ playerId, onClose }: SickleMotherlandModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const updatePlayer = useGameStore((state) => state.updatePlayer)
   const addLogEntry = useGameStore((state) => state.addLogEntry)
@@ -21,7 +21,7 @@ export function SickleMotherlandModal ({ playerId, onClose }: SickleMotherlandMo
     return null
   }
 
-  const handleAnnounce = () => {
+  const handleAnnounce = (): void => {
     addLogEntry({
       type: 'system',
       message: `${player.name} announces: "FOR THE MOTHERLAND!" 🌾`,
@@ -33,7 +33,7 @@ export function SickleMotherlandModal ({ playerId, onClose }: SickleMotherlandMo
     rollDice()
   }
 
-  const handleForget = () => {
+  const handleForget = (): void => {
     if (player.rubles >= 25) {
       updatePlayer(player.id, {
         rubles: player.rubles - 25,

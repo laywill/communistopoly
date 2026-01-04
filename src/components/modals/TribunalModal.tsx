@@ -99,7 +99,7 @@ export const TribunalModal: React.FC = () => {
     return allEligiblePlayers.length > 0 && activeTribunal.witnessesFor.length === allEligiblePlayers.length
   }
 
-  const handleVerdict = (verdict: TribunalVerdict) => {
+  const handleVerdict = (verdict: TribunalVerdict): void => {
     renderTribunalVerdict(verdict)
   }
 

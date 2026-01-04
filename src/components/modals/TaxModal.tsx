@@ -12,7 +12,7 @@ interface TaxModalProps {
   onClose: () => void
 }
 
-export function TaxModal ({ spaceId, playerId, onClose }: TaxModalProps) {
+export function TaxModal ({ spaceId, playerId, onClose }: TaxModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const updatePlayer = useGameStore((state) => state.updatePlayer)
@@ -44,7 +44,7 @@ export function TaxModal ({ spaceId, playerId, onClose }: TaxModalProps) {
       const prop = properties.find((p) => p.spaceId === parseInt(propId))
       if (prop != null) {
         const propSpace = getSpaceById(prop.spaceId)
-        if (propSpace?.baseCost) {
+        if (propSpace?.baseCost != null) {
           wealth += propSpace.baseCost
         }
       }
@@ -76,7 +76,7 @@ export function TaxModal ({ spaceId, playerId, onClose }: TaxModalProps) {
         const prop = properties.find((pr) => pr.spaceId === parseInt(propId))
         if (prop != null) {
           const propSpace = getSpaceById(prop.spaceId)
-          if (propSpace?.baseCost) {
+          if (propSpace?.baseCost != null) {
             otherWealth += propSpace.baseCost
           }
           if (prop.collectivizationLevel > 0) {
@@ -96,13 +96,13 @@ export function TaxModal ({ spaceId, playerId, onClose }: TaxModalProps) {
   const flatAmount = 200
   const isWealthiestPlayer = isWealthiest()
 
-  const handleRevolutionaryChoice = (choice: 'percentage' | 'flat') => {
+  const handleRevolutionaryChoice = (choice: 'percentage' | 'flat'): void => {
     setPlayerChoice(choice)
     setShowStalinAudit(true)
   }
 
-  const handleStalinAudit = (shouldAudit: boolean) => {
-    if (!playerChoice) return
+  const handleStalinAudit = (shouldAudit: boolean): void => {
+    if (playerChoice == null) return
 
     const chosenAmount = playerChoice === 'percentage' ? percentageAmount : flatAmount
     const actualAmount = Math.min(percentageAmount, flatAmount)
@@ -166,7 +166,7 @@ export function TaxModal ({ spaceId, playerId, onClose }: TaxModalProps) {
     onClose()
   }
 
-  const handleBourgeoisDecadence = () => {
+  const handleBourgeoisDecadence = (): void => {
     const amount = isWealthiestPlayer ? 200 : 100
 
     // Check if player can afford it

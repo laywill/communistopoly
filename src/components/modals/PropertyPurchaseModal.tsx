@@ -15,7 +15,7 @@ interface PropertyPurchaseModalProps {
   onClose: () => void
 }
 
-export function PropertyPurchaseModal ({ spaceId, playerId, onClose }: PropertyPurchaseModalProps) {
+export function PropertyPurchaseModal ({ spaceId, playerId, onClose }: PropertyPurchaseModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const purchaseProperty = useGameStore((state) => state.purchaseProperty)
@@ -30,7 +30,7 @@ export function PropertyPurchaseModal ({ spaceId, playerId, onClose }: PropertyP
   const [stalinPrice, setStalinPrice] = useState<number | null>(null)
   const [showPlayerDecision, setShowPlayerDecision] = useState(false)
 
-  if ((space == null) || (player == null) || (property == null) || !space.baseCost || !space.group) {
+  if ((space == null) || (player == null) || (property == null) || (space.baseCost == null) || (space.group == null)) {
     return null
   }
 
@@ -38,12 +38,12 @@ export function PropertyPurchaseModal ({ spaceId, playerId, onClose }: PropertyP
   const canPurchase = canPurchaseProperty(player, space.group)
   const isUtility = space.group === 'utility'
 
-  const handleStalinPriceSet = (price: number) => {
+  const handleStalinPriceSet = (price: number): void => {
     setStalinPrice(price)
     setShowPlayerDecision(true)
   }
 
-  const handleAccept = () => {
+  const handleAccept = (): void => {
     if (stalinPrice === null) return
 
     if (!canPurchase) {
@@ -78,7 +78,7 @@ export function PropertyPurchaseModal ({ spaceId, playerId, onClose }: PropertyP
     onClose()
   }
 
-  const handleDecline = () => {
+  const handleDecline = (): void => {
     addLogEntry({
       type: 'system',
       message: `${player.name} declined custodianship of ${space.name}`,
@@ -146,7 +146,7 @@ export function PropertyPurchaseModal ({ spaceId, playerId, onClose }: PropertyP
             </div>
 
             {/* Special Rule Reminder */}
-            {space.specialRule && (
+            {(space.specialRule != null && space.specialRule !== '') && (
               <div className={styles.specialRule}>
                 <strong>⚠ Special Rule:</strong> {space.specialRule}
               </div>
@@ -154,7 +154,7 @@ export function PropertyPurchaseModal ({ spaceId, playerId, onClose }: PropertyP
           </div>
 
           {/* Rank Restriction */}
-          {rankRestriction && (
+          {(rankRestriction != null && rankRestriction !== '') && (
             <div className={styles.rankRestriction}>
               <strong>⚠ RANK RESTRICTION:</strong> {rankRestriction}
             </div>

@@ -7,7 +7,7 @@ interface RulesModalProps {
   onClose: () => void
 }
 
-export default function RulesModal ({ onClose }: RulesModalProps) {
+export default function RulesModal ({ onClose }: RulesModalProps): JSX.Element {
   return (
     <div className='modal-overlay' onClick={onClose}>
       <div className='modal-container rules-modal' onClick={(e) => { e.stopPropagation() }}>

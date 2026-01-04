@@ -8,18 +8,18 @@ interface ReviewConfessionModalProps {
   confessionId: string
 }
 
-export default function ReviewConfessionModal ({ confessionId }: ReviewConfessionModalProps) {
+export default function ReviewConfessionModal ({ confessionId }: ReviewConfessionModalProps): JSX.Element | null {
   const confession = useGameStore((state) => state.confessions.find(c => c.id === confessionId))
   const prisoner = useGameStore((state) => state.players.find(p => p.id === confession?.prisonerId))
   const reviewConfession = useGameStore((state) => state.reviewConfession)
 
   if ((confession == null) || (prisoner == null)) return null
 
-  const handleAccept = () => {
+  const handleAccept = (): void => {
     reviewConfession(confessionId, true)
   }
 
-  const handleReject = () => {
+  const handleReject = (): void => {
     reviewConfession(confessionId, false)
   }
 

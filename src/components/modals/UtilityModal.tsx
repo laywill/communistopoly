@@ -13,7 +13,7 @@ interface UtilityModalProps {
   onClose: () => void
 }
 
-export function UtilityModal ({ spaceId, payerId, diceTotal, onClose }: UtilityModalProps) {
+export function UtilityModal ({ spaceId, payerId, diceTotal, onClose }: UtilityModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const updatePlayer = useGameStore((state) => state.updatePlayer)
@@ -24,7 +24,7 @@ export function UtilityModal ({ spaceId, payerId, diceTotal, onClose }: UtilityM
   const space = getSpaceById(spaceId)
   const property = properties.find((p) => p.spaceId === spaceId)
   const payer = players.find((p) => p.id === payerId)
-  const controller = property?.custodianId
+  const controller = (property?.custodianId != null && property.custodianId !== '')
     ? players.find((p) => p.id === property.custodianId)
     : null
 
@@ -48,7 +48,7 @@ export function UtilityModal ({ spaceId, payerId, diceTotal, onClose }: UtilityM
   // Check if controller is Proletariat (secret rule)
   const isProletariatController = controller.rank === 'proletariat'
 
-  const handlePay = () => {
+  const handlePay = (): void => {
     if (!canAfford) {
       // Trigger liquidation modal
       setPendingAction({

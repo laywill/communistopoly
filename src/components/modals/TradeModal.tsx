@@ -13,7 +13,7 @@ interface TradeModalProps {
   onClose: () => void
 }
 
-export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeModalProps) {
+export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeModalProps): JSX.Element | null {
   const players = useGameStore((state) => state.players)
   const properties = useGameStore((state) => state.properties)
   const activeTradeOffers = useGameStore((state) => state.activeTradeOffers)
@@ -31,11 +31,11 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
   const [requestingGulagCards, setRequestingGulagCards] = useState<number>(0)
   const [requestingFavours, setRequestingFavours] = useState<number>(0)
 
-  if (mode === 'propose' && !proposerId) {
+  if (mode === 'propose' && (proposerId == null || proposerId === '')) {
     return null
   }
 
-  if (mode === 'respond' && !tradeOfferId) {
+  if (mode === 'respond' && (tradeOfferId == null || tradeOfferId === '')) {
     return null
   }
 
@@ -76,7 +76,7 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
     ? partner.owesFavourTo.filter((id) => id === proposer.id).length
     : 0
 
-  const toggleOfferingProperty = (propertyId: string) => {
+  const toggleOfferingProperty = (propertyId: string): void => {
     if (offeringProperties.includes(propertyId)) {
       setOfferingProperties(offeringProperties.filter((id) => id !== propertyId))
     } else {
@@ -84,7 +84,7 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
     }
   }
 
-  const toggleRequestingProperty = (propertyId: string) => {
+  const toggleRequestingProperty = (propertyId: string): void => {
     if (requestingProperties.includes(propertyId)) {
       setRequestingProperties(requestingProperties.filter((id) => id !== propertyId))
     } else {
@@ -92,8 +92,8 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
     }
   }
 
-  const handlePropose = () => {
-    if (!selectedPartnerId) {
+  const handlePropose = (): void => {
+    if (selectedPartnerId === '') {
       alert('Please select a player to trade with!')
       return
     }
@@ -143,13 +143,13 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
     onClose()
   }
 
-  const handleAccept = () => {
+  const handleAccept = (): void => {
     if (tradeOffer == null) return
     acceptTrade(tradeOffer.id)
     onClose()
   }
 
-  const handleReject = () => {
+  const handleReject = (): void => {
     if (tradeOffer == null) return
     rejectTrade(tradeOffer.id)
     onClose()

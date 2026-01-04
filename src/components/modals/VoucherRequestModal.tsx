@@ -23,12 +23,12 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
     (p) => p.id !== prisonerId && p.id !== stalinPlayerId && !p.inGulag && !p.isEliminated && !p.isStalin
   )
 
-  const handleSelectVoucher = (voucherId: string) => {
+  const handleSelectVoucher = (voucherId: string): void => {
     setSelectedVoucherId(voucherId)
   }
 
-  const handleSubmitRequest = () => {
-    if (!selectedVoucherId) return
+  const handleSubmitRequest = (): void => {
+    if (selectedVoucherId == null) return
 
     setRequestSent(true)
 
@@ -58,7 +58,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
     }
   }
 
-  const handleCancel = () => {
+  const handleCancel = (): void => {
     setPendingAction(null)
   }
 
@@ -198,8 +198,8 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
                   </button>
                   <button
                     onClick={handleSubmitRequest}
-                    disabled={!selectedVoucherId || requestSent}
-                    className={selectedVoucherId && !requestSent ? styles.primaryButton : styles.disabledButton}
+                    disabled={(selectedVoucherId == null) || requestSent}
+                    className={(selectedVoucherId != null) && !requestSent ? styles.primaryButton : styles.disabledButton}
                     style={{ flex: 2 }}
                   >
                     {requestSent ? 'Waiting for response...' : 'Request Voucher'}
@@ -220,5 +220,5 @@ function getRankDisplayName (rank: string): string {
     commissar: 'Commissar',
     innerCircle: 'Inner Circle'
   }
-  return rankNames[rank] || rank
+  return rankNames[rank] ?? rank
 }
