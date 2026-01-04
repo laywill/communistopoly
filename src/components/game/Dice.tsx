@@ -12,7 +12,7 @@ interface DiceProps {
   onRollComplete?: () => void
 }
 
-const Dice = ({ die1, die2, isRolling, isDoubles, onRollComplete }: DiceProps) => {
+const Dice = ({ die1, die2, isRolling, isDoubles, onRollComplete }: DiceProps): React.JSX.Element => {
   const [animatedDie1, setAnimatedDie1] = useState(die1)
   const [animatedDie2, setAnimatedDie2] = useState(die2)
 
@@ -42,9 +42,9 @@ const Dice = ({ die1, die2, isRolling, isDoubles, onRollComplete }: DiceProps) =
     }
   }, [isRolling, die1, die2, onRollComplete])
 
-  const getDieFace = (value: number) => {
+  const getDieFace = (value: number): string => {
     const faces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅']
-    return faces[value - 1] || '⚀'
+    return faces[value - 1] ?? '⚀'
   }
 
   return (
