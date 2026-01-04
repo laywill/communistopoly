@@ -218,162 +218,162 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
               </div>
               )
             : (
-            <>
-              {/* Target Selection */}
-              <div style={{ marginBottom: '20px' }}>
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '14px',
-                    marginBottom: '12px',
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  Select Comrade to Accuse:
-                </h3>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto' }}>
-                  {eligibleTargets.map((target) => (
-                    <div
-                      key={target.id}
-                      onClick={() => { handleSelectTarget(target.id) }}
-                      style={{
-                        padding: '12px',
-                        border:
-                          selectedTargetId === target.id
-                            ? '3px solid var(--color-soviet-red)'
-                            : '2px solid var(--color-propaganda-black)',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        background:
-                          selectedTargetId === target.id ? 'var(--color-parchment)' : 'var(--color-aged-white)',
-                        transition: 'all 0.2s ease'
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '15px' }}>{target.name}</p>
-                          <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gulag-grey)' }}>
-                            Rank: {getRankDisplayName(target.rank)} • ₽{target.rubles} • Props: {target.properties.length}
-                          </p>
-                        </div>
-                        {selectedTargetId === target.id && (
-                          <span style={{ fontSize: '20px', color: 'var(--color-soviet-red)' }}>✓</span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Protected Players Info */}
-              {protectedPlayers.length > 0 && (
+              <>
+                {/* Target Selection */}
                 <div style={{ marginBottom: '20px' }}>
-                  <div
+                  <h3
                     style={{
-                      background: 'rgba(212, 168, 75, 0.1)',
-                      border: '2px solid var(--color-gold)',
-                      borderRadius: '4px',
-                      padding: '12px'
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '14px',
+                      marginBottom: '12px',
+                      textTransform: 'uppercase'
                     }}
                   >
-                    <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--color-gold)', fontWeight: 'bold' }}>
-                      🗿 PROTECTED COMRADES
-                    </p>
-                    <p style={{ margin: '0 0 8px 0', fontSize: '12px', lineHeight: '1.5' }}>
-                      The following comrades cannot be denounced by you:
-                    </p>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      {protectedPlayers.map((target) => {
-                        const denouncementCheck = canBeDenouncedBy(target, informer)
-                        return (
-                          <div key={target.id} style={{ fontSize: '12px', color: 'var(--color-cream)' }}>
-                            • <strong>{target.name}</strong> - {denouncementCheck.reason}
+                    Select Comrade to Accuse:
+                  </h3>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto' }}>
+                    {eligibleTargets.map((target) => (
+                      <div
+                        key={target.id}
+                        onClick={() => { handleSelectTarget(target.id) }}
+                        style={{
+                          padding: '12px',
+                          border:
+                            selectedTargetId === target.id
+                              ? '3px solid var(--color-soviet-red)'
+                              : '2px solid var(--color-propaganda-black)',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          background:
+                            selectedTargetId === target.id ? 'var(--color-parchment)' : 'var(--color-aged-white)',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <p style={{ margin: 0, fontWeight: 'bold', fontSize: '15px' }}>{target.name}</p>
+                            <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gulag-grey)' }}>
+                              Rank: {getRankDisplayName(target.rank)} • ₽{target.rubles} • Props: {target.properties.length}
+                            </p>
                           </div>
-                        )
-                      })}
-                    </div>
+                          {selectedTargetId === target.id && (
+                            <span style={{ fontSize: '20px', color: 'var(--color-soviet-red)' }}>✓</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              )}
 
-              {/* Accusation Input */}
-              <div style={{ marginBottom: '20px' }}>
-                <label
-                  htmlFor='accusation'
-                  style={{
-                    display: 'block',
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    marginBottom: '8px',
-                    textTransform: 'uppercase'
-                  }}
-                >
-                  State Your Accusation:
-                </label>
-                <textarea
-                  id='accusation'
-                  value={accusation}
-                  onChange={(e) => { setAccusation(e.target.value) }}
-                  placeholder='Counter-revolutionary activities, hoarding resources, suspicious behavior, etc.'
-                  maxLength={200}
-                  rows={3}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '14px',
-                    border: '2px solid var(--color-propaganda-black)',
-                    borderRadius: '4px',
-                    resize: 'vertical'
-                  }}
-                />
-                <p style={{ fontSize: '12px', color: 'var(--color-gulag-grey)', marginTop: '4px', textAlign: 'right' }}>
-                  {accusation.length}/200 characters
-                </p>
-              </div>
+                {/* Protected Players Info */}
+                {protectedPlayers.length > 0 && (
+                  <div style={{ marginBottom: '20px' }}>
+                    <div
+                      style={{
+                        background: 'rgba(212, 168, 75, 0.1)',
+                        border: '2px solid var(--color-gold)',
+                        borderRadius: '4px',
+                        padding: '12px'
+                      }}
+                    >
+                      <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--color-gold)', fontWeight: 'bold' }}>
+                        🗿 PROTECTED COMRADES
+                      </p>
+                      <p style={{ margin: '0 0 8px 0', fontSize: '12px', lineHeight: '1.5' }}>
+                        The following comrades cannot be denounced by you:
+                      </p>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {protectedPlayers.map((target) => {
+                          const denouncementCheck = canBeDenouncedBy(target, informer)
+                          return (
+                            <div key={target.id} style={{ fontSize: '12px', color: 'var(--color-cream)' }}>
+                              • <strong>{target.name}</strong> - {denouncementCheck.reason}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button onClick={handleCancel} className={styles.disabledButton} style={{ flex: 1 }}>
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={selectedTargetId == null || selectedTargetId === '' || accusation.trim() === '' || submitted}
-                  className={
-                    selectedTargetId != null && selectedTargetId !== '' && accusation.trim() !== '' && !submitted
-                      ? styles.dangerButton
-                      : styles.disabledButton
-                  }
-                  style={{ flex: 2 }}
-                >
-                  {submitted ? 'Awaiting Stalin\'s Judgment...' : 'Submit Accusation'}
-                </button>
-              </div>
-
-              {selectedTargetId != null && selectedTargetId !== '' && accusation.trim() !== '' && (
-                <div
-                  style={{
-                    marginTop: '16px',
-                    padding: '12px',
-                    background: 'rgba(196, 30, 58, 0.1)',
-                    border: '2px solid var(--color-soviet-red)',
-                    borderRadius: '4px'
-                  }}
-                >
-                  <p style={{ margin: 0, fontSize: '13px', fontWeight: 'bold' }}>Preview:</p>
-                  <p style={{ margin: '8px 0 0 0', fontSize: '14px', fontStyle: 'italic' }}>
-                    &quot;{accusation}&quot;
-                  </p>
-                  <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: 'var(--color-gulag-grey)' }}>
-                    Accused: {selectedTargetId != null && selectedTargetId !== '' ? players.find((p) => p.id === selectedTargetId)?.name : ''}
+                {/* Accusation Input */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label
+                    htmlFor='accusation'
+                    style={{
+                      display: 'block',
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      marginBottom: '8px',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    State Your Accusation:
+                  </label>
+                  <textarea
+                    id='accusation'
+                    value={accusation}
+                    onChange={(e) => { setAccusation(e.target.value) }}
+                    placeholder='Counter-revolutionary activities, hoarding resources, suspicious behavior, etc.'
+                    maxLength={200}
+                    rows={3}
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '14px',
+                      border: '2px solid var(--color-propaganda-black)',
+                      borderRadius: '4px',
+                      resize: 'vertical'
+                    }}
+                  />
+                  <p style={{ fontSize: '12px', color: 'var(--color-gulag-grey)', marginTop: '4px', textAlign: 'right' }}>
+                    {accusation.length}/200 characters
                   </p>
                 </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button onClick={handleCancel} className={styles.disabledButton} style={{ flex: 1 }}>
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={selectedTargetId == null || selectedTargetId === '' || accusation.trim() === '' || submitted}
+                    className={
+                      selectedTargetId != null && selectedTargetId !== '' && accusation.trim() !== '' && !submitted
+                        ? styles.dangerButton
+                        : styles.disabledButton
+                    }
+                    style={{ flex: 2 }}
+                  >
+                    {submitted ? 'Awaiting Stalin\'s Judgment...' : 'Submit Accusation'}
+                  </button>
+                </div>
+
+                {selectedTargetId != null && selectedTargetId !== '' && accusation.trim() !== '' && (
+                  <div
+                    style={{
+                      marginTop: '16px',
+                      padding: '12px',
+                      background: 'rgba(196, 30, 58, 0.1)',
+                      border: '2px solid var(--color-soviet-red)',
+                      borderRadius: '4px'
+                    }}
+                  >
+                    <p style={{ margin: 0, fontSize: '13px', fontWeight: 'bold' }}>Preview:</p>
+                    <p style={{ margin: '8px 0 0 0', fontSize: '14px', fontStyle: 'italic' }}>
+                      &quot;{accusation}&quot;
+                    </p>
+                    <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: 'var(--color-gulag-grey)' }}>
+                      Accused: {selectedTargetId != null && selectedTargetId !== '' ? players.find((p) => p.id === selectedTargetId)?.name : ''}
+                    </p>
+                  </div>
+                )}
+              </>
               )}
-            </>
-          )}
         </div>
       </div>
     </div>
@@ -387,5 +387,5 @@ function getRankDisplayName (rank: string): string {
     commissar: 'Commissar',
     innerCircle: 'Inner Circle'
   }
-  return rankNames[rank] || rank
+  return rankNames[rank] ?? rank
 }

@@ -285,7 +285,7 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
             </select>
           </div>
 
-          {selectedPartnerId && (partner != null) && (
+          {(selectedPartnerId !== '' && partner != null) && (
             <>
               <div className={styles.tradeBuilder}>
                 {/* YOUR OFFER */}
@@ -301,7 +301,7 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
                       min='0'
                       max={proposer.rubles}
                       value={offeringRubles}
-                      onChange={(e) => { setOfferingRubles(Math.max(0, parseInt(e.target.value) || 0)) }}
+                      onChange={(e) => { setOfferingRubles(Math.max(0, parseInt(e.target.value) ?? 0)) }}
                     />
                   </div>
 
@@ -337,7 +337,7 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
                         min='0'
                         max='1'
                         value={offeringGulagCards}
-                        onChange={(e) => { setOfferingGulagCards(Math.max(0, Math.min(1, parseInt(e.target.value) || 0))) }}
+                        onChange={(e) => { setOfferingGulagCards(Math.max(0, Math.min(1, parseInt(e.target.value) ?? 0))) }}
                       />
                     </div>
                   )}
@@ -354,7 +354,7 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
                         min='0'
                         max={proposerFavoursOwed}
                         value={offeringFavours}
-                        onChange={(e) => { setOfferingFavours(Math.max(0, Math.min(proposerFavoursOwed, parseInt(e.target.value) || 0))) }}
+                        onChange={(e) => { setOfferingFavours(Math.max(0, Math.min(proposerFavoursOwed, parseInt(e.target.value) ?? 0))) }}
                       />
                     </div>
                   )}
@@ -375,7 +375,7 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
                       min='0'
                       max={partner.rubles}
                       value={requestingRubles}
-                      onChange={(e) => { setRequestingRubles(Math.max(0, parseInt(e.target.value) || 0)) }}
+                      onChange={(e) => { setRequestingRubles(Math.max(0, parseInt(e.target.value) ?? 0)) }}
                     />
                   </div>
 
@@ -411,7 +411,7 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
                         min='0'
                         max='1'
                         value={requestingGulagCards}
-                        onChange={(e) => { setRequestingGulagCards(Math.max(0, Math.min(1, parseInt(e.target.value) || 0))) }}
+                        onChange={(e) => { setRequestingGulagCards(Math.max(0, Math.min(1, parseInt(e.target.value) ?? 0))) }}
                       />
                     </div>
                   )}
@@ -428,7 +428,7 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
                         min='0'
                         max={partnerFavoursOwed}
                         value={requestingFavours}
-                        onChange={(e) => { setRequestingFavours(Math.max(0, Math.min(partnerFavoursOwed, parseInt(e.target.value) || 0))) }}
+                        onChange={(e) => { setRequestingFavours(Math.max(0, Math.min(partnerFavoursOwed, parseInt(e.target.value) ?? 0))) }}
                       />
                     </div>
                   )}
@@ -446,7 +446,7 @@ export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeMo
             </>
           )}
 
-          {!selectedPartnerId && (
+          {selectedPartnerId === '' && (
             <p className={styles.hint}>Select a player to start building your trade offer.</p>
           )}
         </div>

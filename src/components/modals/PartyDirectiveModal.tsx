@@ -131,7 +131,7 @@ export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirective
               <div className={styles.effectText}>{getEffectDescription()}</div>
             </div>
 
-            {card.flavourText && (
+            {(card.flavourText != null && card.flavourText !== '') && (
               <div className={styles.cardFlavour}>
                 <em>{card.flavourText}</em>
               </div>
