@@ -18,7 +18,7 @@ const getCornerType = (spaceId: number): string => {
   }
 }
 
-const CornerSpace = ({ space }: CornerSpaceProps) => {
+const CornerSpace = ({ space }: CornerSpaceProps): JSX.Element => {
   const cornerType = getCornerType(space.id)
 
   return (

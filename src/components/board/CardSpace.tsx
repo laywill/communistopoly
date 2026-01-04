@@ -8,7 +8,7 @@ interface CardSpaceProps {
   space: BoardSpace
 }
 
-const CardSpace = ({ space }: CardSpaceProps) => {
+const CardSpace = ({ space }: CardSpaceProps): JSX.Element => {
   const isPartyDirective = space.cardType === 'party-directive'
 
   return (

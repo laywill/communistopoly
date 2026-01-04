@@ -12,7 +12,7 @@ interface BoardSpaceProps {
   space: BoardSpace
 }
 
-const BoardSpaceComponent = ({ space }: BoardSpaceProps) => {
+const BoardSpaceComponent = ({ space }: BoardSpaceProps): JSX.Element => {
   switch (space.type) {
     case 'property':
       return <PropertySpace space={space} />

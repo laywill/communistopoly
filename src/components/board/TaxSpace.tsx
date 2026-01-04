@@ -8,7 +8,7 @@ interface TaxSpaceProps {
   space: BoardSpace
 }
 
-const TaxSpace = ({ space }: TaxSpaceProps) => {
+const TaxSpace = ({ space }: TaxSpaceProps): JSX.Element => {
   const isRevolutionary = space.id === 4
 
   return (
