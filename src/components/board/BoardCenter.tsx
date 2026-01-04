@@ -6,7 +6,7 @@ import { useGameStore } from '../../store/gameStore'
 import Dice from '../game/Dice'
 import styles from './BoardCenter.module.css'
 
-const BoardCenter = () => {
+const BoardCenter = (): JSX.Element => {
   const players = useGameStore((state) => state.players)
   const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex)
   const turnPhase = useGameStore((state) => state.turnPhase)
@@ -31,8 +31,7 @@ const BoardCenter = () => {
     }
     // Only depend on turnPhase and currentPlayerIndex to prevent infinite loop
     // when gulagTurns increments (which changes currentPlayer object)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [turnPhase, currentPlayerIndex])
+  }, [turnPhase, currentPlayerIndex, hasRolled, currentPlayer.inGulag, handleGulagTurn, currentPlayer.id])
 
   // Handle starving Bread Loaf players
   useEffect(() => {
@@ -48,10 +47,9 @@ const BoardCenter = () => {
         data: { playerId: currentPlayer.id }
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [turnPhase, currentPlayerIndex])
+  }, [turnPhase, currentPlayerIndex, hasRolled, currentPlayer.inGulag, currentPlayer.piece, currentPlayer.rubles, setPendingAction, currentPlayer.id])
 
-  const handleRoll = () => {
+  const handleRoll = (): void => {
     if (turnPhase === 'pre-roll' && !hasRolled && !currentPlayer.inGulag) {
       // Check if player is Sickle - they must announce "For the Motherland!"
       if (currentPlayer.piece === 'sickle') {
@@ -142,7 +140,7 @@ function getTurnPhaseText (phase: string): string {
     resolving: 'Resolving Space',
     'post-turn': 'Turn Complete'
   }
-  return phaseTexts[phase] || phase
+  return phaseTexts[phase] ?? phase
 }
 
 export default BoardCenter
