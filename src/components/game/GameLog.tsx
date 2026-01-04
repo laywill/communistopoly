@@ -5,10 +5,10 @@ import { useGameStore } from '../../store/gameStore'
 import { LogEntry } from '../../types/game'
 import styles from './GameLog.module.css'
 
-const GameLog = () => {
+const GameLog = (): React.JSX.Element => {
   const gameLog = useGameStore((state) => state.gameLog)
 
-  const getLogEntryClass = (type: LogEntry['type']) => {
+  const getLogEntryClass = (type: LogEntry['type']): string => {
     switch (type) {
       case 'movement':
         return styles.movement
@@ -30,7 +30,7 @@ const GameLog = () => {
     }
   }
 
-  const formatTime = (timestamp: Date) => {
+  const formatTime = (timestamp: Date): string => {
     const date = new Date(timestamp)
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
