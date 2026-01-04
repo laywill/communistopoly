@@ -21,18 +21,18 @@ const PLAYER_COLORS = [
   '#87CEEB' // Light Blue
 ]
 
-const PropertySpace = ({ space }: PropertySpaceProps) => {
+const PropertySpace = ({ space }: PropertySpaceProps): JSX.Element | null => {
   // Hooks must be called before any early returns
   const property = useGameStore((state) =>
     state.properties.find((p) => p.spaceId === space.id)
   )
   const players = useGameStore((state) => state.players)
   const allProperties = useGameStore((state) => state.properties)
-  const custodian = property?.custodianId
+  const custodian = (property?.custodianId !== null && property?.custodianId !== undefined)
     ? players.find((p) => p.id === property.custodianId)
     : null
 
-  if (!space.group) return null
+  if (space.group === null || space.group === undefined) return null
 
   const colors = PROPERTY_COLORS[space.group]
 
@@ -40,12 +40,12 @@ const PropertySpace = ({ space }: PropertySpaceProps) => {
   const isMortgaged = property?.mortgaged ?? false
 
   // Check if custodian owns complete group
-  const hasCompleteGroup = property?.custodianId
+  const hasCompleteGroup = (property?.custodianId !== null && property?.custodianId !== undefined)
     ? ownsCompleteGroup(property.custodianId, space.group, allProperties)
     : false
 
   // Get player color for ownership indicator
-  const getPlayerColor = (custodian: typeof players[0]) => {
+  const getPlayerColor = (custodian: typeof players[0]): string => {
     const playerIndex = players.findIndex((p) => p.id === custodian.id)
     return PLAYER_COLORS[playerIndex % PLAYER_COLORS.length]
   }
@@ -74,7 +74,7 @@ const PropertySpace = ({ space }: PropertySpaceProps) => {
       <div className={styles.content}>
         <div className={styles.name}>{space.name}</div>
 
-        {space.baseQuota && (
+        {(space.baseQuota !== null && space.baseQuota !== undefined && space.baseQuota !== 0) && (
           <div className={styles.quota}>
             <span className={styles.rubleSymbol}>₽</span>
             {space.baseQuota}
