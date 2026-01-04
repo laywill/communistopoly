@@ -1,46 +1,46 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useGameStore } from '../../store/gameStore';
-import StoyPilferModal from './StoyPilferModal';
-import { PropertyPurchaseModal } from './PropertyPurchaseModal';
-import { QuotaPaymentModal } from './QuotaPaymentModal';
-import { RailwayModal } from './RailwayModal';
-import { UtilityModal } from './UtilityModal';
-import { TaxModal } from './TaxModal';
-import { GulagEscapeModal } from './GulagEscapeModal';
-import { VoucherRequestModal } from './VoucherRequestModal';
-import { BribeStalinModal } from './BribeStalinModal';
-import { InformOnPlayerModal } from './InformOnPlayerModal';
-import { LiquidationModal } from './LiquidationModal';
-import { BreadlineModal } from './BreadlineModal';
-import { SickleMotherlandModal } from './SickleMotherlandModal';
-import { BeggingModal } from './BeggingModal';
-import { TradeModal } from './TradeModal';
-import { PartyDirectiveModal } from './PartyDirectiveModal';
-import { CommunistTestModal } from './CommunistTestModal';
-import ConfessionModal from './ConfessionModal';
-import ReviewConfessionModal from './ReviewConfessionModal';
+import { useGameStore } from '../../store/gameStore'
+import StoyPilferModal from './StoyPilferModal'
+import { PropertyPurchaseModal } from './PropertyPurchaseModal'
+import { QuotaPaymentModal } from './QuotaPaymentModal'
+import { RailwayModal } from './RailwayModal'
+import { UtilityModal } from './UtilityModal'
+import { TaxModal } from './TaxModal'
+import { GulagEscapeModal } from './GulagEscapeModal'
+import { VoucherRequestModal } from './VoucherRequestModal'
+import { BribeStalinModal } from './BribeStalinModal'
+import { InformOnPlayerModal } from './InformOnPlayerModal'
+import { LiquidationModal } from './LiquidationModal'
+import { BreadlineModal } from './BreadlineModal'
+import { SickleMotherlandModal } from './SickleMotherlandModal'
+import { BeggingModal } from './BeggingModal'
+import { TradeModal } from './TradeModal'
+import { PartyDirectiveModal } from './PartyDirectiveModal'
+import { CommunistTestModal } from './CommunistTestModal'
+import ConfessionModal from './ConfessionModal'
+import ReviewConfessionModal from './ReviewConfessionModal'
 
 /**
  * This component renders the appropriate modal based on the current pending action
  */
-export function PendingActionHandler() {
-  const pendingAction = useGameStore((state) => state.pendingAction);
-  const setPendingAction = useGameStore((state) => state.setPendingAction);
-  const currentPlayer = useGameStore((state) => state.players[state.currentPlayerIndex]);
-  const drawPartyDirective = useGameStore((state) => state.drawPartyDirective);
-  const drawCommunistTest = useGameStore((state) => state.drawCommunistTest);
+export function PendingActionHandler () {
+  const pendingAction = useGameStore((state) => state.pendingAction)
+  const setPendingAction = useGameStore((state) => state.setPendingAction)
+  const currentPlayer = useGameStore((state) => state.players[state.currentPlayerIndex])
+  const drawPartyDirective = useGameStore((state) => state.drawPartyDirective)
+  const drawCommunistTest = useGameStore((state) => state.drawCommunistTest)
 
   const handleClose = () => {
-    setPendingAction(null);
-  };
+    setPendingAction(null)
+  }
 
-  if (!pendingAction) return null;
+  if (pendingAction == null) return null
 
   switch (pendingAction.type) {
     case 'stoy-pilfer':
-      return <StoyPilferModal playerId={currentPlayer.id} onClose={handleClose} />;
+      return <StoyPilferModal playerId={currentPlayer.id} onClose={handleClose} />
 
     case 'property-purchase':
       if (pendingAction.data?.spaceId && pendingAction.data.playerId) {
@@ -50,9 +50,9 @@ export function PendingActionHandler() {
             playerId={pendingAction.data.playerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'quota-payment':
       if (pendingAction.data?.spaceId && pendingAction.data.payerId) {
@@ -62,9 +62,9 @@ export function PendingActionHandler() {
             payerId={pendingAction.data.payerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'railway-fee':
       if (pendingAction.data?.spaceId && pendingAction.data.payerId) {
@@ -74,9 +74,9 @@ export function PendingActionHandler() {
             payerId={pendingAction.data.payerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'utility-fee':
       if (pendingAction.data?.spaceId && pendingAction.data.payerId && pendingAction.data.diceTotal) {
@@ -87,9 +87,9 @@ export function PendingActionHandler() {
             diceTotal={pendingAction.data.diceTotal as number}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'tax-payment':
       if (pendingAction.data?.spaceId && pendingAction.data.playerId) {
@@ -99,21 +99,21 @@ export function PendingActionHandler() {
             playerId={pendingAction.data.playerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'gulag-escape-choice':
       if (pendingAction.data?.playerId) {
-        return <GulagEscapeModal playerId={pendingAction.data.playerId as string} />;
+        return <GulagEscapeModal playerId={pendingAction.data.playerId as string} />
       }
-      return null;
+      return null
 
     case 'voucher-request':
       if (pendingAction.data?.prisonerId) {
-        return <VoucherRequestModal prisonerId={pendingAction.data.prisonerId as string} />;
+        return <VoucherRequestModal prisonerId={pendingAction.data.prisonerId as string} />
       }
-      return null;
+      return null
 
     case 'bribe-stalin':
       if (pendingAction.data?.playerId && pendingAction.data.reason) {
@@ -122,15 +122,15 @@ export function PendingActionHandler() {
             playerId={pendingAction.data.playerId as string}
             reason={pendingAction.data.reason as string}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'inform-on-player':
       if (pendingAction.data?.informerId) {
-        return <InformOnPlayerModal informerId={pendingAction.data.informerId as string} />;
+        return <InformOnPlayerModal informerId={pendingAction.data.informerId as string} />
       }
-      return null;
+      return null
 
     case 'liquidation-required':
       if (pendingAction.data?.playerId && pendingAction.data.amountOwed && pendingAction.data.creditorId && pendingAction.data.reason) {
@@ -141,9 +141,9 @@ export function PendingActionHandler() {
             creditorId={pendingAction.data.creditorId as string}
             reason={pendingAction.data.reason as string}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'breadline-contribution':
       if (pendingAction.data?.landingPlayerId) {
@@ -152,9 +152,9 @@ export function PendingActionHandler() {
             landingPlayerId={pendingAction.data.landingPlayerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'sickle-motherland-announcement':
       if (pendingAction.data?.playerId) {
@@ -163,9 +163,9 @@ export function PendingActionHandler() {
             playerId={pendingAction.data.playerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'bread-loaf-begging':
       if (pendingAction.data?.playerId) {
@@ -174,61 +174,61 @@ export function PendingActionHandler() {
             playerId={pendingAction.data.playerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'trade-offer':
       if (pendingAction.data?.proposerId) {
         return (
           <TradeModal
-            mode="propose"
+            mode='propose'
             proposerId={pendingAction.data.proposerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'trade-response':
       if (pendingAction.data?.tradeOfferId) {
         return (
           <TradeModal
-            mode="respond"
+            mode='respond'
             tradeOfferId={pendingAction.data.tradeOfferId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'draw-party-directive':
       if (pendingAction.data?.playerId) {
         // Draw a card from the deck
-        const card = drawPartyDirective();
+        const card = drawPartyDirective()
         return (
           <PartyDirectiveModal
             card={card}
             playerId={pendingAction.data.playerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'draw-communist-test':
       if (pendingAction.data?.playerId) {
         // Draw a question
-        const question = drawCommunistTest();
+        const question = drawCommunistTest()
         return (
           <CommunistTestModal
             question={question}
             testedPlayerId={pendingAction.data.playerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'write-confession':
       if (pendingAction.data?.prisonerId) {
@@ -237,9 +237,9 @@ export function PendingActionHandler() {
             prisonerId={pendingAction.data.prisonerId as string}
             onClose={handleClose}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     case 'review-confession':
       if (pendingAction.data?.confessionId) {
@@ -247,11 +247,11 @@ export function PendingActionHandler() {
           <ReviewConfessionModal
             confessionId={pendingAction.data.confessionId as string}
           />
-        );
+        )
       }
-      return null;
+      return null
 
     default:
-      return null;
+      return null
   }
 }

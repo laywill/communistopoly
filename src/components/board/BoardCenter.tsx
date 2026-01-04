@@ -1,38 +1,38 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useEffect } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import Dice from '../game/Dice';
-import styles from './BoardCenter.module.css';
+import { useEffect } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import Dice from '../game/Dice'
+import styles from './BoardCenter.module.css'
 
 const BoardCenter = () => {
-  const players = useGameStore((state) => state.players);
-  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex);
-  const turnPhase = useGameStore((state) => state.turnPhase);
-  const dice = useGameStore((state) => state.dice);
-  const isRolling = useGameStore((state) => state.isRolling);
-  const hasRolled = useGameStore((state) => state.hasRolled);
-  const rollDice = useGameStore((state) => state.rollDice);
-  const finishRolling = useGameStore((state) => state.finishRolling);
-  const handleGulagTurn = useGameStore((state) => state.handleGulagTurn);
-  const partyDirectiveDeck = useGameStore((state) => state.partyDirectiveDeck);
-  const communistTestUsedQuestions = useGameStore((state) => state.communistTestUsedQuestions);
-  const setPendingAction = useGameStore((state) => state.setPendingAction);
+  const players = useGameStore((state) => state.players)
+  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex)
+  const turnPhase = useGameStore((state) => state.turnPhase)
+  const dice = useGameStore((state) => state.dice)
+  const isRolling = useGameStore((state) => state.isRolling)
+  const hasRolled = useGameStore((state) => state.hasRolled)
+  const rollDice = useGameStore((state) => state.rollDice)
+  const finishRolling = useGameStore((state) => state.finishRolling)
+  const handleGulagTurn = useGameStore((state) => state.handleGulagTurn)
+  const partyDirectiveDeck = useGameStore((state) => state.partyDirectiveDeck)
+  const communistTestUsedQuestions = useGameStore((state) => state.communistTestUsedQuestions)
+  const setPendingAction = useGameStore((state) => state.setPendingAction)
 
-  const currentPlayer = players[currentPlayerIndex];
-  const [die1, die2] = dice;
-  const isDoubles = die1 === die2;
+  const currentPlayer = players[currentPlayerIndex]
+  const [die1, die2] = dice
+  const isDoubles = die1 === die2
 
   // Handle Gulag players' turns
   useEffect(() => {
     if (turnPhase === 'pre-roll' && !hasRolled && currentPlayer.inGulag) {
-      handleGulagTurn(currentPlayer.id);
+      handleGulagTurn(currentPlayer.id)
     }
     // Only depend on turnPhase and currentPlayerIndex to prevent infinite loop
     // when gulagTurns increments (which changes currentPlayer object)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [turnPhase, currentPlayerIndex]);
+  }, [turnPhase, currentPlayerIndex])
 
   // Handle starving Bread Loaf players
   useEffect(() => {
@@ -46,10 +46,10 @@ const BoardCenter = () => {
       setPendingAction({
         type: 'bread-loaf-begging',
         data: { playerId: currentPlayer.id }
-      });
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [turnPhase, currentPlayerIndex]);
+  }, [turnPhase, currentPlayerIndex])
 
   const handleRoll = () => {
     if (turnPhase === 'pre-roll' && !hasRolled && !currentPlayer.inGulag) {
@@ -58,12 +58,12 @@ const BoardCenter = () => {
         setPendingAction({
           type: 'sickle-motherland-announcement',
           data: { playerId: currentPlayer.id }
-        });
+        })
       } else {
-        rollDice();
+        rollDice()
       }
     }
-  };
+  }
 
   return (
     <div className={styles.center}>
@@ -78,12 +78,12 @@ const BoardCenter = () => {
           <div className={styles.cards}>
             <div className={styles.cardDeck}>
               <div className={styles.cardIcon}>☭</div>
-              <div className={styles.cardLabel}>Party<br/>Directive</div>
+              <div className={styles.cardLabel}>Party<br />Directive</div>
               <div className={styles.cardCount}>{partyDirectiveDeck.length} cards</div>
             </div>
             <div className={styles.cardDeck}>
               <div className={styles.cardIcon}>★</div>
-              <div className={styles.cardLabel}>Communist<br/>Test</div>
+              <div className={styles.cardLabel}>Communist<br />Test</div>
               <div className={styles.cardCount}>{communistTestUsedQuestions.size} used</div>
             </div>
           </div>
@@ -117,10 +117,10 @@ const BoardCenter = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-function getPieceEmoji(piece: string | null): string {
+function getPieceEmoji (piece: string | null): string {
   const pieceEmojis: Record<string, string> = {
     hammer: '🔨',
     sickle: '🌾',
@@ -129,20 +129,20 @@ function getPieceEmoji(piece: string | null): string {
     breadLoaf: '🍞',
     ironCurtain: '🚧',
     vodkaBottle: '🍾',
-    statueOfLenin: '🗿',
-  };
-  return pieceEmojis[piece ?? ''] ?? '●';
+    statueOfLenin: '🗿'
+  }
+  return pieceEmojis[piece ?? ''] ?? '●'
 }
 
-function getTurnPhaseText(phase: string): string {
+function getTurnPhaseText (phase: string): string {
   const phaseTexts: Record<string, string> = {
     'pre-roll': 'Ready to Roll',
-    'rolling': 'Rolling Dice...',
-    'moving': 'Moving...',
-    'resolving': 'Resolving Space',
-    'post-turn': 'Turn Complete',
-  };
-  return phaseTexts[phase] || phase;
+    rolling: 'Rolling Dice...',
+    moving: 'Moving...',
+    resolving: 'Resolving Space',
+    'post-turn': 'Turn Complete'
+  }
+  return phaseTexts[phase] || phase
 }
 
-export default BoardCenter;
+export default BoardCenter

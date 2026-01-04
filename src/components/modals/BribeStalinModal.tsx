@@ -1,41 +1,41 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import React, { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import styles from './Modal.module.css';
+import React, { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import styles from './Modal.module.css'
 
 interface BribeStalinModalProps {
-  playerId: string;
-  reason: string;
+  playerId: string
+  reason: string
 }
 
 export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, reason }) => {
-  const { players, submitBribe, setPendingAction } = useGameStore();
-  const player = players.find((p) => p.id === playerId);
-  const [bribeAmount, setBribeAmount] = useState(200);
-  const [submitted, setSubmitted] = useState(false);
+  const { players, submitBribe, setPendingAction } = useGameStore()
+  const player = players.find((p) => p.id === playerId)
+  const [bribeAmount, setBribeAmount] = useState(200)
+  const [submitted, setSubmitted] = useState(false)
 
-  if (!player) return null;
+  if (player == null) return null
 
-  const minBribe = 200;
-  const maxBribe = player.rubles;
+  const minBribe = 200
+  const maxBribe = player.rubles
 
   const handleSubmit = () => {
-    if (bribeAmount < minBribe || bribeAmount > maxBribe) return;
+    if (bribeAmount < minBribe || bribeAmount > maxBribe) return
 
-    submitBribe(playerId, bribeAmount, reason);
-    setSubmitted(true);
+    submitBribe(playerId, bribeAmount, reason)
+    setSubmitted(true)
 
     // Auto-close after showing confirmation
     setTimeout(() => {
-      setPendingAction(null);
-    }, 2000);
-  };
+      setPendingAction(null)
+    }, 2000)
+  }
 
   const handleCancel = () => {
-    setPendingAction(null);
-  };
+    setPendingAction(null)
+  }
 
   if (submitted) {
     return (
@@ -55,7 +55,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -75,7 +75,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
               border: '2px solid var(--color-propaganda-black)',
               borderRadius: '4px',
               padding: '16px',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
           >
             <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px' }}>
@@ -92,7 +92,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
               border: '2px solid var(--color-warning-amber)',
               borderRadius: '4px',
               padding: '12px',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
           >
             <p style={{ margin: 0, fontSize: '13px', color: 'var(--color-propaganda-black)', fontWeight: 'bold' }}>
@@ -105,30 +105,30 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
 
           <div style={{ marginBottom: '24px' }}>
             <label
-              htmlFor="bribe-amount"
+              htmlFor='bribe-amount'
               style={{
                 display: 'block',
                 fontFamily: 'var(--font-display)',
                 fontSize: '14px',
                 fontWeight: 'bold',
                 marginBottom: '8px',
-                textTransform: 'uppercase',
+                textTransform: 'uppercase'
               }}
             >
               Bribe Amount (Minimum ₽{minBribe}):
             </label>
 
             <input
-              id="bribe-amount"
-              type="range"
+              id='bribe-amount'
+              type='range'
               min={minBribe}
               max={maxBribe}
               step={50}
               value={bribeAmount}
-              onChange={(e) => { setBribeAmount(parseInt(e.target.value)); }}
+              onChange={(e) => { setBribeAmount(parseInt(e.target.value)) }}
               style={{
                 width: '100%',
-                marginBottom: '8px',
+                marginBottom: '8px'
               }}
             />
 
@@ -139,7 +139,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
                 alignItems: 'center',
                 padding: '12px',
                 background: 'var(--color-steel-blue)',
-                borderRadius: '4px',
+                borderRadius: '4px'
               }}
             >
               <span style={{ fontSize: '12px', color: 'var(--color-kremlin-gold)' }}>Minimum</span>
@@ -148,7 +148,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
                   fontSize: '24px',
                   fontWeight: 'bold',
                   fontFamily: 'var(--font-mono)',
-                  color: 'var(--color-kremlin-gold)',
+                  color: 'var(--color-kremlin-gold)'
                 }}
               >
                 ₽{bribeAmount}
@@ -182,15 +182,15 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-function getReasonText(reason: string): string {
+function getReasonText (reason: string): string {
   const reasons: Record<string, string> = {
     'gulag-escape': 'Release from the Gulag',
     'property-favour': 'Favourable property pricing',
     'rank-promotion': 'Rank advancement',
-    'tribunal-influence': 'Tribunal influence',
-  };
-  return reasons[reason] || reason;
+    'tribunal-influence': 'Tribunal influence'
+  }
+  return reasons[reason] || reason
 }

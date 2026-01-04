@@ -22,7 +22,7 @@ export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirective
 
   const player = players.find((p) => p.id === playerId)
 
-  if (!player) {
+  if (player == null) {
     return null
   }
 
@@ -183,15 +183,17 @@ export function PartyDirectiveModal ({ card, playerId, onClose }: PartyDirective
         </div>
 
         <div className={styles.actions}>
-          {!isApplied ? (
-            <button className={styles.buttonApply} onClick={handleApply}>
-              APPLY DIRECTIVE
-            </button>
-          ) : (
-            <button className={styles.buttonContinue} onClick={handleClose}>
-              CONTINUE
-            </button>
-          )}
+          {!isApplied
+            ? (
+              <button className={styles.buttonApply} onClick={handleApply}>
+                APPLY DIRECTIVE
+              </button>
+              )
+            : (
+              <button className={styles.buttonContinue} onClick={handleClose}>
+                CONTINUE
+              </button>
+              )}
         </div>
       </div>
     </div>

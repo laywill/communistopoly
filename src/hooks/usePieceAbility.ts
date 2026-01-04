@@ -161,7 +161,7 @@ export function canDenouncePieceByRank (
 ): boolean {
   // Statue of Lenin: Cannot be denounced by lower ranks
   if (target.piece === 'statueOfLenin') {
-    const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+    const rankOrder: Array<Player['rank']> = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
     const denouncerRankIndex = rankOrder.indexOf(denouncer.rank)
     const targetRankIndex = rankOrder.indexOf(target.rank)
 

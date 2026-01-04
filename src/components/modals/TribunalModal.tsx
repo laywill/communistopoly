@@ -1,10 +1,10 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import React, { useState, useEffect } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import type { TribunalPhase, TribunalVerdict } from '../../types/game';
-import styles from './Modal.module.css';
+import React, { useState, useEffect } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import type { TribunalPhase, TribunalVerdict } from '../../types/game'
+import styles from './Modal.module.css'
 
 export const TribunalModal: React.FC = () => {
   const {
@@ -12,39 +12,39 @@ export const TribunalModal: React.FC = () => {
     activeTribunal,
     advanceTribunalPhase,
     addWitness,
-    renderTribunalVerdict,
-  } = useGameStore();
+    renderTribunalVerdict
+  } = useGameStore()
 
-  const [timeRemaining, setTimeRemaining] = useState(30);
+  const [timeRemaining, setTimeRemaining] = useState(30)
 
   // Timer effect
   useEffect(() => {
-    if (!activeTribunal) return;
+    if (activeTribunal == null) return
 
-    let phaseTime = 30;
+    let phaseTime = 30
     if (activeTribunal.phase === 'witnesses') {
-      phaseTime = 15;
+      phaseTime = 15
     }
 
-    setTimeRemaining(phaseTime);
+    setTimeRemaining(phaseTime)
 
     const interval = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
+          clearInterval(interval)
+          return 0
         }
-        return prev - 1;
-      });
-    }, 1000);
+        return prev - 1
+      })
+    }, 1000)
 
-    return () => { clearInterval(interval); };
-  }, [activeTribunal]);
+    return () => { clearInterval(interval) }
+  }, [activeTribunal])
 
-  if (!activeTribunal) return null;
+  if (activeTribunal == null) return null
 
-  const accuser = players.find((p) => p.id === activeTribunal.accuserId);
-  const accused = players.find((p) => p.id === activeTribunal.accusedId);
+  const accuser = players.find((p) => p.id === activeTribunal.accuserId)
+  const accused = players.find((p) => p.id === activeTribunal.accusedId)
 
   // Get eligible witnesses (not accuser, not accused, not Stalin, not in Gulag, not eliminated)
   const eligibleWitnesses = players.filter(
@@ -56,36 +56,36 @@ export const TribunalModal: React.FC = () => {
       !p.isEliminated &&
       !activeTribunal.witnessesFor.includes(p.id) &&
       !activeTribunal.witnessesAgainst.includes(p.id)
-  );
+  )
 
   const getPhaseInstructions = (): string => {
     switch (activeTribunal.phase) {
       case 'accusation':
-        return `${accuser?.name ?? 'Accuser'}, you have 30 seconds to verbally present your case against ${accused?.name ?? 'Accused'}.`;
+        return `${accuser?.name ?? 'Accuser'}, you have 30 seconds to verbally present your case against ${accused?.name ?? 'Accused'}.`
       case 'defense':
-        return `${accused?.name ?? 'Accused'}, you have 30 seconds to verbally defend yourself.`;
+        return `${accused?.name ?? 'Accused'}, you have 30 seconds to verbally defend yourself.`
       case 'witnesses':
-        return 'Witnesses may now speak for 15 seconds each. Click the buttons below to indicate support.';
+        return 'Witnesses may now speak for 15 seconds each. Click the buttons below to indicate support.'
       case 'judgment':
-        return 'Stalin must now render judgment.';
+        return 'Stalin must now render judgment.'
       default:
-        return '';
+        return ''
     }
-  };
+  }
 
   const getWitnessRequirementText = (): string => {
     if (typeof activeTribunal.requiredWitnesses === 'number') {
       if (activeTribunal.requiredWitnesses === 0) {
-        return 'No witnesses required';
+        return 'No witnesses required'
       }
-      return `Requires ${String(activeTribunal.requiredWitnesses)} witness(es)`;
+      return `Requires ${String(activeTribunal.requiredWitnesses)} witness(es)`
     }
-    return 'Requires unanimous player agreement';
-  };
+    return 'Requires unanimous player agreement'
+  }
 
   const isWitnessRequirementMet = (): boolean => {
     if (typeof activeTribunal.requiredWitnesses === 'number') {
-      return activeTribunal.witnessesFor.length >= activeTribunal.requiredWitnesses;
+      return activeTribunal.witnessesFor.length >= activeTribunal.requiredWitnesses
     }
     // Unanimous: all eligible players must have spoken for accuser
     const allEligiblePlayers = players.filter(
@@ -95,13 +95,13 @@ export const TribunalModal: React.FC = () => {
         !p.isStalin &&
         !p.inGulag &&
         !p.isEliminated
-    );
-    return allEligiblePlayers.length > 0 && activeTribunal.witnessesFor.length === allEligiblePlayers.length;
-  };
+    )
+    return allEligiblePlayers.length > 0 && activeTribunal.witnessesFor.length === allEligiblePlayers.length
+  }
 
   const handleVerdict = (verdict: TribunalVerdict) => {
-    renderTribunalVerdict(verdict);
-  };
+    renderTribunalVerdict(verdict)
+  }
 
   return (
     <div className={styles.modalOverlay}>
@@ -117,7 +117,7 @@ export const TribunalModal: React.FC = () => {
               background: 'var(--color-aged-white)',
               border: '2px solid var(--color-propaganda-black)',
               padding: '16px',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
@@ -135,7 +135,7 @@ export const TribunalModal: React.FC = () => {
                 background: 'var(--color-parchment)',
                 padding: '12px',
                 borderRadius: '4px',
-                border: '1px solid var(--color-gulag-grey)',
+                border: '1px solid var(--color-gulag-grey)'
               }}
             >
               <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-gulag-grey)' }}>CRIME</p>
@@ -155,7 +155,7 @@ export const TribunalModal: React.FC = () => {
               padding: '20px',
               borderRadius: '4px',
               marginBottom: '20px',
-              textAlign: 'center',
+              textAlign: 'center'
             }}
           >
             <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '8px', textTransform: 'uppercase' }}>
@@ -167,7 +167,7 @@ export const TribunalModal: React.FC = () => {
                   fontSize: '48px',
                   fontWeight: 'bold',
                   color: timeRemaining <= 10 ? 'var(--color-blood-burgundy)' : 'var(--color-propaganda-black)',
-                  marginBottom: '12px',
+                  marginBottom: '12px'
                 }}
               >
                 {timeRemaining}s
@@ -188,7 +188,7 @@ export const TribunalModal: React.FC = () => {
                   </h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {activeTribunal.witnessesFor.map((witnessId) => {
-                      const witness = players.find((p) => p.id === witnessId);
+                      const witness = players.find((p) => p.id === witnessId)
                       return (
                         <div
                           key={witnessId}
@@ -197,12 +197,12 @@ export const TribunalModal: React.FC = () => {
                             background: 'var(--color-military-olive)',
                             color: 'white',
                             borderRadius: '4px',
-                            fontSize: '13px',
+                            fontSize: '13px'
                           }}
                         >
                           {witness?.name}
                         </div>
-                      );
+                      )
                     })}
                     {activeTribunal.witnessesFor.length === 0 && (
                       <div style={{ padding: '8px', color: 'var(--color-gulag-grey)', fontSize: '13px' }}>
@@ -217,7 +217,7 @@ export const TribunalModal: React.FC = () => {
                   </h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {activeTribunal.witnessesAgainst.map((witnessId) => {
-                      const witness = players.find((p) => p.id === witnessId);
+                      const witness = players.find((p) => p.id === witnessId)
                       return (
                         <div
                           key={witnessId}
@@ -226,12 +226,12 @@ export const TribunalModal: React.FC = () => {
                             background: 'var(--color-soviet-red)',
                             color: 'white',
                             borderRadius: '4px',
-                            fontSize: '13px',
+                            fontSize: '13px'
                           }}
                         >
                           {witness?.name}
                         </div>
-                      );
+                      )
                     })}
                     {activeTribunal.witnessesAgainst.length === 0 && (
                       <div style={{ padding: '8px', color: 'var(--color-gulag-grey)', fontSize: '13px' }}>
@@ -250,14 +250,14 @@ export const TribunalModal: React.FC = () => {
                     {eligibleWitnesses.map((witness) => (
                       <div key={witness.id} style={{ display: 'flex', gap: '4px' }}>
                         <button
-                          onClick={() => { addWitness(witness.id, 'for'); }}
+                          onClick={() => { addWitness(witness.id, 'for') }}
                           className={styles.successButton}
                           style={{ fontSize: '12px', padding: '6px 12px' }}
                         >
                           {witness.name} ✓ Accuser
                         </button>
                         <button
-                          onClick={() => { addWitness(witness.id, 'against'); }}
+                          onClick={() => { addWitness(witness.id, 'against') }}
                           className={styles.dangerButton}
                           style={{ fontSize: '12px', padding: '6px 12px' }}
                         >
@@ -275,7 +275,7 @@ export const TribunalModal: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {activeTribunal.phase === 'accusation' && (
               <button
-                onClick={() => { advanceTribunalPhase(); }}
+                onClick={() => { advanceTribunalPhase() }}
                 className={styles.primaryButton}
               >
                 START DEFENSE
@@ -284,7 +284,7 @@ export const TribunalModal: React.FC = () => {
 
             {activeTribunal.phase === 'defense' && (
               <button
-                onClick={() => { advanceTribunalPhase(); }}
+                onClick={() => { advanceTribunalPhase() }}
                 className={styles.primaryButton}
               >
                 CALL WITNESSES
@@ -293,7 +293,7 @@ export const TribunalModal: React.FC = () => {
 
             {activeTribunal.phase === 'witnesses' && (
               <button
-                onClick={() => { advanceTribunalPhase(); }}
+                onClick={() => { advanceTribunalPhase() }}
                 className={styles.primaryButton}
               >
                 PROCEED TO JUDGMENT
@@ -314,7 +314,7 @@ export const TribunalModal: React.FC = () => {
                       padding: '12px',
                       borderRadius: '4px',
                       marginBottom: '8px',
-                      textAlign: 'center',
+                      textAlign: 'center'
                     }}
                   >
                     <p style={{ margin: 0, fontSize: '13px', fontWeight: 'bold' }}>
@@ -329,7 +329,7 @@ export const TribunalModal: React.FC = () => {
                 )}
 
                 <button
-                  onClick={() => { handleVerdict('guilty'); }}
+                  onClick={() => { handleVerdict('guilty') }}
                   className={styles.dangerButton}
                   disabled={!isWitnessRequirementMet() && activeTribunal.requiredWitnesses !== 0}
                   style={{ padding: '16px' }}
@@ -341,7 +341,7 @@ export const TribunalModal: React.FC = () => {
                 </button>
 
                 <button
-                  onClick={() => { handleVerdict('innocent'); }}
+                  onClick={() => { handleVerdict('innocent') }}
                   className={styles.successButton}
                   style={{ padding: '16px' }}
                 >
@@ -352,7 +352,7 @@ export const TribunalModal: React.FC = () => {
                 </button>
 
                 <button
-                  onClick={() => { handleVerdict('bothGuilty'); }}
+                  onClick={() => { handleVerdict('bothGuilty') }}
                   className={styles.dangerButton}
                   style={{ padding: '16px', background: 'var(--color-blood-burgundy)' }}
                 >
@@ -363,7 +363,7 @@ export const TribunalModal: React.FC = () => {
                 </button>
 
                 <button
-                  onClick={() => { handleVerdict('insufficient'); }}
+                  onClick={() => { handleVerdict('insufficient') }}
                   className={styles.disabledButton}
                   style={{ padding: '16px' }}
                 >
@@ -378,25 +378,25 @@ export const TribunalModal: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-function getPhaseTitle(phase: TribunalPhase): string {
+function getPhaseTitle (phase: TribunalPhase): string {
   const titles: Record<TribunalPhase, string> = {
     accusation: 'Accusation',
     defense: 'Defense',
     witnesses: 'Witnesses',
-    judgment: 'Judgment',
-  };
-  return titles[phase];
+    judgment: 'Judgment'
+  }
+  return titles[phase]
 }
 
-function getPhaseColor(phase: TribunalPhase): string {
+function getPhaseColor (phase: TribunalPhase): string {
   const colors: Record<TribunalPhase, string> = {
     accusation: 'rgba(196, 30, 58, 0.15)',
     defense: 'rgba(52, 144, 72, 0.15)',
     witnesses: 'rgba(212, 168, 75, 0.15)',
-    judgment: 'rgba(50, 50, 50, 0.15)',
-  };
-  return colors[phase];
+    judgment: 'rgba(50, 50, 50, 0.15)'
+  }
+  return colors[phase]
 }

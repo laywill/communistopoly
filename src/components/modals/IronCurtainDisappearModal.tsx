@@ -17,7 +17,7 @@ export function IronCurtainDisappearModal ({ ironCurtainPlayerId, onClose }: Iro
 
   const ironCurtainPlayer = players.find((p) => p.id === ironCurtainPlayerId)
 
-  if (!ironCurtainPlayer) {
+  if (ironCurtainPlayer == null) {
     return null
   }
 
@@ -65,40 +65,42 @@ export function IronCurtainDisappearModal ({ ironCurtainPlayerId, onClose }: Iro
             ⚠️ This action is permanent and cannot be undone!
           </p>
 
-          {disappearableProperties.length === 0 ? (
-            <div className={styles.noProperties}>
-              <p>❌ No properties available to disappear</p>
-              <p className={styles.hint}>All properties are owned by you or none exist</p>
-            </div>
-          ) : (
-            <>
-              <h3 className={styles.sectionTitle}>Select a property to disappear:</h3>
-              <div className={styles.propertyList}>
-                {disappearableProperties.map(({ property, space, owner }) => (
-                  <button
-                    key={property.spaceId}
-                    className={styles.propertyButton}
-                    onClick={() => { handleDisappear(property.spaceId) }}
-                  >
-                    <div className={styles.propertyInfo}>
-                      <div className={styles.propertyName}>{space?.name}</div>
-                      <div className={styles.propertyDetails}>
-                        <span className={styles.owner}>
-                          Owner: {owner.name}
-                        </span>
-                        <span className={styles.value}>₽{space?.baseCost}</span>
-                      </div>
-                      {property.collectivizationLevel > 0 && (
-                        <div className={styles.improvements}>
-                          Collectivization Level: {property.collectivizationLevel}
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                ))}
+          {disappearableProperties.length === 0
+            ? (
+              <div className={styles.noProperties}>
+                <p>❌ No properties available to disappear</p>
+                <p className={styles.hint}>All properties are owned by you or none exist</p>
               </div>
-            </>
-          )}
+              )
+            : (
+              <>
+                <h3 className={styles.sectionTitle}>Select a property to disappear:</h3>
+                <div className={styles.propertyList}>
+                  {disappearableProperties.map(({ property, space, owner }) => (
+                    <button
+                      key={property.spaceId}
+                      className={styles.propertyButton}
+                      onClick={() => { handleDisappear(property.spaceId) }}
+                    >
+                      <div className={styles.propertyInfo}>
+                        <div className={styles.propertyName}>{space?.name}</div>
+                        <div className={styles.propertyDetails}>
+                          <span className={styles.owner}>
+                            Owner: {owner.name}
+                          </span>
+                          <span className={styles.value}>₽{space?.baseCost}</span>
+                        </div>
+                        {property.collectivizationLevel > 0 && (
+                          <div className={styles.improvements}>
+                            Collectivization Level: {property.collectivizationLevel}
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </>
+              )}
 
           <div className={styles.actions}>
             <button className={styles.buttonCancel} onClick={onClose}>

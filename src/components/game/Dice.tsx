@@ -1,51 +1,51 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useEffect, useState } from 'react';
-import styles from './Dice.module.css';
+import { useEffect, useState } from 'react'
+import styles from './Dice.module.css'
 
 interface DiceProps {
-  die1: number;
-  die2: number;
-  isRolling: boolean;
-  isDoubles: boolean;
-  onRollComplete?: () => void;
+  die1: number
+  die2: number
+  isRolling: boolean
+  isDoubles: boolean
+  onRollComplete?: () => void
 }
 
 const Dice = ({ die1, die2, isRolling, isDoubles, onRollComplete }: DiceProps) => {
-  const [animatedDie1, setAnimatedDie1] = useState(die1);
-  const [animatedDie2, setAnimatedDie2] = useState(die2);
+  const [animatedDie1, setAnimatedDie1] = useState(die1)
+  const [animatedDie2, setAnimatedDie2] = useState(die2)
 
   useEffect(() => {
     if (isRolling) {
       // Animate with random values during roll
       const interval = setInterval(() => {
-        setAnimatedDie1(Math.floor(Math.random() * 6) + 1);
-        setAnimatedDie2(Math.floor(Math.random() * 6) + 1);
-      }, 100);
+        setAnimatedDie1(Math.floor(Math.random() * 6) + 1)
+        setAnimatedDie2(Math.floor(Math.random() * 6) + 1)
+      }, 100)
 
       // Stop animation after 1.5 seconds and show final values
       const timeout = setTimeout(() => {
-        clearInterval(interval);
-        setAnimatedDie1(die1);
-        setAnimatedDie2(die2);
-        onRollComplete?.();
-      }, 1500);
+        clearInterval(interval)
+        setAnimatedDie1(die1)
+        setAnimatedDie2(die2)
+        onRollComplete?.()
+      }, 1500)
 
       return () => {
-        clearInterval(interval);
-        clearTimeout(timeout);
-      };
+        clearInterval(interval)
+        clearTimeout(timeout)
+      }
     } else {
-      setAnimatedDie1(die1);
-      setAnimatedDie2(die2);
+      setAnimatedDie1(die1)
+      setAnimatedDie2(die2)
     }
-  }, [isRolling, die1, die2, onRollComplete]);
+  }, [isRolling, die1, die2, onRollComplete])
 
   const getDieFace = (value: number) => {
-    const faces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-    return faces[value - 1] || '⚀';
-  };
+    const faces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅']
+    return faces[value - 1] || '⚀'
+  }
 
   return (
     <div className={styles.diceContainer}>
@@ -66,7 +66,7 @@ const Dice = ({ die1, die2, isRolling, isDoubles, onRollComplete }: DiceProps) =
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Dice;
+export default Dice

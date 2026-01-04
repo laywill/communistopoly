@@ -1,116 +1,116 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import { getSpaceById } from '../../data/spaces';
-import { canPurchaseProperty } from '../../utils/propertyUtils';
-import { COLLECTIVIZATION_LEVELS } from '../../data/properties';
-import { StalinPriceSetter } from '../property/StalinPriceSetter';
-import styles from './PropertyPurchaseModal.module.css';
+import { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import { getSpaceById } from '../../data/spaces'
+import { canPurchaseProperty } from '../../utils/propertyUtils'
+import { COLLECTIVIZATION_LEVELS } from '../../data/properties'
+import { StalinPriceSetter } from '../property/StalinPriceSetter'
+import styles from './PropertyPurchaseModal.module.css'
 
 interface PropertyPurchaseModalProps {
-  spaceId: number;
-  playerId: string;
-  onClose: () => void;
+  spaceId: number
+  playerId: string
+  onClose: () => void
 }
 
-export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPurchaseModalProps) {
-  const players = useGameStore((state) => state.players);
-  const properties = useGameStore((state) => state.properties);
-  const purchaseProperty = useGameStore((state) => state.purchaseProperty);
-  const setPendingAction = useGameStore((state) => state.setPendingAction);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
-  const setTurnPhase = useGameStore((state) => state.setTurnPhase);
+export function PropertyPurchaseModal ({ spaceId, playerId, onClose }: PropertyPurchaseModalProps) {
+  const players = useGameStore((state) => state.players)
+  const properties = useGameStore((state) => state.properties)
+  const purchaseProperty = useGameStore((state) => state.purchaseProperty)
+  const setPendingAction = useGameStore((state) => state.setPendingAction)
+  const addLogEntry = useGameStore((state) => state.addLogEntry)
+  const setTurnPhase = useGameStore((state) => state.setTurnPhase)
 
-  const space = getSpaceById(spaceId);
-  const player = players.find((p) => p.id === playerId);
-  const property = properties.find((p) => p.spaceId === spaceId);
+  const space = getSpaceById(spaceId)
+  const player = players.find((p) => p.id === playerId)
+  const property = properties.find((p) => p.spaceId === spaceId)
 
-  const [stalinPrice, setStalinPrice] = useState<number | null>(null);
-  const [showPlayerDecision, setShowPlayerDecision] = useState(false);
+  const [stalinPrice, setStalinPrice] = useState<number | null>(null)
+  const [showPlayerDecision, setShowPlayerDecision] = useState(false)
 
-  if (!space || !player || !property || !space.baseCost || !space.group) {
-    return null;
+  if ((space == null) || (player == null) || (property == null) || !space.baseCost || !space.group) {
+    return null
   }
 
   // Check rank restrictions
-  const canPurchase = canPurchaseProperty(player, space.group);
-  const isUtility = space.group === 'utility';
+  const canPurchase = canPurchaseProperty(player, space.group)
+  const isUtility = space.group === 'utility'
 
   const handleStalinPriceSet = (price: number) => {
-    setStalinPrice(price);
-    setShowPlayerDecision(true);
-  };
+    setStalinPrice(price)
+    setShowPlayerDecision(true)
+  }
 
   const handleAccept = () => {
-    if (stalinPrice === null) return;
+    if (stalinPrice === null) return
 
     if (!canPurchase) {
       // For utilities, player must donate to State
       if (isUtility) {
-        const player = players.find((p) => p.id === playerId);
-        if (player) {
+        const player = players.find((p) => p.id === playerId)
+        if (player != null) {
           useGameStore.getState().updatePlayer(playerId, {
-            rubles: player.rubles - stalinPrice,
-          });
-          useGameStore.getState().adjustTreasury(stalinPrice);
+            rubles: player.rubles - stalinPrice
+          })
+          useGameStore.getState().adjustTreasury(stalinPrice)
           addLogEntry({
             type: 'payment',
             message: `${player.name} donated ₽${String(stalinPrice)} to the State Treasury (utilities require Commissar+ rank)`,
-            playerId,
-          });
+            playerId
+          })
         }
       } else {
         addLogEntry({
           type: 'system',
           message: `${player.name} cannot become Custodian of ${space.name} - insufficient rank`,
-          playerId,
-        });
+          playerId
+        })
       }
     } else {
       // Purchase the property
-      purchaseProperty(playerId, spaceId, stalinPrice);
+      purchaseProperty(playerId, spaceId, stalinPrice)
     }
 
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-    onClose();
-  };
+    setPendingAction(null)
+    setTurnPhase('post-turn')
+    onClose()
+  }
 
   const handleDecline = () => {
     addLogEntry({
       type: 'system',
       message: `${player.name} declined custodianship of ${space.name}`,
-      playerId,
-    });
+      playerId
+    })
 
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-    onClose();
-  };
+    setPendingAction(null)
+    setTurnPhase('post-turn')
+    onClose()
+  }
 
   const getRankRestrictionMessage = (): string | null => {
-    if (canPurchase) return null;
+    if (canPurchase) return null
 
     switch (space.group) {
       case 'elite':
-        return 'Green properties require Party Member rank or higher';
+        return 'Green properties require Party Member rank or higher'
       case 'kremlin':
-        return 'Kremlin Complex properties require Inner Circle rank';
+        return 'Kremlin Complex properties require Inner Circle rank'
       case 'utility':
-        return 'Means of Production require Commissar rank or higher. Lower ranks must donate the cost to the State.';
+        return 'Means of Production require Commissar rank or higher. Lower ranks must donate the cost to the State.'
       default:
-        return null;
+        return null
     }
-  };
+  }
 
-  const rankRestriction = getRankRestrictionMessage();
-  const canAfford = player.rubles >= (stalinPrice ?? space.baseCost);
+  const rankRestriction = getRankRestrictionMessage()
+  const canAfford = player.rubles >= (stalinPrice ?? space.baseCost)
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.header}>
           <span className={styles.icon}>🏭</span>
           <h2 className={styles.title}>STATE PROPERTY TRANSFER</h2>
@@ -123,7 +123,7 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
             <div
               className={styles.colorBand}
               style={{
-                backgroundColor: '#1A1A1A',
+                backgroundColor: '#1A1A1A'
               }}
             />
             <h3 className={styles.propertyName}>{space.name}</h3>
@@ -200,8 +200,8 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
                   {canPurchase
                     ? 'ACCEPT - Become Custodian'
                     : isUtility
-                    ? 'DONATE to State'
-                    : 'INSUFFICIENT RANK'}
+                      ? 'DONATE to State'
+                      : 'INSUFFICIENT RANK'}
                 </button>
               </div>
 
@@ -215,5 +215,5 @@ export function PropertyPurchaseModal({ spaceId, playerId, onClose }: PropertyPu
         </div>
       </div>
     </div>
-  );
+  )
 }

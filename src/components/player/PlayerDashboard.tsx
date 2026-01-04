@@ -1,19 +1,19 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import { getPieceByType } from '../../data/pieces';
-import { PropertyManagementModal } from '../modals/PropertyManagementModal';
-import { ImprovementModal } from '../modals/ImprovementModal';
-import { TradeModal } from '../modals/TradeModal';
-import { SickleHarvestModal } from '../modals/SickleHarvestModal';
-import { IronCurtainDisappearModal } from '../modals/IronCurtainDisappearModal';
-import { LeninSpeechModal } from '../modals/LeninSpeechModal';
-import { DenounceModal } from '../modals/DenounceModal';
-import { PieceAbilityIndicator } from './PieceAbilityIndicator';
-import { shouldHideIronCurtainMoney } from '../../utils/pieceAbilityUtils';
-import './PlayerDashboard.css';
+import { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import { getPieceByType } from '../../data/pieces'
+import { PropertyManagementModal } from '../modals/PropertyManagementModal'
+import { ImprovementModal } from '../modals/ImprovementModal'
+import { TradeModal } from '../modals/TradeModal'
+import { SickleHarvestModal } from '../modals/SickleHarvestModal'
+import { IronCurtainDisappearModal } from '../modals/IronCurtainDisappearModal'
+import { LeninSpeechModal } from '../modals/LeninSpeechModal'
+import { DenounceModal } from '../modals/DenounceModal'
+import { PieceAbilityIndicator } from './PieceAbilityIndicator'
+import { shouldHideIronCurtainMoney } from '../../utils/pieceAbilityUtils'
+import './PlayerDashboard.css'
 
 // Player colors for ownership indicators (matches PropertySpace.tsx)
 const PLAYER_COLORS = [
@@ -22,40 +22,40 @@ const PLAYER_COLORS = [
   '#228B22', // Green
   '#D4A84B', // Gold
   '#DB7093', // Pink
-  '#87CEEB', // Light Blue
-];
+  '#87CEEB' // Light Blue
+]
 
-export default function PlayerDashboard() {
-  const players = useGameStore((state) => state.players);
-  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex);
-  const turnPhase = useGameStore((state) => state.turnPhase);
-  const endTurn = useGameStore((state) => state.endTurn);
-  const finishMoving = useGameStore((state) => state.finishMoving);
-  const tankRequisition = useGameStore((state) => state.tankRequisition);
+export default function PlayerDashboard () {
+  const players = useGameStore((state) => state.players)
+  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex)
+  const turnPhase = useGameStore((state) => state.turnPhase)
+  const endTurn = useGameStore((state) => state.endTurn)
+  const finishMoving = useGameStore((state) => state.finishMoving)
+  const tankRequisition = useGameStore((state) => state.tankRequisition)
 
   // Modal state
-  const [showPropertyModal, setShowPropertyModal] = useState(false);
-  const [showImproveModal, setShowImproveModal] = useState(false);
-  const [showTradeModal, setShowTradeModal] = useState(false);
-  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
-  const [showTankRequisition, setShowTankRequisition] = useState(false);
-  const [showSickleHarvest, setShowSickleHarvest] = useState(false);
-  const [showIronCurtainDisappear, setShowIronCurtainDisappear] = useState(false);
-  const [showLeninSpeech, setShowLeninSpeech] = useState(false);
-  const [showDenounce, setShowDenounce] = useState(false);
+  const [showPropertyModal, setShowPropertyModal] = useState(false)
+  const [showImproveModal, setShowImproveModal] = useState(false)
+  const [showTradeModal, setShowTradeModal] = useState(false)
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null)
+  const [showTankRequisition, setShowTankRequisition] = useState(false)
+  const [showSickleHarvest, setShowSickleHarvest] = useState(false)
+  const [showIronCurtainDisappear, setShowIronCurtainDisappear] = useState(false)
+  const [showLeninSpeech, setShowLeninSpeech] = useState(false)
+  const [showDenounce, setShowDenounce] = useState(false)
 
   const handleEndTurn = () => {
-    endTurn();
-  };
+    endTurn()
+  }
 
   // Get current player for checking Iron Curtain visibility
-  const currentPlayer = players[currentPlayerIndex] ?? null;
+  const currentPlayer = players[currentPlayerIndex] ?? null
 
   // Get player color for ownership indicator
   const getPlayerColor = (player: typeof players[0]) => {
-    const playerIndex = players.findIndex((p) => p.id === player.id);
-    return PLAYER_COLORS[playerIndex % PLAYER_COLORS.length];
-  };
+    const playerIndex = players.findIndex((p) => p.id === player.id)
+    return PLAYER_COLORS[playerIndex % PLAYER_COLORS.length]
+  }
 
   // Render rank stars
   const renderRankStars = (rank: string) => {
@@ -63,22 +63,22 @@ export default function PlayerDashboard() {
       proletariat: 0,
       partyMember: 1,
       commissar: 2,
-      innerCircle: 3,
-    };
+      innerCircle: 3
+    }
 
-    const level = rankLevels[rank] || 0;
-    const stars = [];
+    const level = rankLevels[rank] || 0
+    const stars = []
 
     for (let i = 0; i < 4; i++) {
       stars.push(
         <span key={i} className={`rank-star ${i <= level ? 'filled' : 'empty'}`}>
           ★
         </span>
-      );
+      )
     }
 
-    return <div className="rank-stars">{stars}</div>;
-  };
+    return <div className='rank-stars'>{stars}</div>
+  }
 
   // Render rank name
   const getRankName = (rank: string) => {
@@ -86,17 +86,17 @@ export default function PlayerDashboard() {
       proletariat: 'Proletariat',
       partyMember: 'Party Member',
       commissar: 'Commissar',
-      innerCircle: 'Inner Circle',
-    };
-    return rankNames[rank] || rank;
-  };
+      innerCircle: 'Inner Circle'
+    }
+    return rankNames[rank] || rank
+  }
 
   // Get player status
   const getPlayerStatus = (player: typeof players[0]) => {
-    if (player.isEliminated) return 'Eliminated';
-    if (player.inGulag) return 'In Gulag';
-    return 'In Play';
-  };
+    if (player.isEliminated) return 'Eliminated'
+    if (player.inGulag) return 'In Gulag'
+    return 'In Play'
+  }
 
   // Check if player has any complete color groups
   const hasCompleteColorGroup = (player: typeof players[0]): boolean => {
@@ -109,81 +109,83 @@ export default function PlayerDashboard() {
       military: [21, 23, 24],
       media: [26, 27, 29],
       elite: [31, 32, 34],
-      kremlin: [37, 39],
-    };
+      kremlin: [37, 39]
+    }
 
     for (const [, groupSpaces] of Object.entries(groups)) {
       const ownsAll = groupSpaces.every((spaceId) =>
         player.properties.includes(spaceId.toString())
-      );
-      if (ownsAll) return true;
+      )
+      if (ownsAll) return true
     }
-    return false;
-  };
+    return false
+  }
 
   // Filter out Stalin from display
-  const nonStalinPlayers = players.filter(p => !p.isStalin);
+  const nonStalinPlayers = players.filter(p => !p.isStalin)
 
   return (
-    <div className="player-dashboard">
-      <div className="players-grid">
+    <div className='player-dashboard'>
+      <div className='players-grid'>
         {nonStalinPlayers.map((player, index) => {
-          const pieceData = player.piece ? getPieceByType(player.piece) : null;
-          const isCurrentPlayer = index + 1 === currentPlayerIndex; // +1 because Stalin is index 0
+          const pieceData = player.piece ? getPieceByType(player.piece) : null
+          const isCurrentPlayer = index + 1 === currentPlayerIndex // +1 because Stalin is index 0
 
           return (
             <div
               key={player.id}
               className={`player-card ${isCurrentPlayer ? 'current-player' : ''} ${player.inGulag ? 'in-gulag' : ''}`}
             >
-              <div className="player-card-header">
+              <div className='player-card-header'>
                 <div
-                  className="player-ownership-indicator"
+                  className='player-ownership-indicator'
                   style={{ backgroundColor: getPlayerColor(player) }}
                   title={`${player.name}'s ownership color`}
                 />
                 {player.inGulag && <span style={{ fontSize: '1.5rem' }}>⛓️</span>}
-                <span className="player-piece-icon">{pieceData?.icon ?? '?'}</span>
-                <span className="player-name">{player.name}</span>
-                {isCurrentPlayer && <span className="current-badge">CURRENT</span>}
-                {player.inGulag && <span className="gulag-badge">IMPRISONED</span>}
+                <span className='player-piece-icon'>{pieceData?.icon ?? '?'}</span>
+                <span className='player-name'>{player.name}</span>
+                {isCurrentPlayer && <span className='current-badge'>CURRENT</span>}
+                {player.inGulag && <span className='gulag-badge'>IMPRISONED</span>}
               </div>
 
-              <div className="player-card-body">
-                <div className="player-stat">
+              <div className='player-card-body'>
+                <div className='player-stat'>
                   <label>RANK:</label>
-                  <div className="stat-value">
+                  <div className='stat-value'>
                     {renderRankStars(player.rank)}
-                    <span className="rank-name">{getRankName(player.rank)}</span>
+                    <span className='rank-name'>{getRankName(player.rank)}</span>
                   </div>
                 </div>
 
-                <div className="player-stat">
+                <div className='player-stat'>
                   <label>RUBLES:</label>
-                  {shouldHideIronCurtainMoney(player, currentPlayer.id) ? (
-                    <span className="stat-value rubles" title="Iron Curtain: Money is hidden">
-                      ₽???
-                    </span>
-                  ) : (
-                    <span className="stat-value rubles">₽{player.rubles}</span>
-                  )}
+                  {shouldHideIronCurtainMoney(player, currentPlayer.id)
+                    ? (
+                      <span className='stat-value rubles' title='Iron Curtain: Money is hidden'>
+                        ₽???
+                      </span>
+                      )
+                    : (
+                      <span className='stat-value rubles'>₽{player.rubles}</span>
+                      )}
                 </div>
 
-                <div className="player-stat">
+                <div className='player-stat'>
                   <label>PROPERTIES:</label>
-                  <span className="stat-value">{player.properties.length}</span>
+                  <span className='stat-value'>{player.properties.length}</span>
                 </div>
 
                 {player.hasFreeFromGulagCard && (
-                  <div className="player-stat special-item">
+                  <div className='player-stat special-item'>
                     <label>SPECIAL:</label>
-                    <span className="stat-value" style={{ color: 'var(--color-gold)', fontWeight: 'bold' }}>
+                    <span className='stat-value' style={{ color: 'var(--color-gold)', fontWeight: 'bold' }}>
                       🎫 Free from Gulag Card
                     </span>
                   </div>
                 )}
 
-                <div className="player-stat">
+                <div className='player-stat'>
                   <label>STATUS:</label>
                   <span className={`stat-value status status-${getPlayerStatus(player).toLowerCase().replace(' ', '-')}`}>
                     {getPlayerStatus(player)}
@@ -191,9 +193,9 @@ export default function PlayerDashboard() {
                 </div>
 
                 {player.inGulag && (
-                  <div className="player-stat gulag-sentence">
+                  <div className='player-stat gulag-sentence'>
                     <label>SENTENCE:</label>
-                    <span className="stat-value" style={{ color: 'var(--color-blood-burgundy)', fontWeight: 'bold' }}>
+                    <span className='stat-value' style={{ color: 'var(--color-blood-burgundy)', fontWeight: 'bold' }}>
                       Day {player.gulagTurns + 1} of ???
                     </span>
                   </div>
@@ -205,28 +207,28 @@ export default function PlayerDashboard() {
                 )}
 
                 {isCurrentPlayer && (
-                  <div className="player-actions">
+                  <div className='player-actions'>
                     {/* Property Management Actions - Available during pre-roll and post-turn, but not in Gulag */}
                     {!player.inGulag && (turnPhase === 'pre-roll' || turnPhase === 'post-turn') && (
-                      <div className="property-actions">
+                      <div className='property-actions'>
                         {/* Denounce Button */}
                         <button
-                          className="action-button secondary"
+                          className='action-button secondary'
                           onClick={() => {
-                            setSelectedPlayerId(player.id);
-                            setShowDenounce(true);
+                            setSelectedPlayerId(player.id)
+                            setShowDenounce(true)
                           }}
-                          title="Denounce another player to the Party"
+                          title='Denounce another player to the Party'
                           style={{ background: 'var(--color-blood-burgundy)', color: 'white' }}
                         >
                           ⚖️ DENOUNCE
                         </button>
 
                         <button
-                          className="action-button secondary"
+                          className='action-button secondary'
                           onClick={() => {
-                            setSelectedPlayerId(player.id);
-                            setShowPropertyModal(true);
+                            setSelectedPlayerId(player.id)
+                            setShowPropertyModal(true)
                           }}
                           disabled={player.properties.length === 0}
                           title={player.properties.length === 0 ? 'No properties to manage' : 'Manage your properties'}
@@ -234,10 +236,10 @@ export default function PlayerDashboard() {
                           📋 MANAGE PROPERTIES
                         </button>
                         <button
-                          className="action-button secondary"
+                          className='action-button secondary'
                           onClick={() => {
-                            setSelectedPlayerId(player.id);
-                            setShowImproveModal(true);
+                            setSelectedPlayerId(player.id)
+                            setShowImproveModal(true)
                           }}
                           disabled={!hasCompleteColorGroup(player)}
                           title={!hasCompleteColorGroup(player) ? 'Need complete color group to improve' : 'Improve your properties'}
@@ -245,12 +247,12 @@ export default function PlayerDashboard() {
                           🏭 IMPROVE
                         </button>
                         <button
-                          className="action-button secondary"
+                          className='action-button secondary'
                           onClick={() => {
-                            setSelectedPlayerId(player.id);
-                            setShowTradeModal(true);
+                            setSelectedPlayerId(player.id)
+                            setShowTradeModal(true)
                           }}
-                          title="Propose a trade with another player"
+                          title='Propose a trade with another player'
                         >
                           🤝 PROPOSE TRADE
                         </button>
@@ -258,12 +260,12 @@ export default function PlayerDashboard() {
                         {/* Tank Requisition Ability */}
                         {player.piece === 'tank' && !player.tankRequisitionUsedThisLap && (
                           <button
-                            className="action-button secondary"
+                            className='action-button secondary'
                             onClick={() => {
-                              setSelectedPlayerId(player.id);
-                              setShowTankRequisition(true);
+                              setSelectedPlayerId(player.id)
+                              setShowTankRequisition(true)
                             }}
-                            title="Requisition ₽50 from another player (once per lap)"
+                            title='Requisition ₽50 from another player (once per lap)'
                           >
                             🚛 REQUISITION ₽50
                           </button>
@@ -272,12 +274,12 @@ export default function PlayerDashboard() {
                         {/* Sickle Harvest Ability */}
                         {player.piece === 'sickle' && !player.hasUsedSickleHarvest && (
                           <button
-                            className="action-button secondary"
+                            className='action-button secondary'
                             onClick={() => {
-                              setSelectedPlayerId(player.id);
-                              setShowSickleHarvest(true);
+                              setSelectedPlayerId(player.id)
+                              setShowSickleHarvest(true)
                             }}
-                            title="Steal a property worth less than ₽150 (once per game)"
+                            title='Steal a property worth less than ₽150 (once per game)'
                           >
                             🌾 HARVEST PROPERTY
                           </button>
@@ -286,12 +288,12 @@ export default function PlayerDashboard() {
                         {/* Iron Curtain Disappear Ability */}
                         {player.piece === 'ironCurtain' && !player.hasUsedIronCurtainDisappear && (
                           <button
-                            className="action-button secondary"
+                            className='action-button secondary'
                             onClick={() => {
-                              setSelectedPlayerId(player.id);
-                              setShowIronCurtainDisappear(true);
+                              setSelectedPlayerId(player.id)
+                              setShowIronCurtainDisappear(true)
                             }}
-                            title="Make a property disappear back to the State (once per game)"
+                            title='Make a property disappear back to the State (once per game)'
                           >
                             🚧 DISAPPEAR PROPERTY
                           </button>
@@ -300,12 +302,12 @@ export default function PlayerDashboard() {
                         {/* Lenin Speech Ability */}
                         {player.piece === 'statueOfLenin' && !player.hasUsedLeninSpeech && (
                           <button
-                            className="action-button secondary"
+                            className='action-button secondary'
                             onClick={() => {
-                              setSelectedPlayerId(player.id);
-                              setShowLeninSpeech(true);
+                              setSelectedPlayerId(player.id)
+                              setShowLeninSpeech(true)
                             }}
-                            title="Give an inspiring speech to collect from applauders (once per game)"
+                            title='Give an inspiring speech to collect from applauders (once per game)'
                           >
                             🗿 INSPIRING SPEECH
                           </button>
@@ -315,12 +317,12 @@ export default function PlayerDashboard() {
 
                     {/* Turn Control Actions */}
                     {!player.inGulag && turnPhase === 'moving' && (
-                      <button className="action-button" onClick={finishMoving}>
+                      <button className='action-button' onClick={finishMoving}>
                         FINISH MOVING
                       </button>
                     )}
                     {turnPhase === 'post-turn' && (
-                      <button className="action-button primary" onClick={handleEndTurn}>
+                      <button className='action-button primary' onClick={handleEndTurn}>
                         END TURN
                       </button>
                     )}
@@ -328,7 +330,7 @@ export default function PlayerDashboard() {
                 )}
               </div>
             </div>
-          );
+          )
         })}
       </div>
 
@@ -337,8 +339,8 @@ export default function PlayerDashboard() {
         <PropertyManagementModal
           playerId={selectedPlayerId}
           onClose={() => {
-            setShowPropertyModal(false);
-            setSelectedPlayerId(null);
+            setShowPropertyModal(false)
+            setSelectedPlayerId(null)
           }}
         />
       )}
@@ -347,27 +349,27 @@ export default function PlayerDashboard() {
         <ImprovementModal
           playerId={selectedPlayerId}
           onClose={() => {
-            setShowImproveModal(false);
-            setSelectedPlayerId(null);
+            setShowImproveModal(false)
+            setSelectedPlayerId(null)
           }}
         />
       )}
 
       {showTradeModal && selectedPlayerId && (
         <TradeModal
-          mode="propose"
+          mode='propose'
           proposerId={selectedPlayerId}
           onClose={() => {
-            setShowTradeModal(false);
-            setSelectedPlayerId(null);
+            setShowTradeModal(false)
+            setSelectedPlayerId(null)
           }}
         />
       )}
 
       {/* Tank Requisition Modal */}
       {showTankRequisition && selectedPlayerId && (
-        <div className="modal-overlay" onClick={() => { setShowTankRequisition(false); }}>
-          <div className="modal-content" onClick={(e) => { e.stopPropagation(); }} style={{ maxWidth: '400px' }}>
+        <div className='modal-overlay' onClick={() => { setShowTankRequisition(false) }}>
+          <div className='modal-content' onClick={(e) => { e.stopPropagation() }} style={{ maxWidth: '400px' }}>
             <h2>🚛 TANK REQUISITION</h2>
             <p>Select a player to requisition ₽50 from:</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
@@ -376,11 +378,11 @@ export default function PlayerDashboard() {
                 .map((targetPlayer) => (
                   <button
                     key={targetPlayer.id}
-                    className="action-button secondary"
+                    className='action-button secondary'
                     onClick={() => {
-                      tankRequisition(selectedPlayerId, targetPlayer.id);
-                      setShowTankRequisition(false);
-                      setSelectedPlayerId(null);
+                      tankRequisition(selectedPlayerId, targetPlayer.id)
+                      setShowTankRequisition(false)
+                      setSelectedPlayerId(null)
                     }}
                     style={{ width: '100%', textAlign: 'left', padding: '0.8rem' }}
                   >
@@ -389,10 +391,10 @@ export default function PlayerDashboard() {
                 ))}
             </div>
             <button
-              className="action-button"
+              className='action-button'
               onClick={() => {
-                setShowTankRequisition(false);
-                setSelectedPlayerId(null);
+                setShowTankRequisition(false)
+                setSelectedPlayerId(null)
               }}
               style={{ marginTop: '1rem', width: '100%' }}
             >
@@ -407,8 +409,8 @@ export default function PlayerDashboard() {
         <SickleHarvestModal
           sicklePlayerId={selectedPlayerId}
           onClose={() => {
-            setShowSickleHarvest(false);
-            setSelectedPlayerId(null);
+            setShowSickleHarvest(false)
+            setSelectedPlayerId(null)
           }}
         />
       )}
@@ -418,8 +420,8 @@ export default function PlayerDashboard() {
         <IronCurtainDisappearModal
           ironCurtainPlayerId={selectedPlayerId}
           onClose={() => {
-            setShowIronCurtainDisappear(false);
-            setSelectedPlayerId(null);
+            setShowIronCurtainDisappear(false)
+            setSelectedPlayerId(null)
           }}
         />
       )}
@@ -429,8 +431,8 @@ export default function PlayerDashboard() {
         <LeninSpeechModal
           leninPlayerId={selectedPlayerId}
           onClose={() => {
-            setShowLeninSpeech(false);
-            setSelectedPlayerId(null);
+            setShowLeninSpeech(false)
+            setSelectedPlayerId(null)
           }}
         />
       )}
@@ -440,11 +442,11 @@ export default function PlayerDashboard() {
         <DenounceModal
           accuserId={selectedPlayerId}
           onClose={() => {
-            setShowDenounce(false);
-            setSelectedPlayerId(null);
+            setShowDenounce(false)
+            setSelectedPlayerId(null)
           }}
         />
       )}
     </div>
-  );
+  )
 }

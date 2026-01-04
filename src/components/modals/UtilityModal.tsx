@@ -1,52 +1,52 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useGameStore } from '../../store/gameStore';
-import { getSpaceById } from '../../data/spaces';
-import { PROPERTY_GROUPS } from '../../data/properties';
-import styles from './UtilityModal.module.css';
+import { useGameStore } from '../../store/gameStore'
+import { getSpaceById } from '../../data/spaces'
+import { PROPERTY_GROUPS } from '../../data/properties'
+import styles from './UtilityModal.module.css'
 
 interface UtilityModalProps {
-  spaceId: number;
-  payerId: string;
-  diceTotal: number;
-  onClose: () => void;
+  spaceId: number
+  payerId: string
+  diceTotal: number
+  onClose: () => void
 }
 
-export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityModalProps) {
-  const players = useGameStore((state) => state.players);
-  const properties = useGameStore((state) => state.properties);
-  const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
-  const setPendingAction = useGameStore((state) => state.setPendingAction);
-  const setTurnPhase = useGameStore((state) => state.setTurnPhase);
+export function UtilityModal ({ spaceId, payerId, diceTotal, onClose }: UtilityModalProps) {
+  const players = useGameStore((state) => state.players)
+  const properties = useGameStore((state) => state.properties)
+  const updatePlayer = useGameStore((state) => state.updatePlayer)
+  const addLogEntry = useGameStore((state) => state.addLogEntry)
+  const setPendingAction = useGameStore((state) => state.setPendingAction)
+  const setTurnPhase = useGameStore((state) => state.setTurnPhase)
 
-  const space = getSpaceById(spaceId);
-  const property = properties.find((p) => p.spaceId === spaceId);
-  const payer = players.find((p) => p.id === payerId);
+  const space = getSpaceById(spaceId)
+  const property = properties.find((p) => p.spaceId === spaceId)
+  const payer = players.find((p) => p.id === payerId)
   const controller = property?.custodianId
     ? players.find((p) => p.id === property.custodianId)
-    : null;
+    : null
 
-  if (!space || !property || !payer || !controller) {
-    return null;
+  if ((space == null) || (property == null) || (payer == null) || (controller == null)) {
+    return null
   }
 
   // Calculate how many utilities the controller owns
-  const utilitySpaces = PROPERTY_GROUPS.utility.properties;
+  const utilitySpaces = PROPERTY_GROUPS.utility.properties
   const controlledUtilities = utilitySpaces.filter((utilityId) => {
-    const utilityProperty = properties.find((p) => p.spaceId === utilityId);
-    return utilityProperty?.custodianId === controller.id;
-  }).length;
+    const utilityProperty = properties.find((p) => p.spaceId === utilityId)
+    return utilityProperty?.custodianId === controller.id
+  }).length
 
   // Fee based on utilities owned and dice roll: 1 utility = 4x dice, 2 utilities = 10x dice
-  const multiplier = controlledUtilities === 2 ? 10 : 4;
-  const fee = diceTotal * multiplier;
+  const multiplier = controlledUtilities === 2 ? 10 : 4
+  const fee = diceTotal * multiplier
 
-  const canAfford = payer.rubles >= fee;
+  const canAfford = payer.rubles >= fee
 
   // Check if controller is Proletariat (secret rule)
-  const isProletariatController = controller.rank === 'proletariat';
+  const isProletariatController = controller.rank === 'proletariat'
 
   const handlePay = () => {
     if (!canAfford) {
@@ -57,30 +57,30 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
           playerId: payerId,
           amountOwed: fee,
           creditorId: controller.id,
-          reason: `Utility fee for ${space.name}`,
-        },
-      });
-      return;
+          reason: `Utility fee for ${space.name}`
+        }
+      })
+      return
     } else {
       // Transfer rubles
-      updatePlayer(payerId, { rubles: payer.rubles - fee });
-      updatePlayer(controller.id, { rubles: controller.rubles + fee });
+      updatePlayer(payerId, { rubles: payer.rubles - fee })
+      updatePlayer(controller.id, { rubles: controller.rubles + fee })
 
       addLogEntry({
         type: 'payment',
         message: `${payer.name} paid ₽${String(fee)} to ${controller.name} for use of ${space.name} (${String(diceTotal)} × ${String(multiplier)})`,
-        playerId: payerId,
-      });
+        playerId: payerId
+      })
     }
 
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-    onClose();
-  };
+    setPendingAction(null)
+    setTurnPhase('post-turn')
+    onClose()
+  }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.header}>
           <span className={styles.icon}>⚙️</span>
           <h2 className={styles.title}>MEANS OF PRODUCTION</h2>
@@ -128,7 +128,7 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
               <span className={styles.calcValue}>×{multiplier}</span>
             </div>
 
-            <div className={styles.calcDivider}></div>
+            <div className={styles.calcDivider} />
 
             <div className={styles.calcFormula}>
               {diceTotal} × {multiplier} = ₽{fee}
@@ -176,5 +176,5 @@ export function UtilityModal({ spaceId, payerId, diceTotal, onClose }: UtilityMo
         </div>
       </div>
     </div>
-  );
+  )
 }

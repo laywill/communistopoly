@@ -1,20 +1,20 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import styles from './ExitConfirmModal.module.css';
+import styles from './ExitConfirmModal.module.css'
 
 interface ExitConfirmModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: () => void
 }
 
 const ExitConfirmModal = ({ isOpen, onClose, onConfirm }: ExitConfirmModalProps) => {
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.header}>
           <div className={styles.icon}>☭</div>
           <h2>ABANDON THE REVOLUTION?</h2>
@@ -35,7 +35,7 @@ const ExitConfirmModal = ({ isOpen, onClose, onConfirm }: ExitConfirmModalProps)
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ExitConfirmModal;
+export default ExitConfirmModal

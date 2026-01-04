@@ -19,7 +19,7 @@ export function LeninSpeechModal ({ leninPlayerId, onClose }: LeninSpeechModalPr
 
   const leninPlayer = players.find((p) => p.id === leninPlayerId)
 
-  if (!leninPlayer) {
+  if (leninPlayer == null) {
     return null
   }
 
@@ -47,7 +47,7 @@ export function LeninSpeechModal ({ leninPlayerId, onClose }: LeninSpeechModalPr
 
   const totalCollection = selectedApplauders.reduce((total, applauderId) => {
     const applauder = players.find((p) => p.id === applauderId)
-    if (applauder) {
+    if (applauder != null) {
       return total + Math.min(100, applauder.rubles)
     }
     return total
@@ -63,87 +63,89 @@ export function LeninSpeechModal ({ leninPlayerId, onClose }: LeninSpeechModalPr
         </div>
 
         <div className={styles.content}>
-          {!speechGiven ? (
-            <>
-              <p className={styles.description}>
-                <strong>{leninPlayer.name}</strong>, you may give an <strong>inspiring speech</strong> to the
-                assembled comrades. This ability can only be used <strong>once per game</strong>.
-              </p>
-
-              <div className={styles.instructions}>
-                <h3>Instructions:</h3>
-                <ol>
-                  <li>Click &quot;GIVE SPEECH&quot; to begin your 30-second speech</li>
-                  <li>Give your speech (30 seconds maximum)</li>
-                  <li>Stalin will judge the sincerity of each player&apos;s applause</li>
-                  <li>Select which players applauded sincerely</li>
-                  <li>Collect ₽100 from each sincere applauder</li>
-                </ol>
-              </div>
-
-              <div className={styles.readySection}>
-                <p className={styles.readyText}>Ready to address the comrades?</p>
-                <button className={styles.buttonSpeech} onClick={handleGiveSpeech}>
-                  🗿 GIVE SPEECH
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className={styles.speechGiven}>
-                <p className={styles.speechText}>
-                  📣 <strong>{leninPlayer.name}</strong> has given their inspiring speech!
+          {!speechGiven
+            ? (
+              <>
+                <p className={styles.description}>
+                  <strong>{leninPlayer.name}</strong>, you may give an <strong>inspiring speech</strong> to the
+                  assembled comrades. This ability can only be used <strong>once per game</strong>.
                 </p>
-                <p className={styles.instruction}>
-                  Stalin, select which players applauded <strong>sincerely</strong>:
-                </p>
-              </div>
 
-              <div className={styles.applauderList}>
-                {eligibleApplauders.map((player) => {
-                  const isSelected = selectedApplauders.includes(player.id)
-                  const canAfford = player.rubles >= 100
+                <div className={styles.instructions}>
+                  <h3>Instructions:</h3>
+                  <ol>
+                    <li>Click &quot;GIVE SPEECH&quot; to begin your 30-second speech</li>
+                    <li>Give your speech (30 seconds maximum)</li>
+                    <li>Stalin will judge the sincerity of each player&apos;s applause</li>
+                    <li>Select which players applauded sincerely</li>
+                    <li>Collect ₽100 from each sincere applauder</li>
+                  </ol>
+                </div>
 
-                  return (
-                    <button
-                      key={player.id}
-                      className={`${styles.applauderButton} ${isSelected ? styles.selected : ''}`}
-                      onClick={() => { toggleApplauder(player.id) }}
-                    >
-                      <div className={styles.applauderInfo}>
-                        <span className={styles.applauderName}>{player.name}</span>
-                        <span className={styles.applauderRubles}>
-                          {canAfford ? '₽100' : `₽${String(player.rubles)}`}
-                        </span>
-                      </div>
-                      {isSelected && (
-                        <div className={styles.checkmark}>✓</div>
-                      )}
-                    </button>
-                  )
-                })}
-              </div>
-
-              {selectedApplauders.length > 0 && (
-                <div className={styles.summary}>
-                  <p className={styles.summaryText}>
-                    Total collection: <strong>₽{totalCollection}</strong> from{' '}
-                    {selectedApplauders.length} applauder{selectedApplauders.length !== 1 ? 's' : ''}
+                <div className={styles.readySection}>
+                  <p className={styles.readyText}>Ready to address the comrades?</p>
+                  <button className={styles.buttonSpeech} onClick={handleGiveSpeech}>
+                    🗿 GIVE SPEECH
+                  </button>
+                </div>
+              </>
+              )
+            : (
+              <>
+                <div className={styles.speechGiven}>
+                  <p className={styles.speechText}>
+                    📣 <strong>{leninPlayer.name}</strong> has given their inspiring speech!
+                  </p>
+                  <p className={styles.instruction}>
+                    Stalin, select which players applauded <strong>sincerely</strong>:
                   </p>
                 </div>
-              )}
 
-              <div className={styles.actions}>
-                <button
-                  className={styles.buttonComplete}
-                  onClick={handleCompleteSpeech}
-                  disabled={selectedApplauders.length === 0}
-                >
-                  COMPLETE SPEECH
-                </button>
-              </div>
-            </>
-          )}
+                <div className={styles.applauderList}>
+                  {eligibleApplauders.map((player) => {
+                    const isSelected = selectedApplauders.includes(player.id)
+                    const canAfford = player.rubles >= 100
+
+                    return (
+                      <button
+                        key={player.id}
+                        className={`${styles.applauderButton} ${isSelected ? styles.selected : ''}`}
+                        onClick={() => { toggleApplauder(player.id) }}
+                      >
+                        <div className={styles.applauderInfo}>
+                          <span className={styles.applauderName}>{player.name}</span>
+                          <span className={styles.applauderRubles}>
+                            {canAfford ? '₽100' : `₽${String(player.rubles)}`}
+                          </span>
+                        </div>
+                        {isSelected && (
+                          <div className={styles.checkmark}>✓</div>
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {selectedApplauders.length > 0 && (
+                  <div className={styles.summary}>
+                    <p className={styles.summaryText}>
+                      Total collection: <strong>₽{totalCollection}</strong> from{' '}
+                      {selectedApplauders.length} applauder{selectedApplauders.length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                )}
+
+                <div className={styles.actions}>
+                  <button
+                    className={styles.buttonComplete}
+                    onClick={handleCompleteSpeech}
+                    disabled={selectedApplauders.length === 0}
+                  >
+                    COMPLETE SPEECH
+                  </button>
+                </div>
+              </>
+              )}
 
           {!speechGiven && (
             <div className={styles.actions}>

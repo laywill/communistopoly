@@ -1,22 +1,22 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import './RulesModal.css';
+import './RulesModal.css'
 
 interface RulesModalProps {
-  onClose: () => void;
+  onClose: () => void
 }
 
-export default function RulesModal({ onClose }: RulesModalProps) {
+export default function RulesModal ({ onClose }: RulesModalProps) {
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-container rules-modal" onClick={(e) => { e.stopPropagation(); }}>
-        <div className="modal-header">
+    <div className='modal-overlay' onClick={onClose}>
+      <div className='modal-container rules-modal' onClick={(e) => { e.stopPropagation() }}>
+        <div className='modal-header'>
           <h2>⚖️ HOW TO PLAY COMMUNISTOPOLY ⚖️</h2>
         </div>
 
-        <div className="modal-body">
-          <section className="rules-section">
+        <div className='modal-body'>
+          <section className='rules-section'>
             <h3>OBJECTIVE</h3>
             <p>
               There are no winners in Communistopoly—only survivors. Your goal is to outlast all other players by
@@ -24,7 +24,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             </p>
           </section>
 
-          <section className="rules-section">
+          <section className='rules-section'>
             <h3>TURN STRUCTURE</h3>
             <ol>
               <li>Roll the dice and move your piece</li>
@@ -35,7 +35,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             </ol>
           </section>
 
-          <section className="rules-section">
+          <section className='rules-section'>
             <h3>PARTY RANKS</h3>
             <ul>
               <li><strong>Proletariat:</strong> Starting rank. Most vulnerable, no special privileges.</li>
@@ -45,7 +45,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             </ul>
           </section>
 
-          <section className="rules-section">
+          <section className='rules-section'>
             <h3>THE GULAG</h3>
             <p>You are sent to the Gulag when you:</p>
             <ul>
@@ -57,7 +57,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             <p><strong>Escape:</strong> Roll doubles (difficulty increases with turns spent), pay ₽500, get vouched for, inform on another player, or bribe Stalin.</p>
           </section>
 
-          <section className="rules-section">
+          <section className='rules-section'>
             <h3>DENOUNCEMENTS</h3>
             <p>
               Any player may denounce another at any time by accusing them of a crime (real or invented). Stalin
@@ -66,7 +66,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             <p><strong>Outcomes:</strong> Guilty (Gulag), Innocent (accuser loses rank), Both Guilty, or Insufficient Evidence.</p>
           </section>
 
-          <section className="rules-section">
+          <section className='rules-section'>
             <h3>STALIN&apos;S ROLE</h3>
             <p>
               Stalin controls the game as the Game Master. Stalin sets property prices, judges tribunals, accepts
@@ -75,7 +75,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             </p>
           </section>
 
-          <section className="rules-section">
+          <section className='rules-section'>
             <h3>PROPERTIES (&quot;CUSTODIANSHIP&quot;)</h3>
             <p>
               Instead of &quot;owning&quot; properties, you become their Custodian for the State. All properties start owned by
@@ -85,7 +85,7 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             </p>
           </section>
 
-          <section className="rules-section">
+          <section className='rules-section'>
             <h3>COLLECTIVIZATION (IMPROVEMENTS)</h3>
             <p>
               Improve properties through 5 levels: Worker&apos;s Committee, Party Oversight, Full Collectivization, Model
@@ -94,18 +94,18 @@ export default function RulesModal({ onClose }: RulesModalProps) {
             </p>
           </section>
 
-          <section className="rules-section">
+          <section className='rules-section'>
             <h3>WINNING (SURVIVING)</h3>
             <p>The game ends when only one player remains (Survivor Victory) or all players are eliminated (Stalin Victory).</p>
           </section>
         </div>
 
-        <div className="modal-footer">
-          <button className="modal-btn modal-btn-primary" onClick={onClose}>
+        <div className='modal-footer'>
+          <button className='modal-btn modal-btn-primary' onClick={onClose}>
             CLOSE
           </button>
         </div>
       </div>
     </div>
-  );
+  )
 }

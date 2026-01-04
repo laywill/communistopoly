@@ -1,49 +1,49 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useGameStore } from '../../store/gameStore';
-import { getSpaceById } from '../../data/spaces';
-import { PROPERTY_GROUPS } from '../../data/properties';
-import styles from './RailwayModal.module.css';
+import { useGameStore } from '../../store/gameStore'
+import { getSpaceById } from '../../data/spaces'
+import { PROPERTY_GROUPS } from '../../data/properties'
+import styles from './RailwayModal.module.css'
 
 interface RailwayModalProps {
-  spaceId: number;
-  payerId: string;
-  onClose: () => void;
+  spaceId: number
+  payerId: string
+  onClose: () => void
 }
 
-export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
-  const players = useGameStore((state) => state.players);
-  const properties = useGameStore((state) => state.properties);
-  const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
-  const setPendingAction = useGameStore((state) => state.setPendingAction);
-  const setTurnPhase = useGameStore((state) => state.setTurnPhase);
+export function RailwayModal ({ spaceId, payerId, onClose }: RailwayModalProps) {
+  const players = useGameStore((state) => state.players)
+  const properties = useGameStore((state) => state.properties)
+  const updatePlayer = useGameStore((state) => state.updatePlayer)
+  const addLogEntry = useGameStore((state) => state.addLogEntry)
+  const setPendingAction = useGameStore((state) => state.setPendingAction)
+  const setTurnPhase = useGameStore((state) => state.setTurnPhase)
 
-  const space = getSpaceById(spaceId);
-  const property = properties.find((p) => p.spaceId === spaceId);
-  const payer = players.find((p) => p.id === payerId);
+  const space = getSpaceById(spaceId)
+  const property = properties.find((p) => p.spaceId === spaceId)
+  const payer = players.find((p) => p.id === payerId)
   const controller = property?.custodianId
     ? players.find((p) => p.id === property.custodianId)
-    : null;
+    : null
 
-  if (!space || !property || !payer || !controller) {
-    return null;
+  if ((space == null) || (property == null) || (payer == null) || (controller == null)) {
+    return null
   }
 
   // Calculate how many railway stations the controller owns
-  const railwaySpaces = PROPERTY_GROUPS.railroad.properties;
+  const railwaySpaces = PROPERTY_GROUPS.railroad.properties
   const controlledStations = railwaySpaces.filter((railwayId) => {
-    const railwayProperty = properties.find((p) => p.spaceId === railwayId);
-    return railwayProperty?.custodianId === controller.id;
-  }).length;
+    const railwayProperty = properties.find((p) => p.spaceId === railwayId)
+    return railwayProperty?.custodianId === controller.id
+  }).length
 
   // Fee based on number of stations owned: 1=₽50, 2=₽100, 3=₽150, 4=₽200
-  const fees = [50, 100, 150, 200];
-  const fee = fees[controlledStations - 1] || 0;
+  const fees = [50, 100, 150, 200]
+  const fee = fees[controlledStations - 1] || 0
 
-  const canAfford = payer.rubles >= fee;
-  const ownsAllFour = controlledStations === 4;
+  const canAfford = payer.rubles >= fee
+  const ownsAllFour = controlledStations === 4
 
   const handlePay = () => {
     if (!canAfford) {
@@ -54,29 +54,29 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
           playerId: payerId,
           amountOwed: fee,
           creditorId: controller.id,
-          reason: `Railway fee for ${space.name}`,
-        },
-      });
+          reason: `Railway fee for ${space.name}`
+        }
+      })
     } else {
       // Transfer rubles
-      updatePlayer(payerId, { rubles: payer.rubles - fee });
-      updatePlayer(controller.id, { rubles: controller.rubles + fee });
+      updatePlayer(payerId, { rubles: payer.rubles - fee })
+      updatePlayer(controller.id, { rubles: controller.rubles + fee })
 
       addLogEntry({
         type: 'payment',
         message: `${payer.name} paid ₽${String(fee)} railway fee to ${controller.name} (${String(controlledStations)} station${controlledStations > 1 ? 's' : ''})`,
-        playerId: payerId,
-      });
+        playerId: payerId
+      })
 
-      setPendingAction(null);
-      setTurnPhase('post-turn');
-      onClose();
+      setPendingAction(null)
+      setTurnPhase('post-turn')
+      onClose()
     }
-  };
+  }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.header}>
           <span className={styles.icon}>🚂</span>
           <h2 className={styles.title}>TRANS-SIBERIAN RAILWAY</h2>
@@ -159,5 +159,5 @@ export function RailwayModal({ spaceId, payerId, onClose }: RailwayModalProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

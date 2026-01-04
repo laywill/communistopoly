@@ -1,82 +1,82 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import { getSpaceById } from '../../data/spaces';
-import { calculateQuota } from '../../utils/propertyUtils';
-import { PropertyCard } from '../property/PropertyCard';
-import styles from './QuotaPaymentModal.module.css';
+import { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import { getSpaceById } from '../../data/spaces'
+import { calculateQuota } from '../../utils/propertyUtils'
+import { PropertyCard } from '../property/PropertyCard'
+import styles from './QuotaPaymentModal.module.css'
 
 interface QuotaPaymentModalProps {
-  spaceId: number;
-  payerId: string;
-  onClose: () => void;
+  spaceId: number
+  payerId: string
+  onClose: () => void
 }
 
-export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentModalProps) {
-  const players = useGameStore((state) => state.players);
-  const properties = useGameStore((state) => state.properties);
-  const payQuota = useGameStore((state) => state.payQuota);
-  const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
-  const setPendingAction = useGameStore((state) => state.setPendingAction);
-  const setTurnPhase = useGameStore((state) => state.setTurnPhase);
+export function QuotaPaymentModal ({ spaceId, payerId, onClose }: QuotaPaymentModalProps) {
+  const players = useGameStore((state) => state.players)
+  const properties = useGameStore((state) => state.properties)
+  const payQuota = useGameStore((state) => state.payQuota)
+  const updatePlayer = useGameStore((state) => state.updatePlayer)
+  const addLogEntry = useGameStore((state) => state.addLogEntry)
+  const setPendingAction = useGameStore((state) => state.setPendingAction)
+  const setTurnPhase = useGameStore((state) => state.setTurnPhase)
 
-  const [hasAnnounced, setHasAnnounced] = useState(false);
+  const [hasAnnounced, setHasAnnounced] = useState(false)
 
-  const space = getSpaceById(spaceId);
-  const property = properties.find((p) => p.spaceId === spaceId);
-  const payer = players.find((p) => p.id === payerId);
+  const space = getSpaceById(spaceId)
+  const property = properties.find((p) => p.spaceId === spaceId)
+  const payer = players.find((p) => p.id === payerId)
   const custodian = property?.custodianId
     ? players.find((p) => p.id === property.custodianId)
-    : null;
+    : null
 
-  if (!space || !property || !payer || !custodian) {
-    return null;
+  if ((space == null) || (property == null) || (payer == null) || (custodian == null)) {
+    return null
   }
 
   // Check if this is a Collective Farm
-  const isCollectiveFarm = space.group === 'collective';
+  const isCollectiveFarm = space.group === 'collective'
 
   // Calculate quota
-  const quota = calculateQuota(property, properties, payer);
+  const quota = calculateQuota(property, properties, payer)
 
-  const canAfford = payer.rubles >= quota;
+  const canAfford = payer.rubles >= quota
 
   const handleAnnouncement = () => {
-    setHasAnnounced(true);
+    setHasAnnounced(true)
     addLogEntry({
       type: 'system',
       message: `${custodian.name} announces: "The harvest is bountiful!"`,
-      playerId: custodian.id,
-    });
-  };
+      playerId: custodian.id
+    })
+  }
 
   const handlePay = () => {
     // Check if Collective Farm announcement was forgotten
     if (isCollectiveFarm && !hasAnnounced && custodian.rubles >= 25) {
       // Fine the custodian ₽25 for not announcing
-      updatePlayer(custodian.id, { rubles: custodian.rubles - 25 });
+      updatePlayer(custodian.id, { rubles: custodian.rubles - 25 })
       addLogEntry({
         type: 'payment',
         message: `${custodian.name} fined ₽25 for failing to announce "The harvest is bountiful!" at their Collective Farm`,
-        playerId: custodian.id,
-      });
+        playerId: custodian.id
+      })
     }
 
     if (!canAfford) {
       // Check if Industrial Centers - conscript labour (skip next turn)
       if (space.group === 'industrial') {
-        updatePlayer(payerId, { skipNextTurn: true });
+        updatePlayer(payerId, { skipNextTurn: true })
         addLogEntry({
           type: 'system',
           message: `${payer.name} cannot pay ₽${String(quota)} - conscripted for labour! Will miss next turn.`,
-          playerId: payerId,
-        });
-        setPendingAction(null);
-        setTurnPhase('post-turn');
-        onClose();
+          playerId: payerId
+        })
+        setPendingAction(null)
+        setTurnPhase('post-turn')
+        onClose()
       } else {
         // Trigger liquidation modal
         setPendingAction({
@@ -85,21 +85,21 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
             playerId: payerId,
             amountOwed: quota,
             creditorId: custodian.id,
-            reason: `Quota payment for ${space.name}`,
-          },
-        });
+            reason: `Quota payment for ${space.name}`
+          }
+        })
       }
     } else {
-      payQuota(payerId, custodian.id, quota);
-      setPendingAction(null);
-      setTurnPhase('post-turn');
-      onClose();
+      payQuota(payerId, custodian.id, quota)
+      setPendingAction(null)
+      setTurnPhase('post-turn')
+      onClose()
     }
-  };
+  }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.header}>
           <h2 className={styles.title}>PRODUCTIVITY QUOTA DUE</h2>
         </div>
@@ -140,18 +140,20 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
 
           {!canAfford && (
             <div className={styles.insufficientFunds}>
-              {space.group === 'industrial' ? (
-                <>
-                  <strong>⚠ INSUFFICIENT FUNDS</strong>
-                  <p>Industrial Centers: You will be conscripted for labour and miss your next turn!</p>
-                </>
-              ) : (
-                <>
-                  <strong>⚠ INSUFFICIENT FUNDS</strong>
-                  <p>You do not have enough rubles to pay this quota.</p>
-                  <p>You will need to liquidate assets or face a debt that must be paid within one round.</p>
-                </>
-              )}
+              {space.group === 'industrial'
+                ? (
+                  <>
+                    <strong>⚠ INSUFFICIENT FUNDS</strong>
+                    <p>Industrial Centers: You will be conscripted for labour and miss your next turn!</p>
+                  </>
+                  )
+                : (
+                  <>
+                    <strong>⚠ INSUFFICIENT FUNDS</strong>
+                    <p>You do not have enough rubles to pay this quota.</p>
+                    <p>You will need to liquidate assets or face a debt that must be paid within one round.</p>
+                  </>
+                  )}
             </div>
           )}
 
@@ -173,5 +175,5 @@ export function QuotaPaymentModal({ spaceId, payerId, onClose }: QuotaPaymentMod
         </div>
       </div>
     </div>
-  );
+  )
 }

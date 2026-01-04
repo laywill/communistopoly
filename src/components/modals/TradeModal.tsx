@@ -1,128 +1,128 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import { getSpaceById } from '../../data/spaces';
-import styles from './TradeModal.module.css';
+import { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import { getSpaceById } from '../../data/spaces'
+import styles from './TradeModal.module.css'
 
 interface TradeModalProps {
-  mode: 'propose' | 'respond';
-  proposerId?: string; // Required for propose mode
-  tradeOfferId?: string; // Required for respond mode
-  onClose: () => void;
+  mode: 'propose' | 'respond'
+  proposerId?: string // Required for propose mode
+  tradeOfferId?: string // Required for respond mode
+  onClose: () => void
 }
 
-export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeModalProps) {
-  const players = useGameStore((state) => state.players);
-  const properties = useGameStore((state) => state.properties);
-  const activeTradeOffers = useGameStore((state) => state.activeTradeOffers);
-  const proposeTrade = useGameStore((state) => state.proposeTrade);
-  const acceptTrade = useGameStore((state) => state.acceptTrade);
-  const rejectTrade = useGameStore((state) => state.rejectTrade);
+export function TradeModal ({ mode, proposerId, tradeOfferId, onClose }: TradeModalProps) {
+  const players = useGameStore((state) => state.players)
+  const properties = useGameStore((state) => state.properties)
+  const activeTradeOffers = useGameStore((state) => state.activeTradeOffers)
+  const proposeTrade = useGameStore((state) => state.proposeTrade)
+  const acceptTrade = useGameStore((state) => state.acceptTrade)
+  const rejectTrade = useGameStore((state) => state.rejectTrade)
 
-  const [selectedPartnerId, setSelectedPartnerId] = useState<string>('');
-  const [offeringRubles, setOfferingRubles] = useState<number>(0);
-  const [offeringProperties, setOfferingProperties] = useState<string[]>([]);
-  const [offeringGulagCards, setOfferingGulagCards] = useState<number>(0);
-  const [offeringFavours, setOfferingFavours] = useState<number>(0);
-  const [requestingRubles, setRequestingRubles] = useState<number>(0);
-  const [requestingProperties, setRequestingProperties] = useState<string[]>([]);
-  const [requestingGulagCards, setRequestingGulagCards] = useState<number>(0);
-  const [requestingFavours, setRequestingFavours] = useState<number>(0);
+  const [selectedPartnerId, setSelectedPartnerId] = useState<string>('')
+  const [offeringRubles, setOfferingRubles] = useState<number>(0)
+  const [offeringProperties, setOfferingProperties] = useState<string[]>([])
+  const [offeringGulagCards, setOfferingGulagCards] = useState<number>(0)
+  const [offeringFavours, setOfferingFavours] = useState<number>(0)
+  const [requestingRubles, setRequestingRubles] = useState<number>(0)
+  const [requestingProperties, setRequestingProperties] = useState<string[]>([])
+  const [requestingGulagCards, setRequestingGulagCards] = useState<number>(0)
+  const [requestingFavours, setRequestingFavours] = useState<number>(0)
 
   if (mode === 'propose' && !proposerId) {
-    return null;
+    return null
   }
 
   if (mode === 'respond' && !tradeOfferId) {
-    return null;
+    return null
   }
 
-  const tradeOffer = mode === 'respond' ? activeTradeOffers.find((t) => t.id === tradeOfferId) : null;
+  const tradeOffer = mode === 'respond' ? activeTradeOffers.find((t) => t.id === tradeOfferId) : null
   const proposer = mode === 'propose'
     ? players.find((p) => p.id === proposerId)
-    : tradeOffer
-    ? players.find((p) => p.id === tradeOffer.fromPlayerId)
-    : null;
+    : (tradeOffer != null)
+        ? players.find((p) => p.id === tradeOffer.fromPlayerId)
+        : null
 
   const partner = mode === 'propose'
     ? players.find((p) => p.id === selectedPartnerId)
-    : tradeOffer
-    ? players.find((p) => p.id === tradeOffer.toPlayerId)
-    : null;
+    : (tradeOffer != null)
+        ? players.find((p) => p.id === tradeOffer.toPlayerId)
+        : null
 
-  if (!proposer) {
-    return null;
+  if (proposer == null) {
+    return null
   }
 
   const eligiblePartners = players.filter((p) =>
     !p.isStalin && p.id !== proposer.id && !p.isEliminated && !p.inGulag
-  );
+  )
 
   const proposerProperties = properties.filter((p) =>
     p.custodianId === proposer.id && !p.mortgaged
-  );
+  )
 
-  const partnerProperties = partner
+  const partnerProperties = (partner != null)
     ? properties.filter((p) => p.custodianId === partner.id && !p.mortgaged)
-    : [];
+    : []
 
-  const proposerFavoursOwed = partner
+  const proposerFavoursOwed = (partner != null)
     ? proposer.owesFavourTo.filter((id) => id === partner.id).length
-    : 0;
+    : 0
 
-  const partnerFavoursOwed = partner
+  const partnerFavoursOwed = (partner != null)
     ? partner.owesFavourTo.filter((id) => id === proposer.id).length
-    : 0;
+    : 0
 
   const toggleOfferingProperty = (propertyId: string) => {
     if (offeringProperties.includes(propertyId)) {
-      setOfferingProperties(offeringProperties.filter((id) => id !== propertyId));
+      setOfferingProperties(offeringProperties.filter((id) => id !== propertyId))
     } else {
-      setOfferingProperties([...offeringProperties, propertyId]);
+      setOfferingProperties([...offeringProperties, propertyId])
     }
-  };
+  }
 
   const toggleRequestingProperty = (propertyId: string) => {
     if (requestingProperties.includes(propertyId)) {
-      setRequestingProperties(requestingProperties.filter((id) => id !== propertyId));
+      setRequestingProperties(requestingProperties.filter((id) => id !== propertyId))
     } else {
-      setRequestingProperties([...requestingProperties, propertyId]);
+      setRequestingProperties([...requestingProperties, propertyId])
     }
-  };
+  }
 
   const handlePropose = () => {
     if (!selectedPartnerId) {
-      alert('Please select a player to trade with!');
-      return;
+      alert('Please select a player to trade with!')
+      return
     }
 
     // Validate offering
     if (offeringRubles > proposer.rubles) {
-      alert('You cannot offer more rubles than you have!');
-      return;
+      alert('You cannot offer more rubles than you have!')
+      return
     }
 
     if (offeringGulagCards > (proposer.hasFreeFromGulagCard ? 1 : 0)) {
-      alert('You do not have enough Gulag cards!');
-      return;
+      alert('You do not have enough Gulag cards!')
+      return
     }
 
     if (offeringFavours > proposerFavoursOwed) {
-      alert(`You only owe ${String(proposerFavoursOwed)} favour(s) to this player!`);
-      return;
+      alert(`You only owe ${String(proposerFavoursOwed)} favour(s) to this player!`)
+      return
     }
 
     // Check if offering anything
     const offeringSomething = offeringRubles > 0 || offeringProperties.length > 0 ||
-                              offeringGulagCards > 0 || offeringFavours > 0;
+                              offeringGulagCards > 0 || offeringFavours > 0
     const requestingSomething = requestingRubles > 0 || requestingProperties.length > 0 ||
-                                requestingGulagCards > 0 || requestingFavours > 0;
+                                requestingGulagCards > 0 || requestingFavours > 0
 
     if (!offeringSomething && !requestingSomething) {
-      alert('Trade must include at least one item!');
-      return;
+      alert('Trade must include at least one item!')
+      return
     }
 
     proposeTrade(proposer.id, selectedPartnerId, {
@@ -138,27 +138,27 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
         gulagCards: requestingGulagCards,
         favours: requestingFavours
       }
-    });
+    })
 
-    onClose();
-  };
+    onClose()
+  }
 
   const handleAccept = () => {
-    if (!tradeOffer) return;
-    acceptTrade(tradeOffer.id);
-    onClose();
-  };
+    if (tradeOffer == null) return
+    acceptTrade(tradeOffer.id)
+    onClose()
+  }
 
   const handleReject = () => {
-    if (!tradeOffer) return;
-    rejectTrade(tradeOffer.id);
-    onClose();
-  };
+    if (tradeOffer == null) return
+    rejectTrade(tradeOffer.id)
+    onClose()
+  }
 
-  if (mode === 'respond' && tradeOffer) {
+  if (mode === 'respond' && (tradeOffer != null)) {
     return (
-      <div className={styles.overlay} onClick={(e) => { e.stopPropagation(); }}>
-        <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+      <div className={styles.overlay} onClick={(e) => { e.stopPropagation() }}>
+        <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
           <div className={styles.header}>
             <span className={styles.icon}>🤝</span>
             <h2 className={styles.title}>Trade Offer</h2>
@@ -178,13 +178,13 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                     <div className={styles.item}>💰 ₽{tradeOffer.offering.rubles}</div>
                   )}
                   {tradeOffer.offering.properties.map((propId) => {
-                    const prop = properties.find((p) => p.spaceId === parseInt(propId));
-                    const space = prop ? getSpaceById(prop.spaceId) : null;
+                    const prop = properties.find((p) => p.spaceId === parseInt(propId))
+                    const space = (prop != null) ? getSpaceById(prop.spaceId) : null
                     return (
                       <div key={propId} className={styles.item}>
                         🏭 {space?.name ?? `Property ${propId}`}
                       </div>
-                    );
+                    )
                   })}
                   {tradeOffer.offering.gulagCards > 0 && (
                     <div className={styles.item}>
@@ -200,7 +200,7 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                    tradeOffer.offering.properties.length === 0 &&
                    tradeOffer.offering.gulagCards === 0 &&
                    tradeOffer.offering.favours === 0 && (
-                    <div className={styles.nothingItem}>Nothing</div>
+                     <div className={styles.nothingItem}>Nothing</div>
                   )}
                 </div>
               </div>
@@ -214,13 +214,13 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                     <div className={styles.item}>💰 ₽{tradeOffer.requesting.rubles}</div>
                   )}
                   {tradeOffer.requesting.properties.map((propId) => {
-                    const prop = properties.find((p) => p.spaceId === parseInt(propId));
-                    const space = prop ? getSpaceById(prop.spaceId) : null;
+                    const prop = properties.find((p) => p.spaceId === parseInt(propId))
+                    const space = (prop != null) ? getSpaceById(prop.spaceId) : null
                     return (
                       <div key={propId} className={styles.item}>
                         🏭 {space?.name ?? `Property ${propId}`}
                       </div>
-                    );
+                    )
                   })}
                   {tradeOffer.requesting.gulagCards > 0 && (
                     <div className={styles.item}>
@@ -236,7 +236,7 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                    tradeOffer.requesting.properties.length === 0 &&
                    tradeOffer.requesting.gulagCards === 0 &&
                    tradeOffer.requesting.favours === 0 && (
-                    <div className={styles.nothingItem}>Nothing</div>
+                     <div className={styles.nothingItem}>Nothing</div>
                   )}
                 </div>
               </div>
@@ -255,13 +255,13 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Propose mode
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.header}>
           <span className={styles.icon}>🤝</span>
           <h2 className={styles.title}>Propose Trade</h2>
@@ -274,9 +274,9 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
             <select
               className={styles.partnerSelect}
               value={selectedPartnerId}
-              onChange={(e) => { setSelectedPartnerId(e.target.value); }}
+              onChange={(e) => { setSelectedPartnerId(e.target.value) }}
             >
-              <option value="">Select player...</option>
+              <option value=''>Select player...</option>
               {eligiblePartners.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} (₽{p.rubles})
@@ -285,7 +285,7 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
             </select>
           </div>
 
-          {selectedPartnerId && partner && (
+          {selectedPartnerId && (partner != null) && (
             <>
               <div className={styles.tradeBuilder}>
                 {/* YOUR OFFER */}
@@ -296,12 +296,12 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                   <div className={styles.itemBuilder}>
                     <label className={styles.itemLabel}>Rubles: (You have: ₽{proposer.rubles})</label>
                     <input
-                      type="number"
+                      type='number'
                       className={styles.numberInput}
-                      min="0"
+                      min='0'
                       max={proposer.rubles}
                       value={offeringRubles}
-                      onChange={(e) => { setOfferingRubles(Math.max(0, parseInt(e.target.value) || 0)); }}
+                      onChange={(e) => { setOfferingRubles(Math.max(0, parseInt(e.target.value) || 0)) }}
                     />
                   </div>
 
@@ -311,17 +311,17 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                       <label className={styles.itemLabel}>Properties:</label>
                       <div className={styles.propertyList}>
                         {proposerProperties.map((prop) => {
-                          const space = getSpaceById(prop.spaceId);
-                          const isSelected = offeringProperties.includes(String(prop.spaceId));
+                          const space = getSpaceById(prop.spaceId)
+                          const isSelected = offeringProperties.includes(String(prop.spaceId))
                           return (
                             <button
                               key={prop.spaceId}
                               className={`${styles.propertyButton} ${isSelected ? styles.selected : ''}`}
-                              onClick={() => { toggleOfferingProperty(String(prop.spaceId)); }}
+                              onClick={() => { toggleOfferingProperty(String(prop.spaceId)) }}
                             >
                               {space?.name ?? `Property ${String(prop.spaceId)}`}
                             </button>
-                          );
+                          )
                         })}
                       </div>
                     </div>
@@ -332,12 +332,12 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                     <div className={styles.itemBuilder}>
                       <label className={styles.itemLabel}>Gulag Cards:</label>
                       <input
-                        type="number"
+                        type='number'
                         className={styles.numberInput}
-                        min="0"
-                        max="1"
+                        min='0'
+                        max='1'
                         value={offeringGulagCards}
-                        onChange={(e) => { setOfferingGulagCards(Math.max(0, Math.min(1, parseInt(e.target.value) || 0))); }}
+                        onChange={(e) => { setOfferingGulagCards(Math.max(0, Math.min(1, parseInt(e.target.value) || 0))) }}
                       />
                     </div>
                   )}
@@ -349,12 +349,12 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                         Release Favours: (You owe {proposerFavoursOwed})
                       </label>
                       <input
-                        type="number"
+                        type='number'
                         className={styles.numberInput}
-                        min="0"
+                        min='0'
                         max={proposerFavoursOwed}
                         value={offeringFavours}
-                        onChange={(e) => { setOfferingFavours(Math.max(0, Math.min(proposerFavoursOwed, parseInt(e.target.value) || 0))); }}
+                        onChange={(e) => { setOfferingFavours(Math.max(0, Math.min(proposerFavoursOwed, parseInt(e.target.value) || 0))) }}
                       />
                     </div>
                   )}
@@ -370,12 +370,12 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                   <div className={styles.itemBuilder}>
                     <label className={styles.itemLabel}>Rubles: (They have: ₽{partner.rubles})</label>
                     <input
-                      type="number"
+                      type='number'
                       className={styles.numberInput}
-                      min="0"
+                      min='0'
                       max={partner.rubles}
                       value={requestingRubles}
-                      onChange={(e) => { setRequestingRubles(Math.max(0, parseInt(e.target.value) || 0)); }}
+                      onChange={(e) => { setRequestingRubles(Math.max(0, parseInt(e.target.value) || 0)) }}
                     />
                   </div>
 
@@ -385,17 +385,17 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                       <label className={styles.itemLabel}>Properties:</label>
                       <div className={styles.propertyList}>
                         {partnerProperties.map((prop) => {
-                          const space = getSpaceById(prop.spaceId);
-                          const isSelected = requestingProperties.includes(String(prop.spaceId));
+                          const space = getSpaceById(prop.spaceId)
+                          const isSelected = requestingProperties.includes(String(prop.spaceId))
                           return (
                             <button
                               key={prop.spaceId}
                               className={`${styles.propertyButton} ${isSelected ? styles.selected : ''}`}
-                              onClick={() => { toggleRequestingProperty(String(prop.spaceId)); }}
+                              onClick={() => { toggleRequestingProperty(String(prop.spaceId)) }}
                             >
                               {space?.name ?? `Property ${String(prop.spaceId)}`}
                             </button>
-                          );
+                          )
                         })}
                       </div>
                     </div>
@@ -406,12 +406,12 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                     <div className={styles.itemBuilder}>
                       <label className={styles.itemLabel}>Gulag Cards:</label>
                       <input
-                        type="number"
+                        type='number'
                         className={styles.numberInput}
-                        min="0"
-                        max="1"
+                        min='0'
+                        max='1'
                         value={requestingGulagCards}
-                        onChange={(e) => { setRequestingGulagCards(Math.max(0, Math.min(1, parseInt(e.target.value) || 0))); }}
+                        onChange={(e) => { setRequestingGulagCards(Math.max(0, Math.min(1, parseInt(e.target.value) || 0))) }}
                       />
                     </div>
                   )}
@@ -423,12 +423,12 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
                         Release Favours: (They owe you {partnerFavoursOwed})
                       </label>
                       <input
-                        type="number"
+                        type='number'
                         className={styles.numberInput}
-                        min="0"
+                        min='0'
                         max={partnerFavoursOwed}
                         value={requestingFavours}
-                        onChange={(e) => { setRequestingFavours(Math.max(0, Math.min(partnerFavoursOwed, parseInt(e.target.value) || 0))); }}
+                        onChange={(e) => { setRequestingFavours(Math.max(0, Math.min(partnerFavoursOwed, parseInt(e.target.value) || 0))) }}
                       />
                     </div>
                   )}
@@ -452,5 +452,5 @@ export function TradeModal({ mode, proposerId, tradeOfferId, onClose }: TradeMod
         </div>
       </div>
     </div>
-  );
+  )
 }

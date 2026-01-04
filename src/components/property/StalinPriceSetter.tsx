@@ -1,54 +1,54 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import React, { useState } from 'react';
-import styles from './StalinPriceSetter.module.css';
+import React, { useState } from 'react'
+import styles from './StalinPriceSetter.module.css'
 
 interface StalinPriceSetterProps {
-  baseValue: number;
-  minMultiplier?: number;
-  maxMultiplier?: number;
-  onPriceSet: (price: number) => void;
-  disabled?: boolean;
+  baseValue: number
+  minMultiplier?: number
+  maxMultiplier?: number
+  onPriceSet: (price: number) => void
+  disabled?: boolean
 }
 
-export function StalinPriceSetter({
+export function StalinPriceSetter ({
   baseValue,
   minMultiplier = 0.5,
   maxMultiplier = 2.0,
   onPriceSet,
-  disabled = false,
+  disabled = false
 }: StalinPriceSetterProps) {
-  const minPrice = Math.floor(baseValue * minMultiplier);
-  const maxPrice = Math.floor(baseValue * maxMultiplier);
-  const [inputValue, setInputValue] = useState(baseValue.toString());
-  const [error, setError] = useState<string | null>(null);
+  const minPrice = Math.floor(baseValue * minMultiplier)
+  const maxPrice = Math.floor(baseValue * maxMultiplier)
+  const [inputValue, setInputValue] = useState(baseValue.toString())
+  const [error, setError] = useState<string | null>(null)
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInputValue(value);
+    const value = e.target.value
+    setInputValue(value)
 
-    const numValue = parseInt(value);
+    const numValue = parseInt(value)
     if (isNaN(numValue)) {
-      setError('Invalid price');
-      return;
+      setError('Invalid price')
+      return
     }
 
     if (numValue < minPrice || numValue > maxPrice) {
-      setError(`Price must be between ₽${String(minPrice)} and ₽${String(maxPrice)}`);
+      setError(`Price must be between ₽${String(minPrice)} and ₽${String(maxPrice)}`)
     } else {
-      setError(null);
+      setError(null)
     }
-  };
+  }
 
   const handleSubmit = () => {
-    const price = parseInt(inputValue);
+    const price = parseInt(inputValue)
     if (!isNaN(price) && price >= minPrice && price <= maxPrice) {
-      onPriceSet(price);
+      onPriceSet(price)
     }
-  };
+  }
 
-  const isValid = !error && !isNaN(parseInt(inputValue));
+  const isValid = !error && !isNaN(parseInt(inputValue))
 
   return (
     <div className={styles.container}>
@@ -69,12 +69,12 @@ export function StalinPriceSetter({
       </div>
 
       <div className={styles.inputContainer}>
-        <label htmlFor="stalin-price" className={styles.inputLabel}>
+        <label htmlFor='stalin-price' className={styles.inputLabel}>
           Set Price (₽):
         </label>
         <input
-          id="stalin-price"
-          type="number"
+          id='stalin-price'
+          type='number'
           min={minPrice}
           max={maxPrice}
           value={inputValue}
@@ -98,5 +98,5 @@ export function StalinPriceSetter({
         &quot;The State generously offers this property to the workers...&quot;
       </div>
     </div>
-  );
+  )
 }

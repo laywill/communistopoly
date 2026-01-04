@@ -1,33 +1,33 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { BOARD_SPACES } from '../../data/spaces';
-import { BoardSpace } from '../../types/game';
-import { useGameStore } from '../../store/gameStore';
-import CornerSpace from './CornerSpace';
-import BoardSpaceComponent from './BoardSpace';
-import BoardCenter from './BoardCenter';
-import PlayerPiece from './PlayerPiece';
-import styles from './Board.module.css';
+import { BOARD_SPACES } from '../../data/spaces'
+import { BoardSpace } from '../../types/game'
+import { useGameStore } from '../../store/gameStore'
+import CornerSpace from './CornerSpace'
+import BoardSpaceComponent from './BoardSpace'
+import BoardCenter from './BoardCenter'
+import PlayerPiece from './PlayerPiece'
+import styles from './Board.module.css'
 
 const Board = () => {
-  const players = useGameStore((state) => state.players);
-  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex);
+  const players = useGameStore((state) => state.players)
+  const currentPlayerIndex = useGameStore((state) => state.currentPlayerIndex)
 
   // Split spaces into their respective positions
-  const bottomRow = BOARD_SPACES.slice(0, 11);      // 0-10: STOY to GULAG
-  const leftColumn = BOARD_SPACES.slice(11, 20);    // 11-19: After GULAG to before BREADLINE
-  const topRow = BOARD_SPACES.slice(20, 31);        // 20-30: BREADLINE to ENEMY OF STATE
-  const rightColumn = BOARD_SPACES.slice(31, 40);   // 31-39: After ENEMY to before STOY
+  const bottomRow = BOARD_SPACES.slice(0, 11) // 0-10: STOY to GULAG
+  const leftColumn = BOARD_SPACES.slice(11, 20) // 11-19: After GULAG to before BREADLINE
+  const topRow = BOARD_SPACES.slice(20, 31) // 20-30: BREADLINE to ENEMY OF STATE
+  const rightColumn = BOARD_SPACES.slice(31, 40) // 31-39: After ENEMY to before STOY
 
   // Get players at a specific position
   const getPlayersAtPosition = (position: number) => {
-    return players.filter(player => !player.isStalin && player.position === position);
-  };
+    return players.filter(player => !player.isStalin && player.position === position)
+  }
 
   const renderSpace = (space: BoardSpace, edgePosition: 'top' | 'bottom' | 'left' | 'right', additionalClass?: string) => {
-    const className = additionalClass ?? '';
-    const playersHere = getPlayersAtPosition(space.id);
+    const className = additionalClass ?? ''
+    const playersHere = getPlayersAtPosition(space.id)
 
     if (space.type === 'corner') {
       return (
@@ -45,7 +45,7 @@ const Board = () => {
             </div>
           )}
         </div>
-      );
+      )
     }
     return (
       <div key={space.id} className={`${styles.spaceWrapper} ${className}`}>
@@ -62,8 +62,8 @@ const Board = () => {
           </div>
         )}
       </div>
-    );
-  };
+    )
+  }
 
   return (
     <div className={styles.board}>
@@ -97,7 +97,7 @@ const Board = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Board;
+export default Board

@@ -24,7 +24,7 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
   const stalin = players.find((p) => p.id === stalinPlayerId)
   const reader = stalin // Stalin is always the reader
 
-  if (!testedPlayer) {
+  if (testedPlayer == null) {
     return null
   }
 
@@ -88,7 +88,7 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
               <div className={styles.answer}>
                 <h4 className={styles.answerLabel}>CORRECT ANSWER (Reader Only):</h4>
                 <p className={styles.answerText}>{question.answer}</p>
-                {question.acceptableAnswers && question.acceptableAnswers.length > 0 && (
+                {(question.acceptableAnswers != null) && question.acceptableAnswers.length > 0 && (
                   <p className={styles.alternativeAnswers}>
                     Also accept: {question.acceptableAnswers.join(', ')}
                   </p>
@@ -180,63 +180,63 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
   const penalty = testedPlayer.piece === 'redStar' ? question.penalty * 2 : question.penalty
 
   return (
-      <div className={styles.overlay} onClick={(e) => { e.stopPropagation() }}>
-        <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
-          <div className={styles.header}>
-            <span className={styles.icon}>⭐</span>
-            <h2 className={styles.title}>TEST RESULT</h2>
-            <span className={styles.icon}>⭐</span>
+    <div className={styles.overlay} onClick={(e) => { e.stopPropagation() }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
+        <div className={styles.header}>
+          <span className={styles.icon}>⭐</span>
+          <h2 className={styles.title}>TEST RESULT</h2>
+          <span className={styles.icon}>⭐</span>
+        </div>
+
+        <div className={styles.content}>
+          <div className={styles.resultSection}>
+            <div className={isCorrect === true ? styles.resultCorrect : styles.resultIncorrect}>
+              <h3 className={styles.resultTitle}>
+                {isCorrect === true ? '✓ CORRECT' : '✗ INCORRECT'}
+              </h3>
+            </div>
+
+            <div className={styles.answerReveal}>
+              <h4>Correct Answer:</h4>
+              <p>{question.answer}</p>
+            </div>
+
+            {isCorrect === true && question.difficulty !== 'trick' && (
+              <div className={styles.rewardDisplay}>
+                <p className={styles.rewardText}>
+                  {testedPlayer.name} receives <strong className={styles.rubles}>₽{reward}</strong>
+                </p>
+                {question.grantsRankUp && (
+                  <p className={styles.rankUpText}>🎖 Promoted to next rank!</p>
+                )}
+              </div>
+            )}
+
+            {isCorrect === false && question.difficulty !== 'trick' && penalty > 0 && (
+              <div className={styles.penaltyDisplay}>
+                <p className={styles.penaltyText}>
+                  {testedPlayer.name} pays penalty <strong className={styles.rubles}>₽{penalty}</strong>
+                </p>
+                {testedPlayer.consecutiveFailedTests + 1 >= 2 && (
+                  <p className={styles.demoteText}>⚠ Demoted one rank (2 consecutive failures)</p>
+                )}
+              </div>
+            )}
+
+            {testedPlayer.piece === 'redStar' && (
+              <div className={styles.redStarWarning}>
+                ⭐ Red Star: Double penalties applied
+              </div>
+            )}
           </div>
 
-          <div className={styles.content}>
-            <div className={styles.resultSection}>
-              <div className={isCorrect === true ? styles.resultCorrect : styles.resultIncorrect}>
-                <h3 className={styles.resultTitle}>
-                  {isCorrect === true ? '✓ CORRECT' : '✗ INCORRECT'}
-                </h3>
-              </div>
-
-              <div className={styles.answerReveal}>
-                <h4>Correct Answer:</h4>
-                <p>{question.answer}</p>
-              </div>
-
-              {isCorrect === true && question.difficulty !== 'trick' && (
-                <div className={styles.rewardDisplay}>
-                  <p className={styles.rewardText}>
-                    {testedPlayer.name} receives <strong className={styles.rubles}>₽{reward}</strong>
-                  </p>
-                  {question.grantsRankUp && (
-                    <p className={styles.rankUpText}>🎖 Promoted to next rank!</p>
-                  )}
-                </div>
-              )}
-
-              {isCorrect === false && question.difficulty !== 'trick' && penalty > 0 && (
-                <div className={styles.penaltyDisplay}>
-                  <p className={styles.penaltyText}>
-                    {testedPlayer.name} pays penalty <strong className={styles.rubles}>₽{penalty}</strong>
-                  </p>
-                  {testedPlayer.consecutiveFailedTests + 1 >= 2 && (
-                    <p className={styles.demoteText}>⚠ Demoted one rank (2 consecutive failures)</p>
-                  )}
-                </div>
-              )}
-
-              {testedPlayer.piece === 'redStar' && (
-                <div className={styles.redStarWarning}>
-                  ⭐ Red Star: Double penalties applied
-                </div>
-              )}
-            </div>
-
-            <div className={styles.actions}>
-              <button className={styles.buttonPrimary} onClick={handleClose}>
-                CONTINUE
-              </button>
-            </div>
+          <div className={styles.actions}>
+            <button className={styles.buttonPrimary} onClick={handleClose}>
+              CONTINUE
+            </button>
           </div>
         </div>
       </div>
-    )
+    </div>
+  )
 }

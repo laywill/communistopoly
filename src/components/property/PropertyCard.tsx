@@ -1,41 +1,41 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { Property } from '../../types/game';
-import { getSpaceById } from '../../data/spaces';
-import { PROPERTY_GROUPS, getCollectivizationName } from '../../data/properties';
-import { calculateQuota } from '../../utils/propertyUtils';
-import { useGameStore } from '../../store/gameStore';
-import styles from './PropertyCard.module.css';
+import { Property } from '../../types/game'
+import { getSpaceById } from '../../data/spaces'
+import { PROPERTY_GROUPS, getCollectivizationName } from '../../data/properties'
+import { calculateQuota } from '../../utils/propertyUtils'
+import { useGameStore } from '../../store/gameStore'
+import styles from './PropertyCard.module.css'
 
 interface PropertyCardProps {
-  property: Property;
-  showCurrentQuota?: boolean;
-  compact?: boolean;
+  property: Property
+  showCurrentQuota?: boolean
+  compact?: boolean
 }
 
-export function PropertyCard({ property, showCurrentQuota = false, compact = false }: PropertyCardProps) {
-  const properties = useGameStore((state) => state.properties);
-  const players = useGameStore((state) => state.players);
+export function PropertyCard ({ property, showCurrentQuota = false, compact = false }: PropertyCardProps) {
+  const properties = useGameStore((state) => state.properties)
+  const players = useGameStore((state) => state.players)
 
-  const space = getSpaceById(property.spaceId);
-  if (!space) return null;
+  const space = getSpaceById(property.spaceId)
+  if (space == null) return null
 
-  const group = space.group ? PROPERTY_GROUPS[space.group] : null;
+  const group = space.group ? PROPERTY_GROUPS[space.group] : null
   const custodian = property.custodianId
     ? players.find((p) => p.id === property.custodianId)
-    : null;
+    : null
 
   const currentQuota = showCurrentQuota && space.baseQuota
     ? calculateQuota(property, properties)
-    : null;
+    : null
 
-  const collectivizationName = getCollectivizationName(property.collectivizationLevel);
+  const collectivizationName = getCollectivizationName(property.collectivizationLevel)
 
   return (
     <div className={`${styles.card} ${compact ? styles.compact : ''}`}>
       {/* Color band */}
-      {group && (
+      {(group != null) && (
         <div
           className={styles.colorBand}
           style={{ backgroundColor: group.color }}
@@ -46,7 +46,7 @@ export function PropertyCard({ property, showCurrentQuota = false, compact = fal
       <div className={styles.content}>
         <h4 className={styles.name}>{space.name}</h4>
 
-        {!compact && group && (
+        {!compact && (group != null) && (
           <div className={styles.group}>{group.name}</div>
         )}
 
@@ -54,7 +54,7 @@ export function PropertyCard({ property, showCurrentQuota = false, compact = fal
         <div className={styles.custodian}>
           <span className={styles.label}>Custodian:</span>
           <span className={styles.value}>
-            {custodian ? custodian.name : 'STATE'}
+            {(custodian != null) ? custodian.name : 'STATE'}
           </span>
         </div>
 
@@ -111,5 +111,5 @@ export function PropertyCard({ property, showCurrentQuota = false, compact = fal
         )}
       </div>
     </div>
-  );
+  )
 }

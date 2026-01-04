@@ -1,25 +1,25 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { BoardSpace } from '../../types/game';
-import styles from './CornerSpace.module.css';
+import { BoardSpace } from '../../types/game'
+import styles from './CornerSpace.module.css'
 
 interface CornerSpaceProps {
-  space: BoardSpace;
+  space: BoardSpace
 }
 
 const getCornerType = (spaceId: number): string => {
   switch (spaceId) {
-    case 0: return 'stoy';
-    case 10: return 'gulag';
-    case 20: return 'breadline';
-    case 30: return 'enemy';
-    default: return 'unknown';
+    case 0: return 'stoy'
+    case 10: return 'gulag'
+    case 20: return 'breadline'
+    case 30: return 'enemy'
+    default: return 'unknown'
   }
-};
+}
 
 const CornerSpace = ({ space }: CornerSpaceProps) => {
-  const cornerType = getCornerType(space.id);
+  const cornerType = getCornerType(space.id)
 
   return (
     <div className={`${styles.corner} ${styles[cornerType]}`}>
@@ -64,7 +64,7 @@ const CornerSpace = ({ space }: CornerSpaceProps) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CornerSpace;
+export default CornerSpace

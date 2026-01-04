@@ -17,7 +17,7 @@ export function SickleHarvestModal ({ sicklePlayerId, onClose }: SickleHarvestMo
 
   const sicklePlayer = players.find((p) => p.id === sicklePlayerId)
 
-  if (!sicklePlayer) {
+  if (sicklePlayer == null) {
     return null
   }
 
@@ -41,7 +41,7 @@ export function SickleHarvestModal ({ sicklePlayerId, onClose }: SickleHarvestMo
         owner
       }
     })
-    .filter((item) => item.space && item.owner)
+    .filter((item) => (item.space != null) && item.owner)
 
   const handleHarvest = (propertyId: number) => {
     sickleHarvest(sicklePlayerId, propertyId)
@@ -63,38 +63,40 @@ export function SickleHarvestModal ({ sicklePlayerId, onClose }: SickleHarvestMo
             worth less than ₽150. This ability can only be used <strong>once per game</strong>.
           </p>
 
-          {harvestableProperties.length === 0 ? (
-            <div className={styles.noProperties}>
-              <p>❌ No harvestable properties available</p>
-              <p className={styles.hint}>Properties must be owned by another player and worth less than ₽150</p>
-            </div>
-          ) : (
-            <>
-              <h3 className={styles.sectionTitle}>Select a property to harvest:</h3>
-              <div className={styles.propertyList}>
-                {harvestableProperties.map(({ property, space, owner }) => (
-                  <button
-                    key={property.spaceId}
-                    className={styles.propertyButton}
-                    onClick={() => { handleHarvest(property.spaceId) }}
-                  >
-                    <div className={styles.propertyInfo}>
-                      <div className={styles.propertyName}>{space?.name}</div>
-                      <div className={styles.propertyDetails}>
-                        <span className={styles.owner}>Owner: {owner?.name}</span>
-                        <span className={styles.value}>₽{space?.baseCost}</span>
-                      </div>
-                      {property.collectivizationLevel > 0 && (
-                        <div className={styles.improvements}>
-                          Collectivization Level: {property.collectivizationLevel}
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                ))}
+          {harvestableProperties.length === 0
+            ? (
+              <div className={styles.noProperties}>
+                <p>❌ No harvestable properties available</p>
+                <p className={styles.hint}>Properties must be owned by another player and worth less than ₽150</p>
               </div>
-            </>
-          )}
+              )
+            : (
+              <>
+                <h3 className={styles.sectionTitle}>Select a property to harvest:</h3>
+                <div className={styles.propertyList}>
+                  {harvestableProperties.map(({ property, space, owner }) => (
+                    <button
+                      key={property.spaceId}
+                      className={styles.propertyButton}
+                      onClick={() => { handleHarvest(property.spaceId) }}
+                    >
+                      <div className={styles.propertyInfo}>
+                        <div className={styles.propertyName}>{space?.name}</div>
+                        <div className={styles.propertyDetails}>
+                          <span className={styles.owner}>Owner: {owner?.name}</span>
+                          <span className={styles.value}>₽{space?.baseCost}</span>
+                        </div>
+                        {property.collectivizationLevel > 0 && (
+                          <div className={styles.improvements}>
+                            Collectivization Level: {property.collectivizationLevel}
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </>
+              )}
 
           <div className={styles.actions}>
             <button className={styles.buttonCancel} onClick={onClose}>

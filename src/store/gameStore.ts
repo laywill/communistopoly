@@ -116,7 +116,7 @@ interface GameActions {
   resetGame: () => void
 
   // Player management
-  initializePlayers: (playerSetups: { name: string, piece: Player['piece'], isStalin: boolean }[]) => void
+  initializePlayers: (playerSetups: Array<{ name: string, piece: Player['piece'], isStalin: boolean }>) => void
   setCurrentPlayer: (index: number) => void
   updatePlayer: (playerId: string, updates: Partial<Player>) => void
 
@@ -842,7 +842,7 @@ export const useGameStore = create<GameStore>()(
         const player = state.players.find((p) => p.id === playerId)
         if (player == null) return
 
-        const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+        const rankOrder: Array<Player['rank']> = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
         const currentRankIndex = rankOrder.indexOf(player.rank)
 
         if (currentRankIndex > 0) {
@@ -2155,7 +2155,7 @@ export const useGameStore = create<GameStore>()(
         const player = state.players.find(p => p.id === playerId)
         if (player == null) return
 
-        const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
+        const rankOrder: Array<Player['rank']> = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
         const currentRankIndex = rankOrder.indexOf(player.rank)
 
         if (currentRankIndex < rankOrder.length - 1) {
@@ -2449,7 +2449,7 @@ export const useGameStore = create<GameStore>()(
         const state = get()
         if (state.activeTribunal == null) return
 
-        const phaseOrder: import('../types/game').TribunalPhase[] = ['accusation', 'defence', 'witnesses', 'judgement']
+        const phaseOrder: Array<import('../types/game').TribunalPhase> = ['accusation', 'defence', 'witnesses', 'judgement']
         const currentIndex = phaseOrder.indexOf(state.activeTribunal.phase)
         const nextPhase = phaseOrder[currentIndex + 1]
 

@@ -666,7 +666,7 @@ describe('Gulag System', () => {
 
       initializePlayers([
         { name: 'Prisoner', piece: 'sickle', isStalin: false },
-        { name: 'Target', piece: 'star', isStalin: false }  // Using star piece (no Gulag protection)
+        { name: 'Target', piece: 'star', isStalin: false } // Using star piece (no Gulag protection)
       ])
 
       const [prisoner, target] = useGameStore.getState().players
@@ -726,7 +726,7 @@ describe('Gulag System', () => {
 
       initializePlayers([
         { name: 'Prisoner 1', piece: 'sickle', isStalin: false },
-        { name: 'Prisoner 2', piece: 'star', isStalin: false },  // Changed from hammer to avoid protection
+        { name: 'Prisoner 2', piece: 'star', isStalin: false }, // Changed from hammer to avoid protection
         { name: 'Free Player', piece: 'tank', isStalin: false }
       ])
 
@@ -734,7 +734,7 @@ describe('Gulag System', () => {
 
       // Send both prisoners to Gulag (using enemyOfState which bypasses all protections)
       sendToGulag(prisoner1.id, 'enemyOfState')
-      sendToGulag(prisoner2.id, 'enemyOfState')  // Changed from threeDoubles
+      sendToGulag(prisoner2.id, 'enemyOfState') // Changed from threeDoubles
 
       // From prisoner1's perspective, they should only be able to inform on free players
       // (excluding Stalin, eliminated players, themselves, and other Gulag prisoners)

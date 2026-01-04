@@ -1,25 +1,25 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import React, { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import { canBeDenouncedBy } from '../../utils/pieceAbilityUtils';
-import styles from './Modal.module.css';
+import React, { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import { canBeDenouncedBy } from '../../utils/pieceAbilityUtils'
+import styles from './Modal.module.css'
 
 interface InformOnPlayerModalProps {
-  informerId: string;
+  informerId: string
 }
 
 export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ informerId }) => {
-  const { players, stalinPlayerId, updatePlayer, sendToGulag, setPendingAction, addLogEntry } = useGameStore();
-  const informer = players.find((p) => p.id === informerId);
+  const { players, stalinPlayerId, updatePlayer, sendToGulag, setPendingAction, addLogEntry } = useGameStore()
+  const informer = players.find((p) => p.id === informerId)
 
-  const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null);
-  const [accusation, setAccusation] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [verdict, setVerdict] = useState<'guilty' | 'innocent' | null>(null);
+  const [selectedTargetId, setSelectedTargetId] = useState<string | null>(null)
+  const [accusation, setAccusation] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [verdict, setVerdict] = useState<'guilty' | 'innocent' | null>(null)
 
-  if (!informer) return null;
+  if (informer == null) return null
 
   // Get eligible targets (not in Gulag, not eliminated, not Stalin, not self, can be denounced by informer)
   const eligibleTargets = players.filter(
@@ -32,7 +32,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
       const denouncementCheck = canBeDenouncedBy(p, informer)
       return denouncementCheck.allowed
     }
-  );
+  )
 
   // Get players who are protected from denouncement
   const protectedPlayers = players.filter(
@@ -45,73 +45,73 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
       const denouncementCheck = canBeDenouncedBy(p, informer)
       return !denouncementCheck.allowed
     }
-  );
+  )
 
   const handleSelectTarget = (targetId: string) => {
-    setSelectedTargetId(targetId);
-  };
+    setSelectedTargetId(targetId)
+  }
 
   const handleSubmit = () => {
-    if (!selectedTargetId || !accusation.trim()) return;
+    if (!selectedTargetId || !accusation.trim()) return
 
-    setSubmitted(true);
+    setSubmitted(true)
 
     // In a real implementation, this would pause for Stalin to judge
     // For now, we'll simulate with a confirmation dialog
-    const target = players.find((p) => p.id === selectedTargetId);
-    if (!target) return;
+    const target = players.find((p) => p.id === selectedTargetId)
+    if (target == null) return
 
     const guilty = window.confirm(
       `STALIN'S JUDGMENT\n\n${informer.name} accuses ${target.name} of:\n"${accusation}"\n\nDoes Stalin find ${target.name} GUILTY?`
-    );
+    )
 
     if (guilty) {
-      setVerdict('guilty');
+      setVerdict('guilty')
 
       // Swap places: informer released, accused goes to Gulag
       updatePlayer(informerId, {
         inGulag: false,
-        gulagTurns: 0,
-      });
+        gulagTurns: 0
+      })
 
-      sendToGulag(selectedTargetId, 'denouncementGuilty');
+      sendToGulag(selectedTargetId, 'denouncementGuilty')
 
       addLogEntry({
         type: 'gulag',
-        message: `${informer.name} informed on ${target.name}. Stalin found ${target.name} GUILTY. They have swapped places!`,
-      });
+        message: `${informer.name} informed on ${target.name}. Stalin found ${target.name} GUILTY. They have swapped places!`
+      })
 
       // Close modal after delay
       setTimeout(() => {
-        setPendingAction(null);
-      }, 3000);
+        setPendingAction(null)
+      }, 3000)
     } else {
-      setVerdict('innocent');
+      setVerdict('innocent')
 
       // Add 2 turns to informer's sentence
       updatePlayer(informerId, {
-        gulagTurns: informer.gulagTurns + 2,
-      });
+        gulagTurns: informer.gulagTurns + 2
+      })
 
       addLogEntry({
         type: 'gulag',
-        message: `${informer.name} falsely accused ${target.name}. Stalin found them INNOCENT. ${informer.name}'s sentence extended by 2 turns!`,
-      });
+        message: `${informer.name} falsely accused ${target.name}. Stalin found them INNOCENT. ${informer.name}'s sentence extended by 2 turns!`
+      })
 
       // Close modal after delay
       setTimeout(() => {
-        setPendingAction(null);
-      }, 3000);
+        setPendingAction(null)
+      }, 3000)
     }
-  };
+  }
 
   const handleCancel = () => {
-    setPendingAction(null);
-  };
+    setPendingAction(null)
+  }
 
   // Result screens
   if (verdict === 'guilty') {
-    const target = players.find((p) => p.id === selectedTargetId);
+    const target = players.find((p) => p.id === selectedTargetId)
     return (
       <div className={styles.modalOverlay}>
         <div className={styles.modal} style={{ maxWidth: '500px' }}>
@@ -132,11 +132,11 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   if (verdict === 'innocent') {
-    const target = players.find((p) => p.id === selectedTargetId);
+    const target = players.find((p) => p.id === selectedTargetId)
     return (
       <div className={styles.modalOverlay}>
         <div className={styles.modal} style={{ maxWidth: '500px' }}>
@@ -157,7 +157,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Main form
@@ -174,7 +174,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
               background: 'var(--color-aged-white)',
               border: '2px solid var(--color-propaganda-black)',
               padding: '16px',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
           >
             <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px' }}>
@@ -191,7 +191,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
               border: '2px solid var(--color-warning-amber)',
               borderRadius: '4px',
               padding: '12px',
-              marginBottom: '20px',
+              marginBottom: '20px'
             }}
           >
             <p style={{ margin: 0, fontSize: '13px', color: 'var(--color-propaganda-black)', fontWeight: 'bold' }}>
@@ -224,7 +224,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                     fontFamily: 'var(--font-display)',
                     fontSize: '14px',
                     marginBottom: '12px',
-                    textTransform: 'uppercase',
+                    textTransform: 'uppercase'
                   }}
                 >
                   Select Comrade to Accuse:
@@ -234,7 +234,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                   {eligibleTargets.map((target) => (
                     <div
                       key={target.id}
-                      onClick={() => { handleSelectTarget(target.id); }}
+                      onClick={() => { handleSelectTarget(target.id) }}
                       style={{
                         padding: '12px',
                         border:
@@ -245,7 +245,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                         cursor: 'pointer',
                         background:
                           selectedTargetId === target.id ? 'var(--color-parchment)' : 'var(--color-aged-white)',
-                        transition: 'all 0.2s ease',
+                        transition: 'all 0.2s ease'
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -272,7 +272,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                       background: 'rgba(212, 168, 75, 0.1)',
                       border: '2px solid var(--color-gold)',
                       borderRadius: '4px',
-                      padding: '12px',
+                      padding: '12px'
                     }}
                   >
                     <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--color-gold)', fontWeight: 'bold' }}>
@@ -298,23 +298,23 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
               {/* Accusation Input */}
               <div style={{ marginBottom: '20px' }}>
                 <label
-                  htmlFor="accusation"
+                  htmlFor='accusation'
                   style={{
                     display: 'block',
                     fontFamily: 'var(--font-display)',
                     fontSize: '14px',
                     fontWeight: 'bold',
                     marginBottom: '8px',
-                    textTransform: 'uppercase',
+                    textTransform: 'uppercase'
                   }}
                 >
                   State Your Accusation:
                 </label>
                 <textarea
-                  id="accusation"
+                  id='accusation'
                   value={accusation}
-                  onChange={(e) => { setAccusation(e.target.value); }}
-                  placeholder="Counter-revolutionary activities, hoarding resources, suspicious behavior, etc."
+                  onChange={(e) => { setAccusation(e.target.value) }}
+                  placeholder='Counter-revolutionary activities, hoarding resources, suspicious behavior, etc.'
                   maxLength={200}
                   rows={3}
                   style={{
@@ -324,7 +324,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                     fontSize: '14px',
                     border: '2px solid var(--color-propaganda-black)',
                     borderRadius: '4px',
-                    resize: 'vertical',
+                    resize: 'vertical'
                   }}
                 />
                 <p style={{ fontSize: '12px', color: 'var(--color-gulag-grey)', marginTop: '4px', textAlign: 'right' }}>
@@ -358,7 +358,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                     padding: '12px',
                     background: 'rgba(196, 30, 58, 0.1)',
                     border: '2px solid var(--color-soviet-red)',
-                    borderRadius: '4px',
+                    borderRadius: '4px'
                   }}
                 >
                   <p style={{ margin: 0, fontSize: '13px', fontWeight: 'bold' }}>Preview:</p>
@@ -375,15 +375,15 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-function getRankDisplayName(rank: string): string {
+function getRankDisplayName (rank: string): string {
   const rankNames: Record<string, string> = {
     proletariat: 'Proletariat',
     partyMember: 'Party Member',
     commissar: 'Commissar',
-    innerCircle: 'Inner Circle',
-  };
-  return rankNames[rank] || rank;
+    innerCircle: 'Inner Circle'
+  }
+  return rankNames[rank] || rank
 }

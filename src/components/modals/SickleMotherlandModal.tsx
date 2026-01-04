@@ -1,65 +1,65 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useGameStore } from '../../store/gameStore';
-import styles from './SickleMotherlandModal.module.css';
+import { useGameStore } from '../../store/gameStore'
+import styles from './SickleMotherlandModal.module.css'
 
 interface SickleMotherlandModalProps {
-  playerId: string;
-  onClose: () => void;
+  playerId: string
+  onClose: () => void
 }
 
-export function SickleMotherlandModal({ playerId, onClose }: SickleMotherlandModalProps) {
-  const players = useGameStore((state) => state.players);
-  const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
-  const rollDice = useGameStore((state) => state.rollDice);
+export function SickleMotherlandModal ({ playerId, onClose }: SickleMotherlandModalProps) {
+  const players = useGameStore((state) => state.players)
+  const updatePlayer = useGameStore((state) => state.updatePlayer)
+  const addLogEntry = useGameStore((state) => state.addLogEntry)
+  const rollDice = useGameStore((state) => state.rollDice)
 
-  const player = players.find((p) => p.id === playerId);
+  const player = players.find((p) => p.id === playerId)
 
-  if (!player) {
-    return null;
+  if (player == null) {
+    return null
   }
 
   const handleAnnounce = () => {
     addLogEntry({
       type: 'system',
       message: `${player.name} announces: "FOR THE MOTHERLAND!" 🌾`,
-      playerId: player.id,
-    });
-    updatePlayer(player.id, { sickleMotherlandForgotten: false });
-    onClose();
+      playerId: player.id
+    })
+    updatePlayer(player.id, { sickleMotherlandForgotten: false })
+    onClose()
     // Roll dice after announcement
-    rollDice();
-  };
+    rollDice()
+  }
 
   const handleForget = () => {
     if (player.rubles >= 25) {
       updatePlayer(player.id, {
         rubles: player.rubles - 25,
         sickleMotherlandForgotten: true
-      });
+      })
       addLogEntry({
         type: 'payment',
         message: `${player.name} forgot to announce "For the Motherland!" and paid ₽25 fine`,
-        playerId: player.id,
-      });
+        playerId: player.id
+      })
     } else {
       addLogEntry({
         type: 'system',
         message: `${player.name} cannot afford the ₽25 fine for forgetting the announcement - Sickle ability penalty!`,
-        playerId: player.id,
-      });
-      updatePlayer(player.id, { sickleMotherlandForgotten: true });
+        playerId: player.id
+      })
+      updatePlayer(player.id, { sickleMotherlandForgotten: true })
     }
-    onClose();
+    onClose()
     // Roll dice after paying fine (or not)
-    rollDice();
-  };
+    rollDice()
+  }
 
   return (
-    <div className={styles.overlay} onClick={(e) => { e.stopPropagation(); }}>
-      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+    <div className={styles.overlay} onClick={(e) => { e.stopPropagation() }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.header}>
           <span className={styles.icon}>🌾</span>
           <h2 className={styles.title}>Sickle Ability Requirement</h2>
@@ -110,5 +110,5 @@ export function SickleMotherlandModal({ playerId, onClose }: SickleMotherlandMod
         </div>
       </div>
     </div>
-  );
+  )
 }

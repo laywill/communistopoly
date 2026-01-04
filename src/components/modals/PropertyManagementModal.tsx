@@ -1,78 +1,85 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import { getSpaceById } from '../../data/spaces';
-import { PROPERTY_GROUPS, COLLECTIVIZATION_LEVELS } from '../../data/properties';
-import { PropertyGroup } from '../../types/game';
-import { ImprovementModal } from './ImprovementModal';
-import styles from './PropertyManagementModal.module.css';
+import { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import { getSpaceById } from '../../data/spaces'
+import { PROPERTY_GROUPS, COLLECTIVIZATION_LEVELS } from '../../data/properties'
+import { PropertyGroup } from '../../types/game'
+import { ImprovementModal } from './ImprovementModal'
+import styles from './PropertyManagementModal.module.css'
 
 interface PropertyManagementModalProps {
-  playerId: string;
-  onClose: () => void;
+  playerId: string
+  onClose: () => void
 }
 
-export function PropertyManagementModal({ playerId, onClose }: PropertyManagementModalProps) {
-  const players = useGameStore((state) => state.players);
-  const properties = useGameStore((state) => state.properties);
-  const mortgageProperty = useGameStore((state) => state.mortgageProperty);
-  const unmortgageProperty = useGameStore((state) => state.unmortgageProperty);
+export function PropertyManagementModal ({ playerId, onClose }: PropertyManagementModalProps) {
+  const players = useGameStore((state) => state.players)
+  const properties = useGameStore((state) => state.properties)
+  const mortgageProperty = useGameStore((state) => state.mortgageProperty)
+  const unmortgageProperty = useGameStore((state) => state.unmortgageProperty)
 
-  const [showImprovements, setShowImprovements] = useState(false);
+  const [showImprovements, setShowImprovements] = useState(false)
 
-  const player = players.find((p) => p.id === playerId);
+  const player = players.find((p) => p.id === playerId)
 
-  if (!player) {
-    return null;
+  if (player == null) {
+    return null
   }
 
   // Group player's properties by color group
   const groupedProperties: Record<PropertyGroup, number[]> = {
-    siberian: [], collective: [], industrial: [], ministry: [],
-    military: [], media: [], elite: [], kremlin: [],
-    railroad: [], utility: []
-  };
+    siberian: [],
+    collective: [],
+    industrial: [],
+    ministry: [],
+    military: [],
+    media: [],
+    elite: [],
+    kremlin: [],
+    railroad: [],
+    utility: []
+  }
 
   player.properties.forEach((propId) => {
-    const spaceId = parseInt(propId);
-    const space = getSpaceById(spaceId);
+    const spaceId = parseInt(propId)
+    const space = getSpaceById(spaceId)
     if (space?.group) {
-      groupedProperties[space.group].push(spaceId);
+      groupedProperties[space.group].push(spaceId)
     }
-  });
+  })
 
   // Check if player owns complete group
   const ownsCompleteGroup = (group: PropertyGroup): boolean => {
-    const groupInfo = PROPERTY_GROUPS[group];
+    const groupInfo = PROPERTY_GROUPS[group]
 
-    const ownedInGroup = groupedProperties[group];
-    return ownedInGroup.length === groupInfo.properties.length;
-  };
+    const ownedInGroup = groupedProperties[group]
+    return ownedInGroup.length === groupInfo.properties.length
+  }
 
   const handleMortgage = (spaceId: number) => {
-    const space = getSpaceById(spaceId);
-    const property = properties.find((p) => p.spaceId === spaceId);
+    const space = getSpaceById(spaceId)
+    const property = properties.find((p) => p.spaceId === spaceId)
 
-    if (!property || !space) return;
+    if ((property == null) || (space == null)) return
 
     if (property.mortgaged) {
-      unmortgageProperty(spaceId, playerId);
+      unmortgageProperty(spaceId, playerId)
     } else {
       if (confirm(`Mortgage ${space.name} for ₽${String(Math.floor((space.baseCost ?? 0) * 0.5))}?`)) {
-        mortgageProperty(spaceId);
+        mortgageProperty(spaceId)
       }
     }
-  };
+  }
 
   if (showImprovements) {
-    return <ImprovementModal playerId={playerId} onClose={() => { setShowImprovements(false); }} />;
+    return <ImprovementModal playerId={playerId} onClose={() => { setShowImprovements(false) }} />
   }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.header}>
           <span className={styles.icon}>🏛️</span>
           <h2 className={styles.title}>PROPERTY MANAGEMENT</h2>
@@ -91,7 +98,7 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
           <div className={styles.actions}>
             <button
               className={styles.improveButton}
-              onClick={() => { setShowImprovements(true); }}
+              onClick={() => { setShowImprovements(true) }}
             >
               COLLECTIVIZE PROPERTIES
             </button>
@@ -99,10 +106,10 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
 
           <div className={styles.propertyGroups}>
             {Object.entries(groupedProperties).map(([group, spaceIds]) => {
-              if (spaceIds.length === 0) return null;
+              if (spaceIds.length === 0) return null
 
-              const groupInfo = PROPERTY_GROUPS[group as PropertyGroup];
-              const isComplete = ownsCompleteGroup(group as PropertyGroup);
+              const groupInfo = PROPERTY_GROUPS[group as PropertyGroup]
+              const isComplete = ownsCompleteGroup(group as PropertyGroup)
 
               return (
                 <div key={group} className={styles.propertyGroup}>
@@ -119,14 +126,14 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
 
                   <div className={styles.properties}>
                     {spaceIds.map((spaceId) => {
-                      const space = getSpaceById(spaceId);
-                      const property = properties.find((p) => p.spaceId === spaceId);
+                      const space = getSpaceById(spaceId)
+                      const property = properties.find((p) => p.spaceId === spaceId)
 
-                      if (!space || !property) return null;
+                      if ((space == null) || (property == null)) return null
 
-                      const levelInfo = COLLECTIVIZATION_LEVELS[property.collectivizationLevel];
-                      const mortgageValue = Math.floor((space.baseCost ?? 0) * 0.5);
-                      const unmortgageCost = Math.floor((space.baseCost ?? 0) * 0.6);
+                      const levelInfo = COLLECTIVIZATION_LEVELS[property.collectivizationLevel]
+                      const mortgageValue = Math.floor((space.baseCost ?? 0) * 0.5)
+                      const unmortgageCost = Math.floor((space.baseCost ?? 0) * 0.6)
 
                       return (
                         <div
@@ -171,7 +178,7 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
                           {space.type === 'property' && (
                             <button
                               className={styles.mortgageButton}
-                              onClick={() => { handleMortgage(spaceId); }}
+                              onClick={() => { handleMortgage(spaceId) }}
                               disabled={property.collectivizationLevel > 0 && !property.mortgaged}
                               title={
                                 property.collectivizationLevel > 0 && !property.mortgaged
@@ -185,11 +192,11 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
                             </button>
                           )}
                         </div>
-                      );
+                      )
                     })}
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
 
@@ -205,5 +212,5 @@ export function PropertyManagementModal({ playerId, onClose }: PropertyManagemen
         </div>
       </div>
     </div>
-  );
+  )
 }

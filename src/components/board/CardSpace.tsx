@@ -1,15 +1,15 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { BoardSpace } from '../../types/game';
-import styles from './CardSpace.module.css';
+import { BoardSpace } from '../../types/game'
+import styles from './CardSpace.module.css'
 
 interface CardSpaceProps {
-  space: BoardSpace;
+  space: BoardSpace
 }
 
 const CardSpace = ({ space }: CardSpaceProps) => {
-  const isPartyDirective = space.cardType === 'party-directive';
+  const isPartyDirective = space.cardType === 'party-directive'
 
   return (
     <div className={`${styles.card} ${isPartyDirective ? styles.partyDirective : styles.communistTest}`}>
@@ -23,7 +23,7 @@ const CardSpace = ({ space }: CardSpaceProps) => {
         {isPartyDirective ? 'Draw Card' : 'Answer Question'}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CardSpace;
+export default CardSpace

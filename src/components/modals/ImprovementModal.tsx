@@ -1,137 +1,144 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import { getSpaceById } from '../../data/spaces';
-import { PROPERTY_GROUPS, COLLECTIVIZATION_LEVELS, getNextCollectivizationCost } from '../../data/properties';
-import { PropertyGroup } from '../../types/game';
-import styles from './ImprovementModal.module.css';
+import { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import { getSpaceById } from '../../data/spaces'
+import { PROPERTY_GROUPS, COLLECTIVIZATION_LEVELS, getNextCollectivizationCost } from '../../data/properties'
+import { PropertyGroup } from '../../types/game'
+import styles from './ImprovementModal.module.css'
 
 interface ImprovementModalProps {
-  playerId: string;
-  onClose: () => void;
+  playerId: string
+  onClose: () => void
 }
 
-export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
-  const players = useGameStore((state) => state.players);
-  const properties = useGameStore((state) => state.properties);
-  const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const updateCollectivizationLevel = useGameStore((state) => state.updateCollectivizationLevel);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
+export function ImprovementModal ({ playerId, onClose }: ImprovementModalProps) {
+  const players = useGameStore((state) => state.players)
+  const properties = useGameStore((state) => state.properties)
+  const updatePlayer = useGameStore((state) => state.updatePlayer)
+  const updateCollectivizationLevel = useGameStore((state) => state.updateCollectivizationLevel)
+  const addLogEntry = useGameStore((state) => state.addLogEntry)
 
-  const [, setSelectedProperty] = useState<number | null>(null);
+  const [, setSelectedProperty] = useState<number | null>(null)
 
-  const player = players.find((p) => p.id === playerId);
+  const player = players.find((p) => p.id === playerId)
 
-  if (!player) {
-    return null;
+  if (player == null) {
+    return null
   }
 
   // Group player's properties by color group
   const groupedProperties: Record<PropertyGroup, number[]> = {
-    siberian: [], collective: [], industrial: [], ministry: [],
-    military: [], media: [], elite: [], kremlin: [],
-    railroad: [], utility: []
-  };
+    siberian: [],
+    collective: [],
+    industrial: [],
+    ministry: [],
+    military: [],
+    media: [],
+    elite: [],
+    kremlin: [],
+    railroad: [],
+    utility: []
+  }
 
   player.properties.forEach((propId) => {
-    const spaceId = parseInt(propId);
-    const space = getSpaceById(spaceId);
+    const spaceId = parseInt(propId)
+    const space = getSpaceById(spaceId)
     if (space?.group && space.type === 'property') {
-      groupedProperties[space.group].push(spaceId);
+      groupedProperties[space.group].push(spaceId)
     }
-  });
+  })
 
   // Check if player owns complete group
   const ownsCompleteGroup = (group: PropertyGroup): boolean => {
-    const groupInfo = PROPERTY_GROUPS[group];
+    const groupInfo = PROPERTY_GROUPS[group]
 
-    const ownedInGroup = groupedProperties[group];
-    return ownedInGroup.length === groupInfo.properties.length;
-  };
+    const ownedInGroup = groupedProperties[group]
+    return ownedInGroup.length === groupInfo.properties.length
+  }
 
   // Check if can improve property (even building rule)
-  const canImprove = (spaceId: number): { canImprove: boolean; reason: string } => {
-    const property = properties.find((p) => p.spaceId === spaceId);
-    const space = getSpaceById(spaceId);
+  const canImprove = (spaceId: number): { canImprove: boolean, reason: string } => {
+    const property = properties.find((p) => p.spaceId === spaceId)
+    const space = getSpaceById(spaceId)
 
-    if (!property || !space?.group) {
-      return { canImprove: false, reason: 'Property not found' };
+    if ((property == null) || !space?.group) {
+      return { canImprove: false, reason: 'Property not found' }
     }
 
     // Cannot improve beyond level 5
     if (property.collectivizationLevel >= 5) {
-      return { canImprove: false, reason: 'Maximum level reached' };
+      return { canImprove: false, reason: 'Maximum level reached' }
     }
 
     // Must own complete group to improve any property
     if (!ownsCompleteGroup(space.group)) {
-      return { canImprove: false, reason: 'Must own all properties in group' };
+      return { canImprove: false, reason: 'Must own all properties in group' }
     }
 
     // Check if can afford
-    const cost = getNextCollectivizationCost(property.collectivizationLevel);
+    const cost = getNextCollectivizationCost(property.collectivizationLevel)
     if (player.rubles < cost) {
-      return { canImprove: false, reason: `Insufficient rubles (need ₽${String(cost)})` };
+      return { canImprove: false, reason: `Insufficient rubles (need ₽${String(cost)})` }
     }
 
     // Check even building within group
-    const groupProperties = groupedProperties[space.group];
-    const currentLevel = property.collectivizationLevel;
+    const groupProperties = groupedProperties[space.group]
+    const currentLevel = property.collectivizationLevel
 
     // Get levels of all properties in the group
     const groupLevels = groupProperties.map((id) => {
-      const prop = properties.find((p) => p.spaceId === id);
-      return prop?.collectivizationLevel ?? 0;
-    });
+      const prop = properties.find((p) => p.spaceId === id)
+      return prop?.collectivizationLevel ?? 0
+    })
 
     // Find minimum level in group (excluding current property)
-    const otherLevels = groupLevels.filter((_, idx) => groupProperties[idx] !== spaceId);
-    const minLevel = otherLevels.length > 0 ? Math.min(...otherLevels) : 0;
+    const otherLevels = groupLevels.filter((_, idx) => groupProperties[idx] !== spaceId)
+    const minLevel = otherLevels.length > 0 ? Math.min(...otherLevels) : 0
 
     // Can only build if current property is not already ahead
     if (currentLevel > minLevel) {
-      return { canImprove: false, reason: 'Must improve evenly across group' };
+      return { canImprove: false, reason: 'Must improve evenly across group' }
     }
 
-    return { canImprove: true, reason: '' };
-  };
+    return { canImprove: true, reason: '' }
+  }
 
   const handleImprove = (spaceId: number) => {
-    const property = properties.find((p) => p.spaceId === spaceId);
-    const space = getSpaceById(spaceId);
+    const property = properties.find((p) => p.spaceId === spaceId)
+    const space = getSpaceById(spaceId)
 
-    if (!property || !space) return;
+    if ((property == null) || (space == null)) return
 
-    const { canImprove: canImproveProperty, reason } = canImprove(spaceId);
+    const { canImprove: canImproveProperty, reason } = canImprove(spaceId)
     if (!canImproveProperty) {
-      alert(reason);
-      return;
+      alert(reason)
+      return
     }
 
-    const cost = getNextCollectivizationCost(property.collectivizationLevel);
-    const newLevel = property.collectivizationLevel + 1;
-    const levelInfo = COLLECTIVIZATION_LEVELS[newLevel];
+    const cost = getNextCollectivizationCost(property.collectivizationLevel)
+    const newLevel = property.collectivizationLevel + 1
+    const levelInfo = COLLECTIVIZATION_LEVELS[newLevel]
 
     // Deduct cost
-    updatePlayer(playerId, { rubles: player.rubles - cost });
+    updatePlayer(playerId, { rubles: player.rubles - cost })
 
     // Increase collectivization level
-    updateCollectivizationLevel(spaceId, newLevel);
+    updateCollectivizationLevel(spaceId, newLevel)
 
     addLogEntry({
       type: 'property',
       message: `${player.name} improved ${space.name} to ${levelInfo.name} for ₽${String(cost)}`,
-      playerId,
-    });
+      playerId
+    })
 
-    setSelectedProperty(null);
-  };
+    setSelectedProperty(null)
+  }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.header}>
           <span className={styles.icon}>⚒️</span>
           <h2 className={styles.title}>PROPERTY COLLECTIVIZATION</h2>
@@ -153,10 +160,10 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
 
           <div className={styles.propertyGroups}>
             {Object.entries(groupedProperties).map(([group, spaceIds]) => {
-              if (spaceIds.length === 0 || group === 'railroad' || group === 'utility') return null;
+              if (spaceIds.length === 0 || group === 'railroad' || group === 'utility') return null
 
-              const groupInfo = PROPERTY_GROUPS[group as PropertyGroup];
-              const isComplete = ownsCompleteGroup(group as PropertyGroup);
+              const groupInfo = PROPERTY_GROUPS[group as PropertyGroup]
+              const isComplete = ownsCompleteGroup(group as PropertyGroup)
 
               return (
                 <div key={group} className={styles.propertyGroup}>
@@ -170,16 +177,16 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
 
                   <div className={styles.properties}>
                     {spaceIds.map((spaceId) => {
-                      const space = getSpaceById(spaceId);
-                      const property = properties.find((p) => p.spaceId === spaceId);
-                      const { canImprove: canImproveProperty, reason } = canImprove(spaceId);
+                      const space = getSpaceById(spaceId)
+                      const property = properties.find((p) => p.spaceId === spaceId)
+                      const { canImprove: canImproveProperty, reason } = canImprove(spaceId)
 
-                      if (!space || !property) return null;
+                      if ((space == null) || (property == null)) return null
 
-                      const currentLevel = property.collectivizationLevel;
-                      const nextCost = getNextCollectivizationCost(currentLevel);
-                      const currentLevelInfo = COLLECTIVIZATION_LEVELS[currentLevel];
-                      const nextLevelInfo = COLLECTIVIZATION_LEVELS[currentLevel + 1];
+                      const currentLevel = property.collectivizationLevel
+                      const nextCost = getNextCollectivizationCost(currentLevel)
+                      const currentLevelInfo = COLLECTIVIZATION_LEVELS[currentLevel]
+                      const nextLevelInfo = COLLECTIVIZATION_LEVELS[currentLevel + 1]
 
                       return (
                         <div key={spaceId} className={styles.property}>
@@ -211,7 +218,7 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
 
                                 <button
                                   className={styles.improveButton}
-                                  onClick={() => { handleImprove(spaceId); }}
+                                  onClick={() => { handleImprove(spaceId) }}
                                   disabled={!canImproveProperty}
                                   title={reason}
                                 >
@@ -227,17 +234,17 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
                             )}
                           </div>
                         </div>
-                      );
+                      )
                     })}
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
 
           {player.properties.filter(p => {
-            const space = getSpaceById(parseInt(p));
-            return space?.type === 'property';
+            const space = getSpaceById(parseInt(p))
+            return space?.type === 'property'
           }).length === 0 && (
             <div className={styles.noProperties}>
               You do not have any properties to improve.
@@ -268,5 +275,5 @@ export function ImprovementModal({ playerId, onClose }: ImprovementModalProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

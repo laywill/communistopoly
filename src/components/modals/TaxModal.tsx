@@ -1,140 +1,140 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import { getSpaceById } from '../../data/spaces';
-import styles from './TaxModal.module.css';
+import { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import { getSpaceById } from '../../data/spaces'
+import styles from './TaxModal.module.css'
 
 interface TaxModalProps {
-  spaceId: number;
-  playerId: string;
-  onClose: () => void;
+  spaceId: number
+  playerId: string
+  onClose: () => void
 }
 
-export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
-  const players = useGameStore((state) => state.players);
-  const properties = useGameStore((state) => state.properties);
-  const updatePlayer = useGameStore((state) => state.updatePlayer);
-  const demotePlayer = useGameStore((state) => state.demotePlayer);
-  const adjustTreasury = useGameStore((state) => state.adjustTreasury);
-  const addLogEntry = useGameStore((state) => state.addLogEntry);
-  const setPendingAction = useGameStore((state) => state.setPendingAction);
-  const setTurnPhase = useGameStore((state) => state.setTurnPhase);
+export function TaxModal ({ spaceId, playerId, onClose }: TaxModalProps) {
+  const players = useGameStore((state) => state.players)
+  const properties = useGameStore((state) => state.properties)
+  const updatePlayer = useGameStore((state) => state.updatePlayer)
+  const demotePlayer = useGameStore((state) => state.demotePlayer)
+  const adjustTreasury = useGameStore((state) => state.adjustTreasury)
+  const addLogEntry = useGameStore((state) => state.addLogEntry)
+  const setPendingAction = useGameStore((state) => state.setPendingAction)
+  const setTurnPhase = useGameStore((state) => state.setTurnPhase)
 
-  const [showStalinAudit, setShowStalinAudit] = useState(false);
-  const [playerChoice, setPlayerChoice] = useState<'percentage' | 'flat' | null>(null);
+  const [showStalinAudit, setShowStalinAudit] = useState(false)
+  const [playerChoice, setPlayerChoice] = useState<'percentage' | 'flat' | null>(null)
 
-  const space = getSpaceById(spaceId);
-  const player = players.find((p) => p.id === playerId);
+  const space = getSpaceById(spaceId)
+  const player = players.find((p) => p.id === playerId)
 
-  if (!space || !player) {
-    return null;
+  if ((space == null) || (player == null)) {
+    return null
   }
 
-  const isRevolutionaryContribution = spaceId === 4;
-  const isBourgeoisDecadence = spaceId === 38;
+  const isRevolutionaryContribution = spaceId === 4
+  const isBourgeoisDecadence = spaceId === 38
 
   // Calculate total wealth for Revolutionary Contribution
   const calculateTotalWealth = (): number => {
-    let wealth = player.rubles;
+    let wealth = player.rubles
 
     // Add property values
     player.properties.forEach((propId) => {
-      const prop = properties.find((p) => p.spaceId === parseInt(propId));
-      if (prop) {
-        const propSpace = getSpaceById(prop.spaceId);
+      const prop = properties.find((p) => p.spaceId === parseInt(propId))
+      if (prop != null) {
+        const propSpace = getSpaceById(prop.spaceId)
         if (propSpace?.baseCost) {
-          wealth += propSpace.baseCost;
+          wealth += propSpace.baseCost
         }
       }
-    });
+    })
 
     // Add improvement values (collectivization levels)
     player.properties.forEach((propId) => {
-      const prop = properties.find((p) => p.spaceId === parseInt(propId));
-      if (prop && prop.collectivizationLevel > 0) {
+      const prop = properties.find((p) => p.spaceId === parseInt(propId))
+      if ((prop != null) && prop.collectivizationLevel > 0) {
         // Each level 1-4 costs 100₽, level 5 costs 200₽
         const improvementCost = prop.collectivizationLevel <= 4
           ? prop.collectivizationLevel * 100
-          : 400 + 200; // 4 * 100 + 200 for level 5
-        wealth += improvementCost;
+          : 400 + 200 // 4 * 100 + 200 for level 5
+        wealth += improvementCost
       }
-    });
+    })
 
-    return wealth;
-  };
+    return wealth
+  }
 
   // Check if player is wealthiest for Bourgeois Decadence
   const isWealthiest = (): boolean => {
-    const playerWealth = calculateTotalWealth();
-    const otherPlayers = players.filter((p) => !p.isStalin && p.id !== playerId);
+    const playerWealth = calculateTotalWealth()
+    const otherPlayers = players.filter((p) => !p.isStalin && p.id !== playerId)
 
     return otherPlayers.every((p) => {
-      let otherWealth = p.rubles;
+      let otherWealth = p.rubles
       p.properties.forEach((propId) => {
-        const prop = properties.find((pr) => pr.spaceId === parseInt(propId));
-        if (prop) {
-          const propSpace = getSpaceById(prop.spaceId);
+        const prop = properties.find((pr) => pr.spaceId === parseInt(propId))
+        if (prop != null) {
+          const propSpace = getSpaceById(prop.spaceId)
           if (propSpace?.baseCost) {
-            otherWealth += propSpace.baseCost;
+            otherWealth += propSpace.baseCost
           }
           if (prop.collectivizationLevel > 0) {
             const improvementCost = prop.collectivizationLevel <= 4
               ? prop.collectivizationLevel * 100
-              : 400 + 200;
-            otherWealth += improvementCost;
+              : 400 + 200
+            otherWealth += improvementCost
           }
         }
-      });
-      return playerWealth >= otherWealth;
-    });
-  };
+      })
+      return playerWealth >= otherWealth
+    })
+  }
 
-  const totalWealth = calculateTotalWealth();
-  const percentageAmount = Math.floor(totalWealth * 0.15);
-  const flatAmount = 200;
-  const isWealthiestPlayer = isWealthiest();
+  const totalWealth = calculateTotalWealth()
+  const percentageAmount = Math.floor(totalWealth * 0.15)
+  const flatAmount = 200
+  const isWealthiestPlayer = isWealthiest()
 
   const handleRevolutionaryChoice = (choice: 'percentage' | 'flat') => {
-    setPlayerChoice(choice);
-    setShowStalinAudit(true);
-  };
+    setPlayerChoice(choice)
+    setShowStalinAudit(true)
+  }
 
   const handleStalinAudit = (shouldAudit: boolean) => {
-    if (!playerChoice) return;
+    if (!playerChoice) return
 
-    const chosenAmount = playerChoice === 'percentage' ? percentageAmount : flatAmount;
-    const actualAmount = Math.min(percentageAmount, flatAmount);
+    const chosenAmount = playerChoice === 'percentage' ? percentageAmount : flatAmount
+    const actualAmount = Math.min(percentageAmount, flatAmount)
 
     if (shouldAudit && chosenAmount > actualAmount) {
       // Player chose the higher amount when lower was available - audit penalty
-      const penalty = 50;
-      const difference = chosenAmount - actualAmount;
-      const totalPayment = actualAmount + difference + penalty;
+      const penalty = 50
+      const difference = chosenAmount - actualAmount
+      const totalPayment = actualAmount + difference + penalty
 
       // Check if player can afford it
       if (player.rubles < totalPayment) {
         setPendingAction({
           type: 'liquidation-required',
           data: {
-            playerId: playerId,
+            playerId,
             amountOwed: totalPayment,
             creditorId: 'state',
-            reason: `Revolutionary Contribution with audit penalty`,
-          },
-        });
-        return;
+            reason: 'Revolutionary Contribution with audit penalty'
+          }
+        })
+        return
       }
 
-      updatePlayer(playerId, { rubles: player.rubles - totalPayment });
-      adjustTreasury(totalPayment);
+      updatePlayer(playerId, { rubles: player.rubles - totalPayment })
+      adjustTreasury(totalPayment)
 
       addLogEntry({
         type: 'payment',
         message: `${player.name} paid ₽${String(totalPayment)} Revolutionary Contribution (₽${String(actualAmount)} + ₽${String(difference)} difference + ₽${String(penalty)} audit penalty)`,
-        playerId,
-      });
+        playerId
+      })
     } else {
       // No audit or player chose correctly
       // Check if player can afford it
@@ -142,73 +142,73 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
         setPendingAction({
           type: 'liquidation-required',
           data: {
-            playerId: playerId,
+            playerId,
             amountOwed: chosenAmount,
             creditorId: 'state',
-            reason: `Revolutionary Contribution`,
-          },
-        });
-        return;
+            reason: 'Revolutionary Contribution'
+          }
+        })
+        return
       }
 
-      updatePlayer(playerId, { rubles: player.rubles - chosenAmount });
-      adjustTreasury(chosenAmount);
+      updatePlayer(playerId, { rubles: player.rubles - chosenAmount })
+      adjustTreasury(chosenAmount)
 
       addLogEntry({
         type: 'payment',
         message: `${player.name} paid ₽${String(chosenAmount)} Revolutionary Contribution${shouldAudit ? ' (audited - no penalty)' : ''}`,
-        playerId,
-      });
+        playerId
+      })
     }
 
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-    onClose();
-  };
+    setPendingAction(null)
+    setTurnPhase('post-turn')
+    onClose()
+  }
 
   const handleBourgeoisDecadence = () => {
-    const amount = isWealthiestPlayer ? 200 : 100;
+    const amount = isWealthiestPlayer ? 200 : 100
 
     // Check if player can afford it
     if (player.rubles < amount) {
       setPendingAction({
         type: 'liquidation-required',
         data: {
-          playerId: playerId,
+          playerId,
           amountOwed: amount,
           creditorId: 'state',
-          reason: `Bourgeois Decadence Tax`,
-        },
-      });
-      return;
+          reason: 'Bourgeois Decadence Tax'
+        }
+      })
+      return
     }
 
-    updatePlayer(playerId, { rubles: player.rubles - amount });
-    adjustTreasury(amount);
+    updatePlayer(playerId, { rubles: player.rubles - amount })
+    adjustTreasury(amount)
 
     if (isWealthiestPlayer) {
-      demotePlayer(playerId);
+      demotePlayer(playerId)
       addLogEntry({
         type: 'payment',
         message: `${player.name} paid ₽${String(amount)} Bourgeois Decadence Tax as the wealthiest comrade - demoted for capitalist tendencies!`,
-        playerId,
-      });
+        playerId
+      })
     } else {
       addLogEntry({
         type: 'payment',
         message: `${player.name} paid ₽${String(amount)} Bourgeois Decadence Tax`,
-        playerId,
-      });
+        playerId
+      })
     }
 
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-    onClose();
-  };
+    setPendingAction(null)
+    setTurnPhase('post-turn')
+    onClose()
+  }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => { e.stopPropagation(); }}>
+      <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
         <div className={styles.header}>
           <span className={styles.icon}>📋</span>
           <h2 className={styles.title}>{space.name}</h2>
@@ -236,7 +236,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
                     <span>Property values:</span>
                     <span>₽{totalWealth - player.rubles}</span>
                   </div>
-                  <div className={styles.wealthDivider}></div>
+                  <div className={styles.wealthDivider} />
                   <div className={styles.wealthTotal}>
                     <span>Total Wealth:</span>
                     <span>₽{totalWealth}</span>
@@ -248,7 +248,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
                 <div className={styles.choices}>
                   <button
                     className={styles.choiceButton}
-                    onClick={() => { handleRevolutionaryChoice('percentage'); }}
+                    onClick={() => { handleRevolutionaryChoice('percentage') }}
                   >
                     <div className={styles.choiceTitle}>15% of Total Wealth</div>
                     <div className={styles.choiceAmount}>₽{percentageAmount}</div>
@@ -258,7 +258,7 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
 
                   <button
                     className={styles.choiceButton}
-                    onClick={() => { handleRevolutionaryChoice('flat'); }}
+                    onClick={() => { handleRevolutionaryChoice('flat') }}
                   >
                     <div className={styles.choiceTitle}>Flat Rate</div>
                     <div className={styles.choiceAmount}>₽{flatAmount}</div>
@@ -282,13 +282,13 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
                     <div className={styles.auditButtons}>
                       <button
                         className={styles.noAuditButton}
-                        onClick={() => { handleStalinAudit(false); }}
+                        onClick={() => { handleStalinAudit(false) }}
                       >
                         NO AUDIT - Accept Payment
                       </button>
                       <button
                         className={styles.auditButton}
-                        onClick={() => { handleStalinAudit(true); }}
+                        onClick={() => { handleStalinAudit(true) }}
                       >
                         AUDIT - Verify Contribution
                       </button>
@@ -338,5 +338,5 @@ export function TaxModal({ spaceId, playerId, onClose }: TaxModalProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

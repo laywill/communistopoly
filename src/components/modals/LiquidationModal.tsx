@@ -1,24 +1,24 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import React, { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import { getSpaceById } from '../../data/spaces';
-import { COLLECTIVIZATION_LEVELS } from '../../data/properties';
-import styles from './Modal.module.css';
+import React, { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import { getSpaceById } from '../../data/spaces'
+import { COLLECTIVIZATION_LEVELS } from '../../data/properties'
+import styles from './Modal.module.css'
 
 interface LiquidationModalProps {
-  playerId: string;
-  amountOwed: number;
-  creditorId: string;
-  reason: string;
+  playerId: string
+  amountOwed: number
+  creditorId: string
+  reason: string
 }
 
 export const LiquidationModal: React.FC<LiquidationModalProps> = ({
   playerId,
   amountOwed,
   creditorId,
-  reason,
+  reason
 }) => {
   const {
     players,
@@ -30,190 +30,190 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
     addLogEntry,
     createDebt,
     adjustTreasury,
-    setTurnPhase,
-  } = useGameStore();
+    setTurnPhase
+  } = useGameStore()
 
-  const player = players.find((p) => p.id === playerId);
-  const [remainingDebt] = useState(amountOwed);
-  const [liquidatedValue, setLiquidatedValue] = useState(0);
+  const player = players.find((p) => p.id === playerId)
+  const [remainingDebt] = useState(amountOwed)
+  const [liquidatedValue, setLiquidatedValue] = useState(0)
 
-  if (!player) return null;
+  if (player == null) return null
 
   // Get player's properties with their current collectivization levels
   const playerProperties = properties.filter(
     (prop) => prop.custodianId === playerId
-  );
+  )
 
   // Calculate sellable improvements value (50₽ per regular level, 100₽ for palace)
   const getImprovementValue = (collectivizationLevel: number): number => {
-    if (collectivizationLevel === 0) return 0;
+    if (collectivizationLevel === 0) return 0
     if (collectivizationLevel === 5) {
       // Palace (level 5) sells for 100₽, plus 4 regular levels at 50₽ each
-      return 100 + (4 * 50);
+      return 100 + (4 * 50)
     }
     // Regular levels sell for 50₽ each
-    return collectivizationLevel * 50;
-  };
+    return collectivizationLevel * 50
+  }
 
   // Calculate mortgage value (50% of base cost)
   const getMortgageValue = (spaceId: number): number => {
-    const space = getSpaceById(spaceId);
-    return space?.baseCost ? Math.floor(space.baseCost * 0.5) : 0;
-  };
+    const space = getSpaceById(spaceId)
+    return space?.baseCost ? Math.floor(space.baseCost * 0.5) : 0
+  }
 
   // Get total available funds through liquidation
   const getTotalAvailableFunds = (): number => {
-    let total = player.rubles;
+    let total = player.rubles
 
     playerProperties.forEach((prop) => {
       // Add improvement values
-      total += getImprovementValue(prop.collectivizationLevel);
+      total += getImprovementValue(prop.collectivizationLevel)
 
       // Add mortgage value if not already mortgaged
       if (!prop.mortgaged) {
-        total += getMortgageValue(prop.spaceId);
+        total += getMortgageValue(prop.spaceId)
       }
-    });
+    })
 
-    return total;
-  };
+    return total
+  }
 
-  const totalAvailable = getTotalAvailableFunds();
+  const totalAvailable = getTotalAvailableFunds()
 
   const handleSellImprovement = (spaceId: number) => {
-    const property = properties.find((p) => p.spaceId === spaceId);
-    if (!property || property.collectivizationLevel === 0) return;
+    const property = properties.find((p) => p.spaceId === spaceId)
+    if ((property == null) || property.collectivizationLevel === 0) return
 
-    const space = getSpaceById(spaceId);
-    if (!space) return;
+    const space = getSpaceById(spaceId)
+    if (space == null) return
 
     // Sell one level of improvement
-    let sellValue = 0;
-    const newLevel = property.collectivizationLevel - 1;
+    let sellValue = 0
+    const newLevel = property.collectivizationLevel - 1
 
     if (property.collectivizationLevel === 5) {
       // Selling palace gives 100₽
-      sellValue = 100;
+      sellValue = 100
     } else {
       // Selling regular level gives 50₽
-      sellValue = 50;
+      sellValue = 50
     }
 
     // Update property level
-    updateCollectivizationLevel(spaceId, newLevel);
+    updateCollectivizationLevel(spaceId, newLevel)
 
     // Add funds to player
     updatePlayer(playerId, {
-      rubles: player.rubles + sellValue,
-    });
+      rubles: player.rubles + sellValue
+    })
 
-    setLiquidatedValue(liquidatedValue + sellValue);
+    setLiquidatedValue(liquidatedValue + sellValue)
 
     addLogEntry({
       type: 'property',
       message: `${player.name} sold improvements on ${space.name} for ₽${String(sellValue)}`,
-      playerId,
-    });
+      playerId
+    })
 
     // Check if debt is now paid
     if (player.rubles + sellValue >= remainingDebt) {
-      handlePayDebt(player.rubles + sellValue);
+      handlePayDebt(player.rubles + sellValue)
     }
-  };
+  }
 
   const handleMortgageProperty = (spaceId: number) => {
-    const property = properties.find((p) => p.spaceId === spaceId);
-    if (!property || property.mortgaged || property.collectivizationLevel > 0) return;
+    const property = properties.find((p) => p.spaceId === spaceId)
+    if ((property == null) || property.mortgaged || property.collectivizationLevel > 0) return
 
-    const space = getSpaceById(spaceId);
-    if (!space) return;
+    const space = getSpaceById(spaceId)
+    if (space == null) return
 
-    const mortgageValue = getMortgageValue(spaceId);
+    const mortgageValue = getMortgageValue(spaceId)
 
     // Mortgage the property
-    mortgageProperty(spaceId);
+    mortgageProperty(spaceId)
 
     // Add funds to player
     updatePlayer(playerId, {
-      rubles: player.rubles + mortgageValue,
-    });
+      rubles: player.rubles + mortgageValue
+    })
 
-    setLiquidatedValue(liquidatedValue + mortgageValue);
+    setLiquidatedValue(liquidatedValue + mortgageValue)
 
     addLogEntry({
       type: 'property',
       message: `${player.name} mortgaged ${space.name} for ₽${String(mortgageValue)}`,
-      playerId,
-    });
+      playerId
+    })
 
     // Check if debt is now paid
     if (player.rubles + mortgageValue >= remainingDebt) {
-      handlePayDebt(player.rubles + mortgageValue);
+      handlePayDebt(player.rubles + mortgageValue)
     }
-  };
+  }
 
   const handlePayDebt = (currentRubles: number = player.rubles) => {
-    if (currentRubles < remainingDebt) return;
+    if (currentRubles < remainingDebt) return
 
     // Pay the debt
     updatePlayer(playerId, {
       rubles: currentRubles - remainingDebt,
       debt: null,
-      debtCreatedAtRound: null,
-    });
+      debtCreatedAtRound: null
+    })
 
     // If creditor is a player, give them the money
     if (creditorId !== 'state') {
-      const creditor = players.find((p) => p.id === creditorId);
-      if (creditor) {
+      const creditor = players.find((p) => p.id === creditorId)
+      if (creditor != null) {
         updatePlayer(creditorId, {
-          rubles: creditor.rubles + remainingDebt,
-        });
+          rubles: creditor.rubles + remainingDebt
+        })
       }
     } else {
       // If creditor is state, add to treasury
-      adjustTreasury(remainingDebt);
+      adjustTreasury(remainingDebt)
     }
 
-    const creditorName = creditorId === 'state' ? 'the State' : players.find((p) => p.id === creditorId)?.name ?? 'unknown';
+    const creditorName = creditorId === 'state' ? 'the State' : players.find((p) => p.id === creditorId)?.name ?? 'unknown'
 
     addLogEntry({
       type: 'payment',
       message: `${player.name} paid ₽${String(remainingDebt)} to ${creditorName} by liquidating assets`,
-      playerId,
-    });
+      playerId
+    })
 
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-  };
+    setPendingAction(null)
+    setTurnPhase('post-turn')
+  }
 
   const handleCannotPay = () => {
     // Create debt if total available funds can cover it
     if (totalAvailable >= remainingDebt) {
       // Player chose not to liquidate, create debt
-      createDebt(playerId, creditorId, remainingDebt, reason);
+      createDebt(playerId, creditorId, remainingDebt, reason)
 
       addLogEntry({
         type: 'payment',
         message: `${player.name} chose not to liquidate assets. Debt of ₽${String(remainingDebt)} created. Must pay within one round!`,
-        playerId,
-      });
+        playerId
+      })
     } else {
       // Insufficient assets, create debt anyway (will lead to Gulag)
-      createDebt(playerId, creditorId, remainingDebt, reason);
+      createDebt(playerId, creditorId, remainingDebt, reason)
 
       addLogEntry({
         type: 'payment',
         message: `${player.name} has insufficient assets to pay ₽${String(remainingDebt)}. Debt created - face Gulag if not paid within one round!`,
-        playerId,
-      });
+        playerId
+      })
     }
 
-    setPendingAction(null);
-    setTurnPhase('post-turn');
-  };
+    setPendingAction(null)
+    setTurnPhase('post-turn')
+  }
 
-  const creditorName = creditorId === 'state' ? 'the State' : players.find((p) => p.id === creditorId)?.name;
+  const creditorName = creditorId === 'state' ? 'the State' : players.find((p) => p.id === creditorId)?.name
 
   return (
     <div className={styles.modalOverlay}>
@@ -230,7 +230,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
               border: '3px solid var(--color-blood-burgundy)',
               padding: '16px',
               marginBottom: '20px',
-              borderRadius: '4px',
+              borderRadius: '4px'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
@@ -262,7 +262,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
               <p style={{ fontSize: '18px', marginBottom: '16px', color: 'var(--color-military-olive)' }}>
                 You have sufficient rubles to pay this debt!
               </p>
-              <button onClick={() => { handlePayDebt(); }} className={styles.primaryButton}>
+              <button onClick={() => { handlePayDebt() }} className={styles.primaryButton}>
                 Pay ₽{remainingDebt}
               </button>
             </div>
@@ -277,7 +277,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
                   border: '2px solid var(--color-soviet-red)',
                   padding: '12px',
                   marginBottom: '20px',
-                  borderRadius: '4px',
+                  borderRadius: '4px'
                 }}
               >
                 <p style={{ margin: 0, fontSize: '14px', fontWeight: 'bold' }}>
@@ -315,12 +315,12 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
                 {playerProperties.length > 0 && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '400px', overflowY: 'auto' }}>
                     {playerProperties.map((property) => {
-                      const space = getSpaceById(property.spaceId);
-                      if (!space) return null;
+                      const space = getSpaceById(property.spaceId)
+                      if (space == null) return null
 
-                      const mortgageValue = getMortgageValue(property.spaceId);
-                      const canSellImprovement = property.collectivizationLevel > 0;
-                      const canMortgage = !property.mortgaged && property.collectivizationLevel === 0;
+                      const mortgageValue = getMortgageValue(property.spaceId)
+                      const canSellImprovement = property.collectivizationLevel > 0
+                      const canMortgage = !property.mortgaged && property.collectivizationLevel === 0
 
                       return (
                         <div
@@ -330,7 +330,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
                             border: '2px solid var(--color-propaganda-black)',
                             borderRadius: '4px',
                             background: property.mortgaged ? 'var(--color-gulag-grey)' : 'var(--color-aged-white)',
-                            opacity: property.mortgaged ? 0.6 : 1,
+                            opacity: property.mortgaged ? 0.6 : 1
                           }}
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
@@ -352,7 +352,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
                           <div style={{ display: 'flex', gap: '8px' }}>
                             {canSellImprovement && (
                               <button
-                                onClick={() => { handleSellImprovement(property.spaceId); }}
+                                onClick={() => { handleSellImprovement(property.spaceId) }}
                                 className={styles.primaryButton}
                                 style={{ flex: 1, fontSize: '12px', padding: '8px 12px' }}
                               >
@@ -362,7 +362,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
                             {canMortgage && (
                               <button
-                                onClick={() => { handleMortgageProperty(property.spaceId); }}
+                                onClick={() => { handleMortgageProperty(property.spaceId) }}
                                 className={styles.dangerButton}
                                 style={{ flex: 1, fontSize: '12px', padding: '8px 12px' }}
                               >
@@ -377,7 +377,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
                             )}
                           </div>
                         </div>
-                      );
+                      )
                     })}
                   </div>
                 )}
@@ -395,7 +395,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
 
                 {player.rubles >= remainingDebt && (
                   <button
-                    onClick={() => { handlePayDebt(); }}
+                    onClick={() => { handlePayDebt() }}
                     className={styles.primaryButton}
                     style={{ flex: 1 }}
                   >
@@ -416,5 +416,5 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

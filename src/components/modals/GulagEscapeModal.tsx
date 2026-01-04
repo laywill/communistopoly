@@ -1,69 +1,71 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import React, { useState } from 'react';
-import { useGameStore } from '../../store/gameStore';
-import styles from './Modal.module.css';
+import React, { useState } from 'react'
+import { useGameStore } from '../../store/gameStore'
+import styles from './Modal.module.css'
 
 interface GulagEscapeModalProps {
-  playerId: string;
+  playerId: string
 }
 
 export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) => {
-  const { players, dice, rollDice, finishRolling, attemptGulagEscape } = useGameStore();
-  const player = players.find((p) => p.id === playerId);
-  const [isRolling, setIsRolling] = useState(false);
+  const { players, dice, rollDice, finishRolling, attemptGulagEscape } = useGameStore()
+  const player = players.find((p) => p.id === playerId)
+  const [isRolling, setIsRolling] = useState(false)
 
-  if (!player?.inGulag) return null;
+  if (!player?.inGulag) return null
 
-  const requiredDoubles = getRequiredDoublesText(player.gulagTurns);
+  const requiredDoubles = getRequiredDoublesText(player.gulagTurns)
 
   const handleRollForEscape = () => {
-    setIsRolling(true);
-    rollDice();
+    setIsRolling(true)
+    rollDice()
 
     // After dice animation, check result
     setTimeout(() => {
-      finishRolling();
-      attemptGulagEscape(playerId, 'roll');
-      setIsRolling(false);
-    }, 1500);
-  };
+      finishRolling()
+      attemptGulagEscape(playerId, 'roll')
+      setIsRolling(false)
+    }, 1500)
+  }
 
   const handlePayForEscape = () => {
     if (player.rubles >= 500) {
-      attemptGulagEscape(playerId, 'pay');
+      attemptGulagEscape(playerId, 'pay')
     }
-  };
+  }
 
   const handleRequestVoucher = () => {
-    attemptGulagEscape(playerId, 'vouch');
-  };
+    attemptGulagEscape(playerId, 'vouch')
+  }
 
   const handleInformOnComrade = () => {
-    attemptGulagEscape(playerId, 'inform');
-  };
+    attemptGulagEscape(playerId, 'inform')
+  }
 
   const handleBribeStalin = () => {
-    attemptGulagEscape(playerId, 'bribe');
-  };
+    attemptGulagEscape(playerId, 'bribe')
+  }
 
   const handleUseGulagCard = () => {
-    attemptGulagEscape(playerId, 'card');
-  };
+    attemptGulagEscape(playerId, 'card')
+  }
 
-  const canAffordRehabilitation = player.rubles >= 500;
+  const canAffordRehabilitation = player.rubles >= 500
 
   return (
     <div className={styles.modalOverlay}>
       <div className={styles.modal} style={{ maxWidth: '600px' }}>
-        <div className={styles.header} style={{
-          background: 'var(--color-gulag-grey)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          justifyContent: 'center'
-        }}>
+        <div
+          className={styles.header} style={{
+            background: 'var(--color-gulag-grey)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            justifyContent: 'center'
+          }}
+        >
           <span style={{ fontSize: '24px' }}>⛓️</span>
           <h2 style={{ margin: 0 }}>THE GULAG</h2>
           <span style={{ fontSize: '24px' }}>⛓️</span>
@@ -201,20 +203,20 @@ export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) 
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-function getRequiredDoublesText(turnsInGulag: number): string {
+function getRequiredDoublesText (turnsInGulag: number): string {
   switch (turnsInGulag) {
     case 0:
-      return 'Double 6s';
+      return 'Double 6s'
     case 1:
-      return 'Double 5s or 6s';
+      return 'Double 5s or 6s'
     case 2:
-      return 'Double 4s, 5s, or 6s';
+      return 'Double 4s, 5s, or 6s'
     case 3:
-      return 'Double 3s, 4s, 5s, or 6s';
+      return 'Double 3s, 4s, 5s, or 6s'
     default:
-      return 'Any doubles';
+      return 'Any doubles'
   }
 }
