@@ -37,7 +37,7 @@ describe('Property Flow Integration', () => {
       expect(buyerAfterPurchase?.rubles).toBe(buyerRublesBefore - 60)
       expect(buyerAfterPurchase?.properties).toContain(String(spaceId))
 
-      const property = store.properties.find(p => p.spaceId === spaceId)
+      const property = useGameStore.getState().properties.find(p => p.spaceId === spaceId)
       expect(property?.custodianId).toBe(buyer.id)
 
       // Visitor lands on property
@@ -321,7 +321,7 @@ describe('Property Flow Integration', () => {
 
       // Fee calculation is in propertyUtils
       // This test verifies the purchase flow works for railways
-      const property = store.properties.find(p => p.spaceId === railway1)
+      const property = useGameStore.getState().properties.find(p => p.spaceId === railway1)
       expect(property).toBeDefined()
       expect(property?.custodianId).toBe(buyer.id)
     })

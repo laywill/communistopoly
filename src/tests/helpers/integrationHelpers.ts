@@ -58,6 +58,7 @@ export function setupTestGame(config: {
 
   const store = useGameStore.getState()
   store.initializePlayers(playerConfigs)
+  store.initializeProperties()
 
   // Set custom ranks if specified
   const allPlayers = useGameStore.getState().players
