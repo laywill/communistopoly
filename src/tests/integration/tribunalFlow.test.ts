@@ -50,12 +50,14 @@ describe('Tribunal Flow Integration', () => {
       // Check aftermath
       expect(useGameStore.getState().activeTribunal).toBeNull()
 
-      const updatedAccused = store.players.find(p => p.id === accused.id)!
-      expect(updatedAccused.inGulag).toBe(true)
+      const updatedAccused = store.players.find(p => p.id === accused.id)
+      expect(updatedAccused).toBeDefined()
+      expect(updatedAccused?.inGulag).toBe(true)
 
       // Accuser should receive bonus
-      const updatedAccuser = store.players.find(p => p.id === accuser.id)!
-      expect(updatedAccuser.rubles).toBeGreaterThan(accuserRublesBefore)
+      const updatedAccuser = store.players.find(p => p.id === accuser.id)
+      expect(updatedAccuser).toBeDefined()
+      expect(updatedAccuser?.rubles).toBeGreaterThan(accuserRublesBefore)
     })
 
     it('should demote accuser on innocent verdict', () => {
@@ -74,12 +76,14 @@ describe('Tribunal Flow Integration', () => {
       store.renderTribunalVerdict('innocent')
 
       // Accuser should be demoted
-      const updatedAccuser = store.players.find(p => p.id === accuser.id)!
-      expect(updatedAccuser.rank).toBe('proletariat')
+      const updatedAccuser = store.players.find(p => p.id === accuser.id)
+      expect(updatedAccuser).toBeDefined()
+      expect(updatedAccuser?.rank).toBe('proletariat')
 
       // Accused should not be in Gulag
-      const updatedAccused = store.players.find(p => p.id === accused.id)!
-      expect(updatedAccused.inGulag).toBe(false)
+      const updatedAccused = store.players.find(p => p.id === accused.id)
+      expect(updatedAccused).toBeDefined()
+      expect(updatedAccused?.inGulag).toBe(false)
 
       // Tribunal should be cleared
       expect(useGameStore.getState().activeTribunal).toBeNull()
@@ -94,11 +98,13 @@ describe('Tribunal Flow Integration', () => {
 
       store.renderTribunalVerdict('bothGuilty')
 
-      const updatedAccuser = store.players.find(p => p.id === accuser.id)!
-      const updatedAccused = store.players.find(p => p.id === accused.id)!
+      const updatedAccuser = store.players.find(p => p.id === accuser.id)
+      const updatedAccused = store.players.find(p => p.id === accused.id)
+      expect(updatedAccuser).toBeDefined()
+      expect(updatedAccused).toBeDefined()
 
-      expect(updatedAccuser.inGulag).toBe(true)
-      expect(updatedAccused.inGulag).toBe(true)
+      expect(updatedAccuser?.inGulag).toBe(true)
+      expect(updatedAccused?.inGulag).toBe(true)
       expect(useGameStore.getState().activeTribunal).toBeNull()
     })
 
@@ -111,12 +117,14 @@ describe('Tribunal Flow Integration', () => {
 
       store.renderTribunalVerdict('insufficient')
 
-      const updatedAccuser = store.players.find(p => p.id === accuser.id)!
-      const updatedAccused = store.players.find(p => p.id === accused.id)!
+      const updatedAccuser = store.players.find(p => p.id === accuser.id)
+      const updatedAccused = store.players.find(p => p.id === accused.id)
+      expect(updatedAccuser).toBeDefined()
+      expect(updatedAccused).toBeDefined()
 
       // Neither should go to Gulag
-      expect(updatedAccuser.inGulag).toBe(false)
-      expect(updatedAccused.inGulag).toBe(false)
+      expect(updatedAccuser?.inGulag).toBe(false)
+      expect(updatedAccused?.inGulag).toBe(false)
 
       expect(useGameStore.getState().activeTribunal).toBeNull()
     })
@@ -177,7 +185,7 @@ describe('Tribunal Flow Integration', () => {
     it('should require witnesses for Commissar', () => {
       const store = useGameStore.getState()
       const players = store.players.filter(p => !p.isStalin)
-      const [accuser, accused] = players
+      const accused = players[1]
 
       // Promote accused to Commissar
       store.updatePlayer(accused.id, { rank: 'partyMember' })
@@ -191,7 +199,7 @@ describe('Tribunal Flow Integration', () => {
     it('should require witnesses for Hero of Soviet Union', () => {
       const store = useGameStore.getState()
       const players = store.players.filter(p => !p.isStalin)
-      const [accuser, accused] = players
+      const accused = players[1]
 
       // Grant Hero status
       store.grantHeroOfSovietUnion(accused.id)
@@ -203,7 +211,7 @@ describe('Tribunal Flow Integration', () => {
     it('should not require witnesses for Proletariat', () => {
       const store = useGameStore.getState()
       const players = store.players.filter(p => !p.isStalin)
-      const [accuser, accused] = players
+      const accused = players[1]
 
       // Accused is already Proletariat by default
       const requirement = store.getWitnessRequirement(accused.id)
@@ -235,8 +243,6 @@ describe('Tribunal Flow Integration', () => {
       store.renderTribunalVerdict('innocent')
 
       // Try second denouncement of same player
-      const denouncementsBefore = useGameStore.getState().denouncementsThisRound.length
-
       store.initiateDenouncement(accuser.id, accused.id, 'Second crime')
 
       // Should not create another denouncement (depends on implementation)
@@ -250,14 +256,18 @@ describe('Tribunal Flow Integration', () => {
       const players = store.players.filter(p => !p.isStalin)
       const [accuser, accused] = players
 
-      const accuserBefore = store.players.find(p => p.id === accuser.id)!
-      const tribunalsWonBefore = accuserBefore.statistics?.tribunalsWon ?? 0
+      const accuserBefore = store.players.find(p => p.id === accuser.id)
+      expect(accuserBefore).toBeDefined()
+      if (!accuserBefore) return
+      const tribunalsWonBefore = (accuserBefore as { statistics?: { tribunalsWon?: number } }).statistics?.tribunalsWon ?? 0
 
       store.initiateDenouncement(accuser.id, accused.id, 'Crime')
       store.renderTribunalVerdict('guilty')
 
-      const accuserAfter = useGameStore.getState().players.find(p => p.id === accuser.id)!
-      const tribunalsWonAfter = accuserAfter.statistics?.tribunalsWon ?? 0
+      const accuserAfter = useGameStore.getState().players.find(p => p.id === accuser.id)
+      expect(accuserAfter).toBeDefined()
+      if (!accuserAfter) return
+      const tribunalsWonAfter = (accuserAfter as { statistics?: { tribunalsWon?: number } }).statistics?.tribunalsWon ?? 0
 
       expect(tribunalsWonAfter).toBe(tribunalsWonBefore + 1)
     })
@@ -267,14 +277,18 @@ describe('Tribunal Flow Integration', () => {
       const players = store.players.filter(p => !p.isStalin)
       const [accuser, accused] = players
 
-      const accuserBefore = store.players.find(p => p.id === accuser.id)!
-      const tribunalsLostBefore = accuserBefore.statistics?.tribunalsLost ?? 0
+      const accuserBefore = store.players.find(p => p.id === accuser.id)
+      expect(accuserBefore).toBeDefined()
+      if (!accuserBefore) return
+      const tribunalsLostBefore = (accuserBefore as { statistics?: { tribunalsLost?: number } }).statistics?.tribunalsLost ?? 0
 
       store.initiateDenouncement(accuser.id, accused.id, 'Crime')
       store.renderTribunalVerdict('innocent')
 
-      const accuserAfter = useGameStore.getState().players.find(p => p.id === accuser.id)!
-      const tribunalsLostAfter = accuserAfter.statistics?.tribunalsLost ?? 0
+      const accuserAfter = useGameStore.getState().players.find(p => p.id === accuser.id)
+      expect(accuserAfter).toBeDefined()
+      if (!accuserAfter) return
+      const tribunalsLostAfter = (accuserAfter as { statistics?: { tribunalsLost?: number } }).statistics?.tribunalsLost ?? 0
 
       expect(tribunalsLostAfter).toBe(tribunalsLostBefore + 1)
     })
