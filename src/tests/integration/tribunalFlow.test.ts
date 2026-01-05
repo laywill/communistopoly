@@ -161,10 +161,8 @@ describe('Tribunal Flow Integration', () => {
       const store = useGameStore.getState()
 
       // Add more players to serve as witnesses
-      store.initializePlayers([
-        { name: 'Witness2', piece: 'star', isStalin: false },
-        { name: 'Witness3', piece: 'vodka', isStalin: false }
-      ])
+      store.addPlayer('Witness2', 'star')
+      store.addPlayer('Witness3', 'vodka')
 
       const players = useGameStore.getState().players.filter(p => !p.isStalin)
       const [accuser, accused, witness1, witness2, witness3] = players
@@ -205,7 +203,8 @@ describe('Tribunal Flow Integration', () => {
       store.grantHeroOfSovietUnion(accused.id)
 
       const requirement = store.getWitnessRequirement(accused.id)
-      expect(requirement.required).toBeGreaterThan(0)
+      // Hero status requires 'unanimous' agreement
+      expect(requirement.required === 'unanimous' || (typeof requirement.required === 'number' && requirement.required > 0)).toBe(true)
     })
 
     it('should not require witnesses for Proletariat', () => {

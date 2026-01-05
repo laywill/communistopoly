@@ -12,9 +12,39 @@ export function setupTestGame(config: {
   players: { name: string, piece: PieceType, rank?: PartyRank }[]
   stalinName?: string
 }) {
-  // Reset store to clean state
-  const initialState = useGameStore.getState()
-  useGameStore.setState(initialState, true)
+  // Reset store to clean state - clear all arrays and reset to defaults
+  useGameStore.setState({
+    gamePhase: 'welcome',
+    players: [],
+    stalinPlayerId: null,
+    currentPlayerIndex: 0,
+    properties: [],
+    stateTreasury: 0,
+    turnPhase: 'pre-roll',
+    doublesCount: 0,
+    hasRolled: false,
+    roundNumber: 1,
+    dice: [1, 1],
+    isRolling: false,
+    gameLog: [],
+    pendingAction: null,
+    activeVouchers: [],
+    pendingBribes: [],
+    activeTradeOffers: [],
+    denouncementsThisRound: [],
+    activeTribunal: null,
+    heroesOfSovietUnion: [],
+    greatPurgeUsed: false,
+    activeGreatPurge: null,
+    activeFiveYearPlan: null,
+    confessions: [],
+    endVoteInProgress: false,
+    endVoteInitiator: null,
+    endVotes: {},
+    gameEndCondition: null,
+    winnerId: null,
+    showEndScreen: false
+  })
 
   // Add Stalin first, then other players
   const playerConfigs = [

@@ -2434,6 +2434,12 @@ export const useGameStore = create<GameStore>()(
           return { required: 0, reason: 'Player is under suspicion - no witnesses required' }
         }
 
+        // Check if Hero of Soviet Union
+        const isHero = get().isHeroOfSovietUnion(playerId)
+        if (isHero) {
+          return { required: 'unanimous', reason: 'Hero of Soviet Union requires unanimous agreement' }
+        }
+
         // Rank-based requirements
         switch (player.rank) {
           case 'commissar':
