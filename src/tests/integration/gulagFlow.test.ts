@@ -25,7 +25,7 @@ describe('Gulag Flow Integration', () => {
       // Send to Gulag
       store.sendToGulag(player.id, 'enemyOfState')
 
-      let updatedPlayer = store.players.find(p => p.id === player.id)
+      let updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
       expect(updatedPlayer).toBeDefined()
       expect(updatedPlayer?.inGulag).toBe(true)
       expect(updatedPlayer?.gulagTurns).toBe(0)
@@ -35,7 +35,7 @@ describe('Gulag Flow Integration', () => {
       for (let turn = 1; turn <= 4; turn++) {
         store.handleGulagTurn(player.id)
 
-        updatedPlayer = store.players.find(p => p.id === player.id)
+        updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
         expect(updatedPlayer).toBeDefined()
         expect(updatedPlayer?.gulagTurns).toBe(turn)
 
@@ -44,7 +44,7 @@ describe('Gulag Flow Integration', () => {
           // Turn 1: Need double 6s
           useGameStore.setState({ dice: [5, 5] })
           store.attemptGulagEscape(player.id, 'roll')
-          updatedPlayer = store.players.find(p => p.id === player.id)
+          updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
           expect(updatedPlayer).toBeDefined()
           expect(updatedPlayer?.inGulag).toBe(true)
         }
@@ -55,7 +55,7 @@ describe('Gulag Flow Integration', () => {
       useGameStore.setState({ dice: [1, 1] })
       store.attemptGulagEscape(player.id, 'roll')
 
-      updatedPlayer = store.players.find(p => p.id === player.id)
+      updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
       expect(updatedPlayer).toBeDefined()
       expect(updatedPlayer?.inGulag).toBe(false)
       expect(updatedPlayer?.gulagTurns).toBe(0)
@@ -73,7 +73,7 @@ describe('Gulag Flow Integration', () => {
       useGameStore.setState({ dice: [6, 6] })
       store.attemptGulagEscape(player.id, 'roll')
 
-      const updatedPlayer = store.players.find(p => p.id === player.id)
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
       expect(updatedPlayer).toBeDefined()
       expect(updatedPlayer?.inGulag).toBe(false)
     })
@@ -87,21 +87,21 @@ describe('Gulag Flow Integration', () => {
 
       // Promote to have rank to lose
       store.updatePlayer(player.id, { rank: 'partyMember' })
-      expect(store.players.find(p => p.id === player.id)?.rank).toBe('partyMember')
+      expect(useGameStore.getState().players.find(p => p.id === player.id)?.rank).toBe('partyMember')
 
       const rublesBefore = player.rubles
 
       // Send to Gulag (demotes once)
       store.sendToGulag(player.id, 'enemyOfState')
 
-      let updatedPlayer = store.players.find(p => p.id === player.id)
+      let updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
       expect(updatedPlayer).toBeDefined()
       expect(updatedPlayer?.rank).toBe('proletariat') // Demoted from partyMember
 
       // Pay for release (demotes again, but already at minimum)
       store.attemptGulagEscape(player.id, 'pay')
 
-      updatedPlayer = store.players.find(p => p.id === player.id)
+      updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
       expect(updatedPlayer).toBeDefined()
       expect(updatedPlayer?.inGulag).toBe(false)
       expect(updatedPlayer?.rubles).toBe(rublesBefore - 500)
@@ -121,7 +121,7 @@ describe('Gulag Flow Integration', () => {
       // Try to pay for release
       store.attemptGulagEscape(player.id, 'pay')
 
-      const updatedPlayer = store.players.find(p => p.id === player.id)
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
       expect(updatedPlayer).toBeDefined()
       expect(updatedPlayer?.inGulag).toBe(true) // Still in Gulag
     })
@@ -136,18 +136,18 @@ describe('Gulag Flow Integration', () => {
       // Send Ivan to Gulag
       store.sendToGulag(ivan.id, 'enemyOfState')
 
-      let updatedIvan = store.players.find(p => p.id === ivan.id)
+      let updatedIvan = useGameStore.getState().players.find(p => p.id === ivan.id)
       expect(updatedIvan).toBeDefined()
       expect(updatedIvan?.inGulag).toBe(true)
 
       // Natasha vouches for Ivan
       store.createVoucher(ivan.id, natasha.id)
 
-      updatedIvan = store.players.find(p => p.id === ivan.id)
+      updatedIvan = useGameStore.getState().players.find(p => p.id === ivan.id)
       expect(updatedIvan).toBeDefined()
       expect(updatedIvan?.inGulag).toBe(false) // Released by voucher
 
-      const voucherState = store.activeVouchers.find(v => v.prisonerId === ivan.id)
+      const voucherState = useGameStore.getState().activeVouchers.find(v => v.prisonerId === ivan.id)
       expect(voucherState).toBeDefined()
       expect(voucherState?.voucherId).toBe(natasha.id)
 
@@ -158,7 +158,7 @@ describe('Gulag Flow Integration', () => {
       store.checkVoucherConsequences(ivan.id, 'threeDoubles')
 
       // Natasha should also be sent to Gulag
-      const updatedNatasha = store.players.find(p => p.id === natasha.id)
+      const updatedNatasha = useGameStore.getState().players.find(p => p.id === natasha.id)
       expect(updatedNatasha).toBeDefined()
       expect(updatedNatasha?.inGulag).toBe(true)
     })
@@ -170,14 +170,14 @@ describe('Gulag Flow Integration', () => {
 
       store.sendToGulag(prisoner.id, 'enemyOfState')
 
-      const prisonerBefore = store.players.find(p => p.id === prisoner.id)
+      const prisonerBefore = useGameStore.getState().players.find(p => p.id === prisoner.id)
       expect(prisonerBefore).toBeDefined()
       expect(prisonerBefore?.inGulag).toBe(true)
 
       // Create voucher
       store.createVoucher(prisoner.id, voucher.id)
 
-      const prisonerAfter = store.players.find(p => p.id === prisoner.id)
+      const prisonerAfter = useGameStore.getState().players.find(p => p.id === prisoner.id)
       expect(prisonerAfter).toBeDefined()
       expect(prisonerAfter?.inGulag).toBe(false)
       expect(prisonerAfter?.gulagTurns).toBe(0)
@@ -191,15 +191,15 @@ describe('Gulag Flow Integration', () => {
       store.sendToGulag(prisoner.id, 'enemyOfState')
       store.createVoucher(prisoner.id, voucher.id)
 
-      const currentRound = store.roundNumber
-      const voucherState = store.activeVouchers.find(v => v.prisonerId === prisoner.id)
+      const currentRound = useGameStore.getState().roundNumber
+      const voucherState = useGameStore.getState().activeVouchers.find(v => v.prisonerId === prisoner.id)
       expect(voucherState?.expiresAtRound).toBe(currentRound + 3)
 
       // Advance past expiration
       useGameStore.setState({ roundNumber: currentRound + 4 })
       store.expireVouchers()
 
-      const expiredVoucher = store.activeVouchers.find(v => v.prisonerId === prisoner.id && v.isActive)
+      const expiredVoucher = useGameStore.getState().activeVouchers.find(v => v.prisonerId === prisoner.id && v.isActive)
       expect(expiredVoucher).toBeUndefined()
     })
   })
@@ -217,14 +217,14 @@ describe('Gulag Flow Integration', () => {
       // Submit bribe
       store.submitBribe(player.id, 200, 'gulag-escape')
 
-      const bribe = store.pendingBribes[0]
+      const bribe = useGameStore.getState().pendingBribes[0]
       expect(bribe).toBeDefined()
       expect(bribe.playerId).toBe(player.id)
 
       // Stalin accepts
       store.respondToBribe(bribe.id, true)
 
-      const updatedPlayer = store.players.find(p => p.id === player.id)
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
       expect(updatedPlayer).toBeDefined()
       expect(updatedPlayer?.inGulag).toBe(false)
       expect(updatedPlayer?.rubles).toBe(rublesBefore - 200)
@@ -242,12 +242,12 @@ describe('Gulag Flow Integration', () => {
       // Submit bribe
       store.submitBribe(player.id, 250, 'gulag-escape')
 
-      const bribe = store.pendingBribes[0]
+      const bribe = useGameStore.getState().pendingBribes[0]
 
       // Stalin rejects
       store.respondToBribe(bribe.id, false)
 
-      const updatedPlayer = store.players.find(p => p.id === player.id)
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
       expect(updatedPlayer).toBeDefined()
       expect(updatedPlayer?.inGulag).toBe(true) // Still in Gulag
       expect(updatedPlayer?.rubles).toBe(rublesBefore - 250) // Money still lost
@@ -262,7 +262,7 @@ describe('Gulag Flow Integration', () => {
 
       store.sendToGulag(prisoner.id, 'enemyOfState')
 
-      expect(store.players.find(p => p.id === prisoner.id)?.inGulag).toBe(true)
+      expect(useGameStore.getState().players.find(p => p.id === prisoner.id)?.inGulag).toBe(true)
 
       // Initiate denouncement from Gulag
       store.initiateDenouncement(prisoner.id, target.id, 'Counter-revolutionary activities')
@@ -270,7 +270,7 @@ describe('Gulag Flow Integration', () => {
       // Render guilty verdict
       store.renderTribunalVerdict('guilty')
 
-      const updatedTarget = store.players.find(p => p.id === target.id)
+      const updatedTarget = useGameStore.getState().players.find(p => p.id === target.id)
       expect(updatedTarget).toBeDefined()
       expect(updatedTarget?.inGulag).toBe(true)
 
@@ -295,7 +295,7 @@ describe('Gulag Flow Integration', () => {
 
       // Prisoner should have additional turns added
       // Note: Implementation may vary
-      const updatedPrisoner = store.players.find(p => p.id === prisoner.id)
+      const updatedPrisoner = useGameStore.getState().players.find(p => p.id === prisoner.id)
       expect(updatedPrisoner).toBeDefined()
       expect(updatedPrisoner?.inGulag).toBe(true)
     })
@@ -314,7 +314,7 @@ describe('Gulag Flow Integration', () => {
 
       store.checkFor10TurnElimination(player.id)
 
-      const updatedPlayer = store.players.find(p => p.id === player.id)
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
       expect(updatedPlayer).toBeDefined()
       expect(updatedPlayer?.isEliminated).toBe(true)
     })
