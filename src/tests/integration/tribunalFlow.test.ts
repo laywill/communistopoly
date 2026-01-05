@@ -10,8 +10,8 @@ describe('Tribunal Flow Integration', () => {
     setupTestGame({
       players: [
         { name: 'Accuser', piece: 'sickle' },
-        { name: 'Accused', piece: 'tank' },
-        { name: 'Witness', piece: 'hammer' }
+        { name: 'Accused', piece: 'breadLoaf' },
+        { name: 'Witness', piece: 'vodkaBottle' }
       ]
     })
     startTestGame()

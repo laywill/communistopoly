@@ -10,7 +10,7 @@ describe('Gulag Flow Integration', () => {
     setupTestGame({
       players: [
         { name: 'Ivan', piece: 'sickle' },
-        { name: 'Natasha', piece: 'hammer' }
+        { name: 'Natasha', piece: 'breadLoaf' }
       ]
     })
     startTestGame()
