@@ -9,7 +9,7 @@ Fix all integration test issues (eslint errors and failing tests) and implement 
 - [x] 1.1: Fix non-null assertions in integrationHelpers.ts (5 errors)
 - [x] 1.2: Fix non-null assertions in gulagFlow.test.ts (31 errors)
 - [x] 1.3: Fix unused variables in gulagFlow.test.ts (1 error)
-- [ ] 1.4: Fix unsafe type operations in gulagFlow.test.ts (13 errors)
+- [x] 1.4: Fix unsafe type operations in gulagFlow.test.ts (13 errors)
 - [ ] 1.5: Fix non-null assertions in propertyFlow.test.ts (19 errors)
 - [ ] 1.6: Fix unused variables in propertyFlow.test.ts (3 errors)
 - [ ] 1.7: Fix non-null assertions in tribunalFlow.test.ts (14 errors)

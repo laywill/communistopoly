@@ -147,7 +147,7 @@ describe('Gulag Flow Integration', () => {
       expect(updatedIvan).toBeDefined()
       expect(updatedIvan?.inGulag).toBe(false) // Released by voucher
 
-      const voucherState = store.vouchers.find(v => v.prisonerId === ivan.id)
+      const voucherState = store.activeVouchers.find(v => v.prisonerId === ivan.id)
       expect(voucherState).toBeDefined()
       expect(voucherState?.voucherId).toBe(natasha.id)
 
@@ -192,14 +192,14 @@ describe('Gulag Flow Integration', () => {
       store.createVoucher(prisoner.id, voucher.id)
 
       const currentRound = store.roundNumber
-      const voucherState = store.vouchers.find(v => v.prisonerId === prisoner.id)
+      const voucherState = store.activeVouchers.find(v => v.prisonerId === prisoner.id)
       expect(voucherState?.expiresAtRound).toBe(currentRound + 3)
 
       // Advance past expiration
       useGameStore.setState({ roundNumber: currentRound + 4 })
       store.expireVouchers()
 
-      const expiredVoucher = store.vouchers.find(v => v.prisonerId === prisoner.id && v.isActive)
+      const expiredVoucher = store.activeVouchers.find(v => v.prisonerId === prisoner.id && v.isActive)
       expect(expiredVoucher).toBeUndefined()
     })
   })
