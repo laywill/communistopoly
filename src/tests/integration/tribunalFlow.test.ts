@@ -192,8 +192,8 @@ describe('Tribunal Flow Integration', () => {
       store.updatePlayer(accused.id, { rank: 'commissar' })
 
       const requirement = store.getWitnessRequirement(accused.id)
-      expect(requirement).toBeGreaterThan(0)
-      expect(requirement).toBe(2)
+      expect(requirement.required).toBeGreaterThan(0)
+      expect(requirement.required).toBe(2)
     })
 
     it('should require witnesses for Hero of Soviet Union', () => {
@@ -205,7 +205,7 @@ describe('Tribunal Flow Integration', () => {
       store.grantHeroOfSovietUnion(accused.id)
 
       const requirement = store.getWitnessRequirement(accused.id)
-      expect(requirement).toBeGreaterThan(0)
+      expect(requirement.required).toBeGreaterThan(0)
     })
 
     it('should not require witnesses for Proletariat', () => {
@@ -215,7 +215,7 @@ describe('Tribunal Flow Integration', () => {
 
       // Accused is already Proletariat by default
       const requirement = store.getWitnessRequirement(accused.id)
-      expect(requirement).toBe(0)
+      expect(requirement.required).toBe(0)
     })
   })
 
