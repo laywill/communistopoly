@@ -158,12 +158,19 @@ describe('Tribunal Flow Integration', () => {
     })
 
     it('should support multiple witnesses on each side', () => {
+      // Set up a test with more players
+      setupTestGame({
+        players: [
+          { name: 'Accuser', piece: 'sickle' },
+          { name: 'Accused', piece: 'breadLoaf' },
+          { name: 'Witness1', piece: 'vodkaBottle' },
+          { name: 'Witness2', piece: 'statueOfLenin' },
+          { name: 'Witness3', piece: 'ironCurtain' }
+        ]
+      })
+      startTestGame()
+
       const store = useGameStore.getState()
-
-      // Add more players to serve as witnesses
-      store.addPlayer('Witness2', 'star')
-      store.addPlayer('Witness3', 'vodka')
-
       const players = useGameStore.getState().players.filter(p => !p.isStalin)
       const [accuser, accused, witness1, witness2, witness3] = players
 
