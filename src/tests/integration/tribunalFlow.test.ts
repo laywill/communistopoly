@@ -262,18 +262,13 @@ describe('Tribunal Flow Integration', () => {
       const players = useGameStore.getState().players.filter(p => !p.isStalin)
       const [accuser, accused] = players
 
-      const accuserBefore = useGameStore.getState().players.find(p => p.id === accuser.id)
-      expect(accuserBefore).toBeDefined()
-      if (!accuserBefore) return
-      const tribunalsWonBefore = (accuserBefore as { statistics?: { tribunalsWon?: number } }).statistics?.tribunalsWon ?? 0
+      const tribunalsWonBefore = store.gameStatistics.playerStats[accuser.id]?.tribunalsWon ?? 0
 
       store.initiateDenouncement(accuser.id, accused.id, 'Crime')
       store.renderTribunalVerdict('guilty')
 
-      const accuserAfter = useGameStore.getState().players.find(p => p.id === accuser.id)
-      expect(accuserAfter).toBeDefined()
-      if (!accuserAfter) return
-      const tribunalsWonAfter = (accuserAfter as { statistics?: { tribunalsWon?: number } }).statistics?.tribunalsWon ?? 0
+      const updatedStore = useGameStore.getState()
+      const tribunalsWonAfter = updatedStore.gameStatistics.playerStats[accuser.id]?.tribunalsWon ?? 0
 
       expect(tribunalsWonAfter).toBe(tribunalsWonBefore + 1)
     })
@@ -283,18 +278,13 @@ describe('Tribunal Flow Integration', () => {
       const players = useGameStore.getState().players.filter(p => !p.isStalin)
       const [accuser, accused] = players
 
-      const accuserBefore = useGameStore.getState().players.find(p => p.id === accuser.id)
-      expect(accuserBefore).toBeDefined()
-      if (!accuserBefore) return
-      const tribunalsLostBefore = (accuserBefore as { statistics?: { tribunalsLost?: number } }).statistics?.tribunalsLost ?? 0
+      const tribunalsLostBefore = store.gameStatistics.playerStats[accuser.id]?.tribunalsLost ?? 0
 
       store.initiateDenouncement(accuser.id, accused.id, 'Crime')
       store.renderTribunalVerdict('innocent')
 
-      const accuserAfter = useGameStore.getState().players.find(p => p.id === accuser.id)
-      expect(accuserAfter).toBeDefined()
-      if (!accuserAfter) return
-      const tribunalsLostAfter = (accuserAfter as { statistics?: { tribunalsLost?: number } }).statistics?.tribunalsLost ?? 0
+      const updatedStore = useGameStore.getState()
+      const tribunalsLostAfter = updatedStore.gameStatistics.playerStats[accuser.id]?.tribunalsLost ?? 0
 
       expect(tribunalsLostAfter).toBe(tribunalsLostBefore + 1)
     })

@@ -2522,8 +2522,8 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            state.gameStatistics.playerStats[accuser.id].tribunalsWon++
-            state.gameStatistics.playerStats[accused.id].tribunalsLost++
+            get().updatePlayerStat(accuser.id, 'tribunalsWon', 1)
+            get().updatePlayerStat(accused.id, 'tribunalsLost', 1)
             break
           }
 
@@ -2537,8 +2537,8 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            state.gameStatistics.playerStats[accuser.id].tribunalsLost++
-            state.gameStatistics.playerStats[accused.id].tribunalsWon++
+            get().updatePlayerStat(accuser.id, 'tribunalsLost', 1)
+            get().updatePlayerStat(accused.id, 'tribunalsWon', 1)
             break
           }
 
@@ -2553,8 +2553,8 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            state.gameStatistics.playerStats[accuser.id].tribunalsLost++
-            state.gameStatistics.playerStats[accused.id].tribunalsLost++
+            get().updatePlayerStat(accuser.id, 'tribunalsLost', 1)
+            get().updatePlayerStat(accused.id, 'tribunalsLost', 1)
             break
           }
 
