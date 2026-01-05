@@ -15,8 +15,8 @@ Fix all integration test issues (eslint errors and failing tests) and implement 
 - [x] 1.7: Fix non-null assertions in tribunalFlow.test.ts (14 errors)
 - [x] 1.8: Fix unused variables in tribunalFlow.test.ts (4 errors)
 - [x] 1.9: Fix unsafe type operations in tribunalFlow.test.ts (6 errors)
-- [ ] 1.10: Fix non-null assertions in turnCycle.test.ts (8 errors)
-- [ ] 1.11: Fix unused variables in turnCycle.test.ts (2 errors)
+- [x] 1.10: Fix non-null assertions in turnCycle.test.ts (8 errors)
+- [x] 1.11: Fix unused variables in turnCycle.test.ts (2 errors)
 
 **Total: 106 eslint errors to fix**
 

@@ -19,10 +19,9 @@ describe('Turn Cycle Integration', () => {
 
   describe('Basic Turn Flow', () => {
     it('should complete a full turn cycle through all players', () => {
-      const store = useGameStore.getState()
       const initialPlayer = getCurrentPlayer()
       expect(initialPlayer).toBeDefined()
-      const initialPlayerId = initialPlayer?.id
+      const initialPlayerId = initialPlayer.id
 
       // Complete turns for all players
       completeTurn([3, 4]) // Player 1
@@ -31,13 +30,13 @@ describe('Turn Cycle Integration', () => {
 
       // Should be back to first player
       const currentPlayer = getCurrentPlayer()
-      expect(currentPlayer?.id).toBe(initialPlayerId)
+      expect(currentPlayer.id).toBe(initialPlayerId)
     })
 
     it('should allow extra turn on doubles', () => {
       const store = useGameStore.getState()
       const initialPlayer = getCurrentPlayer()
-      const initialPlayerId = initialPlayer?.id
+      const initialPlayerId = initialPlayer.id
 
       // Roll doubles
       rollAndMove([4, 4])
@@ -46,7 +45,7 @@ describe('Turn Cycle Integration', () => {
 
       // Should still be same player's turn (because of doubles)
       const afterDoublesPlayer = getCurrentPlayer()
-      expect(afterDoublesPlayer?.id).toBe(initialPlayerId)
+      expect(afterDoublesPlayer.id).toBe(initialPlayerId)
 
       // Roll non-doubles to end turn
       rollAndMove([3, 5])
@@ -55,18 +54,19 @@ describe('Turn Cycle Integration', () => {
 
       // Now should be next player
       const nextPlayer = getCurrentPlayer()
-      expect(nextPlayer?.id).not.toBe(initialPlayerId)
+      expect(nextPlayer.id).not.toBe(initialPlayerId)
     })
 
     it('should send player to Gulag on three consecutive doubles', () => {
       const store = useGameStore.getState()
-      const player = getCurrentPlayer()!
+      const player = getCurrentPlayer()
 
       // Directly test that sendToGulag with threeDoubles reason works
       store.sendToGulag(player.id, 'threeDoubles')
 
       const updatedStore = useGameStore.getState()
       const updatedPlayer = updatedStore.players.find(p => p.id === player.id)
+      expect(updatedPlayer).toBeDefined()
       expect(updatedPlayer?.inGulag).toBe(true)
     })
   })
@@ -91,8 +91,7 @@ describe('Turn Cycle Integration', () => {
   describe('Passing STOY (GO)', () => {
     it('should charge travel tax when passing STOY', () => {
       const store = useGameStore.getState()
-      const player = getCurrentPlayer()!
-      const initialRubles = player.rubles
+      const player = getCurrentPlayer()
 
       // Position player near STOY (position 0)
       store.updatePlayer(player.id, { position: 38 })
@@ -101,8 +100,9 @@ describe('Turn Cycle Integration', () => {
       rollAndMove([3, 2])
 
       // Player should have passed STOY
-      const updatedPlayer = store.players.find(p => p.id === player.id)!
-      expect(updatedPlayer.position).toBeLessThan(38)
+      const updatedPlayer = store.players.find(p => p.id === player.id)
+      expect(updatedPlayer).toBeDefined()
+      expect(updatedPlayer?.position).toBeLessThan(38)
 
       // Note: Tax implementation depends on game rules
       // This test documents the expected behavior
@@ -111,20 +111,21 @@ describe('Turn Cycle Integration', () => {
 
   describe('Player Movement', () => {
     it('should move player by the sum of dice roll', () => {
-      const player = getCurrentPlayer()!
+      const player = getCurrentPlayer()
       const initialPosition = player.position
 
       rollAndMove([4, 3])
 
       // Get fresh state after movement
       const updatedStore = useGameStore.getState()
-      const updatedPlayer = updatedStore.players.find(p => p.id === player.id)!
-      expect(updatedPlayer.position).toBe((initialPosition + 7) % 40)
+      const updatedPlayer = updatedStore.players.find(p => p.id === player.id)
+      expect(updatedPlayer).toBeDefined()
+      expect(updatedPlayer?.position).toBe((initialPosition + 7) % 40)
     })
 
     it('should wrap around the board after position 39', () => {
       const store = useGameStore.getState()
-      const player = getCurrentPlayer()!
+      const player = getCurrentPlayer()
 
       // Position near the end
       store.updatePlayer(player.id, { position: 37 })
@@ -133,8 +134,9 @@ describe('Turn Cycle Integration', () => {
 
       // Get fresh state after movement
       const updatedStore = useGameStore.getState()
-      const updatedPlayer = updatedStore.players.find(p => p.id === player.id)!
-      expect(updatedPlayer.position).toBe(2)
+      const updatedPlayer = updatedStore.players.find(p => p.id === player.id)
+      expect(updatedPlayer).toBeDefined()
+      expect(updatedPlayer?.position).toBe(2)
     })
   })
 
@@ -146,8 +148,6 @@ describe('Turn Cycle Integration', () => {
       // Ensure we have at least 3 non-Stalin players
       expect(nonStalinPlayers.length).toBeGreaterThanOrEqual(3)
 
-      const firstPlayer = getCurrentPlayer()
-
       // Eliminate the second player in the non-Stalin list
       store.updatePlayer(nonStalinPlayers[1].id, { isEliminated: true })
 
@@ -156,15 +156,15 @@ describe('Turn Cycle Integration', () => {
 
       // Should skip to third player (second is eliminated)
       const currentPlayer = getCurrentPlayer()
-      expect(currentPlayer?.isEliminated).toBe(false)
-      expect(currentPlayer?.id).not.toBe(nonStalinPlayers[1].id)
+      expect(currentPlayer.isEliminated).toBe(false)
+      expect(currentPlayer.id).not.toBe(nonStalinPlayers[1].id)
     })
   })
 
   describe('Gulag Players in Turn Order', () => {
     it('should send player to Gulag correctly', () => {
       const store = useGameStore.getState()
-      const player = getCurrentPlayer()!
+      const player = getCurrentPlayer()
 
       // Send current player to Gulag
       store.sendToGulag(player.id, 'enemyOfState')
@@ -172,13 +172,14 @@ describe('Turn Cycle Integration', () => {
       // Get updated state
       const updatedStore = useGameStore.getState()
       const inGulagPlayer = updatedStore.players.find(p => p.id === player.id)
+      expect(inGulagPlayer).toBeDefined()
       expect(inGulagPlayer?.inGulag).toBe(true)
 
       // End turn - should move to next player
       updatedStore.endTurn()
 
       const nextPlayer = getCurrentPlayer()
-      expect(nextPlayer?.id).not.toBe(player.id)
+      expect(nextPlayer.id).not.toBe(player.id)
     })
   })
 })
