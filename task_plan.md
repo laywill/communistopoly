@@ -21,19 +21,26 @@ Fix all integration test issues (eslint errors and failing tests) and implement 
 **Total: 106 eslint errors to fix**
 
 ### Phase 2: Fix Failing Integration Tests
-- [ ] 2.1: Fix Gulag flow API mismatches (6/12 failing)
-  - [ ] Fix voucher system return types
-  - [ ] Fix bribe system API
-  - [ ] Verify elimination logic
-- [ ] 2.2: Fix Tribunal flow API mismatches (5/14 failing)
-  - [ ] Fix getWitnessRequirement to return number instead of object
-  - [ ] Implement statistics tracking for tribunals
-- [ ] 2.3: Fix Property flow API mismatches (3/10 failing)
-  - [ ] Fix quota collection integration
-  - [ ] Verify collectivization effects
-  - [ ] Test railway fee calculations
+- [x] 2.1: Fix Gulag flow API mismatches (11/12 passing)
+  - [x] Fix Zustand state access pattern in tests
+  - [x] Fix voucher system state access
+  - [x] Fix bribe system state access
+  - [ ] Fix tribunal swap logic for gulag prisoner denouncements (1 failing)
+- [x] 2.2: Fix Tribunal flow API mismatches (9/14 passing)
+  - [x] Fix Zustand state access pattern in tests
+  - [x] Fix getWitnessRequirement test assertions (use .required property)
+  - [x] Fix Hero of Soviet Union witness requirement check
+  - [x] Fix test pollution by properly resetting heroesOfSovietUnion
+  - [ ] Fix tribunal verdict logic to send players to Gulag (2 failing)
+  - [ ] Fix multiple witnesses test (1 failing)
+  - [ ] Implement statistics tracking for tribunals (2 failing)
+- [ ] 2.3: Fix Property flow API mismatches (7/10 passing)
+  - [ ] Fix Zustand state access pattern in tests
+  - [ ] Fix quota collection integration (1 failing)
+  - [ ] Fix collectivization effects (1 failing)
+  - [ ] Fix railway fee calculations (1 failing)
 
-**Total: 23 failing tests to fix**
+**Total: 36/45 passing (was 22/45) - 9 tests still failing**
 
 ### Phase 3: Implement Error Handling in Game Store
 - [ ] 3.1: Design error handling strategy
