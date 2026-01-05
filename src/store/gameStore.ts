@@ -2511,15 +2511,28 @@ export const useGameStore = create<GameStore>()(
             // Send accused to Gulag
             get().sendToGulag(accused.id, 'denouncementGuilty')
 
-            // Give accuser informant bonus
-            get().updatePlayer(accuser.id, {
-              rubles: accuser.rubles + 100
-            })
-
-            get().addLogEntry({
-              type: 'tribunal',
-              message: `GUILTY! ${accused.name} has been sent to the Gulag. ${accuser.name} receives ₽100 informant bonus.`
-            })
+            // If accuser was in Gulag, release them (informant reward)
+            if (accuser.inGulag) {
+              get().updatePlayer(accuser.id, {
+                inGulag: false,
+                gulagTurns: 0,
+                position: 10, // Release to Just Visiting
+                rubles: accuser.rubles + 100
+              })
+              get().addLogEntry({
+                type: 'gulag',
+                message: `${accuser.name} is released from Gulag for successful denunciation and receives ₽100 informant bonus.`
+              })
+            } else {
+              // Give accuser informant bonus
+              get().updatePlayer(accuser.id, {
+                rubles: accuser.rubles + 100
+              })
+              get().addLogEntry({
+                type: 'tribunal',
+                message: `GUILTY! ${accused.name} has been sent to the Gulag. ${accuser.name} receives ₽100 informant bonus.`
+              })
+            }
 
             // Update statistics
             get().updatePlayerStat(accuser.id, 'tribunalsWon', 1)
