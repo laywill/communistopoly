@@ -35,9 +35,7 @@ export function setupTestGame(config: {
     if (playerConfig.rank && playerConfig.rank !== 'proletariat') {
       // Index + 1 because Stalin is at index 0
       const player = allPlayers[index + 1]
-      if (player) {
-        store.updatePlayer(player.id, { rank: playerConfig.rank })
-      }
+      store.updatePlayer(player.id, { rank: playerConfig.rank })
     }
   })
 
@@ -55,7 +53,7 @@ export function startTestGame() {
   const store = useGameStore.getState()
   // Game is already started by initializePlayers in setupTestGame
   // Just return the current player
-  return store.currentPlayerIndex !== null ? store.players[store.currentPlayerIndex] : null
+  return store.players[store.currentPlayerIndex]
 }
 
 /**
@@ -67,16 +65,14 @@ export function rollAndMove(roll: [number, number]) {
   // Set the dice roll
   useGameStore.setState({ dice: roll })
 
-  const currentPlayer = store.currentPlayerIndex !== null ? store.players[store.currentPlayerIndex] : null
-  if (currentPlayer) {
-    const totalRoll = roll[0] + roll[1]
-    // Use the store's movePlayer method for proper movement handling
-    store.movePlayer(currentPlayer.id, totalRoll)
-  }
+  const currentPlayer = store.players[store.currentPlayerIndex]
+  const totalRoll = roll[0] + roll[1]
+  // Use the store's movePlayer method for proper movement handling
+  store.movePlayer(currentPlayer.id, totalRoll)
 
   // Get updated player state
   const updatedStore = useGameStore.getState()
-  return updatedStore.currentPlayerIndex !== null ? updatedStore.players[updatedStore.currentPlayerIndex] : null
+  return updatedStore.players[updatedStore.currentPlayerIndex]
 }
 
 /**
@@ -104,7 +100,7 @@ export function getSpaceIdByName(namePart: string): number {
  */
 export function getCurrentPlayer() {
   const store = useGameStore.getState()
-  return store.currentPlayerIndex !== null ? store.players[store.currentPlayerIndex] : null
+  return store.players[store.currentPlayerIndex]
 }
 
 /**
