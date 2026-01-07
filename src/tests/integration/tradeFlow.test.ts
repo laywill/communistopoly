@@ -258,11 +258,12 @@ describe('Trade Flow Integration', () => {
       const players = store.players.filter(p => !p.isStalin)
       const [player1, player2] = players
 
-      // Give player2 some favours owed by player1
-      store.updatePlayer(player2.id, { favoursOwedBy: [player1.id, player1.id] })
+      // Give player1 some favours owed to player2
+      store.updatePlayer(player1.id, { owesFavourTo: [player2.id, player2.id] })
 
-      const player2FavoursBefore = useGameStore.getState().players.find(p => p.id === player2.id)?.favoursOwedBy?.length ?? 0
-      expect(player2FavoursBefore).toBe(2)
+      const player1BeforeState = useGameStore.getState().players.find(p => p.id === player1.id)
+      const player1FavoursBefore = player1BeforeState?.owesFavourTo.length ?? 0
+      expect(player1FavoursBefore).toBe(2)
 
       // Player 2 trades 1 favour for 200 rubles
       store.proposeTrade(player2.id, player1.id, {
@@ -284,9 +285,10 @@ describe('Trade Flow Integration', () => {
       store.acceptTrade(trade.id)
 
       // Verify favours transferred
-      const player2After = useGameStore.getState().players.find(p => p.id === player2.id)
+      const player1After = useGameStore.getState().players.find(p => p.id === player1.id)
       // Favour transfer implementation may vary
-      expect(player2After?.favoursOwedBy?.length).toBeLessThanOrEqual(2) // Favours should be managed
+      const player1FavoursAfter = player1After?.owesFavourTo.length ?? 0
+      expect(player1FavoursAfter).toBeLessThanOrEqual(2) // Favours should be managed
     })
   })
 
