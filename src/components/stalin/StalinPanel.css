@@ -96,9 +96,31 @@
   }
 }
 
+/* Constrain all accordion content elements */
+.accordion-content > * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 /* Prevent number inputs from expanding container */
 .accordion-content input[type="number"] {
   min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure all buttons respect container width */
+.accordion-content button {
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+/* Ensure all inputs and textareas respect container width */
+.accordion-content input,
+.accordion-content textarea,
+.accordion-content select {
+  max-width: 100%;
   box-sizing: border-box;
 }
 
