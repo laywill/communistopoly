@@ -476,6 +476,37 @@ Owning all properties in a group immediately doubles the quota; +100% (== 2x bas
 
 ---
 
+# PROPERTY MORTGAGING
+
+Sometimes the burden of maintaining State property becomes too great. In these desperate times, Custodians may mortgage properties to raise emergency funds.
+
+## Mortgaging a Property
+
+- A Custodian may mortgage any property they control to raise Rubles
+- The property must have NO collectivization improvements (all improvements must be liquidated first)
+- The State pays 50% of the property's base cost when mortgaged
+- Place the property card face-down or mark it as "UNDER STATE RECEIVERSHIP"
+
+## Mortgaged Property Rules
+
+- **Mortgaged properties DO NOT charge quotas** - the State has temporarily suspended their productivity requirements
+- Players landing on mortgaged properties pay nothing
+- The Custodian retains ownership but receives no income from the property
+- Mortgaged properties still count toward complete group ownership for calculation purposes (but groups with mortgaged properties cannot be improved)
+
+## Unmortgaging a Property
+
+- To unmortgage, the Custodian must pay back 110% of the mortgage value (the original 50% plus 10% interest to the State)
+- Example: A property worth 200₽ mortgages for 100₽. To unmortgage costs 110₽
+- Once unmortgaged, the property immediately resumes charging quotas and can be improved again
+- The Custodian may unmortgage properties at any time during their turn (before rolling or after resolving their move)
+
+## Mortgage Strategy
+
+*"When the Five-Year Plan fails, mortgage your factory. When the mortgage comes due, denounce your neighbor. This is the Soviet way."*
+
+---
+
 # GAME END CONDITIONS
 
 ## Individual Elimination

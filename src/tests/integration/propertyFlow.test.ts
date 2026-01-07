@@ -114,7 +114,7 @@ describe('Property Flow Integration', () => {
       expect(propertyLevel1).toBeDefined()
       if (!propertyLevel1) return
       quota = calculateQuota(propertyLevel1, useGameStore.getState().properties, visitor)
-      expect(quota).toBe(baseQuota * 3) // 10 * 3 = 30
+      expect(quota).toBe(baseQuota * 4) // 10 * 4 = 40
 
       // Add Party Oversight (level 2, 9x multiplier)
       store.updateCollectivizationLevel(spaceId, 2)

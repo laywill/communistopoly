@@ -624,30 +624,41 @@ export const useGameStore = create<GameStore>()(
                 }
               })
             } else if (property.custodianId !== currentPlayer.id) {
-              // Check if property is owned by another player (must pay quota)
-              if (space.type === 'railway') {
-                set({
-                  pendingAction: {
-                    type: 'railway-fee',
-                    data: { spaceId: space.id, payerId: currentPlayer.id }
-                  }
+              // Check if property is mortgaged - mortgaged properties don't charge quota
+              if (property.mortgaged) {
+                const custodian = state.players.find(p => p.id === property.custodianId)
+                get().addLogEntry({
+                  type: 'system',
+                  message: `${currentPlayer.name} landed on ${space.name} (mortgaged by ${custodian?.name ?? 'unknown'}) - no quota charged`,
+                  playerId: currentPlayer.id
                 })
-              } else if (space.type === 'utility') {
-                const die1: number = state.dice[0]
-                const die2: number = state.dice[1]
-                set({
-                  pendingAction: {
-                    type: 'utility-fee',
-                    data: { spaceId: space.id, payerId: currentPlayer.id, diceTotal: die1 + die2 }
-                  }
-                })
+                set({ turnPhase: 'post-turn' })
               } else {
-                set({
-                  pendingAction: {
-                    type: 'quota-payment',
-                    data: { spaceId: space.id, payerId: currentPlayer.id }
-                  }
-                })
+                // Check if property is owned by another player (must pay quota)
+                if (space.type === 'railway') {
+                  set({
+                    pendingAction: {
+                      type: 'railway-fee',
+                      data: { spaceId: space.id, payerId: currentPlayer.id }
+                    }
+                  })
+                } else if (space.type === 'utility') {
+                  const die1: number = state.dice[0]
+                  const die2: number = state.dice[1]
+                  set({
+                    pendingAction: {
+                      type: 'utility-fee',
+                      data: { spaceId: space.id, payerId: currentPlayer.id, diceTotal: die1 + die2 }
+                    }
+                  })
+                } else {
+                  set({
+                    pendingAction: {
+                      type: 'quota-payment',
+                      data: { spaceId: space.id, payerId: currentPlayer.id }
+                    }
+                  })
+                }
               }
             } else {
               // Player owns this property - just visiting
