@@ -6,6 +6,7 @@ import { useGameStore } from '../../store/gameStore'
 import { createTestProperty } from '../helpers/gameStateHelpers'
 import { createPlayerWithPiece } from '../helpers/pieceHelpers'
 import {
+  getPieceAbility,
   SICKLE_FARM_QUOTA_MODIFIER,
   RED_STAR_PENALTY_MULTIPLIER,
   TANK_REQUISITION_AMOUNT,
@@ -27,6 +28,57 @@ describe('Piece Abilities', () => {
   beforeEach(() => {
     // Reset store before each test
     useGameStore.setState(useGameStore.getState())
+  })
+
+  describe('getPieceAbility helper', () => {
+    it('should return the correct ability for each piece type', () => {
+      const hammerAbility = getPieceAbility('hammer')
+      expect(hammerAbility.name).toBe('The Hammer')
+      expect(hammerAbility.emoji).toBe('🔨')
+
+      const sickleAbility = getPieceAbility('sickle')
+      expect(sickleAbility.name).toBe('The Sickle')
+      expect(sickleAbility.emoji).toBe('🌙')
+
+      const redStarAbility = getPieceAbility('redStar')
+      expect(redStarAbility.name).toBe('The Red Star')
+      expect(redStarAbility.emoji).toBe('⭐')
+
+      const tankAbility = getPieceAbility('tank')
+      expect(tankAbility.name).toBe('The Tank')
+      expect(tankAbility.emoji).toBe('🛡️')
+
+      const breadLoafAbility = getPieceAbility('breadLoaf')
+      expect(breadLoafAbility.name).toBe('The Bread Loaf')
+      expect(breadLoafAbility.emoji).toBe('🍞')
+
+      const ironCurtainAbility = getPieceAbility('ironCurtain')
+      expect(ironCurtainAbility.name).toBe('The Iron Curtain')
+      expect(ironCurtainAbility.emoji).toBe('🚪')
+
+      const vodkaBottleAbility = getPieceAbility('vodkaBottle')
+      expect(vodkaBottleAbility.name).toBe('The Vodka Bottle')
+      expect(vodkaBottleAbility.emoji).toBe('🍾')
+
+      const statueOfLeninAbility = getPieceAbility('statueOfLenin')
+      expect(statueOfLeninAbility.name).toBe('The Statue of Lenin')
+      expect(statueOfLeninAbility.emoji).toBe('🗿')
+    })
+
+    it('should return ability objects with all required properties', () => {
+      const ability = getPieceAbility('hammer')
+
+      expect(ability).toHaveProperty('name')
+      expect(ability).toHaveProperty('emoji')
+      expect(ability).toHaveProperty('description')
+      expect(ability).toHaveProperty('flavour')
+      expect(ability).toHaveProperty('passiveAbilities')
+      expect(ability).toHaveProperty('activeAbilities')
+      expect(ability).toHaveProperty('restrictions')
+      expect(Array.isArray(ability.passiveAbilities)).toBe(true)
+      expect(Array.isArray(ability.activeAbilities)).toBe(true)
+      expect(Array.isArray(ability.restrictions)).toBe(true)
+    })
   })
 
   describe('Hammer Piece', () => {
