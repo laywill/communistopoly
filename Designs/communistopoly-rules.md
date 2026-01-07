@@ -503,7 +503,7 @@ Sometimes the burden of maintaining State property becomes too great. In these d
 
 ## Mortgage Strategy
 
-*"When the Five-Year Plan fails, mortgage your factory. When the mortgage comes due, denounce your neighbor. This is the Soviet way."*
+*"When the Five-Year Plan fails, mortgage your factory. When the mortgage comes due, denounce your neighbour. This is the Soviet way."*
 
 ---
 

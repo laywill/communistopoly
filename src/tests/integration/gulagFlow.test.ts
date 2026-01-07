@@ -128,7 +128,7 @@ describe('Gulag Flow Integration', () => {
   })
 
   describe('Vouching System', () => {
-    it('should track voucher liability and trigger if offense occurs', () => {
+    it('should track voucher liability and trigger if offence occurs', () => {
       const store = useGameStore.getState()
       const players = store.players.filter(p => !p.isStalin)
       const [ivan, natasha] = players
@@ -151,7 +151,7 @@ describe('Gulag Flow Integration', () => {
       expect(voucherState).toBeDefined()
       expect(voucherState?.voucherId).toBe(natasha.id)
 
-      // Ivan commits offense within liability period
+      // Ivan commits offence within liability period
       store.sendToGulag(ivan.id, 'threeDoubles')
 
       // Check if voucher consequences were triggered

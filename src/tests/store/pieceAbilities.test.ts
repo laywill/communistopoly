@@ -456,7 +456,7 @@ describe('Piece Abilities', () => {
         expect(updatedPlayer.position).toBe(35)
       })
 
-      it('should go to Gulag normally on second offense', () => {
+      it('should go to Gulag normally on second offence', () => {
         const { initializePlayers, sendToGulag } = useGameStore.getState()
 
         initializePlayers([
@@ -465,13 +465,13 @@ describe('Piece Abilities', () => {
 
         const player = useGameStore.getState().players[0]
 
-        // First offense - should redirect
+        // First offence - should redirect
         sendToGulag(player.id, 'enemyOfState')
         const afterFirst = useGameStore.getState().players[0]
         expect(afterFirst.inGulag).toBe(false)
         expect(afterFirst.hasUsedTankGulagImmunity).toBe(true)
 
-        // Second offense - should go to Gulag
+        // Second offence - should go to Gulag
         sendToGulag(player.id, 'enemyOfState')
         const afterSecond = useGameStore.getState().players[0]
         expect(afterSecond.inGulag).toBe(true)
