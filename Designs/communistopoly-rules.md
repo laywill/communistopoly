@@ -458,7 +458,11 @@ Instead of houses and hotels, properties are improved through Collectivization.
 
 ## Levels of Collectivization
 
-1. **Worker's Committee** (House equivalent): +200% (== 3x base) to quota. Cost: 100₽
+Each property has a base quota that can be collected if you own it.
+
+Owning all properties in a group immediately doubles the quota; +100% (== 2x base) to quota.
+
+1. **Worker's Committee** (House equivalent): +300% (== 4x base) to quota. Cost: 100₽
 2. **Party Oversight** (2 houses): +800% (== 9x base) to quota. Cost: 100₽
 3. **Full Collectivization** (3 houses): +1400% (== 15x base) to quota. Cost: 100₽
 4. **Model Soviet** (4 houses): +1900% (== 20x base) to quota. Cost: 100₽

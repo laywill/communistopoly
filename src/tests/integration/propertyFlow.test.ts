@@ -108,7 +108,7 @@ describe('Property Flow Integration', () => {
       const baseQuota = quota
       expect(baseQuota).toBe(10)
 
-      // Add Worker's Committee (level 1, 3x multiplier)
+      // Add Worker's Committee (level 1, 4x multiplier)
       store.updateCollectivizationLevel(spaceId, 1)
       const propertyLevel1 = useGameStore.getState().properties.find(p => p.spaceId === spaceId)
       expect(propertyLevel1).toBeDefined()
@@ -124,13 +124,29 @@ describe('Property Flow Integration', () => {
       quota = calculateQuota(propertyLevel2, useGameStore.getState().properties, visitor)
       expect(quota).toBe(baseQuota * 9) // 10 * 9 = 90
 
-      // Add Full Central Planning (level 3, 27x multiplier)
+      // Add Full Collectivization (level 3, 15x multiplier)
       store.updateCollectivizationLevel(spaceId, 3)
       const propertyLevel3 = useGameStore.getState().properties.find(p => p.spaceId === spaceId)
       expect(propertyLevel3).toBeDefined()
       if (!propertyLevel3) return
       quota = calculateQuota(propertyLevel3, useGameStore.getState().properties, visitor)
-      expect(quota).toBe(baseQuota * 27) // 10 * 27 = 270
+      expect(quota).toBe(baseQuota * 15) // 10 * 15 = 150
+
+      // Add Model Soviet (level 4, 20x multiplier)
+      store.updateCollectivizationLevel(spaceId, 4)
+      const propertyLevel4 = useGameStore.getState().properties.find(p => p.spaceId === spaceId)
+      expect(propertyLevel4).toBeDefined()
+      if (!propertyLevel4) return
+      quota = calculateQuota(propertyLevel4, useGameStore.getState().properties, visitor)
+      expect(quota).toBe(baseQuota * 20) // 10 * 20 = 200
+
+      // Add People's Palace (level 5, 30x multiplier)
+      store.updateCollectivizationLevel(spaceId, 5)
+      const propertyLevel5 = useGameStore.getState().properties.find(p => p.spaceId === spaceId)
+      expect(propertyLevel5).toBeDefined()
+      if (!propertyLevel5) return
+      quota = calculateQuota(propertyLevel5, useGameStore.getState().properties, visitor)
+      expect(quota).toBe(baseQuota * 30) // 10 * 30 = 300
     })
   })
 
