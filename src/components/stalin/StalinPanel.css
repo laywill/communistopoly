@@ -1,4 +1,5 @@
 /* Copyright © 2025 William Lay */
+
 /* Licensed under the PolyForm Noncommercial License 1.0.0 */
 
 .stalin-panel {
@@ -35,8 +36,7 @@
 
 .stalin-content {
   padding: 1rem;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   flex: 1;
 }
 
@@ -117,7 +117,7 @@
   max-width: 100%;
   box-sizing: border-box;
   white-space: normal;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Ensure all inputs and textareas respect container width */
