@@ -1,5 +1,10 @@
 # Additional Safeguards
 
+# Backup files
+**.orig
+**.BACKUP.*
+**.bak
+
 # Claude - planning-with-files skill cache
 notes.md
 task_plan.md
