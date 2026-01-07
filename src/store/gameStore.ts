@@ -624,30 +624,41 @@ export const useGameStore = create<GameStore>()(
                 }
               })
             } else if (property.custodianId !== currentPlayer.id) {
-              // Check if property is owned by another player (must pay quota)
-              if (space.type === 'railway') {
-                set({
-                  pendingAction: {
-                    type: 'railway-fee',
-                    data: { spaceId: space.id, payerId: currentPlayer.id }
-                  }
+              // Check if property is mortgaged - mortgaged properties don't charge quota
+              if (property.mortgaged) {
+                const custodian = state.players.find(p => p.id === property.custodianId)
+                get().addLogEntry({
+                  type: 'system',
+                  message: `${currentPlayer.name} landed on ${space.name} (mortgaged by ${custodian?.name ?? 'unknown'}) - no quota charged`,
+                  playerId: currentPlayer.id
                 })
-              } else if (space.type === 'utility') {
-                const die1: number = state.dice[0]
-                const die2: number = state.dice[1]
-                set({
-                  pendingAction: {
-                    type: 'utility-fee',
-                    data: { spaceId: space.id, payerId: currentPlayer.id, diceTotal: die1 + die2 }
-                  }
-                })
+                set({ turnPhase: 'post-turn' })
               } else {
-                set({
-                  pendingAction: {
-                    type: 'quota-payment',
-                    data: { spaceId: space.id, payerId: currentPlayer.id }
-                  }
-                })
+                // Check if property is owned by another player (must pay quota)
+                if (space.type === 'railway') {
+                  set({
+                    pendingAction: {
+                      type: 'railway-fee',
+                      data: { spaceId: space.id, payerId: currentPlayer.id }
+                    }
+                  })
+                } else if (space.type === 'utility') {
+                  const die1: number = state.dice[0]
+                  const die2: number = state.dice[1]
+                  set({
+                    pendingAction: {
+                      type: 'utility-fee',
+                      data: { spaceId: space.id, payerId: currentPlayer.id, diceTotal: die1 + die2 }
+                    }
+                  })
+                } else {
+                  set({
+                    pendingAction: {
+                      type: 'quota-payment',
+                      data: { spaceId: space.id, payerId: currentPlayer.id }
+                    }
+                  })
+                }
               }
             } else {
               // Player owns this property - just visiting
@@ -2434,6 +2445,12 @@ export const useGameStore = create<GameStore>()(
           return { required: 0, reason: 'Player is under suspicion - no witnesses required' }
         }
 
+        // Check if Hero of Soviet Union
+        const isHero = get().isHeroOfSovietUnion(playerId)
+        if (isHero) {
+          return { required: 'unanimous', reason: 'Hero of Soviet Union requires unanimous agreement' }
+        }
+
         // Rank-based requirements
         switch (player.rank) {
           case 'commissar':
@@ -2505,19 +2522,32 @@ export const useGameStore = create<GameStore>()(
             // Send accused to Gulag
             get().sendToGulag(accused.id, 'denouncementGuilty')
 
-            // Give accuser informant bonus
-            get().updatePlayer(accuser.id, {
-              rubles: accuser.rubles + 100
-            })
-
-            get().addLogEntry({
-              type: 'tribunal',
-              message: `GUILTY! ${accused.name} has been sent to the Gulag. ${accuser.name} receives ₽100 informant bonus.`
-            })
+            // If accuser was in Gulag, release them (informant reward)
+            if (accuser.inGulag) {
+              get().updatePlayer(accuser.id, {
+                inGulag: false,
+                gulagTurns: 0,
+                position: 10, // Release to Just Visiting
+                rubles: accuser.rubles + 100
+              })
+              get().addLogEntry({
+                type: 'gulag',
+                message: `${accuser.name} is released from Gulag for successful denunciation and receives ₽100 informant bonus.`
+              })
+            } else {
+              // Give accuser informant bonus
+              get().updatePlayer(accuser.id, {
+                rubles: accuser.rubles + 100
+              })
+              get().addLogEntry({
+                type: 'tribunal',
+                message: `GUILTY! ${accused.name} has been sent to the Gulag. ${accuser.name} receives ₽100 informant bonus.`
+              })
+            }
 
             // Update statistics
-            state.gameStatistics.playerStats[accuser.id].tribunalsWon++
-            state.gameStatistics.playerStats[accused.id].tribunalsLost++
+            get().updatePlayerStat(accuser.id, 'tribunalsWon', 1)
+            get().updatePlayerStat(accused.id, 'tribunalsLost', 1)
             break
           }
 
@@ -2531,8 +2561,8 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            state.gameStatistics.playerStats[accuser.id].tribunalsLost++
-            state.gameStatistics.playerStats[accused.id].tribunalsWon++
+            get().updatePlayerStat(accuser.id, 'tribunalsLost', 1)
+            get().updatePlayerStat(accused.id, 'tribunalsWon', 1)
             break
           }
 
@@ -2547,8 +2577,8 @@ export const useGameStore = create<GameStore>()(
             })
 
             // Update statistics
-            state.gameStatistics.playerStats[accuser.id].tribunalsLost++
-            state.gameStatistics.playerStats[accused.id].tribunalsLost++
+            get().updatePlayerStat(accuser.id, 'tribunalsLost', 1)
+            get().updatePlayerStat(accused.id, 'tribunalsLost', 1)
             break
           }
 

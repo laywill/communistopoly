@@ -34,14 +34,20 @@ export function calculateQuota (
 
   let quota = space.baseQuota
 
-  // Apply collectivization multiplier
-  quota *= getCollectivizationMultiplier(property.collectivizationLevel)
+  // Apply collectivization multiplier OR group bonus (not both)
+  // Collectivization bonuses replace the group ownership bonus
+  const collectivizationMultiplier = getCollectivizationMultiplier(property.collectivizationLevel)
 
-  // Check for complete group ownership (doubles quota)
-  if ((property.custodianId != null) && (space.group != null)) {
-    const hasCompleteGroup = ownsCompleteGroup(property.custodianId, space.group, properties)
-    if (hasCompleteGroup) {
-      quota *= 2
+  if (property.collectivizationLevel > 0) {
+    // Has collectivization: use that multiplier (replaces group bonus)
+    quota *= collectivizationMultiplier
+  } else {
+    // No collectivization: check for complete group ownership (doubles quota)
+    if ((property.custodianId != null) && (space.group != null)) {
+      const hasCompleteGroup = ownsCompleteGroup(property.custodianId, space.group, properties)
+      if (hasCompleteGroup) {
+        quota *= 2
+      }
     }
   }
 

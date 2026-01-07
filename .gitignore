@@ -1,5 +1,9 @@
 # Additional Safeguards
 
+# Claude - planning-with-files skill cache
+notes.md
+task_plan.md
+
 # Megalinter
 megalinter-reports/
 

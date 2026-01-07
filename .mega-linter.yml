@@ -16,6 +16,7 @@ DISABLE_LINTERS:
   - JSX_ESLINT # Disabled as run in a separate GitHub Action
   - TYPESCRIPT_ES # Disabled as run in a separate GitHub Action
   - TSX_ESLINT # Disabled as run in a separate GitHub Action
+  - TYPESCRIPT_STANDARD # Disabled as TS Standard does not support our version of typescript
 
 # Not worried if Lychee finds dead links
 SPELL_LYCHEE_DISABLE_ERRORS: true

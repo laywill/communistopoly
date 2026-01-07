@@ -223,7 +223,8 @@ Properties can be improved through collectivization (similar to houses/hotels in
 
 **Collectivization Levels:**
 - **None** (Site Only): Base quota × 1.0
-- **★☆☆☆☆** (Worker's Committee): Base quota × 3.0 (costs ₽100)
+- **Group Owned**: Base quota x 2.0
+- **★☆☆☆☆** (Worker's Committee): Base quota × 4.0 (costs ₽100)
 - **★★☆☆☆** (Party Oversight): Base quota × 9.0 (costs ₽100)
 - **★★★☆☆** (Full Collectivization): Base quota × 15.0 (costs ₽100)
 - **★★★★☆** (Model Soviet): Base quota × 20.0 (costs ₽100)

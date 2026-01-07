@@ -85,14 +85,14 @@ describe('Quota Calculation', () => {
       expect(quota).toBe(2) // 2 * 1.0 = 2
     })
 
-    it('should apply 3.0x multiplier for level 1 (Worker\'s Committee)', () => {
+    it('should apply 4.0x multiplier for level 1 (Worker\'s Committee)', () => {
       const property = createTestProperty(1, {
         custodianId: 'custodian-1',
         collectivizationLevel: 1
       })
       const properties: Property[] = [property]
       const quota = calculateQuota(property, properties)
-      expect(quota).toBe(6) // 2 * 3.0 = 6
+      expect(quota).toBe(8) // 2 * 4.0 = 8
     })
 
     it('should apply 9.0x multiplier for level 2 (Party Oversight)', () => {
@@ -304,7 +304,7 @@ describe('Quota Calculation', () => {
       const properties: Property[] = [property1, property2]
 
       const quota = calculateQuota(property1, properties)
-      expect(quota).toBe(36) // 2 * 9.0 (level 2) * 2 (complete group) = 36
+      expect(quota).toBe(18) // 2 * 9.0 (level 2) - collectivization replaces group bonus
     })
 
     it('should correctly calculate quota with collectivization, complete group, and Sickle', () => {
@@ -325,7 +325,7 @@ describe('Quota Calculation', () => {
       const player = createTestPlayer({ piece: 'sickle' })
 
       const quota = calculateQuota(property1, properties, player)
-      expect(quota).toBe(18) // 6 * 3.0 (level 1) * 2 (complete group) * 0.5 (sickle) = 18
+      expect(quota).toBe(12) // 6 * 4.0 (level 1) * 0.5 (sickle) - collectivization replaces group bonus
     })
 
     it('should correctly calculate quota with collectivization and Proletariat in Elite', () => {

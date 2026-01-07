@@ -532,14 +532,14 @@ describe('Gulag System', () => {
       sendToGulag(prisoner.id, 'enemyOfState')
       createVoucher(prisoner.id, voucher.id)
 
-      // Prisoner commits an offense that triggers voucher consequence
+      // Prisoner commits an offence that triggers voucher consequence
       checkVoucherConsequences(prisoner.id, 'threeDoubles')
 
       const updatedVoucher = useGameStore.getState().players.find(p => p.id === voucher.id)
       expect(updatedVoucher?.inGulag).toBe(true)
     })
 
-    it('should clear liability after 3 rounds without offense', () => {
+    it('should clear liability after 3 rounds without offence', () => {
       const { initializePlayers, sendToGulag, createVoucher, expireVouchers } = useGameStore.getState()
 
       initializePlayers([
@@ -836,7 +836,7 @@ describe('Gulag System', () => {
         expect([5, 15, 25, 35]).toContain(updatedPlayer.position)
       })
 
-      it('should go to Gulag on second offense', () => {
+      it('should go to Gulag on second offence', () => {
         const { initializePlayers, sendToGulag } = useGameStore.getState()
 
         initializePlayers([
@@ -845,11 +845,11 @@ describe('Gulag System', () => {
 
         const player = useGameStore.getState().players[0]
 
-        // First offense - immunity used
+        // First offence - immunity used
         sendToGulag(player.id, 'threeDoubles')
         expect(useGameStore.getState().players[0].inGulag).toBe(false)
 
-        // Second offense - goes to Gulag
+        // Second offence - goes to Gulag
         sendToGulag(player.id, 'enemyOfState')
 
         const updatedPlayer = useGameStore.getState().players[0]

@@ -458,7 +458,11 @@ Instead of houses and hotels, properties are improved through Collectivization.
 
 ## Levels of Collectivization
 
-1. **Worker's Committee** (House equivalent): +200% (== 3x base) to quota. Cost: 100₽
+Each property has a base quota that can be collected if you own it.
+
+Owning all properties in a group immediately doubles the quota; +100% (== 2x base) to quota.
+
+1. **Worker's Committee** (House equivalent): +300% (== 4x base) to quota. Cost: 100₽
 2. **Party Oversight** (2 houses): +800% (== 9x base) to quota. Cost: 100₽
 3. **Full Collectivization** (3 houses): +1400% (== 15x base) to quota. Cost: 100₽
 4. **Model Soviet** (4 houses): +1900% (== 20x base) to quota. Cost: 100₽
@@ -469,6 +473,37 @@ Instead of houses and hotels, properties are improved through Collectivization.
 - Must improve evenly across color groups (communist equality)
 - Improvements can be "requisitioned" by Stalin at any time for State needs
 - If you cannot pay a debt, your improvements are liquidated first
+
+---
+
+# PROPERTY MORTGAGING
+
+Sometimes the burden of maintaining State property becomes too great. In these desperate times, Custodians may mortgage properties to raise emergency funds.
+
+## Mortgaging a Property
+
+- A Custodian may mortgage any property they control to raise Rubles
+- The property must have NO collectivization improvements (all improvements must be liquidated first)
+- The State pays 50% of the property's base cost when mortgaged
+- Place the property card face-down or mark it as "UNDER STATE RECEIVERSHIP"
+
+## Mortgaged Property Rules
+
+- **Mortgaged properties DO NOT charge quotas** - the State has temporarily suspended their productivity requirements
+- Players landing on mortgaged properties pay nothing
+- The Custodian retains ownership but receives no income from the property
+- Mortgaged properties still count toward complete group ownership for calculation purposes (but groups with mortgaged properties cannot be improved)
+
+## Unmortgaging a Property
+
+- To unmortgage, the Custodian must pay back 110% of the mortgage value (the original 50% plus 10% interest to the State)
+- Example: A property worth 200₽ mortgages for 100₽. To unmortgage costs 110₽
+- Once unmortgaged, the property immediately resumes charging quotas and can be improved again
+- The Custodian may unmortgage properties at any time during their turn (before rolling or after resolving their move)
+
+## Mortgage Strategy
+
+*"When the Five-Year Plan fails, mortgage your factory. When the mortgage comes due, denounce your neighbour. This is the Soviet way."*
 
 ---
 

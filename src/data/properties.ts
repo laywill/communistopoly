@@ -65,7 +65,7 @@ export const PROPERTY_GROUPS: Record<PropertyGroup, PropertyGroupInfo> = {
 // Collectivization levels and their effects
 export const COLLECTIVIZATION_LEVELS = [
   { level: 0, name: 'None', multiplier: 1.0, cost: 0 },
-  { level: 1, name: "Worker's Committee", multiplier: 3.0, cost: 100 },
+  { level: 1, name: "Worker's Committee", multiplier: 4.0, cost: 100 },
   { level: 2, name: 'Party Oversight', multiplier: 9.0, cost: 100 },
   { level: 3, name: 'Full Collectivization', multiplier: 15.0, cost: 100 },
   { level: 4, name: 'Model Soviet', multiplier: 20.0, cost: 100 },
