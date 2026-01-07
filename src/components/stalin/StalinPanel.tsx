@@ -31,6 +31,25 @@ export default function StalinPanel() {
   const [fiveYearTarget, setFiveYearTarget] = useState('1000');
   const [fiveYearDuration, setFiveYearDuration] = useState('10');
 
+  // Accordion state - all sections start collapsed
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
+    new Set(['gulag', 'rank', 'decrees', 'audit'])
+  );
+
+  const toggleSection = (sectionId: string) => {
+    setCollapsedSections((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(sectionId)) {
+        newSet.delete(sectionId);
+      } else {
+        newSet.add(sectionId);
+      }
+      return newSet;
+    });
+  };
+
+  const isSectionCollapsed = (sectionId: string) => collapsedSections.has(sectionId);
+
   // Get Gulag inmates
   const gulagInmates = players.filter((p) => !p.isStalin && p.inGulag);
 
@@ -192,264 +211,302 @@ export default function StalinPanel() {
 
         {/* Send to Gulag */}
         <div className="stalin-section">
-          <h3>⚡ SEND TO GULAG</h3>
-          <div className="send-gulag-form">
-            <select
-              className="player-select"
-              value={selectedPlayer}
-              onChange={(e) => { setSelectedPlayer(e.target.value); }}
-            >
-              <option value="">Select a player...</option>
-              {availablePlayers.map((player) => (
-                <option key={player.id} value={player.id}>
-                  {player.name} - {player.rank} - ₽{player.rubles}
-                </option>
-              ))}
-            </select>
+          <h3
+            className="accordion-header"
+            onClick={() => { toggleSection('gulag'); }}
+          >
+            <span className="accordion-icon">{isSectionCollapsed('gulag') ? '▶' : '▼'}</span>
+            ⚡ SEND TO GULAG
+          </h3>
+          {!isSectionCollapsed('gulag') && (
+            <div className="accordion-content">
+              <div className="send-gulag-form">
+                <select
+                  className="player-select"
+                  value={selectedPlayer}
+                  onChange={(e) => { setSelectedPlayer(e.target.value); }}
+                >
+                  <option value="">Select a player...</option>
+                  {availablePlayers.map((player) => (
+                    <option key={player.id} value={player.id}>
+                      {player.name} - {player.rank} - ₽{player.rubles}
+                    </option>
+                  ))}
+                </select>
 
-            <textarea
-              className="justification-input"
-              placeholder="Justification (required)"
-              value={justification}
-              onChange={(e) => { setJustification(e.target.value); }}
-              rows={3}
-            />
+                <textarea
+                  className="justification-input"
+                  placeholder="Justification (required)"
+                  value={justification}
+                  onChange={(e) => { setJustification(e.target.value); }}
+                  rows={3}
+                />
 
-            <button
-              className="send-gulag-button"
-              onClick={handleSendToGulag}
-              disabled={!selectedPlayer || !justification.trim()}
-            >
-              SEND TO GULAG
-            </button>
-          </div>
+                <button
+                  className="send-gulag-button"
+                  onClick={handleSendToGulag}
+                  disabled={!selectedPlayer || !justification.trim()}
+                >
+                  SEND TO GULAG
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Rank Management */}
         <div className="stalin-section">
-          <h3>⭐ RANK MANAGEMENT</h3>
+          <h3
+            className="accordion-header"
+            onClick={() => { toggleSection('rank'); }}
+          >
+            <span className="accordion-icon">{isSectionCollapsed('rank') ? '▶' : '▼'}</span>
+            ⭐ RANK MANAGEMENT
+          </h3>
+          {!isSectionCollapsed('rank') && (
+            <div className="accordion-content">
+              {/* Promote Player */}
+              <div className="rank-control" style={{ marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Promote Player:</h4>
+                <select
+                  className="player-select"
+                  value={promotePlayerId}
+                  onChange={(e) => { setPromotePlayerId(e.target.value); }}
+                  style={{ marginBottom: '8px' }}
+                >
+                  <option value="">Select a player...</option>
+                  {availablePlayers.map((player) => (
+                    <option key={player.id} value={player.id}>
+                      {player.name} - {getRankName(player.rank)}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="stalin-button promote"
+                  onClick={handlePromote}
+                  disabled={!promotePlayerId}
+                  style={{ width: '100%', background: 'var(--color-military-olive)', color: 'white' }}
+                >
+                  PROMOTE TO {promotePlayerId ? getNextRank(promotePlayerId) : '---'}
+                </button>
+              </div>
 
-          {/* Promote Player */}
-          <div className="rank-control" style={{ marginBottom: '16px' }}>
-            <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Promote Player:</h4>
-            <select
-              className="player-select"
-              value={promotePlayerId}
-              onChange={(e) => { setPromotePlayerId(e.target.value); }}
-              style={{ marginBottom: '8px' }}
-            >
-              <option value="">Select a player...</option>
-              {availablePlayers.map((player) => (
-                <option key={player.id} value={player.id}>
-                  {player.name} - {getRankName(player.rank)}
-                </option>
-              ))}
-            </select>
-            <button
-              className="stalin-button promote"
-              onClick={handlePromote}
-              disabled={!promotePlayerId}
-              style={{ width: '100%', background: 'var(--color-military-olive)', color: 'white' }}
-            >
-              PROMOTE TO {promotePlayerId ? getNextRank(promotePlayerId) : '---'}
-            </button>
-          </div>
-
-          {/* Demote Player */}
-          <div className="rank-control">
-            <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Demote Player:</h4>
-            <select
-              className="player-select"
-              value={demotePlayerId}
-              onChange={(e) => { setDemotePlayerId(e.target.value); }}
-              style={{ marginBottom: '8px' }}
-            >
-              <option value="">Select a player...</option>
-              {availablePlayers.map((player) => (
-                <option key={player.id} value={player.id}>
-                  {player.name} - {getRankName(player.rank)}
-                </option>
-              ))}
-            </select>
-            <textarea
-              className="justification-input"
-              placeholder="Justification (required for the record)"
-              value={demoteJustification}
-              onChange={(e) => { setDemoteJustification(e.target.value); }}
-              rows={2}
-              style={{ marginBottom: '8px' }}
-            />
-            <button
-              className="stalin-button demote"
-              onClick={handleDemote}
-              disabled={!demotePlayerId || !demoteJustification.trim()}
-              style={{ width: '100%', background: 'var(--color-blood-burgundy)', color: 'white' }}
-            >
-              DEMOTE
-            </button>
-          </div>
+              {/* Demote Player */}
+              <div className="rank-control">
+                <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Demote Player:</h4>
+                <select
+                  className="player-select"
+                  value={demotePlayerId}
+                  onChange={(e) => { setDemotePlayerId(e.target.value); }}
+                  style={{ marginBottom: '8px' }}
+                >
+                  <option value="">Select a player...</option>
+                  {availablePlayers.map((player) => (
+                    <option key={player.id} value={player.id}>
+                      {player.name} - {getRankName(player.rank)}
+                    </option>
+                  ))}
+                </select>
+                <textarea
+                  className="justification-input"
+                  placeholder="Justification (required for the record)"
+                  value={demoteJustification}
+                  onChange={(e) => { setDemoteJustification(e.target.value); }}
+                  rows={2}
+                  style={{ marginBottom: '8px' }}
+                />
+                <button
+                  className="stalin-button demote"
+                  onClick={handleDemote}
+                  disabled={!demotePlayerId || !demoteJustification.trim()}
+                  style={{ width: '100%', background: 'var(--color-blood-burgundy)', color: 'white' }}
+                >
+                  DEMOTE
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Special Decrees */}
         <div className="stalin-section">
-          <h3>☭ SPECIAL DECREES</h3>
+          <h3
+            className="accordion-header"
+            onClick={() => { toggleSection('decrees'); }}
+          >
+            <span className="accordion-icon">{isSectionCollapsed('decrees') ? '▶' : '▼'}</span>
+            ☭ SPECIAL DECREES
+          </h3>
+          {!isSectionCollapsed('decrees') && (
+            <div className="accordion-content">
+              {/* Great Purge */}
+              <div style={{ marginBottom: '16px' }}>
+                <button
+                  className="stalin-button"
+                  onClick={initiateGreatPurge}
+                  disabled={greatPurgeUsed}
+                  style={{
+                    width: '100%',
+                    background: greatPurgeUsed ? '#666' : 'var(--color-blood-burgundy)',
+                    color: 'white',
+                    padding: '12px'
+                  }}
+                >
+                  {greatPurgeUsed ? '✓ GREAT PURGE USED' : '☭ THE GREAT PURGE'}
+                </button>
+                <p style={{ fontSize: '11px', color: 'var(--color-gulag-grey)', margin: '4px 0 0 0' }}>
+                  Once per game: All players vote simultaneously
+                </p>
+              </div>
 
-          {/* Great Purge */}
-          <div style={{ marginBottom: '16px' }}>
-            <button
-              className="stalin-button"
-              onClick={initiateGreatPurge}
-              disabled={greatPurgeUsed}
-              style={{
-                width: '100%',
-                background: greatPurgeUsed ? '#666' : 'var(--color-blood-burgundy)',
-                color: 'white',
-                padding: '12px'
-              }}
-            >
-              {greatPurgeUsed ? '✓ GREAT PURGE USED' : '☭ THE GREAT PURGE'}
-            </button>
-            <p style={{ fontSize: '11px', color: 'var(--color-gulag-grey)', margin: '4px 0 0 0' }}>
-              Once per game: All players vote simultaneously
-            </p>
-          </div>
+              {/* Five-Year Plan */}
+              <div style={{ marginBottom: '16px' }}>
+                <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Five-Year Plan:</h4>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                  <input
+                    type="number"
+                    placeholder="Target ₽"
+                    value={fiveYearTarget}
+                    onChange={(e) => { setFiveYearTarget(e.target.value); }}
+                    style={{ flex: 1, padding: '8px' }}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Minutes"
+                    value={fiveYearDuration}
+                    onChange={(e) => { setFiveYearDuration(e.target.value); }}
+                    style={{ flex: 1, padding: '8px' }}
+                  />
+                </div>
+                <button
+                  className="stalin-button"
+                  onClick={handleInitiateFiveYearPlan}
+                  disabled={!!activeFiveYearPlan}
+                  style={{
+                    width: '100%',
+                    background: activeFiveYearPlan ? '#666' : 'var(--color-soviet-red)',
+                    color: 'white'
+                  }}
+                >
+                  {activeFiveYearPlan ? 'PLAN IN PROGRESS' : 'INITIATE PLAN'}
+                </button>
+              </div>
 
-          {/* Five-Year Plan */}
-          <div style={{ marginBottom: '16px' }}>
-            <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Five-Year Plan:</h4>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-              <input
-                type="number"
-                placeholder="Target ₽"
-                value={fiveYearTarget}
-                onChange={(e) => { setFiveYearTarget(e.target.value); }}
-                style={{ flex: 1, padding: '8px' }}
-              />
-              <input
-                type="number"
-                placeholder="Minutes"
-                value={fiveYearDuration}
-                onChange={(e) => { setFiveYearDuration(e.target.value); }}
-                style={{ flex: 1, padding: '8px' }}
-              />
+              {/* Hero of Soviet Union */}
+              <div>
+                <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Hero of Soviet Union:</h4>
+                <select
+                  className="player-select"
+                  value={heroPlayerId}
+                  onChange={(e) => { setHeroPlayerId(e.target.value); }}
+                  style={{ marginBottom: '8px' }}
+                >
+                  <option value="">Select a player...</option>
+                  {availablePlayers.map((player) => (
+                    <option key={player.id} value={player.id}>
+                      {player.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="stalin-button"
+                  onClick={handleGrantHero}
+                  disabled={!heroPlayerId}
+                  style={{ width: '100%', background: 'var(--color-gold)', color: 'var(--color-propaganda-black)' }}
+                >
+                  ⭐ GRANT HERO STATUS
+                </button>
+                <p style={{ fontSize: '11px', color: 'var(--color-gulag-grey)', margin: '4px 0 0 0' }}>
+                  Immune to all negative effects for 3 rounds
+                </p>
+              </div>
             </div>
-            <button
-              className="stalin-button"
-              onClick={handleInitiateFiveYearPlan}
-              disabled={!!activeFiveYearPlan}
-              style={{
-                width: '100%',
-                background: activeFiveYearPlan ? '#666' : 'var(--color-soviet-red)',
-                color: 'white'
-              }}
-            >
-              {activeFiveYearPlan ? 'PLAN IN PROGRESS' : 'INITIATE PLAN'}
-            </button>
-          </div>
-
-          {/* Hero of Soviet Union */}
-          <div>
-            <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>Hero of Soviet Union:</h4>
-            <select
-              className="player-select"
-              value={heroPlayerId}
-              onChange={(e) => { setHeroPlayerId(e.target.value); }}
-              style={{ marginBottom: '8px' }}
-            >
-              <option value="">Select a player...</option>
-              {availablePlayers.map((player) => (
-                <option key={player.id} value={player.id}>
-                  {player.name}
-                </option>
-              ))}
-            </select>
-            <button
-              className="stalin-button"
-              onClick={handleGrantHero}
-              disabled={!heroPlayerId}
-              style={{ width: '100%', background: 'var(--color-gold)', color: 'var(--color-propaganda-black)' }}
-            >
-              ⭐ GRANT HERO STATUS
-            </button>
-            <p style={{ fontSize: '11px', color: 'var(--color-gulag-grey)', margin: '4px 0 0 0' }}>
-              Immune to all negative effects for 3 rounds
-            </p>
-          </div>
+          )}
         </div>
 
         {/* Audit System */}
         <div className="stalin-section">
-          <h3>🔍 AUDIT SYSTEM</h3>
-          <select
-            className="player-select"
-            value={auditPlayerId}
-            onChange={(e) => {
-              setAuditPlayerId(e.target.value);
-              setShowAuditResults(false);
-            }}
-            style={{ marginBottom: '8px' }}
+          <h3
+            className="accordion-header"
+            onClick={() => { toggleSection('audit'); }}
           >
-            <option value="">Select a player to audit...</option>
-            {availablePlayers.map((player) => (
-              <option key={player.id} value={player.id}>
-                {player.name}
-              </option>
-            ))}
-          </select>
-          <button
-            className="stalin-button"
-            onClick={handleAudit}
-            disabled={!auditPlayerId}
-            style={{ width: '100%', marginBottom: '12px' }}
-          >
-            CONDUCT AUDIT
-          </button>
-
-          {showAuditResults && auditPlayerId && (() => {
-            const player = players.find(p => p.id === auditPlayerId);
-            if (!player) return null;
-
-            return (
-              <div
-                style={{
-                  background: 'var(--color-parchment)',
-                  border: '2px solid var(--color-propaganda-black)',
-                  padding: '12px',
-                  borderRadius: '4px'
+            <span className="accordion-icon">{isSectionCollapsed('audit') ? '▶' : '▼'}</span>
+            🔍 AUDIT SYSTEM
+          </h3>
+          {!isSectionCollapsed('audit') && (
+            <div className="accordion-content">
+              <select
+                className="player-select"
+                value={auditPlayerId}
+                onChange={(e) => {
+                  setAuditPlayerId(e.target.value);
+                  setShowAuditResults(false);
                 }}
+                style={{ marginBottom: '8px' }}
               >
-                <h4 style={{ margin: '0 0 8px 0', fontSize: '14px' }}>
-                  AUDIT REPORT: {player.name}
-                </h4>
-                <div style={{ fontSize: '13px' }}>
-                  <div style={{ marginBottom: '4px' }}>
-                    <strong>Rank:</strong> {getRankName(player.rank)}
-                  </div>
-                  <div style={{ marginBottom: '4px' }}>
-                    <strong>Rubles:</strong> ₽{player.rubles}
-                  </div>
-                  <div style={{ marginBottom: '4px' }}>
-                    <strong>Properties:</strong> {player.properties.length}
-                  </div>
-                  <div style={{ marginBottom: '4px' }}>
-                    <strong>In Gulag:</strong> {player.inGulag ? `Yes (Day ${String(player.gulagTurns + 1)})` : 'No'}
-                  </div>
-                  {player.piece === 'ironCurtain' && (
-                    <div style={{ marginTop: '8px', padding: '8px', background: 'var(--color-warning-amber)', borderRadius: '4px' }}>
-                      <strong>⚠️ IRON CURTAIN PIECE:</strong><br />
-                      Claimed Rubles: ₽{player.ironCurtainClaimedRubles}<br />
-                      Actual Rubles: ₽{player.rubles}
-                      {player.ironCurtainClaimedRubles !== player.rubles && (
-                        <div style={{ color: 'var(--color-blood-burgundy)', fontWeight: 'bold', marginTop: '4px' }}>
-                          DISCREPANCY DETECTED!
+                <option value="">Select a player to audit...</option>
+                {availablePlayers.map((player) => (
+                  <option key={player.id} value={player.id}>
+                    {player.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                className="stalin-button"
+                onClick={handleAudit}
+                disabled={!auditPlayerId}
+                style={{ width: '100%', marginBottom: '12px' }}
+              >
+                CONDUCT AUDIT
+              </button>
+
+              {showAuditResults && auditPlayerId && (() => {
+                const player = players.find(p => p.id === auditPlayerId);
+                if (!player) return null;
+
+                return (
+                  <div
+                    style={{
+                      background: 'var(--color-parchment)',
+                      border: '2px solid var(--color-propaganda-black)',
+                      padding: '12px',
+                      borderRadius: '4px'
+                    }}
+                  >
+                    <h4 style={{ margin: '0 0 8px 0', fontSize: '14px' }}>
+                      AUDIT REPORT: {player.name}
+                    </h4>
+                    <div style={{ fontSize: '13px' }}>
+                      <div style={{ marginBottom: '4px' }}>
+                        <strong>Rank:</strong> {getRankName(player.rank)}
+                      </div>
+                      <div style={{ marginBottom: '4px' }}>
+                        <strong>Rubles:</strong> ₽{player.rubles}
+                      </div>
+                      <div style={{ marginBottom: '4px' }}>
+                        <strong>Properties:</strong> {player.properties.length}
+                      </div>
+                      <div style={{ marginBottom: '4px' }}>
+                        <strong>In Gulag:</strong> {player.inGulag ? `Yes (Day ${String(player.gulagTurns + 1)})` : 'No'}
+                      </div>
+                      {player.piece === 'ironCurtain' && (
+                        <div style={{ marginTop: '8px', padding: '8px', background: 'var(--color-warning-amber)', borderRadius: '4px' }}>
+                          <strong>⚠️ IRON CURTAIN PIECE:</strong><br />
+                          Claimed Rubles: ₽{player.ironCurtainClaimedRubles}<br />
+                          Actual Rubles: ₽{player.rubles}
+                          {player.ironCurtainClaimedRubles !== player.rubles && (
+                            <div style={{ color: 'var(--color-blood-burgundy)', fontWeight: 'bold', marginTop: '4px' }}>
+                              DISCREPANCY DETECTED!
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
-                  )}
-                </div>
-              </div>
-            );
-          })()}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
         </div>
       </div>
     </div>
