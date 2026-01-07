@@ -262,13 +262,13 @@ describe('Tribunal Flow Integration', () => {
       const players = useGameStore.getState().players.filter(p => !p.isStalin)
       const [accuser, accused] = players
 
-      const tribunalsWonBefore = store.gameStatistics.playerStats[accuser.id]?.tribunalsWon ?? 0
+      const tribunalsWonBefore = store.gameStatistics.playerStats[accuser.id].tribunalsWon
 
       store.initiateDenouncement(accuser.id, accused.id, 'Crime')
       store.renderTribunalVerdict('guilty')
 
       const updatedStore = useGameStore.getState()
-      const tribunalsWonAfter = updatedStore.gameStatistics.playerStats[accuser.id]?.tribunalsWon ?? 0
+      const tribunalsWonAfter = updatedStore.gameStatistics.playerStats[accuser.id].tribunalsWon
 
       expect(tribunalsWonAfter).toBe(tribunalsWonBefore + 1)
     })
@@ -278,13 +278,13 @@ describe('Tribunal Flow Integration', () => {
       const players = useGameStore.getState().players.filter(p => !p.isStalin)
       const [accuser, accused] = players
 
-      const tribunalsLostBefore = store.gameStatistics.playerStats[accuser.id]?.tribunalsLost ?? 0
+      const tribunalsLostBefore = store.gameStatistics.playerStats[accuser.id].tribunalsLost
 
       store.initiateDenouncement(accuser.id, accused.id, 'Crime')
       store.renderTribunalVerdict('innocent')
 
       const updatedStore = useGameStore.getState()
-      const tribunalsLostAfter = updatedStore.gameStatistics.playerStats[accuser.id]?.tribunalsLost ?? 0
+      const tribunalsLostAfter = updatedStore.gameStatistics.playerStats[accuser.id].tribunalsLost
 
       expect(tribunalsLostAfter).toBe(tribunalsLostBefore + 1)
     })
