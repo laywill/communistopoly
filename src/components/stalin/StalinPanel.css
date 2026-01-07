@@ -80,6 +80,8 @@
 
 .accordion-content {
   animation: slideDown 0.2s ease-out;
+  width: 100%;
+  overflow: hidden;
 }
 
 @keyframes slideDown {
@@ -92,6 +94,12 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Prevent number inputs from expanding container */
+.accordion-content input[type="number"] {
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .stalin-stat {
