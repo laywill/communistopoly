@@ -30,7 +30,8 @@ describe('Spaces Filter Functions', () => {
     })
 
     it('should return empty array for non-existent type', () => {
-      const result = getSpacesByType('nonexistent' as any)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const result = getSpacesByType('nonexistent' as unknown as SpaceType)
       expect(result).toEqual([])
     })
   })
@@ -55,7 +56,8 @@ describe('Spaces Filter Functions', () => {
     })
 
     it('should return empty array for non-existent group', () => {
-      const result = getSpacesByGroup('nonexistent' as any)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const result = getSpacesByGroup('nonexistent' as unknown as PropertyGroup)
       expect(result).toEqual([])
     })
   })

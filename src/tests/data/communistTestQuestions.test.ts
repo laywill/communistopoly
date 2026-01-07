@@ -130,7 +130,7 @@ describe('Communist Test Questions Helpers', () => {
     it('should return false when acceptableAnswers is null', () => {
       const questionWithNullAcceptable: TestQuestion = {
         ...mockQuestion,
-        acceptableAnswers: null as any
+        acceptableAnswers: null as unknown as string[]
       }
       expect(isAnswerCorrect(questionWithNullAcceptable, 'marx')).toBe(false)
     })
