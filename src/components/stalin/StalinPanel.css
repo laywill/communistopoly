@@ -36,6 +36,7 @@
 .stalin-content {
   padding: 1rem;
   overflow-y: auto;
+  overflow-x: hidden;
   flex: 1;
 }
 
@@ -81,7 +82,9 @@
 .accordion-content {
   animation: slideDown 0.2s ease-out;
   width: 100%;
+  max-width: 100%;
   overflow: hidden;
+  overflow-x: hidden;
 }
 
 @keyframes slideDown {
@@ -96,10 +99,11 @@
   }
 }
 
-/* Constrain all accordion content elements */
-.accordion-content > * {
+/* Constrain all accordion content elements at every nesting level */
+.accordion-content * {
   max-width: 100%;
   box-sizing: border-box;
+  min-width: 0;
 }
 
 /* Prevent number inputs from expanding container */
