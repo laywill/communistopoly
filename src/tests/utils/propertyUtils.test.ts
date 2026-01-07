@@ -15,7 +15,7 @@ import {
   getUtilityCount
 } from '../../utils/propertyUtils'
 import { createTestPlayer, createTestProperty } from '../helpers/gameStateHelpers'
-import { Property, Player } from '../../types/game'
+import { Property } from '../../types/game'
 
 describe('propertyUtils', () => {
   describe('ownsCompleteGroup', () => {

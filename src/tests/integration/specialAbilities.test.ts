@@ -3,7 +3,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useGameStore } from '../../store/gameStore'
-import { setupTestGame, startTestGame, rollAndMove } from '../helpers/integrationHelpers'
+import { setupTestGame, startTestGame } from '../helpers/integrationHelpers'
 
 describe('Special Abilities Integration', () => {
   describe('Hammer Abilities', () => {
