@@ -38,13 +38,18 @@ export default function StalinPanel() {
 
   const toggleSection = (sectionId: string) => {
     setCollapsedSections((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(sectionId)) {
-        newSet.delete(sectionId);
+      const isCurrentlyCollapsed = prev.has(sectionId);
+      if (isCurrentlyCollapsed) {
+        // Opening this section - close all others
+        const allSections = ['gulag', 'rank', 'decrees', 'audit'];
+        const newSet = new Set(allSections.filter(id => id !== sectionId));
+        return newSet;
       } else {
+        // Closing this section - add it back to collapsed
+        const newSet = new Set(prev);
         newSet.add(sectionId);
+        return newSet;
       }
-      return newSet;
     });
   };
 
