@@ -177,9 +177,8 @@
     flex: 1;
   }
 
-  /* In narrow view, limit game log height to Stalin panel's natural height */
-  .stalin-panel-section,
   .game-log-section {
+    flex: 1;
     max-height: 400px;
   }
 }
