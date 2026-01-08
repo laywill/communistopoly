@@ -77,29 +77,30 @@
 }
 
 .stalin-section {
-  flex: 0 0 auto;
+  flex: 1 1 300px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .board-section {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .info-section {
-  flex: 0 0 auto;
+  flex: 1 1 300px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .stalin-panel-section {
-  flex: 1;
-  width: 300px;
+  flex: 1 1 300px;
+  /* min-width: 250px; */
   display: flex;
   flex-direction: column;
 
@@ -117,8 +118,8 @@
 }
 
 .game-log-section {
-  flex: 1;
-  width: 300px;
+  flex: 1 1 300px;
+  /* min-width: 250px; */
   display: flex;
   flex-direction: column;
 
