@@ -91,7 +91,7 @@
 }
 
 .info-section {
-  width: 300px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -118,7 +118,7 @@
 
 .game-log-section {
   flex: 1;
-  min-height: 300px;
+  width: 300px;
   display: flex;
   flex-direction: column;
 
@@ -179,6 +179,6 @@
   /* In narrow view, limit game log height to Stalin panel's natural height */
   .stalin-panel-section,
   .game-log-section {
-    /* max-height: 400px; */
+    max-height: 400px;
   }
 }

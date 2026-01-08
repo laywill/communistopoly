@@ -43,7 +43,6 @@
 .stalin-section {
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-propaganda-black);
 }
 
 .stalin-section:last-child {
