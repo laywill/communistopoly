@@ -35,8 +35,7 @@
 
 .stalin-content {
   padding: 1rem;
-  overflow-y: auto;
-  overflow-x: auto;
+  overflow: auto;
   flex: 1;
 }
 
