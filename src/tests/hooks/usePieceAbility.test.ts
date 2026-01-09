@@ -1,7 +1,7 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import type { Player } from '../../types/game'
 import { useGameStore } from '../../store/gameStore'
@@ -678,6 +678,98 @@ describe('usePieceAbility - Hook', () => {
         speechUsed: true
       })
       expect(result.current.abilityStatus?.description).toContain('Speech ability used')
+    })
+  })
+
+  describe('Action Functions', () => {
+    it('should call gameStore.sickleHarvest with correct params', () => {
+      const { initializePlayers } = useGameStore.getState()
+      initializePlayers([{ name: 'Player 1', piece: 'sickle', isStalin: false }])
+      const player = useGameStore.getState().players[0]
+
+      const sickleHarvestSpy = vi.spyOn(useGameStore.getState(), 'sickleHarvest')
+
+      const { result } = renderHook(() => usePieceAbility(player))
+      const targetPropertyId = 5
+      result.current.useSickleHarvest(targetPropertyId)
+
+      expect(sickleHarvestSpy).toHaveBeenCalledWith(player.id, targetPropertyId)
+      expect(sickleHarvestSpy).toHaveBeenCalledTimes(1)
+
+      sickleHarvestSpy.mockRestore()
+    })
+
+    it('should call gameStore.tankRequisition with correct params', () => {
+      const { initializePlayers } = useGameStore.getState()
+      initializePlayers([{ name: 'Player 1', piece: 'tank', isStalin: false }])
+      const player = useGameStore.getState().players[0]
+
+      const tankRequisitionSpy = vi.spyOn(useGameStore.getState(), 'tankRequisition')
+
+      const { result } = renderHook(() => usePieceAbility(player))
+      const targetPlayerId = 'player-2'
+      result.current.useTankRequisition(targetPlayerId)
+
+      expect(tankRequisitionSpy).toHaveBeenCalledWith(player.id, targetPlayerId)
+      expect(tankRequisitionSpy).toHaveBeenCalledTimes(1)
+
+      tankRequisitionSpy.mockRestore()
+    })
+
+    it('should call gameStore.ironCurtainDisappear with correct params', () => {
+      const { initializePlayers } = useGameStore.getState()
+      initializePlayers([{ name: 'Player 1', piece: 'ironCurtain', isStalin: false }])
+      const player = useGameStore.getState().players[0]
+
+      const ironCurtainDisappearSpy = vi.spyOn(useGameStore.getState(), 'ironCurtainDisappear')
+
+      const { result } = renderHook(() => usePieceAbility(player))
+      const targetPropertyId = 10
+      result.current.useIronCurtainDisappear(targetPropertyId)
+
+      expect(ironCurtainDisappearSpy).toHaveBeenCalledWith(player.id, targetPropertyId)
+      expect(ironCurtainDisappearSpy).toHaveBeenCalledTimes(1)
+
+      ironCurtainDisappearSpy.mockRestore()
+    })
+
+    it('should call gameStore.leninSpeech with correct params', () => {
+      const { initializePlayers } = useGameStore.getState()
+      initializePlayers([{ name: 'Player 1', piece: 'statueOfLenin', isStalin: false }])
+      const player = useGameStore.getState().players[0]
+
+      const leninSpeechSpy = vi.spyOn(useGameStore.getState(), 'leninSpeech')
+
+      const { result } = renderHook(() => usePieceAbility(player))
+      const applauders = ['player-2', 'player-3']
+      result.current.useLeninSpeech(applauders)
+
+      expect(leninSpeechSpy).toHaveBeenCalledWith(player.id, applauders)
+      expect(leninSpeechSpy).toHaveBeenCalledTimes(1)
+
+      leninSpeechSpy.mockRestore()
+    })
+
+    it('should call gameStore.rollVodka3Dice', () => {
+      const { initializePlayers } = useGameStore.getState()
+      initializePlayers([{ name: 'Player 1', piece: 'vodkaBottle', isStalin: false }])
+      const player = useGameStore.getState().players[0]
+
+      // Set currentPlayerIndex so rollVodka3Dice can access the current player
+      useGameStore.setState({
+        currentPlayerIndex: 0,
+        gamePhase: 'playing'
+      })
+
+      const rollVodka3DiceSpy = vi.spyOn(useGameStore.getState(), 'rollVodka3Dice')
+
+      const { result } = renderHook(() => usePieceAbility(player))
+      result.current.useVodka3Dice()
+
+      expect(rollVodka3DiceSpy).toHaveBeenCalledWith()
+      expect(rollVodka3DiceSpy).toHaveBeenCalledTimes(1)
+
+      rollVodka3DiceSpy.mockRestore()
     })
   })
 })
