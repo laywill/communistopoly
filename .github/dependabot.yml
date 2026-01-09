@@ -13,6 +13,10 @@ updates:
       - "github_actions"
       - "chore"
       - "dependencies"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
   # Maintain dependencies for NPM Modules
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
@@ -23,14 +27,32 @@ updates:
       - "dependencies"
       - "chore"
     groups:
-      development-dependencies:
+      typescript-eslint:
+        patterns:
+          - "@typescript-eslint/*"
+          - "typescript-eslint"
+      vite-ecosystem:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+      vitest-ecosystem:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+      eslint-plugins:
+        patterns:
+          - "eslint-plugin-*"
+      testing:
+        patterns:
+          - "@testing-library/*"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react*"
+      other-dependencies:
         patterns:
           - "*"
-        dependency-type: "development"
-      production-dependencies:
-        patterns:
-          - "*"
-        dependency-type: "production"
   # Maintain dependencies for Devcontainer dependencies
   - package-ecosystem: "devcontainers"
     directory: "/"
@@ -38,3 +60,7 @@ updates:
       interval: "weekly"
     labels:
       - "chore"
+    groups:
+      devcontainer:
+        patterns:
+          - "*"
