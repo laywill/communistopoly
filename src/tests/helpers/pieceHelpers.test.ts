@@ -9,7 +9,6 @@ import {
   getLowerRank,
   getHigherRank
 } from './pieceHelpers'
-import type { PartyRank } from '../../types/game'
 
 describe('pieceHelpers - createMultiplePlayersWithPieces', () => {
   it('should create multiple players with different pieces', () => {

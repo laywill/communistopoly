@@ -152,8 +152,6 @@ describe('integrationHelpers - advanceRound', () => {
       ]
     })
 
-    const initialPlayerIndex = useGameStore.getState().currentPlayerIndex
-
     // Advance round - should cycle through all players
     advanceRound()
 
