@@ -2,7 +2,7 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { renderHook } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import type { Player } from '../../types/game'
 import { useGameStore } from '../../store/gameStore'
 import {
@@ -691,7 +691,10 @@ describe('usePieceAbility - Hook', () => {
 
       const { result } = renderHook(() => usePieceAbility(player))
       const targetPropertyId = 5
-      result.current.useSickleHarvest(targetPropertyId)
+
+      act(() => {
+        result.current.useSickleHarvest(targetPropertyId)
+      })
 
       expect(sickleHarvestSpy).toHaveBeenCalledWith(player.id, targetPropertyId)
       expect(sickleHarvestSpy).toHaveBeenCalledTimes(1)
@@ -708,7 +711,10 @@ describe('usePieceAbility - Hook', () => {
 
       const { result } = renderHook(() => usePieceAbility(player))
       const targetPlayerId = 'player-2'
-      result.current.useTankRequisition(targetPlayerId)
+
+      act(() => {
+        result.current.useTankRequisition(targetPlayerId)
+      })
 
       expect(tankRequisitionSpy).toHaveBeenCalledWith(player.id, targetPlayerId)
       expect(tankRequisitionSpy).toHaveBeenCalledTimes(1)
@@ -725,7 +731,10 @@ describe('usePieceAbility - Hook', () => {
 
       const { result } = renderHook(() => usePieceAbility(player))
       const targetPropertyId = 10
-      result.current.useIronCurtainDisappear(targetPropertyId)
+
+      act(() => {
+        result.current.useIronCurtainDisappear(targetPropertyId)
+      })
 
       expect(ironCurtainDisappearSpy).toHaveBeenCalledWith(player.id, targetPropertyId)
       expect(ironCurtainDisappearSpy).toHaveBeenCalledTimes(1)
@@ -742,7 +751,10 @@ describe('usePieceAbility - Hook', () => {
 
       const { result } = renderHook(() => usePieceAbility(player))
       const applauders = ['player-2', 'player-3']
-      result.current.useLeninSpeech(applauders)
+
+      act(() => {
+        result.current.useLeninSpeech(applauders)
+      })
 
       expect(leninSpeechSpy).toHaveBeenCalledWith(player.id, applauders)
       expect(leninSpeechSpy).toHaveBeenCalledTimes(1)
@@ -764,7 +776,10 @@ describe('usePieceAbility - Hook', () => {
       const rollVodka3DiceSpy = vi.spyOn(useGameStore.getState(), 'rollVodka3Dice')
 
       const { result } = renderHook(() => usePieceAbility(player))
-      result.current.useVodka3Dice()
+
+      act(() => {
+        result.current.useVodka3Dice()
+      })
 
       expect(rollVodka3DiceSpy).toHaveBeenCalledWith()
       expect(rollVodka3DiceSpy).toHaveBeenCalledTimes(1)
