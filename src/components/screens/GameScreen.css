@@ -100,8 +100,6 @@
 
 .stalin-panel-section {
   flex: 1 1 300px;
-
-  /* min-width: 250px; */
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
@@ -119,8 +117,6 @@
 
 .game-log-section {
   flex: 1 1 300px;
-
-  /* min-width: 250px; */
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
