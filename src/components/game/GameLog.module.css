@@ -99,6 +99,10 @@
   transition: background 0.2s ease;
 }
 
+.entry:last-child {
+  margin-bottom: 0;
+}
+
 .entry:hover {
   background: #fff;
 }
