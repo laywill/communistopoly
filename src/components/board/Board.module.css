@@ -1,5 +1,5 @@
-/* Copyright © 2025 William Lay */
-/* Licensed under the PolyForm Noncommercial License 1.0.0 */
+/* Copyright © 2025 William Lay
+   Licensed under the PolyForm Noncommercial License 1.0.0 */
 
 .board {
   --space-width: 70px;
@@ -58,14 +58,6 @@
   flex-shrink: 0;
 }
 
-.leftColumn {
-  /* Already reversed in component */
-}
-
-.rightColumn {
-  /* Normal order top to bottom */
-}
-
 /* Rotation for side spaces */
 .rotateLeft {
   display: flex;
@@ -108,23 +100,6 @@
   background: var(--color-aged-white);
   border: 2px solid var(--color-propaganda-black);
   margin: 2px;
-}
-
-/* Responsive adjustments */
-@media (width <= 1024px) {
-  .board {
-    --space-width: 60px;
-    --space-height: 96px;
-    --corner-size: 96px;
-  }
-}
-
-@media (width >= 1600px) {
-  .board {
-    --space-width: 80px;
-    --space-height: 128px;
-    --corner-size: 128px;
-  }
 }
 
 /* Space wrapper for positioning */
@@ -176,4 +151,21 @@
   transform: translateY(-50%);
   flex-direction: row;
   transform-origin: right center;
+}
+
+/* Responsive adjustments */
+@media (width <= 1024px) {
+  .board {
+    --space-width: 60px;
+    --space-height: 96px;
+    --corner-size: 96px;
+  }
+}
+
+@media (width >= 1700px) {
+  .board {
+    --space-width: 80px;
+    --space-height: 128px;
+    --corner-size: 128px;
+  }
 }

@@ -663,8 +663,8 @@ If implementing audio, use these guidelines:
 |-------------|---------------------------------------------------|
 | < 1024px    | Not supported - show "rotate device" message      |
 | 1024-1279px | Compact mode - smaller board, stacked dashboards  |
-| 1280-1599px | Standard mode - side-by-side layout               |
-| 1600px+     | Enhanced mode - larger board, more visible detail |
+| 1280-1699px | Standard mode - side-by-side layout               |
+| 1700px+     | Enhanced mode - larger board, more visible detail |
 
 ## Touch Targets
 - Minimum 44x44px for all interactive elements

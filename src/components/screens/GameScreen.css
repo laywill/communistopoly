@@ -1,5 +1,5 @@
-/* Copyright © 2025 William Lay */
-/* Licensed under the PolyForm Noncommercial License 1.0.0 */
+/* Copyright © 2025 William Lay
+   Licensed under the PolyForm Noncommercial License 1.0.0 */
 
 .game-screen {
   min-height: 100vh;
@@ -76,32 +76,50 @@
   padding: 1rem;
 }
 
+.stalin-wrapper {
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .board-section {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .info-section {
-  width: 300px;
+  flex: 1 1 300px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  justify-content: center;
 }
 
 .stalin-panel-section {
-  flex: 1;
-  min-height: 400px;
+  flex: 1 1 300px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
+
+  /* Limit height to board size in default view */
+  --space-width: 70px;
+  --space-height: 112px;
+  --corner-size: 112px;
+  --space-padding: 2px;
+  --num-spaces-per-side: 9;
+  --board-size: calc((var(--space-width) * (var(--num-spaces-per-side))) + (var(--corner-size) * 2) + (var(--space-padding) * (var(--num-spaces-per-side) - 1)));
+
+  max-height: var(--board-size);
 }
 
 .game-log-section {
-  flex: 1;
-  min-height: 300px;
+  flex: 1 1 300px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
 
   /* Limit height to board size in default view */
   --space-width: 70px;
@@ -120,28 +138,37 @@
   padding: 1rem;
 }
 
-/* Adjust board size and game log height for medium screens */
-@media (width <= 1024px) {
-  .game-log-section {
-    --space-width: 60px;
-    --corner-size: 96px;
-  }
-}
-
 /* High resolution screens */
-@media (width >= 1600px) {
+@media (width >= 1700px) {
+  .stalin-panel-section,
   .game-log-section {
     --space-width: 80px;
     --corner-size: 128px;
   }
 }
 
+@media (width <= 1550px) {
+  .stalin-panel-section,
+  .game-log-section {
+    flex: 1 1 200px;
+  }
+
+  .stalin-wrapper {
+  flex: 1 1 200px;
+}
+
+.info-section {
+  flex: 1 1 200px;
+}
+}
+
 /* Narrow layout - stack vertically then switch to horizontal */
-@media (width <= 1280px) {
+@media (width <= 1350px) {
   .game-layout {
     flex-direction: column;
   }
-
+  
+  .stalin-wrapper,
   .info-section {
     width: 100%;
     flex-direction: row;
@@ -152,8 +179,17 @@
     flex: 1;
   }
 
-  /* In narrow view, limit game log height to Stalin panel's natural height */
   .game-log-section {
+    flex: 1;
     max-height: 400px;
+  }
+}
+
+/* Adjust board size and game log height for medium screens */
+@media (width <= 1024px) {
+  .stalin-panel-section,
+  .game-log-section {
+    --space-width: 60px;
+    --corner-size: 96px;
   }
 }

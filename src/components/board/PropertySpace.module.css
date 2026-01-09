@@ -1,5 +1,5 @@
-/* Copyright © 2025 William Lay */
-/* Licensed under the PolyForm Noncommercial License 1.0.0 */
+/* Copyright © 2025 William Lay
+   Licensed under the PolyForm Noncommercial License 1.0.0 */
 
 .propertySpace {
   width: 70px;
@@ -130,7 +130,7 @@
   }
 }
 
-@media (width >= 1600px) {
+@media (width >= 1700px) {
   .propertySpace {
     width: 80px;
     height: 128px;
