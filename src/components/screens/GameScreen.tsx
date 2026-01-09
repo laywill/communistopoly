@@ -49,7 +49,7 @@ export default function GameScreen() {
       </header>
 
       <div className="game-layout">
-        <div className="stalin-section">
+        <div className="stalin-wrapper">
           <div className="stalin-panel-section">
             <StalinPanel />
           </div>

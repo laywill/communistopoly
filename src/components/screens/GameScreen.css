@@ -76,7 +76,7 @@
   padding: 1rem;
 }
 
-.stalin-section {
+.stalin-wrapper {
   flex: 1 1 300px;
   display: flex;
   flex-direction: column;
@@ -157,7 +157,7 @@
     flex: 1 1 200px;
   }
 
-  .stalin-section {
+  .stalin-wrapper {
   flex: 1 1 200px;
 }
 
@@ -172,7 +172,7 @@
     flex-direction: column;
   }
   
-  .stalin-section,
+  .stalin-wrapper,
   .info-section {
     width: 100%;
     flex-direction: row;
