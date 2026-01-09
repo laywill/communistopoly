@@ -1612,6 +1612,673 @@ describe('gameStore - Turn & Game Flow', () => {
   })
 })
 
+describe('gameStore - Gulag System', () => {
+  beforeEach(() => {
+    // Reset store to clean state
+    useGameStore.setState({
+      gamePhase: 'playing',
+      players: [],
+      gameLog: [],
+      currentPlayerIndex: 0,
+      turnPhase: 'pre-roll',
+      pendingAction: null,
+      vouchers: []
+    })
+  })
+
+  describe('sendToGulag', () => {
+    it('should send player to Gulag for enemyOfState', () => {
+      const { initializePlayers, sendToGulag } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false },
+        { name: 'Player 2', piece: 'hammer', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      sendToGulag(player1.id, 'enemyOfState', 'Test reason')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.inGulag).toBe(true)
+      expect(updatedPlayer?.gulagTurns).toBe(0)
+      expect(updatedPlayer?.position).toBe(10)
+    })
+
+    it('should demote player when sent to Gulag', () => {
+      const { initializePlayers, updatePlayer, sendToGulag } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      // Promote player to partyMember first
+      updatePlayer(player1.id, { rank: 'partyMember' })
+
+      sendToGulag(player1.id, 'enemyOfState', 'Test reason')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.rank).toBe('proletariat')
+    })
+
+    it('should add gulag log entry', () => {
+      const { initializePlayers, sendToGulag } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      // Clear log
+      useGameStore.setState({ gameLog: [] })
+
+      sendToGulag(player1.id, 'enemyOfState', 'Test reason')
+
+      const state = useGameStore.getState()
+      const gulagLog = state.gameLog.find(log => log.type === 'gulag')
+
+      expect(gulagLog).toBeDefined()
+      expect(gulagLog?.message).toContain('sent to Gulag')
+      expect(gulagLog?.playerId).toBe(player1.id)
+    })
+
+    it('should set turnPhase to post-turn', () => {
+      const { initializePlayers, sendToGulag } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      useGameStore.setState({ turnPhase: 'resolving' })
+
+      sendToGulag(player1.id, 'enemyOfState', 'Test reason')
+
+      const state = useGameStore.getState()
+      expect(state.turnPhase).toBe('post-turn')
+    })
+
+    it('should block Hammer piece from player-initiated Gulag (denouncementGuilty)', () => {
+      const { initializePlayers, sendToGulag } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Hammer Player', piece: 'hammer', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      sendToGulag(player1.id, 'denouncementGuilty', 'Test reason')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.inGulag).toBe(false)
+      expect(updatedPlayer?.position).not.toBe(10)
+    })
+
+    it('should redirect Tank piece to nearest railway on first Gulag sentence', () => {
+      const { initializePlayers, updatePlayer, sendToGulag } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Tank Player', piece: 'tank', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      // Position player at space 7 (nearest railway is 5)
+      updatePlayer(player1.id, { position: 7, hasUsedTankGulagImmunity: false })
+
+      sendToGulag(player1.id, 'enemyOfState', 'Test reason')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.inGulag).toBe(false)
+      expect(updatedPlayer?.position).toBe(5) // Nearest railway
+      expect(updatedPlayer?.hasUsedTankGulagImmunity).toBe(true)
+    })
+
+    it('should still demote Tank player even when redirected to railway', () => {
+      const { initializePlayers, updatePlayer, sendToGulag } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Tank Player', piece: 'tank', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      // Promote to partyMember
+      updatePlayer(player1.id, { rank: 'partyMember', hasUsedTankGulagImmunity: false })
+
+      sendToGulag(player1.id, 'enemyOfState', 'Test reason')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.rank).toBe('proletariat') // Demoted
+    })
+
+    it('should send Tank player to Gulag after immunity is used', () => {
+      const { initializePlayers, updatePlayer, sendToGulag } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Tank Player', piece: 'tank', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      // Mark immunity as used
+      updatePlayer(player1.id, { hasUsedTankGulagImmunity: true })
+
+      sendToGulag(player1.id, 'enemyOfState', 'Test reason')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.inGulag).toBe(true)
+      expect(updatedPlayer?.position).toBe(10)
+    })
+  })
+
+  describe('demotePlayer', () => {
+    it('should demote partyMember to proletariat', () => {
+      const { initializePlayers, updatePlayer, demotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { rank: 'partyMember' })
+
+      demotePlayer(player1.id)
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.rank).toBe('proletariat')
+    })
+
+    it('should demote commissar to partyMember', () => {
+      const { initializePlayers, updatePlayer, demotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { rank: 'commissar' })
+
+      demotePlayer(player1.id)
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.rank).toBe('partyMember')
+    })
+
+    it('should demote innerCircle to commissar', () => {
+      const { initializePlayers, updatePlayer, demotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { rank: 'innerCircle' })
+
+      demotePlayer(player1.id)
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.rank).toBe('commissar')
+    })
+
+    it('should not demote proletariat (already lowest rank)', () => {
+      const { initializePlayers, demotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      // Player is already proletariat by default
+      expect(player1.rank).toBe('proletariat')
+
+      demotePlayer(player1.id)
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.rank).toBe('proletariat') // Still proletariat
+    })
+
+    it('should add rank log entry on demotion', () => {
+      const { initializePlayers, updatePlayer, demotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { rank: 'partyMember' })
+
+      // Clear log
+      useGameStore.setState({ gameLog: [] })
+
+      demotePlayer(player1.id)
+
+      const state = useGameStore.getState()
+      const rankLog = state.gameLog.find(log => log.type === 'rank')
+
+      expect(rankLog).toBeDefined()
+      expect(rankLog?.message).toContain('demoted to proletariat')
+    })
+
+    it('should eliminate Red Star player when demoted to proletariat', () => {
+      const { initializePlayers, updatePlayer, demotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Red Star Player', piece: 'redStar', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      // Start as partyMember (Red Star starts here)
+      expect(player1.rank).toBe('partyMember')
+
+      demotePlayer(player1.id)
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.rank).toBe('proletariat')
+      expect(updatedPlayer?.isEliminated).toBe(true)
+    })
+  })
+
+  describe('handleGulagTurn', () => {
+    it('should increment gulagTurns for player in Gulag', () => {
+      const { initializePlayers, updatePlayer, handleGulagTurn } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { inGulag: true, gulagTurns: 0 })
+
+      handleGulagTurn(player1.id)
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.gulagTurns).toBe(1)
+    })
+
+    it('should add gulag turn log entry', () => {
+      const { initializePlayers, updatePlayer, handleGulagTurn } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { inGulag: true, gulagTurns: 2 })
+
+      // Clear log
+      useGameStore.setState({ gameLog: [] })
+
+      handleGulagTurn(player1.id)
+
+      const state = useGameStore.getState()
+      const gulagLog = state.gameLog.find(log => log.type === 'gulag')
+
+      expect(gulagLog).toBeDefined()
+      expect(gulagLog?.message).toContain('begins turn 3 in the Gulag')
+    })
+
+    it('should set pendingAction for gulag escape choice', () => {
+      const { initializePlayers, updatePlayer, handleGulagTurn } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { inGulag: true, gulagTurns: 0 })
+
+      handleGulagTurn(player1.id)
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction?.type).toBe('gulag-escape-choice')
+      expect(state.pendingAction?.data?.playerId).toBe(player1.id)
+    })
+
+    it('should not increment gulagTurns if player is not in Gulag', () => {
+      const { initializePlayers, handleGulagTurn } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      // Player is not in Gulag
+      expect(player1.inGulag).toBe(false)
+
+      handleGulagTurn(player1.id)
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.gulagTurns).toBe(0) // No change
+    })
+  })
+
+  describe('checkFor10TurnElimination', () => {
+    it('should eliminate player after 10 turns in Gulag', () => {
+      const { initializePlayers, updatePlayer, checkFor10TurnElimination } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { inGulag: true, gulagTurns: 10 })
+
+      checkFor10TurnElimination(player1.id)
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.isEliminated).toBe(true)
+    })
+
+    it('should not eliminate player before 10 turns', () => {
+      const { initializePlayers, updatePlayer, checkFor10TurnElimination } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { inGulag: true, gulagTurns: 9 })
+
+      checkFor10TurnElimination(player1.id)
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.isEliminated).toBe(false)
+    })
+
+    it('should not eliminate player not in Gulag', () => {
+      const { initializePlayers, checkFor10TurnElimination } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      checkFor10TurnElimination(player1.id)
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+      expect(updatedPlayer?.isEliminated).toBe(false)
+    })
+  })
+
+  describe('attemptGulagEscape', () => {
+    describe('roll method', () => {
+      it('should escape Gulag on successful doubles roll', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, { inGulag: true, gulagTurns: 1, position: 10 })
+
+        // Set dice to double 6s (required for gulag turn 1)
+        useGameStore.setState({ dice: [6, 6] })
+
+        attemptGulagEscape(player1.id, 'roll')
+
+        const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+        expect(updatedPlayer?.inGulag).toBe(false)
+        expect(updatedPlayer?.gulagTurns).toBe(0)
+      })
+
+      it('should remain in Gulag on failed doubles roll', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, { inGulag: true, gulagTurns: 1 })
+
+        // Set dice to non-doubles
+        useGameStore.setState({ dice: [3, 5] })
+
+        attemptGulagEscape(player1.id, 'roll')
+
+        const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+        expect(updatedPlayer?.inGulag).toBe(true)
+      })
+
+      it('should set turnPhase to post-turn after escape attempt', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, { inGulag: true, gulagTurns: 1 })
+        useGameStore.setState({ dice: [6, 6], turnPhase: 'resolving' })
+
+        attemptGulagEscape(player1.id, 'roll')
+
+        const state = useGameStore.getState()
+        expect(state.turnPhase).toBe('post-turn')
+        expect(state.pendingAction).toBeNull()
+      })
+
+      it('should add success log entry on successful escape', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, { inGulag: true, gulagTurns: 1 })
+        useGameStore.setState({ dice: [6, 6], gameLog: [] })
+
+        attemptGulagEscape(player1.id, 'roll')
+
+        const state = useGameStore.getState()
+        const escapeLog = state.gameLog.find(log =>
+          log.type === 'gulag' && log.message.includes('escaped')
+        )
+
+        expect(escapeLog).toBeDefined()
+      })
+
+      it('should add failure log entry on failed escape', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, { inGulag: true, gulagTurns: 1 })
+        useGameStore.setState({ dice: [3, 5], gameLog: [] })
+
+        attemptGulagEscape(player1.id, 'roll')
+
+        const state = useGameStore.getState()
+        const failLog = state.gameLog.find(log =>
+          log.type === 'gulag' && log.message.includes('failed')
+        )
+
+        expect(failLog).toBeDefined()
+      })
+    })
+
+    describe('pay method', () => {
+      it('should escape Gulag by paying 500 rubles', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, { inGulag: true, gulagTurns: 3, rubles: 1000 })
+
+        attemptGulagEscape(player1.id, 'pay')
+
+        const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+        expect(updatedPlayer?.inGulag).toBe(false)
+        expect(updatedPlayer?.gulagTurns).toBe(0)
+        expect(updatedPlayer?.rubles).toBe(500) // 1000 - 500
+      })
+
+      it('should demote player when paying to escape', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, {
+          inGulag: true,
+          gulagTurns: 3,
+          rubles: 1000,
+          rank: 'partyMember'
+        })
+
+        attemptGulagEscape(player1.id, 'pay')
+
+        const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+        expect(updatedPlayer?.rank).toBe('proletariat')
+      })
+
+      it('should not escape if player has insufficient rubles', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, { inGulag: true, gulagTurns: 3, rubles: 400 })
+
+        attemptGulagEscape(player1.id, 'pay')
+
+        const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+        expect(updatedPlayer?.inGulag).toBe(true) // Still in Gulag
+        expect(updatedPlayer?.rubles).toBe(400) // No change
+      })
+
+      it('should add treasury adjustment when paying', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+        const initialTreasury = useGameStore.getState().stateTreasury
+
+        updatePlayer(player1.id, { inGulag: true, gulagTurns: 3, rubles: 1000 })
+
+        attemptGulagEscape(player1.id, 'pay')
+
+        const state = useGameStore.getState()
+        expect(state.stateTreasury).toBe(initialTreasury + 500)
+      })
+    })
+
+    describe('card method', () => {
+      it('should escape Gulag using Get Out card', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, {
+          inGulag: true,
+          gulagTurns: 5,
+          hasFreeFromGulagCard: true
+        })
+
+        attemptGulagEscape(player1.id, 'card')
+
+        const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+        expect(updatedPlayer?.inGulag).toBe(false)
+        expect(updatedPlayer?.gulagTurns).toBe(0)
+        expect(updatedPlayer?.hasFreeFromGulagCard).toBe(false)
+      })
+
+      it('should not escape if player has no card', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, {
+          inGulag: true,
+          gulagTurns: 5,
+          hasFreeFromGulagCard: false
+        })
+
+        attemptGulagEscape(player1.id, 'card')
+
+        const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+        expect(updatedPlayer?.inGulag).toBe(true) // Still in Gulag
+      })
+
+      it('should add log entry when using card', () => {
+        const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        updatePlayer(player1.id, {
+          inGulag: true,
+          gulagTurns: 5,
+          hasFreeFromGulagCard: true
+        })
+
+        useGameStore.setState({ gameLog: [] })
+
+        attemptGulagEscape(player1.id, 'card')
+
+        const state = useGameStore.getState()
+        const cardLog = state.gameLog.find(log =>
+          log.type === 'gulag' && log.message.includes('Get out of Gulag free')
+        )
+
+        expect(cardLog).toBeDefined()
+      })
+    })
+  })
+})
+
 describe('gameStore - Round Progression', () => {
   beforeEach(() => {
     // Reset store to clean state

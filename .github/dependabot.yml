@@ -60,6 +60,7 @@ updates:
       interval: "weekly"
     labels:
       - "chore"
+      - "dependencies"
     groups:
       devcontainer:
         patterns:
