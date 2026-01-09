@@ -47,6 +47,7 @@
 
 .stalin-section:last-child {
   border-bottom: none;
+  margin-bottom: 0;
 }
 
 .stalin-section h3 {
