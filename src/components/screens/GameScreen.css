@@ -142,17 +142,8 @@
   padding: 1rem;
 }
 
-/* Adjust board size and game log height for medium screens */
-@media (width <= 1024px) {
-  .stalin-panel-section,
-  .game-log-section {
-    --space-width: 60px;
-    --corner-size: 96px;
-  }
-}
-
 /* High resolution screens */
-@media (width >= 1600px) {
+@media (width >= 1700px) {
   .stalin-panel-section,
   .game-log-section {
     --space-width: 80px;
@@ -160,12 +151,27 @@
   }
 }
 
+@media (width <= 1550px) {
+  .stalin-panel-section,
+  .game-log-section {
+    flex: 1 1 200px;
+  }
+
+  .stalin-section {
+  flex: 1 1 200px;
+}
+
+.info-section {
+  flex: 1 1 200px;
+}
+}
+
 /* Narrow layout - stack vertically then switch to horizontal */
-@media (width <= 1280px) {
+@media (width <= 1350px) {
   .game-layout {
     flex-direction: column;
   }
-
+  
   .stalin-section,
   .info-section {
     width: 100%;
@@ -180,5 +186,14 @@
   .game-log-section {
     flex: 1;
     max-height: 400px;
+  }
+}
+
+/* Adjust board size and game log height for medium screens */
+@media (width <= 1024px) {
+  .stalin-panel-section,
+  .game-log-section {
+    --space-width: 60px;
+    --corner-size: 96px;
   }
 }

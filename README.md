@@ -24,7 +24,7 @@ This repository contains the web-based implementation built with React, TypeScri
 - ✅ Complete 40-space board with Soviet theme
 - ✅ Zustand state management with persistence
 - ✅ Error boundary for robust error handling
-- ✅ Responsive design (1024px - 1600px+)
+- ✅ Responsive design (1024px - 1700px+)
 
 #### Game Loop & Movement ✓
 - ✅ Player setup (3-6 players + Stalin)
