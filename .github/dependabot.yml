@@ -12,6 +12,7 @@ updates:
     labels:
       - "github_actions"
       - "chore"
+      - "dependencies"
   # Maintain dependencies for NPM Modules
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
@@ -21,6 +22,15 @@ updates:
     labels:
       - "dependencies"
       - "chore"
+    groups:
+      development-dependencies:
+        patterns:
+          - "*"
+        dependency-type: "development"
+      production-dependencies:
+        patterns:
+          - "*"
+        dependency-type: "production"
   # Maintain dependencies for Devcontainer dependencies
   - package-ecosystem: "devcontainers"
     directory: "/"
