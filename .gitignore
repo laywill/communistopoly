@@ -5,9 +5,13 @@
 **.BACKUP.*
 **.bak
 
+# Claude
+.claude/settings.local.json
+
 # Claude - planning-with-files skill cache
 notes.md
 task_plan.md
+task_plan_*.md
 
 # Megalinter
 megalinter-reports/

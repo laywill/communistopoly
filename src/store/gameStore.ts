@@ -66,7 +66,8 @@ function getEliminationMessage (playerName: string, reason: EliminationReason): 
   return messages[reason]
 }
 
-function calculateTotalWealth (player: Player, properties: Property[]): number {
+// Export for testing
+export function calculateTotalWealth (player: Player, properties: Property[]): number {
   let total = player.rubles
 
   // Add property values (50% of base cost for mortgaged properties)
@@ -91,7 +92,8 @@ function calculateTotalWealth (player: Player, properties: Property[]): number {
   return total
 }
 
-function initializePlayerStats (): PlayerStatistics {
+// Export for testing
+export function initializePlayerStats (): PlayerStatistics {
   return {
     turnsPlayed: 0,
     denouncementsMade: 0,
