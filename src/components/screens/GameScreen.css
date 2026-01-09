@@ -1,4 +1,5 @@
 /* Copyright © 2025 William Lay */
+
 /* Licensed under the PolyForm Noncommercial License 1.0.0 */
 
 .game-screen {
@@ -100,11 +101,11 @@
 
 .stalin-panel-section {
   flex: 1 1 300px;
+
   /* min-width: 250px; */
   display: flex;
   flex-direction: column;
-
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
 
   /* Limit height to board size in default view */
   --space-width: 70px;
@@ -119,10 +120,10 @@
 
 .game-log-section {
   flex: 1 1 300px;
+
   /* min-width: 250px; */
   display: flex;
   flex-direction: column;
-
   box-shadow: 0 4px 8px rgb(0 0 0 / 30%);
 
   /* Limit height to board size in default view */
