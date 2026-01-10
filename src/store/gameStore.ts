@@ -1463,14 +1463,20 @@ export const useGameStore = create<GameStore>()(
         const trade = state.activeTradeOffers.find((t) => t.id === tradeId)
         if (trade == null) return
 
-        const fromPlayer = state.players.find((p) => p.id === trade.fromPlayerId)
-        const toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
+        let fromPlayer = state.players.find((p) => p.id === trade.fromPlayerId)
+        let toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
         if ((fromPlayer == null) || (toPlayer == null)) return
 
-        // Transfer offering from fromPlayer to toPlayer
-        if (trade.offering.rubles > 0) {
-          get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles - trade.offering.rubles })
-          get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles + trade.offering.rubles })
+        // Calculate net ruble transfer
+        const fromPlayerRubleChange = -trade.offering.rubles + trade.requesting.rubles
+        const toPlayerRubleChange = trade.offering.rubles - trade.requesting.rubles
+
+        // Apply ruble changes if any
+        if (fromPlayerRubleChange !== 0) {
+          get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles + fromPlayerRubleChange })
+        }
+        if (toPlayerRubleChange !== 0) {
+          get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles + toPlayerRubleChange })
         }
 
         trade.offering.properties.forEach((propId) => {
@@ -1489,12 +1495,7 @@ export const useGameStore = create<GameStore>()(
           get().updatePlayer(fromPlayer.id, { owesFavourTo: updatedFavours })
         }
 
-        // Transfer requesting from toPlayer to fromPlayer
-        if (trade.requesting.rubles > 0) {
-          get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles - trade.requesting.rubles })
-          get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles + trade.requesting.rubles })
-        }
-
+        // Transfer requesting properties
         trade.requesting.properties.forEach((propId) => {
           get().transferProperty(propId, fromPlayer.id)
         })
