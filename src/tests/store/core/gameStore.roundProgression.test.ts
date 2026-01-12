@@ -45,7 +45,7 @@ describe('gameStore - Round Progression', () => {
       // Add some denouncements
       useGameStore.setState({
         denouncementsThisRound: [
-          { denouncer: player1.id, denounced: player2.id }
+          { id: 'test-denouncement-1', accuserId: player1.id, accusedId: player2.id, crime: 'Test crime', timestamp: new Date(), roundNumber: 1 }
         ]
       })
 
