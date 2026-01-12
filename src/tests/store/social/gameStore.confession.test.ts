@@ -31,7 +31,7 @@ describe('gameStore - Confession System', () => {
       const prisoner = players[0]
 
       // Send player to Gulag first
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
 
       const confessionText = 'I confess to my crimes against the State and vow to reform.'
       submitConfession(prisoner.id, confessionText)
@@ -47,7 +47,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
 
       const now = Date.now()
       vi.setSystemTime(now)
@@ -62,7 +62,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
 
       const now = new Date()
       vi.setSystemTime(now)
@@ -77,7 +77,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
 
       const initialLogLength = useGameStore.getState().gameLog.length
       submitConfession(prisoner.id, 'My confession')
@@ -94,7 +94,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
       submitConfession(prisoner.id, 'My confession')
 
       const state = useGameStore.getState()
@@ -118,7 +118,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
 
       submitConfession(prisoner.id, 'First confession')
       vi.advanceTimersByTime(1000)
@@ -135,8 +135,8 @@ describe('gameStore - Confession System', () => {
       const prisoner1 = players[0]
       const prisoner2 = players[1]
 
-      sendToGulag(prisoner1.id, 'HARD_LABOR')
-      sendToGulag(prisoner2.id, 'HARD_LABOR')
+      sendToGulag(prisoner1.id, 'campLabour')
+      sendToGulag(prisoner2.id, 'campLabour')
 
       submitConfession(prisoner1.id, 'Confession from prisoner 1')
       vi.advanceTimersByTime(1000)
@@ -154,7 +154,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, reviewConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
       submitConfession(prisoner.id, 'I confess and will reform')
 
       const confessionId = useGameStore.getState().confessions[0].id
@@ -171,7 +171,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, reviewConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
       submitConfession(prisoner.id, 'My confession')
 
       const confessionId = useGameStore.getState().confessions[0].id
@@ -188,7 +188,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, reviewConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
       submitConfession(prisoner.id, 'My confession')
 
       const confessionId = useGameStore.getState().confessions[0].id
@@ -209,7 +209,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, reviewConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
       submitConfession(prisoner.id, 'My confession')
 
       const confessionId = useGameStore.getState().confessions[0].id
@@ -225,7 +225,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, reviewConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
       submitConfession(prisoner.id, 'My confession')
 
       const confessionId = useGameStore.getState().confessions[0].id
@@ -242,7 +242,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, reviewConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
       submitConfession(prisoner.id, 'My confession')
 
       const confessionId = useGameStore.getState().confessions[0].id
@@ -263,7 +263,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, reviewConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
       submitConfession(prisoner.id, 'My confession')
 
       const confessionId = useGameStore.getState().confessions[0].id
@@ -277,7 +277,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, reviewConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
       submitConfession(prisoner.id, 'My confession')
 
       const confessionId = useGameStore.getState().confessions[0].id
@@ -287,7 +287,7 @@ describe('gameStore - Confession System', () => {
       expect(useGameStore.getState().players.find(p => p.id === prisoner.id)?.inGulag).toBe(false)
 
       // Put player back in gulag
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
 
       // Try to review again - should not work
       reviewConfession(confessionId, false)
@@ -314,7 +314,7 @@ describe('gameStore - Confession System', () => {
       const { submitConfession, reviewConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
-      sendToGulag(prisoner.id, 'HARD_LABOR')
+      sendToGulag(prisoner.id, 'campLabour')
       submitConfession(prisoner.id, 'My confession')
 
       const confessionId = useGameStore.getState().confessions[0].id
