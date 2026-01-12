@@ -8,7 +8,7 @@ export function createTestPlayer(overrides: Partial<Player> = {}): Player {
   return {
     id: 'test-player-1',
     name: 'Test Player',
-    piece: 'hammer',
+    piece: 'sickle',
     rank: 'proletariat',
     rubles: 1500,
     position: 0,
