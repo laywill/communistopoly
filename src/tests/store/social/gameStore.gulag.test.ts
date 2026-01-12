@@ -1181,7 +1181,7 @@ describe('gameStore - Gulag System', () => {
 
       initializePlayers([
         { name: 'Prisoner', piece: 'sickle', isStalin: false },
-        { name: 'Target', piece: 'star', isStalin: false }  // Using star piece (no Gulag protection)
+        { name: 'Target', piece: 'redStar', isStalin: false }  // Using redStar piece (no Gulag protection)
       ])
 
       const [prisoner, target] = useGameStore.getState().players
@@ -1241,7 +1241,7 @@ describe('gameStore - Gulag System', () => {
 
       initializePlayers([
         { name: 'Prisoner 1', piece: 'sickle', isStalin: false },
-        { name: 'Prisoner 2', piece: 'star', isStalin: false },
+        { name: 'Prisoner 2', piece: 'redStar', isStalin: false },
         { name: 'Free Player', piece: 'tank', isStalin: false }
       ])
 

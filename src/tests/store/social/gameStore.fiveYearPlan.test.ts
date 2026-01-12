@@ -9,9 +9,9 @@ describe('gameStore - Five Year Plan', () => {
     const { initializePlayers } = useGameStore.getState()
     initializePlayers([
       { name: 'Player 1', piece: 'sickle', isStalin: false },
-      { name: 'Player 2', piece: 'star', isStalin: false },
-      { name: 'Player 3', piece: 'boot', isStalin: false },
-      { name: 'Player 4', piece: 'anvil', isStalin: false }
+      { name: 'Player 2', piece: 'redStar', isStalin: false },
+      { name: 'Player 3', piece: 'tank', isStalin: false },
+      { name: 'Player 4', piece: 'hammer', isStalin: false }
     ])
 
     // Give players some rubles for testing
@@ -346,7 +346,7 @@ describe('gameStore - Five Year Plan', () => {
       useGameStore.getState().resetGame()
       initializePlayers([
         { name: 'Player 1', piece: 'sickle', isStalin: false },
-        { name: 'Player 2', piece: 'star', isStalin: false },
+        { name: 'Player 2', piece: 'redStar', isStalin: false },
         { name: 'Stalin', piece: null, isStalin: true }
       ])
 
@@ -424,7 +424,7 @@ describe('gameStore - Five Year Plan', () => {
       useGameStore.getState().resetGame()
       initializePlayers([
         { name: 'Player 1', piece: 'sickle', isStalin: false },
-        { name: 'Player 2', piece: 'star', isStalin: false },
+        { name: 'Player 2', piece: 'redStar', isStalin: false },
         { name: 'Stalin', piece: null, isStalin: true }
       ])
 

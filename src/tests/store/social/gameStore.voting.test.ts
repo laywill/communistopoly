@@ -10,8 +10,8 @@ describe('gameStore - End Game Voting', () => {
     initializePlayers([
       { name: 'Player 1', piece: 'sickle', isStalin: false },
       { name: 'Player 2', piece: 'hammer', isStalin: false },
-      { name: 'Player 3', piece: 'star', isStalin: false },
-      { name: 'Stalin', piece: 'boot', isStalin: true }
+      { name: 'Player 3', piece: 'redStar', isStalin: false },
+      { name: 'Stalin', piece: null, isStalin: true }
     ])
   }
 

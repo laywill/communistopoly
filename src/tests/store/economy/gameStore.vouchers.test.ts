@@ -536,7 +536,7 @@ describe('gameStore - Voucher & Bribe System', () => {
         { name: 'Prisoner1', piece: 'sickle', isStalin: false },
         { name: 'Voucher1', piece: 'hammer', isStalin: false },
         { name: 'Prisoner2', piece: 'tank', isStalin: false },
-        { name: 'Voucher2', piece: 'star', isStalin: false }
+        { name: 'Voucher2', piece: 'redStar', isStalin: false }
       ])
 
       const [prisoner1, voucher1, prisoner2, voucher2] = useGameStore.getState().players
