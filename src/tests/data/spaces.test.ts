@@ -8,6 +8,7 @@ import {
   getSpacesByGroup,
   getPropertiesByGroup
 } from '../../data/spaces'
+import type { SpaceType, PropertyGroup } from '../../types/game'
 
 describe('Spaces Filter Functions', () => {
   describe('getSpacesByType', () => {
