@@ -1463,8 +1463,8 @@ export const useGameStore = create<GameStore>()(
         const trade = state.activeTradeOffers.find((t) => t.id === tradeId)
         if (trade == null) return
 
-        let fromPlayer = state.players.find((p) => p.id === trade.fromPlayerId)
-        let toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
+        const fromPlayer = state.players.find((p) => p.id === trade.fromPlayerId)
+        const toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
         if ((fromPlayer == null) || (toPlayer == null)) return
 
         // Calculate net ruble transfer
