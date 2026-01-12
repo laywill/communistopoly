@@ -6,7 +6,7 @@ import { persist } from 'zustand/middleware'
 import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, PlayerStatistics, Confession } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
 import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck, type DirectiveCard } from '../data/partyDirectiveCards'
-import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
+import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion, COMMUNIST_TEST_QUESTIONS_BY_DIFFICULTY } from '../data/communistTestQuestions'
 
 // Helper functions
 function getGulagReasonText (reason: GulagReason, justification?: string): string {
@@ -1864,10 +1864,24 @@ export const useGameStore = create<GameStore>()(
       drawCommunistTest: (difficulty) => {
         const state = get()
         const selectedDifficulty = difficulty ?? getRandomDifficulty()
-        const question = getRandomQuestionByDifficulty(selectedDifficulty)
+
+        // Get all questions for this difficulty
+        const allQuestions = COMMUNIST_TEST_QUESTIONS_BY_DIFFICULTY[selectedDifficulty]
+
+        // Filter out already-used questions
+        const availableQuestions = allQuestions.filter(q => !state.communistTestUsedQuestions.has(q.id))
+
+        // If all questions have been used, reset the used set and use all questions
+        const questionsToUse = availableQuestions.length > 0 ? availableQuestions : allQuestions
+
+        // Select a random question from available pool
+        const randomIndex = Math.floor(Math.random() * questionsToUse.length)
+        const question = questionsToUse[randomIndex]
 
         // Mark question as used
-        const newUsedQuestions = new Set(state.communistTestUsedQuestions)
+        const newUsedQuestions = availableQuestions.length > 0
+          ? new Set(state.communistTestUsedQuestions)
+          : new Set()  // Reset if we exhausted all questions
         newUsedQuestions.add(question.id)
 
         set({ communistTestUsedQuestions: newUsedQuestions })
