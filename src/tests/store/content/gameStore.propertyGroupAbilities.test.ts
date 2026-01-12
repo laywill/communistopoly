@@ -195,7 +195,7 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(23, custodian.id)
 
       // Mock alert
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined)
 
       // Execute
       store.kgbPreviewTest(custodian.id)
@@ -257,7 +257,7 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(23, custodian.id)
       store.updatePlayer(custodian.id, { kgbTestPreviewsUsedThisRound: 1 })
 
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined)
 
       // Execute
       store.kgbPreviewTest(custodian.id)
@@ -306,7 +306,7 @@ describe('Property Group Abilities', () => {
       // Simulate round end (counter should reset)
       store.updatePlayer(custodian.id, { kgbTestPreviewsUsedThisRound: 0 })
 
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined)
 
       // Execute
       store.kgbPreviewTest(custodian.id)
@@ -475,7 +475,7 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(29, custodian.id)
 
       // Mock alert
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined)
 
       const decision = 'Should Player 2 be eliminated?'
 
@@ -548,7 +548,7 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(29, custodian.id)
       store.updatePlayer(custodian.id, { hasUsedPravdaPressRevote: true })
 
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {})
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined)
 
       const decision = 'Test decision'
 
