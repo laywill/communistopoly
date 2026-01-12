@@ -125,7 +125,7 @@ describe('gameStore - Trading System', () => {
 
       const { pendingAction, activeTradeOffers } = useGameStore.getState()
       expect(pendingAction?.type).toBe('trade-response')
-      expect(pendingAction?.data.tradeOfferId).toBe(activeTradeOffers[0].id)
+      expect(pendingAction?.data?.tradeOfferId).toBe(activeTradeOffers[0].id)
     })
 
     it('should not create trade if fromPlayer does not exist', () => {

@@ -93,14 +93,14 @@ describe('Spaces Filter Functions', () => {
           BOARD_SPACES
             .filter(space => space.type === 'property')
             .map(space => space.group)
-            .filter((group): group is string => group !== undefined)
+            .filter((group): group is PropertyGroup => group !== undefined)
         )
       )
 
       expect(propertyGroups.length).toBeGreaterThan(0)
 
       propertyGroups.forEach(group => {
-        const properties = getPropertiesByGroup(group)
+        const properties = getPropertiesByGroup(group as string)
         expect(properties.length).toBeGreaterThan(0)
         expect(properties.every(space => space.type === 'property')).toBe(true)
         expect(properties.every(space => space.group === group)).toBe(true)

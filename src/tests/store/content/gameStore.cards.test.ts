@@ -339,7 +339,7 @@ describe('gameStore - Cards & Questions', () => {
       const initialRubles = player.rubles
       const initialTreasury = useGameStore.getState().stateTreasury
 
-      answerCommunistTest(mockQuestion, 'correct answer', null)
+      answerCommunistTest(mockQuestion, 'correct answer', '')
 
       const state = useGameStore.getState()
       const updatedPlayer = state.players.find(p => p.id === player.id)
@@ -368,7 +368,7 @@ describe('gameStore - Cards & Questions', () => {
       const initialRubles = player.rubles
       const initialTreasury = useGameStore.getState().stateTreasury
 
-      answerCommunistTest(mockQuestion, 'wrong answer', null)
+      answerCommunistTest(mockQuestion, 'wrong answer', '')
 
       const state = useGameStore.getState()
       const updatedPlayer = state.players.find(p => p.id === player.id)
@@ -398,7 +398,7 @@ describe('gameStore - Cards & Questions', () => {
 
       const initialRubles = useGameStore.getState().players[currentPlayerIndex].rubles
 
-      answerCommunistTest(mockQuestion, 'correct answer', null)
+      answerCommunistTest(mockQuestion, 'correct answer', '')
 
       const state = useGameStore.getState()
       const updatedPlayer = state.players.find(p => p.id === player.id)
@@ -427,7 +427,7 @@ describe('gameStore - Cards & Questions', () => {
 
       const initialRubles = useGameStore.getState().players[currentPlayerIndex].rubles
 
-      answerCommunistTest(mockQuestion, 'wrong answer', null)
+      answerCommunistTest(mockQuestion, 'wrong answer', '')
 
       const state = useGameStore.getState()
       const updatedPlayer = state.players.find(p => p.id === player.id)
@@ -453,7 +453,7 @@ describe('gameStore - Cards & Questions', () => {
 
       const initialLogLength = useGameStore.getState().gameLog.length
 
-      answerCommunistTest(mockQuestion, 'correct answer', null)
+      answerCommunistTest(mockQuestion, 'correct answer', '')
 
       const logs = useGameStore.getState().gameLog
       expect(logs.length).toBe(initialLogLength + 1)
@@ -478,7 +478,7 @@ describe('gameStore - Cards & Questions', () => {
 
       const initialLogLength = useGameStore.getState().gameLog.length
 
-      answerCommunistTest(mockQuestion, 'wrong answer', null)
+      answerCommunistTest(mockQuestion, 'wrong answer', '')
 
       const logs = useGameStore.getState().gameLog
       expect(logs.length).toBe(initialLogLength + 1)
@@ -500,7 +500,7 @@ describe('gameStore - Cards & Questions', () => {
         grantsRankUp: false
       }
 
-      answerCommunistTest(mockQuestion, 'correct answer', null)
+      answerCommunistTest(mockQuestion, 'correct answer', '')
 
       const state = useGameStore.getState()
       expect(state.turnPhase).toBe('post-turn')

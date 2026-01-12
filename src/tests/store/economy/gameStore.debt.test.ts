@@ -3,6 +3,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useGameStore } from '../../../store/gameStore'
+import { BOARD_SPACES } from '../../../data/spaces'
 
 describe('gameStore - Debt & Elimination', () => {
   const setupPlayers = () => {
@@ -205,7 +206,8 @@ describe('gameStore - Debt & Elimination', () => {
       const { setPropertyCustodian, updateCollectivizationLevel, eliminatePlayer, players, properties } = useGameStore.getState()
       const player = players[0]
 
-      const prop = properties.find(p => p.color === 'brown')?.spaceId
+      const brownSpace = BOARD_SPACES.find(s => s.type === 'property' && s.group === 'siberian')
+      const prop = brownSpace?.id
       if (prop) {
         setPropertyCustodian(prop, player.id)
         updateCollectivizationLevel(prop, 3)
