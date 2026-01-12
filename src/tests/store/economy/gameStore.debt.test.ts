@@ -203,7 +203,7 @@ describe('gameStore - Debt & Elimination', () => {
     })
 
     it('should reset collectivization levels on properties', () => {
-      const { setPropertyCustodian, updateCollectivizationLevel, eliminatePlayer, players, properties } = useGameStore.getState()
+      const { setPropertyCustodian, updateCollectivizationLevel, eliminatePlayer, players } = useGameStore.getState()
       const player = players[0]
 
       const brownSpace = BOARD_SPACES.find(s => s.type === 'property' && s.group === 'siberian')

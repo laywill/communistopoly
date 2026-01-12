@@ -528,7 +528,7 @@ describe('gameStore - Cards & Questions', () => {
       const initialRubles = useGameStore.getState().players[currentPlayerIndex].rubles
 
       // Answer incorrectly - but should be immune
-      answerCommunistTest(mockTrickQuestion, 'wrong answer', null)
+      answerCommunistTest(mockTrickQuestion, 'wrong answer', '')
 
       const state = useGameStore.getState()
       const updatedPlayer = state.players.find(p => p.id === player.id)
