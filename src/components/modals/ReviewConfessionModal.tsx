@@ -27,7 +27,7 @@ export default function ReviewConfessionModal({ confessionId }: ReviewConfession
     <div className="modal-overlay">
       <div className="review-confession-modal modal-content">
         <div className="review-header">
-          <h2>☭ STALIN&apos;S JUDGMENT ☭</h2>
+          <h2>☭ STALIN&apos;S JUDGEMENT ☭</h2>
           <p className="review-subtitle">Review the prisoner&apos;s rehabilitation confession</p>
         </div>
 
@@ -52,7 +52,7 @@ export default function ReviewConfessionModal({ confessionId }: ReviewConfession
 
         <div className="stalin-decision">
           <p className="decision-prompt">
-            Comrade Stalin, what is your judgment on this confession?
+            Comrade Stalin, what is your judgement on this confession?
           </p>
           <div className="decision-buttons">
             <button className="accept-button" onClick={handleAccept}>
