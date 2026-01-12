@@ -1,7 +1,7 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { useGameStore } from '../../../store/gameStore'
 
 describe('gameStore - Five Year Plan', () => {

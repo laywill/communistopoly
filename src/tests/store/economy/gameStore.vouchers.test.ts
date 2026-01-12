@@ -1,9 +1,8 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { useGameStore, calculateTotalWealth, initializePlayerStats } from '../../../store/gameStore'
-import type { Player, Property } from '../../../types/game'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { useGameStore } from '../../../store/gameStore'
 
 describe('gameStore - Voucher & Bribe System', () => {
   beforeEach(() => {

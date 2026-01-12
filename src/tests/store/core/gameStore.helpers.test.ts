@@ -2,7 +2,7 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import { describe, it, expect } from 'vitest'
-import { useGameStore, calculateTotalWealth, initializePlayerStats } from '../../../store/gameStore'
+import { calculateTotalWealth, initializePlayerStats } from '../../../store/gameStore'
 import type { Player, Property } from '../../../types/game'
 
 describe('gameStore - Helper Functions', () => {
