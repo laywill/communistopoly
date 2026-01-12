@@ -181,8 +181,11 @@ describe('gameStore - Trading System', () => {
       updatePlayer(player2.id, { rubles: 300 })
 
       // Need to get fresh player references after update
-      const updatedPlayer1Before = useGameStore.getState().players.find(p => p.id === player1.id)!
-      const updatedPlayer2Before = useGameStore.getState().players.find(p => p.id === player2.id)!
+      const updatedPlayer1Before = useGameStore.getState().players.find(p => p.id === player1.id)
+      const updatedPlayer2Before = useGameStore.getState().players.find(p => p.id === player2.id)
+      expect(updatedPlayer1Before).toBeDefined()
+      expect(updatedPlayer2Before).toBeDefined()
+      if (!updatedPlayer1Before || !updatedPlayer2Before) return
 
       proposeTrade(updatedPlayer1Before.id, updatedPlayer2Before.id, {
         offering: { rubles: 100, properties: [], gulagCards: 0, favours: 0 },
