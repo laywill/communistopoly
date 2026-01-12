@@ -2664,7 +2664,7 @@ export const useGameStore = create<GameStore>()(
         targets.forEach(playerId => {
           const player = state.players.find(p => p.id === playerId)
           if (player != null && !player.inGulag) {
-            get().sendToGulag(playerId, 'denouncementGuilty')
+            get().sendToGulag(playerId, 'stalinDecree')
           }
         })
 
@@ -2750,7 +2750,7 @@ export const useGameStore = create<GameStore>()(
             .filter(p => !p.isStalin && !p.isEliminated && !p.inGulag)
             .sort((a, b) => a.rubles - b.rubles)[0]
 
-          get().sendToGulag(poorestPlayer.id, 'denouncementGuilty')
+          get().sendToGulag(poorestPlayer.id, 'stalinDecree')
           get().addLogEntry({
             type: 'system',
             message: `Five-Year Plan FAILED! ${poorestPlayer.name} (poorest player) has been sent to the Gulag for sabotage.`
