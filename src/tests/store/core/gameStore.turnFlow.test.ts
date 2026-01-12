@@ -405,7 +405,7 @@ describe('gameStore - Turn & Game Flow', () => {
         { name: 'Player 3', piece: 'redStar', isStalin: false }
       ])
 
-      const [player1, player2, player3] = useGameStore.getState().players
+      const [, player2] = useGameStore.getState().players
 
       // Eliminate player 2
       updatePlayer(player2.id, { isEliminated: true })
@@ -427,7 +427,7 @@ describe('gameStore - Turn & Game Flow', () => {
         { name: 'Player 2', piece: 'hammer', isStalin: false }
       ])
 
-      const [player1, player2] = useGameStore.getState().players
+      const [, player2] = useGameStore.getState().players
 
       // Put player 2 in gulag
       updatePlayer(player2.id, { inGulag: true, gulagTurns: 1 })
@@ -516,10 +516,7 @@ describe('gameStore - Turn & Game Flow', () => {
     })
 
     it('should increment round when cycling back to first non-Stalin player', () => {
-      const { initializePlayers, endTurn, incrementRound } = useGameStore.getState()
-
-      // Spy on incrementRound to verify it's called
-      const incrementRoundSpy = vi.spyOn(useGameStore.getState(), 'incrementRound')
+      const { initializePlayers, endTurn } = useGameStore.getState()
 
       initializePlayers([
         { name: 'Stalin', piece: null, isStalin: true },
@@ -550,7 +547,7 @@ describe('gameStore - Turn & Game Flow', () => {
         { name: 'Player 4', piece: 'tank', isStalin: false }
       ])
 
-      const [player1, player2, player3, player4] = useGameStore.getState().players
+      const [, player2, player3] = useGameStore.getState().players
 
       // Eliminate players 2 and 3
       updatePlayer(player2.id, { isEliminated: true })

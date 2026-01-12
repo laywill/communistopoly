@@ -72,9 +72,7 @@ describe('gameStore - Five Year Plan', () => {
       const { initiateFiveYearPlan } = useGameStore.getState()
       const durationMinutes = 5
 
-      const beforeTime = Date.now()
       initiateFiveYearPlan(500, durationMinutes)
-      const afterTime = Date.now()
 
       const state = useGameStore.getState()
       const deadlineTime = state.activeFiveYearPlan?.deadline.getTime() ?? 0
@@ -324,8 +322,6 @@ describe('gameStore - Five Year Plan', () => {
       contributeToFiveYearPlan(players[0].id, 500)
       contributeToFiveYearPlan(players[1].id, 300)
       contributeToFiveYearPlan(players[2].id, 200)
-
-      const initialRubles = players[0].rubles
 
       resolveFiveYearPlan()
 

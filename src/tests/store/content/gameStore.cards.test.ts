@@ -60,7 +60,6 @@ describe('gameStore - Cards & Questions', () => {
       expect(useGameStore.getState().partyDirectiveDeck.length).toBe(0)
 
       // Draw one more card - should trigger reshuffle
-      const initialLogLength = useGameStore.getState().gameLog.length
       const card = drawPartyDirective()
 
       expect(card).toBeDefined()

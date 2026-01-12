@@ -255,7 +255,7 @@ describe('gameStore - Gulag System', () => {
     })
 
     it('should eliminate Red Star player when demoted to proletariat', () => {
-      const { initializePlayers, updatePlayer, demotePlayer } = useGameStore.getState()
+      const { initializePlayers, demotePlayer } = useGameStore.getState()
 
       initializePlayers([
         { name: 'Red Star Player', piece: 'redStar', isStalin: false }

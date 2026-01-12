@@ -53,7 +53,7 @@ describe('Denouncement & Tribunal System', () => {
         { name: 'Player 2', piece: 'sickle', isStalin: false },
         { name: 'Player 3', piece: 'tank', isStalin: false }
       ])
-      const [commissar, player2, player3] = useGameStore.getState().players
+      const [commissar, player2] = useGameStore.getState().players
 
       // Promote to Commissar
       store.updatePlayer(commissar.id, { rank: 'commissar' })

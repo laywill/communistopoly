@@ -145,7 +145,6 @@ describe('gameStore - End Game Voting', () => {
       // Vote YES, YES, NO
       castEndVote(nonStalinPlayers[0].id, true)
       castEndVote(nonStalinPlayers[1].id, true)
-      const initialLogLength = useGameStore.getState().gameLog.length
       castEndVote(nonStalinPlayers[2].id, false)
 
       const logs = useGameStore.getState().gameLog
@@ -176,7 +175,6 @@ describe('gameStore - End Game Voting', () => {
     it('should not count votes from Stalin', () => {
       const { initiateEndVote, castEndVote, players } = useGameStore.getState()
       const nonStalinPlayers = players.filter(p => !p.isStalin)
-      const stalin = players.find(p => p.isStalin)
 
       initiateEndVote(nonStalinPlayers[0].id)
 

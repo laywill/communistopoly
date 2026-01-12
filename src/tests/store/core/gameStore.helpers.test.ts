@@ -250,7 +250,7 @@ describe('gameStore - Helper Functions', () => {
 
       const zeroEntries = entries.filter(([key]) => key !== 'maxWealth')
 
-      zeroEntries.forEach(([key, value]) => {
+      zeroEntries.forEach(([, value]) => {
         expect(value).toBe(0)
       })
     })
