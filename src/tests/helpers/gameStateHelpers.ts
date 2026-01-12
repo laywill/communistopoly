@@ -32,9 +32,15 @@ export function createTestPlayer(overrides: Partial<Player> = {}): Player {
     ironCurtainClaimedRubles: 0,
     owesFavourTo: [],
     hasUsedTankGulagImmunity: false,
+    tankRequisitionUsedThisLap: false,
+    lapsCompleted: 0,
+    kgbTestPreviewsUsedThisRound: 0,
+    hasUsedMinistryTruthRewrite: false,
+    hasUsedPravdaPressRevote: false,
     vouchingFor: null,
     vouchedByRound: null,
     debt: null,
+    debtCreatedAtRound: null,
     ...overrides
   }
 }
