@@ -9,7 +9,7 @@ describe('gameStateHelpers - sendPlayerToGulag', () => {
   beforeEach(() => {
     // Reset store before each test
     useGameStore.setState({
-      gamePhase: 'in-progress',
+      gamePhase: 'playing',
       players: [],
       stalinPlayerId: null,
       currentPlayerIndex: 0,
@@ -74,7 +74,7 @@ describe('gameStateHelpers - sendPlayerToGulag', () => {
 describe('gameStateHelpers - setGulagTurns', () => {
   beforeEach(() => {
     useGameStore.setState({
-      gamePhase: 'in-progress',
+      gamePhase: 'playing',
       players: [],
       stalinPlayerId: null,
       currentPlayerIndex: 0,
