@@ -175,7 +175,7 @@ describe('gameStore - Voucher & Bribe System', () => {
       const [prisoner, voucherPlayer] = useGameStore.getState().players
 
       useGameStore.getState().updatePlayer(prisoner.id, { inGulag: true, gulagTurns: 2 })
-      useGameStore.setState({ pendingAction: { type: 'voucher', data: {} } })
+      useGameStore.setState({ pendingAction: { type: 'voucher-request', data: {} } })
 
       createVoucher(prisoner.id, voucherPlayer.id)
 
@@ -910,7 +910,7 @@ describe('gameStore - Voucher & Bribe System', () => {
       updatePlayer(player1.id, { inGulag: true, gulagTurns: 2 })
       submitBribe(player1.id, 500, 'gulag-escape')
 
-      useGameStore.setState({ pendingAction: { type: 'bribe', data: {} } })
+      useGameStore.setState({ pendingAction: { type: 'bribe-stalin', data: {} } })
 
       const bribeId = useGameStore.getState().pendingBribes[0].id
 
