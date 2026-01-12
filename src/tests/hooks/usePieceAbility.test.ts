@@ -599,13 +599,13 @@ describe('usePieceAbility - Hook', () => {
       initializePlayers([{ name: 'Player 1', piece: 'sickle', isStalin: false }])
       const player = useGameStore.getState().players[0]
 
-      const sickleHarvestSpy = vi.spyOn(useGameStore.getState(), 'sickleHarvest')!
+      const sickleHarvestSpy = vi.spyOn(useGameStore.getState(), 'sickleHarvest')
 
       const { result } = renderHook(() => usePieceAbility(player))
       const targetPropertyId = 5
 
       act(() => {
-        result.current!.useSickleHarvest?.(targetPropertyId)
+        result.current.useSickleHarvest?.(targetPropertyId)
       })
 
       expect(sickleHarvestSpy).toHaveBeenCalledWith(player.id, targetPropertyId)
@@ -619,13 +619,13 @@ describe('usePieceAbility - Hook', () => {
       initializePlayers([{ name: 'Player 1', piece: 'tank', isStalin: false }])
       const player = useGameStore.getState().players[0]
 
-      const tankRequisitionSpy = vi.spyOn(useGameStore.getState(), 'tankRequisition')!
+      const tankRequisitionSpy = vi.spyOn(useGameStore.getState(), 'tankRequisition')
 
       const { result } = renderHook(() => usePieceAbility(player))
       const targetPlayerId = 'player-2'
 
       act(() => {
-        result.current!.useTankRequisition?.(targetPlayerId)
+        result.current.useTankRequisition?.(targetPlayerId)
       })
 
       expect(tankRequisitionSpy).toHaveBeenCalledWith(player.id, targetPlayerId)
@@ -639,13 +639,13 @@ describe('usePieceAbility - Hook', () => {
       initializePlayers([{ name: 'Player 1', piece: 'ironCurtain', isStalin: false }])
       const player = useGameStore.getState().players[0]
 
-      const ironCurtainDisappearSpy = vi.spyOn(useGameStore.getState(), 'ironCurtainDisappear')!
+      const ironCurtainDisappearSpy = vi.spyOn(useGameStore.getState(), 'ironCurtainDisappear')
 
       const { result } = renderHook(() => usePieceAbility(player))
       const targetPropertyId = 10
 
       act(() => {
-        result.current!.useIronCurtainDisappear?.(targetPropertyId)
+        result.current.useIronCurtainDisappear?.(targetPropertyId)
       })
 
       expect(ironCurtainDisappearSpy).toHaveBeenCalledWith(player.id, targetPropertyId)
@@ -659,13 +659,13 @@ describe('usePieceAbility - Hook', () => {
       initializePlayers([{ name: 'Player 1', piece: 'statueOfLenin', isStalin: false }])
       const player = useGameStore.getState().players[0]
 
-      const leninSpeechSpy = vi.spyOn(useGameStore.getState(), 'leninSpeech')!
+      const leninSpeechSpy = vi.spyOn(useGameStore.getState(), 'leninSpeech')
 
       const { result } = renderHook(() => usePieceAbility(player))
       const applauders = ['player-2', 'player-3']
 
       act(() => {
-        result.current!.useLeninSpeech?.(applauders)
+        result.current.useLeninSpeech?.(applauders)
       })
 
       expect(leninSpeechSpy).toHaveBeenCalledWith(player.id, applauders)
@@ -685,12 +685,12 @@ describe('usePieceAbility - Hook', () => {
         gamePhase: 'playing'
       })
 
-      const rollVodka3DiceSpy = vi.spyOn(useGameStore.getState(), 'rollVodka3Dice')!
+      const rollVodka3DiceSpy = vi.spyOn(useGameStore.getState(), 'rollVodka3Dice')
 
       const { result } = renderHook(() => usePieceAbility(player))
 
       act(() => {
-        result.current!.useVodka3Dice?.()
+        result.current.useVodka3Dice?.()
       })
 
       expect(rollVodka3DiceSpy).toHaveBeenCalledWith()
