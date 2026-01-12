@@ -386,7 +386,7 @@ describe('gameStore - Five Year Plan', () => {
       const poorestPlayer = players[3]
 
       // Send poorest player to Gulag before resolving
-      sendToGulag(poorestPlayer.id, 'denouncementGuilty')
+      sendToGulag(poorestPlayer.id, 'stalinDecree')
       const initialGulagTurns = useGameStore.getState().players.find(p => p.id === poorestPlayer.id)?.gulagTurns
 
       resolveFiveYearPlan()

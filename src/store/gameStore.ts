@@ -2764,16 +2764,37 @@ export const useGameStore = create<GameStore>()(
             message: 'Five-Year Plan SUCCESSFUL! All players receive ₽100 bonus for meeting the quota.'
           })
         } else {
-          // Find poorest player and send to Gulag
-          const poorestPlayer = state.players
+          // Find poorest eligible player and send to Gulag
+          // Keep trying until someone is successfully sent (handles tank immunity, etc.)
+          const eligiblePlayers = state.players
             .filter(p => !p.isStalin && !p.isEliminated && !p.inGulag)
-            .sort((a, b) => a.rubles - b.rubles)[0]
+            .sort((a, b) => a.rubles - b.rubles)
 
-          get().sendToGulag(poorestPlayer.id, 'stalinDecree')
-          get().addLogEntry({
-            type: 'system',
-            message: `Five-Year Plan FAILED! ${poorestPlayer.name} (poorest player) has been sent to the Gulag for sabotage.`
-          })
+          let sentToGulag = false
+          for (const player of eligiblePlayers) {
+            const wasInGulag = player.inGulag
+            get().sendToGulag(player.id, 'stalinDecree')
+
+            // Check if player was actually sent to Gulag (not redirected by abilities)
+            const currentState = get()
+            const updatedPlayer = currentState.players.find(p => p.id === player.id)
+            if (updatedPlayer && updatedPlayer.inGulag && !wasInGulag) {
+              get().addLogEntry({
+                type: 'system',
+                message: `Five-Year Plan FAILED! ${player.name} (poorest player) has been sent to the Gulag for sabotage.`
+              })
+              sentToGulag = true
+              break
+            }
+          }
+
+          if (!sentToGulag && eligiblePlayers.length > 0) {
+            // All players had immunity or were redirected
+            get().addLogEntry({
+              type: 'system',
+              message: 'Five-Year Plan FAILED! No player could be sent to the Gulag (all protected).'
+            })
+          }
         }
 
         set({ activeFiveYearPlan: null })
