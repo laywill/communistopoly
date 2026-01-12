@@ -55,7 +55,7 @@ describe('gameStore - Confession System', () => {
       submitConfession(prisoner.id, 'First confession')
 
       const state = useGameStore.getState()
-      expect(state.confessions[0].id).toBe(`confession-${now}`)
+      expect(state.confessions[0].id).toBe(`confession-${now.toString()}`)
     })
 
     it('should set confession timestamp', () => {
