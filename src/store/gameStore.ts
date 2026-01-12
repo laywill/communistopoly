@@ -1599,10 +1599,15 @@ export const useGameStore = create<GameStore>()(
         if (player == null) return
 
         // Return all properties to State (with improvements removed)
-        player.properties.forEach((propId) => {
-          get().setPropertyCustodian(parseInt(propId), null)
-          get().updateCollectivizationLevel(parseInt(propId), 0)
-        })
+        // Find all properties owned by this player (by custodianId)
+        // This is more reliable than using player.properties array
+        set((currentState) => ({
+          properties: currentState.properties.map((prop) =>
+            prop.custodianId === playerId
+              ? { ...prop, custodianId: null, collectivizationLevel: 0 }
+              : prop
+          )
+        }))
 
         // Update player with elimination details
         get().updatePlayer(playerId, {
