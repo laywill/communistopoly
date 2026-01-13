@@ -288,7 +288,7 @@ npm test -- src/tests/store/social/gameStore.greatPurge.test.ts
 ```
 
 ### Step 5: Update Rules Document
-**File**: `Designs/communistopoly-rules.md`
+**File**: `docs/communistopoly-rules.md`
 
 Add clarifications:
 - Five Year Plan failure when poorest already in Gulag
@@ -311,4 +311,4 @@ Add clarifications:
 - `src/tests/store/social/gameStore.fiveYearPlan.test.ts` - Five Year Plan tests
 - `src/tests/store/social/gameStore.greatPurge.test.ts` - Great Purge tests
 - `src/tests/store/social/gameStore.gulag.test.ts` - Gulag system tests
-- `Designs/communistopoly-rules.md` - Game rules documentation
+- `docs/communistopoly-rules.md` - Game rules documentation

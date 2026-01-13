@@ -193,7 +193,7 @@ For complete design specifications, see `Designs/communistopoly-design.md`.
 
 ## Game Rules
 
-For the complete rule set, see `Designs/communistopoly-rules.md`. Key mechanics include:
+For the complete rule set, see `docs/communistopoly-rules.md`. Key mechanics include:
 
 - **Party Rank System**: Proletariat → Party Member → Commissar → Inner Circle
 - **The Gulag**: Not jail—a crucible of suffering with complex escape mechanics
@@ -301,7 +301,7 @@ Properties can be improved through collectivization (similar to houses/hotels in
 - **Trading**: Players can trade properties, money, and favours
 - **Confessions**: Players in Gulag can write confessions to Stalin for possible early release
 
-For complete rules, see `Designs/communistopoly-rules.md`.
+For complete rules, see `docs/communistopoly-rules.md`.
 
 ## Browser Support
 
