@@ -30,7 +30,7 @@ Properties can be improved through collectivization (similar to houses/hotels in
 ## Standard Properties
 
 | Property                    | Cost | Mortgage | Rent - Site Only | Rent ★☆☆☆☆ | Rent ★★☆☆☆ | Rent ★★★☆☆ | Rent ★★★★☆ | Rent ★★★★★ |
-| --------------------------- | ---- | -------- | ---------------- | ---------- | ---------- | ---------- | ---------- | ---------- |
+|-----------------------------|------|----------|------------------|------------|------------|------------|------------|------------|
 | **Siberian Work Camps**     |      |          |                  |            |            |            |            |            |
 | Camp Vorkuta                | ₽60  | ₽30      | ₽2               | ₽6         | ₽18        | ₽30        | ₽40        | ₽60        |
 | Camp Kolyma                 | ₽60  | ₽30      | ₽4               | ₽12        | ₽36        | ₽60        | ₽80        | ₽120       |
@@ -69,7 +69,7 @@ Properties can be improved through collectivization (similar to houses/hotels in
 Railways cannot be collectivized. Their quota increases based on how many railways the custodian owns.
 
 | Property            | Cost | Mortgage | Rent (1 owned) | Rent (2 owned) | Rent (3 owned) | Rent (4 owned) |
-| ------------------- | ---- | -------- | -------------- | -------------- | -------------- | -------------- |
+|---------------------|------|----------|----------------|----------------|----------------|----------------|
 | Moscow Station      | ₽200 | ₽100     | ₽25            | ₽50            | ₽100           | ₽200           |
 | Novosibirsk Station | ₽200 | ₽100     | ₽25            | ₽50            | ₽100           | ₽200           |
 | Irkutsk Station     | ₽200 | ₽100     | ₽25            | ₽50            | ₽100           | ₽200           |
@@ -82,7 +82,7 @@ Railways cannot be collectivized. Their quota increases based on how many railwa
 Utilities cannot be collectivized. Their quota is based on the dice roll that brought the player to the space.
 
 | Property                  | Cost | Mortgage | Rent (1 owned) | Rent (2 owned) |
-| ------------------------- | ---- | -------- | -------------- | -------------- |
+|---------------------------|------|----------|----------------|----------------|
 | State Electricity Board   | ₽150 | ₽75      | 4 × dice roll  | 10 × dice roll |
 | People's Water Collective | ₽150 | ₽75      | 4 × dice roll  | 10 × dice roll |
 

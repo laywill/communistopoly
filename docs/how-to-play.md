@@ -101,12 +101,12 @@ Each level costs ₽100 (except People's Palace which costs ₽200) and dramatic
 
 Your rank determines what you can own and how vulnerable you are:
 
-| Rank           | Can Own              | Denouncement Witnesses Needed | Special                    |
-| -------------- | -------------------- | ----------------------------- | -------------------------- |
-| **Proletariat**    | Restrictions apply. Be thankful they aren't worse. | 0 witnesses | Easily denounced |
-| **Party Member**   | + Elite properties   | 1 witness                     | Can denounce once per round |
-| **Commissar**      | + Utilities          | 2 witnesses                   | Multiple denouncements     |
-| **Inner Circle**   | + Kremlin properties | Unanimous + Stalin approval   | Nearly untouchable         |
+| Rank             | Can Own                                            | Denouncement Witnesses Needed | Special                     |
+|------------------|----------------------------------------------------|-------------------------------|-----------------------------|
+| **Proletariat**  | Restrictions apply. Be thankful they aren't worse. | 0 witnesses                   | Easily denounced            |
+| **Party Member** | + Elite properties                                 | 1 witness                     | Can denounce once per round |
+| **Commissar**    | + Utilities                                        | 2 witnesses                   | Multiple denouncements      |
+| **Inner Circle** | + Kremlin properties                               | Unanimous + Stalin approval   | Nearly untouchable          |
 
 **Property Restrictions by Rank:**
 
