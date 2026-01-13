@@ -114,3 +114,5 @@ Examples include:
 For complete gameplay rules, see [Communistopoly Rules](communistopoly-rules.md).
 
 For a quick start guide, see [How to Play](how-to-play.md).
+
+**Слава Родине! Glory to the Motherland!**

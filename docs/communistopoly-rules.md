@@ -41,7 +41,7 @@ Before the game begins, players must select who will be Stalin. This can be done
 
 ---
 
-# THE BOARD: RENAMED SPACES
+# THE BOARD
 
 ## Corner Spaces
 

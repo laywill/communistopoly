@@ -23,31 +23,30 @@ This is a quick start guide covering the essentials to get you playing. For comp
 
 One player must be Stalin. Stalin doesn't play as a regular player—they control the game, judge tribunals, and manage the State.
 
-**How to choose**:
-- Owner of the game becomes Stalin (very capitalist!)
-- Democratic vote (Stalin counts the votes)
-- Whoever has the best mustache
+See the [complete rules](communistopoly-rules.md#selecting-stalin) for advice on selecting who will be first among equals.
 
 ### 2. Choose Your Piece
 
-Each player selects a unique game piece. Each piece has special abilities and restrictions—choose wisely!
-
-Examples:
-- **The Hammer**: Cannot be sent to Gulag by other players, but must always vote "guilty" in tribunals
-- **The Sickle**: Halves Collective Farm quotas, can steal a cheap property once per game
-- **The Tank**: Immune to first Gulag sentence, but loses ability if votes against Stalin
+Each player selects a unique game piece. Each piece has special abilities and restrictions. Choose wisely!
 
 See the [complete rules](communistopoly-rules.md#player-pieces-and-abilities) for all piece abilities.
 
 ### 3. Starting Resources
 
 - Each player starts with **₽1,500**
-- Everyone begins at **Proletariat rank** (lowest)
+- Everyone begins with a given **Party Rank**
 - All properties start owned by **The State**
 
 ---
 
 ## Basic Gameplay
+
+Play is taken in turns by players.
+
+As Premier, Stalin does not take a turn and can use his powers at any time.
+The game calls upon Stalin to make executive decisions at various points.
+
+Do not upset Stalin.
 
 ### Your Turn
 
@@ -55,7 +54,7 @@ On your turn:
 
 1. **Roll the dice** and move your piece clockwise
 2. **Resolve the space** you land on:
-   - **Property**: Purchase it (if unclaimed and your rank allows) or pay quota to the custodian
+   - **Property**: Purchase custodianship (if unclaimed and your rank allows) or pay quota to the custodian
    - **Railway/Utility**: Same as properties
    - **Party Directive**: Draw a card and follow instructions
    - **Communist Test**: Answer a question correctly for rewards
@@ -66,44 +65,11 @@ On your turn:
    - Denounce another player (once per round)
 4. **End your turn** - next player goes
 
-### Special Spaces
+### Spaces
 
-#### STOY (GO/Checkpoint)
+Spaces broadly are either a property, or a space that triggers some sort of event.
 
-- **Passing through**: Pay ₽200 travel tax
-- **Landing exactly**: Attempt to pilfer! Roll one die:
-  - 4-6: Steal ₽100 from the State
-  - 1-3: Caught! Go directly to Gulag
-
-#### The Gulag (Jail)
-
-You can enter the Gulag by:
-- Rolling three doubles in a row
-- Being denounced successfully
-- Landing on "Enemy of the State"
-- Stalin's decree
-
-**To escape**:
-- Roll required doubles (gets easier each turn)
-- Pay ₽500 and lose one rank
-- Get vouched for by another player
-- Inform on another player
-- Bribe Stalin (₽200+ - Stalin decides if it's enough)
-
-**Warning**: 10 turns in Gulag = elimination!
-
-#### Breadline (Free Parking)
-
-All other players must give you:
-- ₽50, OR
-- A property, OR
-- A favour owed
-
-If anyone refuses, you may denounce them!
-
-#### Enemy of the State (Go to Jail)
-
-Go directly to Gulag. Do not pass STOY. Lose one Party Rank.
+See the [complete rules](communistopoly-rules.md#the-board) for full details.
 
 ---
 
@@ -111,13 +77,7 @@ Go directly to Gulag. Do not pass STOY. Lose one Party Rank.
 
 ### Becoming a Custodian
 
-When you land on an unclaimed property and can afford it, you may purchase custodianship from the State.
-
-**Rank restrictions**:
-- **Proletariat**: Can only own Siberian Work Camps
-- **Party Member**: Can own up to Industrial Centers
-- **Commissar**: Can own anything (including utilities)
-- **Inner Circle**: Can own anything
+When you land on an unclaimed property and can afford it, you may be able to purchase custodianship from the State.
 
 ### Paying Quotas (Rent)
 
@@ -152,6 +112,8 @@ Your rank determines what you can own and how vulnerable you are:
 - Stalin can promote/demote anyone
 - Certain card effects
 - Owning property groups
+
+See the [complete rules](communistopoly-rules.md#party-rank-system) for full details.
 
 ---
 
@@ -252,7 +214,7 @@ A: You answer a question about communist history/ideology. Correct = ₽100 and 
 A: Yes, you can decline any property purchase.
 
 **Q: What happens if I roll doubles?**
-A: Take another turn! But three doubles in a row sends you to Gulag for counter-revolutionary behavior.
+A: Take another turn! But three doubles sends you to Gulag for counter-revolutionary behavior.
 
 ---
 
@@ -265,7 +227,5 @@ Launch the game, select your players and pieces, and let the glorious revolution
 **For property costs and quotas**, see the [Property Quick Reference](property-reference.md).
 
 ---
-
-**Слава Родине! Glory to the Motherland!**
 
 **За коммунизм! For Communism!**
