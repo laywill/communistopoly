@@ -3,9 +3,9 @@
 
 # COMMUNISTOPOLY
 
-## A Satirical House-Rules Variant of Monopoly
+### A Satirical House-Rules Variant of Monopoly
 
-### *"All players are equal, but some players are more equal than others."*
+#### *"All players are equal, but some players are more equal than others."*
 
 ---
 
@@ -13,7 +13,7 @@
 
 ---
 
-# OVERVIEW
+## OVERVIEW
 
 Communistopoly transforms the capitalist fantasy of Monopoly into a darkly comedic simulation of Soviet bureaucracy, paranoia, and ideological absurdity. Victory is not achieved through wealth accumulation—it is survived through political manoeuvring, strategic betrayal, and shameless flattery of Comrade Stalin (the Banker).
 
@@ -23,9 +23,9 @@ Communistopoly transforms the capitalist fantasy of Monopoly into a darkly comed
 
 ---
 
-# SETUP
+## SETUP
 
-## Selecting Stalin
+### Selecting Stalin
 
 Before the game begins, players must select who will be Stalin. This can be done by:
 
@@ -35,7 +35,7 @@ Before the game begins, players must select who will be Stalin. This can be done
 
 **Stalin does not play as a regular player.** Stalin is the Banker, the Judge, the Party, and the State. Stalin sits at the head of the table and controls the game.
 
-## Starting Conditions
+### Starting Conditions
 
 - All players begin with **1,500 Rubles** (use Monopoly money but call it Rubles)
 - All players begin at **Party Rank: Proletariat** (the lowest rank)
@@ -44,105 +44,105 @@ Before the game begins, players must select who will be Stalin. This can be done
 
 ---
 
-# THE BOARD
+## THE BOARD
 
-## Corner Spaces
+### Corner Spaces
 
 | Original     | Communistopoly               | Function                                                                                                                                                                                                        |
-|--------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------ | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GO           | **STOY (СТОЙ)** "Checkpoint" | **Passing:** Pay 200₽ "travel tax" to the State. **Landing exactly:** You may attempt to pilfer—roll one die. On 4-6, steal 100₽ from the State coffers. On 1-3, you are caught and sent directly to the Gulag. |
 | Jail         | **THE GULAG**                | See Gulag Rules below                                                                                                                                                                                           |
 | Free Parking | **BREADLINE**                | All players must give you one item (50₽, a property, or a favour owed). If any player refuses, you may denounce them. Stalin adjudicates.                                                                       |
 | Go To Jail   | **ENEMY OF THE STATE**       | Go directly to the Gulag. Do not pass Stoy. Do not collect anything. Lose one Party Rank.                                                                                                                       |
 
-## Property Groups
+### Property Groups
 
 Properties cannot be "owned" in the capitalist sense. Instead, players become **Custodians** of State property, responsible for its maintenance and collectivization. Rent is replaced with **Productivity Quotas**—failure to meet them reflects poorly on YOU.
 
 **For quick reference tables of all property costs, quotas, and collectivization levels, see the [Property Quick Reference Guide](property-reference.md).**
 
-### Brown → SIBERIAN WORK CAMPS (Lowest value, highest misery)
+#### Brown → SIBERIAN WORK CAMPS (Lowest value, highest misery)
 
 | Original          | Communistopoly   | Quota |
-|-------------------|------------------|-------|
+| ----------------- | ---------------- | ----- |
 | Mediterranean Ave | **Camp Vorkuta** | 20₽   |
 | Baltic Ave        | **Camp Kolyma**  | 40₽   |
 
 *Special Rule: If you are Custodian of both camps, you may send ONE player to the Gulag per game by claiming they are "needed for labour." Stalin must approve.*
 
-### Light Blue → COLLECTIVE FARMS
+#### Light Blue → COLLECTIVE FARMS
 
 | Original        | Communistopoly       | Quota |
-|-----------------|----------------------|-------|
+| --------------- | -------------------- | ----- |
 | Oriental Ave    | **Kolkhoz Sunrise**  | 60₽   |
 | Vermont Ave     | **Kolkhoz Progress** | 60₽   |
 | Connecticut Ave | **Kolkhoz Victory**  | 80₽   |
 
 *Special Rule: Custodian must announce "The harvest is bountiful!" when collecting quota. Failure to do so means quota is halved.*
 
-### Pink → INDUSTRIAL CENTERS
+#### Pink → INDUSTRIAL CENTERS
 
 | Original          | Communistopoly                  | Quota |
-|-------------------|---------------------------------|-------|
+| ----------------- | ------------------------------- | ----- |
 | St. Charles Place | **Tractor Factory #47**         | 100₽  |
 | States Ave        | **Steel Mill Molotov**          | 100₽  |
 | Virginia Ave      | **Munitions Plant Kalashnikov** | 120₽  |
 
 *Special Rule: If another player lands here and cannot pay, they must work off their debt by missing their next turn (conscripted labour).*
 
-### Orange → GOVERNMENT MINISTRIES
+#### Orange → GOVERNMENT MINISTRIES
 
 | Original        | Communistopoly         | Quota |
-|-----------------|------------------------|-------|
+| --------------- | ---------------------- | ----- |
 | St. James Place | **Ministry of Truth**  | 140₽  |
 | Tennessee Ave   | **Ministry of Plenty** | 140₽  |
 | New York Ave    | **Ministry of Love**   | 160₽  |
 
 *Special Rule: Custodian of all three may rewrite ONE rule per game. Stalin has veto power.*
 
-### Red → MILITARY INSTALLATIONS
+#### Red → MILITARY INSTALLATIONS
 
 | Original     | Communistopoly                | Quota |
-|--------------|-------------------------------|-------|
+| ------------ | ----------------------------- | ----- |
 | Kentucky Ave | **Red Army Barracks**         | 180₽  |
 | Indiana Ave  | **KGB Headquarters**          | 180₽  |
 | Illinois Ave | **Nuclear Bunker Arzamas-16** | 200₽  |
 
 *Special Rule: Custodian of KGB Headquarters may look at one Communist Test card before anyone draws it, once per round.*
 
-### Yellow → STATE MEDIA
+#### Yellow → STATE MEDIA
 
 | Original       | Communistopoly              | Quota |
-|----------------|-----------------------------|-------|
+| -------------- | --------------------------- | ----- |
 | Atlantic Ave   | **Pravda Printing Press**   | 220₽  |
 | Ventnor Ave    | **Radio Moscow**            | 220₽  |
 | Marvin Gardens | **State Television Center** | 240₽  |
 
 *Special Rule: Custodian may spread propaganda—once per game, force a re-vote on any Stalin decision by claiming "the people demand it."*
 
-### Green → PARTY ELITE DISTRICT
+#### Green → PARTY ELITE DISTRICT
 
 | Original           | Communistopoly                 | Quota |
-|--------------------|--------------------------------|-------|
+| ------------------ | ------------------------------ | ----- |
 | Pacific Ave        | **Politburo Apartments**       | 260₽  |
 | North Carolina Ave | **Dachas of the Nomenklatura** | 260₽  |
 | Pennsylvania Ave   | **The Lubyanka**               | 280₽  |
 
 *Special Rule: Only players of Rank PARTY MEMBER or higher may become Custodians. Lower ranks who land here pay double quota and must salute.*
 
-### Dark Blue → THE KREMLIN COMPLEX (Highest value)
+#### Dark Blue → THE KREMLIN COMPLEX (Highest value)
 
 | Original   | Communistopoly              | Quota |
-|------------|-----------------------------|-------|
+| ---------- | --------------------------- | ----- |
 | Park Place | **Lenin's Mausoleum**       | 350₽  |
 | Boardwalk  | **Stalin's Private Office** | 500₽  |
 
 *Special Rule: Only INNER CIRCLE rank may become Custodian. Custodian of Stalin's Private Office may whisper privately with Stalin once per round. Custodian of Lenin's Mausoleum is immune to ONE denouncement per game (Lenin protects you from beyond the grave).*
 
-## Railroads → TRANS-SIBERIAN RAILWAY STATIONS
+### Railroads → TRANS-SIBERIAN RAILWAY STATIONS
 
 | Original              | Communistopoly          | Function                   |
-|-----------------------|-------------------------|----------------------------|
+| --------------------- | ----------------------- | -------------------------- |
 | Reading Railroad      | **Moscow Station**      | 50₽ per station controlled |
 | Pennsylvania Railroad | **Novosibirsk Station** | 100₽ for 2 stations        |
 | B&O Railroad          | **Irkutsk Station**     | 150₽ for 3 stations        |
@@ -150,10 +150,10 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 
 *Special Rule: Controller of all four stations may transport any player directly to the Gulag once per game, claiming they were "attempting to flee the motherland."*
 
-## Utilities → THE MEANS OF PRODUCTION
+### Utilities → THE MEANS OF PRODUCTION
 
 | Original         | Communistopoly                | Function  |
-|------------------|-------------------------------|-----------|
+| ---------------- | ----------------------------- | --------- |
 | Electric Company | **State Electricity Board**   | See below |
 | Water Works      | **People's Water Collective** | See below |
 
@@ -163,28 +163,28 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 
 *Secret Rule (Stalin knows this):* If a Proletariat somehow obtains a utility (through a rule contradiction or Stalin's whim), all other players must denounce them within one round or face suspicion themselves.
 
-## Tax Spaces
+### Tax Spaces
 
 | Original   | Communistopoly                 | Function                                                                                                                                         |
-|------------|--------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Income Tax | **REVOLUTIONARY CONTRIBUTION** | Pay 15% of total wealth OR 200₽ (player's choice). Then Stalin may audit you—if you chose the lower amount, pay the difference plus 50₽ penalty. |
 | Luxury Tax | **BOURGEOIS DECADENCE TAX**    | Pay 100₽. If you are the wealthiest player, pay 200₽ and lose one Party Rank for "capitalist tendencies."                                        |
 
-## Chance → PARTY DIRECTIVE
+### Chance → PARTY DIRECTIVE
 
 When you land on Party Directive, Stalin draws a card and reads it aloud. These are direct orders from the Party and must be obeyed.
 
-## Community Chest → COMMUNIST TEST
+### Community Chest → COMMUNIST TEST
 
 When you land on Communist Test, another player (chosen by Stalin) asks you a trivia question from the Communist Test card deck. See Communist Test section below.
 
 ---
 
-# PARTY RANK SYSTEM
+## PARTY RANK SYSTEM
 
 All players have a Party Rank that determines their privileges and vulnerability. Ranks from lowest to highest:
 
-## 1. PROLETARIAT (Starting Rank)
+### 1. PROLETARIAT (Starting Rank)
 
 - Cannot control utilities
 - Cannot control Green or Dark Blue properties
@@ -192,7 +192,7 @@ All players have a Party Rank that determines their privileges and vulnerability
 - Most vulnerable to denouncement
 - *"You are the backbone of the revolution, comrade. Now break your back."*
 
-## 2. PARTY MEMBER
+### 2. PARTY MEMBER
 
 - May control Green properties
 - 10% discount on all State purchases
@@ -201,7 +201,7 @@ All players have a Party Rank that determines their privileges and vulnerability
 
 **To achieve:** Successfully answer 2 Communist Test questions OR denounce a player who is found guilty OR bribe Stalin (minimum 300₽, Stalin's discretion)
 
-## 3. COMMISSAR
+### 3. COMMISSAR
 
 - May control utilities (Means of Production)
 - 20% discount on all State purchases
@@ -211,7 +211,7 @@ All players have a Party Rank that determines their privileges and vulnerability
 
 **To achieve:** Control 3+ properties AND successfully answer 1 Hard Communist Test question OR be personally promoted by Stalin
 
-## 4. INNER CIRCLE
+### 4. INNER CIRCLE
 
 - May control Dark Blue properties
 - 50% discount on all State purchases
@@ -222,7 +222,7 @@ All players have a Party Rank that determines their privileges and vulnerability
 
 **To achieve:** Control 5+ properties AND be nominated by Stalin AND survive a "loyalty test" (other players vote; majority must approve OR you go to Gulag)
 
-## LOSING RANK
+### LOSING RANK
 
 You lose one rank when:
 
@@ -233,11 +233,11 @@ You lose one rank when:
 
 ---
 
-# THE GULAG
+## THE GULAG
 
 The Gulag is not mere jail. It is a crucible of suffering from which few return.
 
-## Entering the Gulag
+### Entering the Gulag
 
 You are sent to the Gulag when:
 
@@ -247,7 +247,7 @@ You are sent to the Gulag when:
 - You roll three doubles (counter-revolutionary behavior)
 - Stalin sends you (requires justification, however flimsy)
 
-## Escaping the Gulag
+### Escaping the Gulag
 
 **Option 1: Serve Your Sentence**
 
@@ -286,11 +286,11 @@ You are sent to the Gulag when:
 
 ---
 
-# DENOUNCEMENT SYSTEM
+## DENOUNCEMENT SYSTEM
 
 Denouncing other players is the heart of Communistopoly. It is how you survive.
 
-## Making a Denouncement
+### Making a Denouncement
 
 Any player may denounce any other player at any time by declaring:
 
@@ -309,7 +309,7 @@ Crimes include (but are not limited to):
 - Not having a suspicious enough look
 - "You know what you did"
 
-## The Tribunal
+### The Tribunal
 
 1. **Stalin presides** as judge
 2. **The Accuser** presents their case (30 seconds max)
@@ -324,7 +324,7 @@ Stalin's judgement options:
 - **BOTH GUILTY:** Both go to Gulag (Stalin loves this option)
 - **INSUFFICIENT EVIDENCE:** No punishment, but accused is now "under suspicion" (next denouncement against them requires no witnesses)
 
-## Denouncement Limits
+### Denouncement Limits
 
 - You may only denounce once per round (unless you are COMMISSAR or higher)
 - You cannot denounce someone already in the Gulag
@@ -332,11 +332,11 @@ Stalin's judgement options:
 
 ---
 
-# COMMUNIST TEST QUESTIONS
+## COMMUNIST TEST QUESTIONS
 
 When a player lands on Communist Test, another player (chosen by Stalin) draws a card and reads the question. The active player must answer.
 
-## EASY QUESTIONS (100₽ reward, no penalty for wrong answer)
+### EASY QUESTIONS (100₽ reward, no penalty for wrong answer)
 
 1. What does USSR stand for? *(Union of Soviet Socialist Republics)*
 2. Who wrote The Communist Manifesto? *(Karl Marx and Friedrich Engels)*
@@ -349,7 +349,7 @@ When a player lands on Communist Test, another player (chosen by Stalin) draws a
 9. What is a "kolkhoz"? *(Collective farm)*
 10. What organization was the Soviet secret police? *(KGB, NKVD, or Cheka all acceptable)*
 
-## MEDIUM QUESTIONS (200₽ reward, 100₽ penalty for wrong)
+### MEDIUM QUESTIONS (200₽ reward, 100₽ penalty for wrong)
 
 1. In what year did Stalin come to power? *(1924)*
 2. What was the name of Stalin's policy of rapid industrialization? *(Five-Year Plans)*
@@ -362,7 +362,7 @@ When a player lands on Communist Test, another player (chosen by Stalin) draws a
 9. What was the name of the first artificial satellite, launched by the USSR? *(Sputnik)*
 10. What did "glasnost" mean? *(Openness/transparency)*
 
-## HARD QUESTIONS (400₽ reward, 200₽ penalty for wrong, +1 Party Rank for correct)
+### HARD QUESTIONS (400₽ reward, 200₽ penalty for wrong, +1 Party Rank for correct)
 
 1. What was Stalin's birth name? *(Ioseb Jughashvili)*
 2. Name the Soviet general who led the defence of Stalingrad. *(Vasily Chuikov or Georgy Zhukov)*
@@ -375,7 +375,7 @@ When a player lands on Communist Test, another player (chosen by Stalin) draws a
 9. What was the Katyn Massacre? *(Soviet execution of Polish officers in 1940)*
 10. What was "socialist realism"? *(Official Soviet artistic doctrine glorifying communist values)*
 
-## TRICK QUESTIONS (Stalin decides reward/penalty)
+### TRICK QUESTIONS (Stalin decides reward/penalty)
 
 1. Was communism successful? *(Only correct answer: "Communism is always successful, Comrade Stalin.")*
 2. Who is the greatest leader in history? *(Stalin. Any other answer is wrong.)*
@@ -385,11 +385,11 @@ When a player lands on Communist Test, another player (chosen by Stalin) draws a
 
 ---
 
-# PLAYING PIECES & SPECIAL ABILITIES
+## PLAYING PIECES & SPECIAL ABILITIES
 
 Each player selects a piece with unique abilities. Stalin assigns pieces to prevent arguments (arguing is counter-revolutionary).
 
-## THE HAMMER
+### THE HAMMER
 
 *"The worker's tool, building the future"*
 
@@ -397,7 +397,7 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
 - Cannot be sent to Gulag by other players (only by Stalin or landing on Enemy of the State)
 - Must always vote "guilty" in tribunals or lose ability for rest of game
 
-## THE SICKLE
+### THE SICKLE
 
 *"The farmer's blade, reaping the harvest"*
 
@@ -405,7 +405,7 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
 - Once per game, may "harvest" another player's property (steal custodianship of one property worth less than 150₽)
 - Must announce "For the Motherland!" before each roll or pay 25₽ fine
 
-## THE RED STAR
+### THE RED STAR
 
 *"Shining beacon of the revolution"*
 
@@ -416,7 +416,7 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
   - This gives you an opportunity to escape the Gulag and redeem yourself (e.g., by appealing to Stalin for promotion)
   - However, if you escape or are released from the Gulag while still at Proletariat rank, you are immediately executed
 
-## THE TANK
+### THE TANK
 
 *"The iron fist of the Red Army"*
 
@@ -424,7 +424,7 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
 - Immune to first Gulag sentence (return to nearest Railway Station instead)
 - Cannot control any properties in the Collective Farm group
 
-## THE BREAD LOAF
+### THE BREAD LOAF
 
 *"The people's sustenance... when available"*
 
@@ -432,7 +432,7 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
 - If you ever have less than 100₽, you are "starving" and must beg other players or Stalin each turn
 - May never have more than 1,000₽ (excess must be "donated" to the State)
 
-## THE IRON CURTAIN (Thimble replacement)
+### THE IRON CURTAIN (Thimble replacement)
 
 *"What happens in the USSR stays in the USSR"*
 
@@ -440,7 +440,7 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
 - Stalin may audit you at any time; if you have more than you've claimed, Gulag
 - Once per game, may "disappear" a player's property card (shuffle it back into State ownership)
 
-## THE VODKA BOTTLE
+### THE VODKA BOTTLE
 
 *"The true opiate of the masses"*
 
@@ -449,7 +449,7 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
 - If Stalin judges you "too sober," you must drink (in real life, water is acceptable) or lose the ability
 - Immune to trick questions (too drunk to be held accountable)
 
-## THE STATUE OF LENIN
+### THE STATUE OF LENIN
 
 *"The eternal revolutionary, watching over us all"*
 
@@ -459,11 +459,11 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
 
 ---
 
-# STALIN'S POWERS
+## STALIN'S POWERS
 
 The player who is Stalin has absolute authority, limited only by the need to maintain the illusion of fairness (barely).
 
-## Absolute Powers (No justification needed)
+### Absolute Powers (No justification needed)
 
 - Set prices for State property sales (within 50-200% of printed value)
 - Decide outcomes of denouncement tribunals
@@ -471,7 +471,7 @@ The player who is Stalin has absolute authority, limited only by the need to mai
 - Assign Communist Test questions to specific players
 - Promote players (but not demote without cause)
 
-## Powers Requiring Theatrical Justification
+### Powers Requiring Theatrical Justification
 
 - Send a player to the Gulag
 - Confiscate a player's property
@@ -479,13 +479,13 @@ The player who is Stalin has absolute authority, limited only by the need to mai
 - Change a rule mid-game
 - Declare a player "Hero of the Soviet Union" (immune to all negative effects for 3 rounds)
 
-## Powers Stalin Does NOT Have
+### Powers Stalin Does NOT Have
 
 - Stalin cannot play as a regular player
 - Stalin cannot take money for personal use (the State is not Stalin's personal bank... officially)
 - Stalin cannot win or lose—Stalin is eternal
 
-## Bribing Stalin
+### Bribing Stalin
 
 Players may attempt to bribe Stalin at any time. Bribes may be:
 
@@ -498,11 +498,11 @@ Stalin may accept or reject bribes without explanation. Rejected bribes are conf
 
 ---
 
-# PROPERTY IMPROVEMENT: "COLLECTIVIZATION"
+## PROPERTY IMPROVEMENT: "COLLECTIVIZATION"
 
 Instead of houses and hotels, properties are improved through Collectivization.
 
-## Levels of Collectivization
+### Levels of Collectivization
 
 Each property has a base quota that can be collected if you own it.
 
@@ -516,7 +516,7 @@ Owning all properties in a group immediately doubles the quota; +100% (== 2x bas
 
 **For complete property and collectivization tables, see the [Property Quick Reference Guide](property-reference.md).**
 
-## Improvement Rules
+### Improvement Rules
 
 - Must improve evenly across color groups (communist equality)
 - Improvements can be "requisitioned" by Stalin at any time for State needs
@@ -524,40 +524,40 @@ Owning all properties in a group immediately doubles the quota; +100% (== 2x bas
 
 ---
 
-# PROPERTY MORTGAGING
+## PROPERTY MORTGAGING
 
 Sometimes the burden of maintaining State property becomes too great. In these desperate times, Custodians may mortgage properties to raise emergency funds.
 
-## Mortgaging a Property
+### Mortgaging a Property
 
 - A Custodian may mortgage any property they control to raise Rubles
 - The property must have NO collectivization improvements (all improvements must be liquidated first)
 - The State pays 50% of the property's base cost when mortgaged
 - Place the property card face-down or mark it as "UNDER STATE RECEIVERSHIP"
 
-## Mortgaged Property Rules
+### Mortgaged Property Rules
 
 - **Mortgaged properties DO NOT charge quotas** - the State has temporarily suspended their productivity requirements
 - Players landing on mortgaged properties pay nothing
 - The Custodian retains ownership but receives no income from the property
 - Mortgaged properties still count toward complete group ownership for calculation purposes (but groups with mortgaged properties cannot be improved)
 
-## Unmortgaging a Property
+### Unmortgaging a Property
 
 - To unmortgage, the Custodian must pay back 110% of the mortgage value (the original 50% plus 10% interest to the State)
 - Example: A property worth 200₽ mortgages for 100₽. To unmortgage costs 110₽
 - Once unmortgaged, the property immediately resumes charging quotas and can be improved again
 - The Custodian may unmortgage properties at any time during their turn (before rolling or after resolving their move)
 
-## Mortgage Strategy
+### Mortgage Strategy
 
 *"When the Five-Year Plan fails, mortgage your factory. When the mortgage comes due, denounce your neighbour. This is the Soviet way."*
 
 ---
 
-# GAME END CONDITIONS
+## GAME END CONDITIONS
 
-## Individual Elimination
+### Individual Elimination
 
 A player is eliminated when:
 
@@ -573,7 +573,7 @@ Eliminated players become **Ghosts of the Revolution:**
 - They cannot vote, roll, or own anything
 - They should occasionally moan about their fate
 
-## Game Victory
+### Game Victory
 
 The game ends when:
 
@@ -586,9 +586,9 @@ In case of Survivor Victory, the winner does not celebrate. The winner simply su
 
 ---
 
-# OPTIONAL RULES FOR MAXIMUM CHAOS
+## OPTIONAL RULES FOR MAXIMUM CHAOS
 
-## The Secret Police
+### The Secret Police
 
 At game start, Stalin secretly designates one player as the "KGB Informant." This player:
 
@@ -596,7 +596,7 @@ At game start, Stalin secretly designates one player as the "KGB Informant." Thi
 - Receives 50₽ for each successful denouncement they originate
 - Is revealed if they are ever sent to the Gulag (they lose all powers and benefits)
 
-## Five-Year Plans
+### Five-Year Plans
 
 Every 30 minutes of real time, Stalin announces a "Five-Year Plan" with specific quotas:
 
@@ -604,7 +604,7 @@ Every 30 minutes of real time, Stalin announces a "Five-Year Plan" with specific
 - If met: All players receive 50₽ bonus
 - If not met: The poorest player goes to Gulag for "sabotage"
 
-## The Great Purge
+### The Great Purge
 
 Once per game, Stalin may declare "The Great Purge":
 
@@ -613,19 +613,19 @@ Once per game, Stalin may declare "The Great Purge":
 - In case of tie, both go
 - Stalin breaks ties if necessary
 
-## Rehabilitation
+### Rehabilitation
 
 Players in the Gulag may write "confessions" (actual written notes) admitting to crimes. Stalin reads these aloud and may reduce sentences for sufficiently creative/groveling confessions.
 
-## The Personality Cult
+### The Personality Cult
 
 Players may construct a "shrine to Stalin" using game pieces, snacks, or other items. Stalin may reward creativity with Rubles or rank promotions. This is not mandatory, but refusal may be noted.
 
 ---
 
-# QUICK REFERENCE CARD
+## QUICK REFERENCE CARD
 
-## Turn Order
+### Turn Order
 
 1. Praise Stalin (optional but recommended)
 2. Roll dice
@@ -635,7 +635,7 @@ Players may construct a "shrine to Stalin" using game pieces, snacks, or other i
 6. May conduct business (buy, sell, trade custodianships)
 7. Pay respects to Stalin (optional but recommended)
 
-## Key Costs
+### Key Costs
 
 - Passing Stoy: Pay 200₽
 - Gulag escape (payment): 500₽
@@ -643,11 +643,11 @@ Players may construct a "shrine to Stalin" using game pieces, snacks, or other i
 - Informant bonus: 100₽
 - Communist Test rewards: 100₽/200₽/400₽
 
-## Party Ranks
+### Party Ranks
 
 Proletariat → Party Member → Commissar → Inner Circle
 
-## Remember
+### Remember
 
 - There is no winning, only surviving
 - Stalin is always right
