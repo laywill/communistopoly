@@ -9,7 +9,7 @@ describe('gameStateHelpers - sendPlayerToGulag', () => {
   beforeEach(() => {
     // Reset store before each test
     useGameStore.setState({
-      gamePhase: 'in-progress',
+      gamePhase: 'playing',
       players: [],
       stalinPlayerId: null,
       currentPlayerIndex: 0,
@@ -46,7 +46,7 @@ describe('gameStateHelpers - sendPlayerToGulag', () => {
     const player = createTestPlayer({ id: 'player-1', name: 'Test Player' })
     useGameStore.setState({ players: [player] })
 
-    sendPlayerToGulag('player-1', 'denounced')
+    sendPlayerToGulag('player-1', 'denouncementGuilty')
 
     const state = useGameStore.getState()
     const updatedPlayer = state.players.find(p => p.id === 'player-1')
@@ -62,7 +62,7 @@ describe('gameStateHelpers - sendPlayerToGulag', () => {
     const player = createTestPlayer({ id: 'player-2', name: 'Another Player' })
     useGameStore.setState({ players: [player] })
 
-    sendPlayerToGulag('player-2', 'rolled-3-doubles')
+    sendPlayerToGulag('player-2', 'threeDoubles')
 
     const state = useGameStore.getState()
     const updatedPlayer = state.players.find(p => p.id === 'player-2')
@@ -74,7 +74,7 @@ describe('gameStateHelpers - sendPlayerToGulag', () => {
 describe('gameStateHelpers - setGulagTurns', () => {
   beforeEach(() => {
     useGameStore.setState({
-      gamePhase: 'in-progress',
+      gamePhase: 'playing',
       players: [],
       stalinPlayerId: null,
       currentPlayerIndex: 0,

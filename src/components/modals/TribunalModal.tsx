@@ -62,12 +62,12 @@ export const TribunalModal: React.FC = () => {
     switch (activeTribunal.phase) {
       case 'accusation':
         return `${accuser?.name ?? 'Accuser'}, you have 30 seconds to verbally present your case against ${accused?.name ?? 'Accused'}.`;
-      case 'defense':
+      case 'defence':
         return `${accused?.name ?? 'Accused'}, you have 30 seconds to verbally defend yourself.`;
       case 'witnesses':
         return 'Witnesses may now speak for 15 seconds each. Click the buttons below to indicate support.';
-      case 'judgment':
-        return 'Stalin must now render judgment.';
+      case 'judgement':
+        return 'Stalin must now render judgement.';
       default:
         return '';
     }
@@ -161,7 +161,7 @@ export const TribunalModal: React.FC = () => {
             <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '8px', textTransform: 'uppercase' }}>
               {getPhaseTitle(activeTribunal.phase)}
             </div>
-            {activeTribunal.phase !== 'judgment' && (
+            {activeTribunal.phase !== 'judgement' && (
               <div
                 style={{
                   fontSize: '48px',
@@ -278,11 +278,11 @@ export const TribunalModal: React.FC = () => {
                 onClick={() => { advanceTribunalPhase(); }}
                 className={styles.primaryButton}
               >
-                START DEFENSE
+                START DEFENCE
               </button>
             )}
 
-            {activeTribunal.phase === 'defense' && (
+            {activeTribunal.phase === 'defence' && (
               <button
                 onClick={() => { advanceTribunalPhase(); }}
                 className={styles.primaryButton}
@@ -296,14 +296,14 @@ export const TribunalModal: React.FC = () => {
                 onClick={() => { advanceTribunalPhase(); }}
                 className={styles.primaryButton}
               >
-                PROCEED TO JUDGMENT
+                PROCEED TO JUDGEMENT
               </button>
             )}
 
-            {activeTribunal.phase === 'judgment' && (
+            {activeTribunal.phase === 'judgement' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <h3 style={{ margin: '0 0 12px 0', textAlign: 'center', fontSize: '16px' }}>
-                  STALIN&apos;S JUDGMENT
+                  STALIN&apos;S JUDGEMENT
                 </h3>
 
                 {/* Check witness requirement */}
@@ -384,9 +384,9 @@ export const TribunalModal: React.FC = () => {
 function getPhaseTitle(phase: TribunalPhase): string {
   const titles: Record<TribunalPhase, string> = {
     accusation: 'Accusation',
-    defense: 'Defense',
+    defence: 'Defence',
     witnesses: 'Witnesses',
-    judgment: 'Judgment',
+    judgement: 'Judgement',
   };
   return titles[phase];
 }
@@ -394,9 +394,9 @@ function getPhaseTitle(phase: TribunalPhase): string {
 function getPhaseColor(phase: TribunalPhase): string {
   const colors: Record<TribunalPhase, string> = {
     accusation: 'rgba(196, 30, 58, 0.15)',
-    defense: 'rgba(52, 144, 72, 0.15)',
+    defence: 'rgba(52, 144, 72, 0.15)',
     witnesses: 'rgba(212, 168, 75, 0.15)',
-    judgment: 'rgba(50, 50, 50, 0.15)',
+    judgement: 'rgba(50, 50, 50, 0.15)',
   };
   return colors[phase];
 }

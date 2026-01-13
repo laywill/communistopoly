@@ -129,7 +129,7 @@ export function CommunistTestModal ({ question, testedPlayerId, onClose }: Commu
         <div className={styles.modal} onClick={(e) => { e.stopPropagation() }}>
           <div className={styles.header}>
             <span className={styles.icon}>☭</span>
-            <h2 className={styles.title}>STALIN&apos;S JUDGMENT</h2>
+            <h2 className={styles.title}>STALIN&apos;S JUDGEMENT</h2>
             <span className={styles.icon}>☭</span>
           </div>
 

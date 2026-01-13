@@ -2,9 +2,9 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import { describe, it, expect, beforeEach } from 'vitest'
-import { useGameStore } from '../../store/gameStore'
-import { createTestProperty } from '../helpers/gameStateHelpers'
-import { createPlayerWithPiece } from '../helpers/pieceHelpers'
+import { useGameStore } from '../../../store/gameStore'
+import { createTestProperty } from '../../helpers/gameStateHelpers'
+import { createPlayerWithPiece } from '../../helpers/pieceHelpers'
 import {
   getPieceAbility,
   SICKLE_FARM_QUOTA_MODIFIER,
@@ -13,21 +13,21 @@ import {
   BREAD_LOAF_STARVING_THRESHOLD,
   BREAD_LOAF_MAX_RUBLES,
   LENIN_SPEECH_PAYMENT
-} from '../../data/pieceAbilities'
+} from '../../../data/pieceAbilities'
 import {
   calculateQuotaWithPieceAbility,
   canOwnPropertyGroup,
   applyTestPenaltyMultiplier,
   isImmuneToTrickQuestions
-} from '../../hooks/usePieceAbility'
+} from '../../../hooks/usePieceAbility'
 import {
   canBeDenouncedBy
-} from '../../utils/pieceAbilityUtils'
+} from '../../../utils/pieceAbilityUtils'
 
 describe('Piece Abilities', () => {
   beforeEach(() => {
-    // Reset store before each test
-    useGameStore.setState(useGameStore.getState())
+    const store = useGameStore.getState()
+    store.resetGame()
   })
 
   describe('getPieceAbility helper', () => {
@@ -209,6 +209,20 @@ describe('Piece Abilities', () => {
 
         expect(finalQuota).toBe(37) // Floor of 37.5
       })
+
+      it('should apply discount to all collectivization levels', () => {
+        const baseQuota1 = 50
+        const baseQuota2 = 100
+        const baseQuota3 = 200
+
+        const quota1 = calculateQuotaWithPieceAbility(baseQuota1, 'sickle', 'collective')
+        const quota2 = calculateQuotaWithPieceAbility(baseQuota2, 'sickle', 'collective')
+        const quota3 = calculateQuotaWithPieceAbility(baseQuota3, 'sickle', 'collective')
+
+        expect(quota1).toBe(25)
+        expect(quota2).toBe(50)
+        expect(quota3).toBe(100)
+      })
     })
 
     describe('Harvest Ability', () => {
@@ -239,8 +253,64 @@ describe('Piece Abilities', () => {
 
         expect(updatedProperty.custodianId).toBe(sicklePlayer.id)
         expect(updatedSicklePlayer.hasUsedSickleHarvest).toBe(true)
-        // Note: The player's properties array is not automatically updated by setPropertyCustodian
-        // This would need to be managed by the game UI or additional logic
+      })
+
+      it('should harvest from the State (no custodian)', () => {
+        const { initializePlayers, setPropertyCustodian, sickleHarvest } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Sickle Player', piece: 'sickle', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const sicklePlayerId = state.players[0].id
+
+        // Property with no custodian (State-owned)
+        setPropertyCustodian(1, null)
+
+        sickleHarvest(sicklePlayerId, 1)
+
+        const updatedState = useGameStore.getState()
+        const property = updatedState.properties.find(p => p.spaceId === 1)
+        expect(property?.custodianId).toBe(sicklePlayerId)
+
+        const harvestLog = updatedState.gameLog.find(log =>
+          log.message.includes('harvested') && log.message.includes('the State')
+        )
+        expect(harvestLog).toBeDefined()
+      })
+
+      it('should not harvest property worth ₽150 or more', () => {
+        const { initializePlayers, setPropertyCustodian, sickleHarvest } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Sickle Player', piece: 'sickle', isStalin: false },
+          { name: 'Victim Player', piece: 'tank', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const sicklePlayerId = state.players[0].id
+        const victimPlayerId = state.players[1].id
+
+        // Set up property - Park Place (space 37, cost ₽350)
+        setPropertyCustodian(37, victimPlayerId)
+
+        sickleHarvest(sicklePlayerId, 37)
+
+        // Verify property NOT transferred
+        const updatedState = useGameStore.getState()
+        const property = updatedState.properties.find(p => p.spaceId === 37)
+        expect(property?.custodianId).toBe(victimPlayerId)
+
+        // Verify ability NOT marked as used
+        const updatedSicklePlayer = updatedState.players.find(p => p.id === sicklePlayerId)
+        expect(updatedSicklePlayer?.hasUsedSickleHarvest).toBe(false)
+
+        // Verify error log entry
+        const errorLog = updatedState.gameLog.find(log =>
+          log.message.includes('Cannot harvest') && log.message.includes('₽150')
+        )
+        expect(errorLog).toBeDefined()
       })
 
       it('should only allow use once per game', () => {
@@ -278,6 +348,63 @@ describe('Piece Abilities', () => {
         const property2After = useGameStore.getState().properties[1]
         // Property should still belong to target player
         expect(property2After.custodianId).toBe(property2Before.custodianId)
+      })
+
+      it('should not work if player is not sickle piece', () => {
+        const { initializePlayers, setPropertyCustodian, sickleHarvest } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Wrong Player', piece: 'tank', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const wrongPlayerId = state.players[0].id
+
+        setPropertyCustodian(1, null)
+
+        sickleHarvest(wrongPlayerId, 1)
+
+        // Verify property NOT transferred
+        const updatedState = useGameStore.getState()
+        const property = updatedState.properties.find(p => p.spaceId === 1)
+        expect(property?.custodianId).toBeNull()
+      })
+
+      it('should not work if player does not exist', () => {
+        const { setPropertyCustodian, sickleHarvest } = useGameStore.getState()
+
+        setPropertyCustodian(1, null)
+
+        const initialLogLength = useGameStore.getState().gameLog.length
+
+        sickleHarvest('nonexistent-player', 1)
+
+        // Verify no changes
+        const updatedState = useGameStore.getState()
+        const property = updatedState.properties.find(p => p.spaceId === 1)
+        expect(property?.custodianId).toBeUndefined()
+        expect(updatedState.gameLog.length).toBe(initialLogLength)
+      })
+
+      it('should not work if property does not exist', () => {
+        const { initializePlayers, sickleHarvest } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Sickle Player', piece: 'sickle', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const sicklePlayerId = state.players[0].id
+
+        const initialLogLength = useGameStore.getState().gameLog.length
+
+        sickleHarvest(sicklePlayerId, 999)  // Non-existent property
+
+        // Verify no changes
+        const updatedState = useGameStore.getState()
+        expect(updatedState.gameLog.length).toBe(initialLogLength)
+        const player = updatedState.players.find(p => p.id === sicklePlayerId)
+        expect(player?.hasUsedSickleHarvest).toBe(false)
       })
     })
   })
@@ -648,9 +775,38 @@ describe('Piece Abilities', () => {
         const updatedIronPlayer = useGameStore.getState().players[0]
 
         expect(updatedProperty.custodianId).toBeNull()
-        // Note: collectivizationLevel is not reset by ironCurtainDisappear currently
-        // expect(updatedProperty.collectivizationLevel).toBe(0)
         expect(updatedIronPlayer.hasUsedIronCurtainDisappear).toBe(true)
+      })
+
+      it('should work on State-owned property', () => {
+        const { initializePlayers, setPropertyCustodian, ironCurtainDisappear } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Iron Player', piece: 'ironCurtain', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const ironCurtainPlayerId = state.players[0].id
+
+        // Property already owned by State
+        setPropertyCustodian(1, null)
+
+        ironCurtainDisappear(ironCurtainPlayerId, 1)
+
+        // Verify property still with State
+        const updatedState = useGameStore.getState()
+        const property = updatedState.properties.find(p => p.spaceId === 1)
+        expect(property?.custodianId).toBeNull()
+
+        // Verify ability marked as used
+        const updatedPlayer = updatedState.players.find(p => p.id === ironCurtainPlayerId)
+        expect(updatedPlayer?.hasUsedIronCurtainDisappear).toBe(true)
+
+        // Verify log mentions "the State"
+        const disappearLog = updatedState.gameLog.find(log =>
+          log.message.includes('disappear') && log.message.includes('the State')
+        )
+        expect(disappearLog).toBeDefined()
       })
 
       it('should only allow use once per game', () => {
@@ -688,6 +844,117 @@ describe('Piece Abilities', () => {
         const property2After = useGameStore.getState().properties[1]
         // Property should still belong to target
         expect(property2After.custodianId).toBe(property2Before.custodianId)
+      })
+
+      it('should not work if player is not ironCurtain piece', () => {
+        const { initializePlayers, setPropertyCustodian, ironCurtainDisappear } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Wrong Player', piece: 'tank', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const wrongPlayerId = state.players[0].id
+
+        setPropertyCustodian(1, wrongPlayerId)
+
+        ironCurtainDisappear(wrongPlayerId, 1)
+
+        // Verify property NOT changed
+        const updatedState = useGameStore.getState()
+        const property = updatedState.properties.find(p => p.spaceId === 1)
+        expect(property?.custodianId).toBe(wrongPlayerId)
+      })
+
+      it('should not work if ability already used', () => {
+        const { initializePlayers, setPropertyCustodian, ironCurtainDisappear, updatePlayer } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Iron Player', piece: 'ironCurtain', isStalin: false },
+          { name: 'Victim Player', piece: 'tank', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const ironCurtainPlayerId = state.players[0].id
+        const victimPlayerId = state.players[1].id
+
+        // Mark ability as already used
+        updatePlayer(ironCurtainPlayerId, { hasUsedIronCurtainDisappear: true })
+
+        setPropertyCustodian(1, victimPlayerId)
+
+        const initialLogLength = useGameStore.getState().gameLog.length
+
+        ironCurtainDisappear(ironCurtainPlayerId, 1)
+
+        // Verify property NOT changed
+        const updatedState = useGameStore.getState()
+        const property = updatedState.properties.find(p => p.spaceId === 1)
+        expect(property?.custodianId).toBe(victimPlayerId)
+
+        // Verify no new log entries
+        expect(updatedState.gameLog.length).toBe(initialLogLength)
+      })
+
+      it('should not work if player does not exist', () => {
+        const { setPropertyCustodian, ironCurtainDisappear } = useGameStore.getState()
+
+        setPropertyCustodian(1, null)
+
+        const initialLogLength = useGameStore.getState().gameLog.length
+
+        ironCurtainDisappear('nonexistent-player', 1)
+
+        const updatedState = useGameStore.getState()
+        expect(updatedState.gameLog.length).toBe(initialLogLength)
+      })
+
+      it('should not work if property does not exist', () => {
+        const { initializePlayers, ironCurtainDisappear } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Iron Player', piece: 'ironCurtain', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const ironCurtainPlayerId = state.players[0].id
+
+        const initialLogLength = useGameStore.getState().gameLog.length
+
+        ironCurtainDisappear(ironCurtainPlayerId, 999)
+
+        const updatedState = useGameStore.getState()
+        expect(updatedState.gameLog.length).toBe(initialLogLength)
+        const player = updatedState.players.find(p => p.id === ironCurtainPlayerId)
+        expect(player?.hasUsedIronCurtainDisappear).toBe(false)
+      })
+
+      it('should allow disappearing property from any player', () => {
+        const { initializePlayers, ironCurtainDisappear } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Iron Curtain Player', piece: 'ironCurtain', isStalin: false },
+          { name: 'Tank Player', piece: 'tank', isStalin: false },
+          { name: 'Lenin Player', piece: 'statueOfLenin', isStalin: false }
+        ])
+
+        const ironPlayer = useGameStore.getState().players[0]
+        const tankPlayer = useGameStore.getState().players[1]
+
+        // Create property owned by Tank
+        const property = createTestProperty(8, { custodianId: tankPlayer.id })
+
+        useGameStore.setState(state => ({
+          properties: [property],
+          players: state.players.map(p =>
+            p.id === tankPlayer.id ? { ...p, properties: ['8'] } : p
+          )
+        }))
+
+        ironCurtainDisappear(ironPlayer.id, 8)
+
+        const updatedProperty = useGameStore.getState().properties[0]
+        expect(updatedProperty.custodianId).toBeNull()
       })
     })
   })
@@ -794,6 +1061,88 @@ describe('Piece Abilities', () => {
         expect(updatedLenin.hasUsedLeninSpeech).toBe(true)
       })
 
+      it('should collect partial amount if applauder has less than ₽100', () => {
+        const { initializePlayers, updatePlayer, leninSpeech } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Lenin Player', piece: 'statueOfLenin', isStalin: false },
+          { name: 'Poor Applauder', piece: 'tank', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const leninPlayerId = state.players[0].id
+        const poorApplauderId = state.players[1].id
+
+        // Set poor applauder to only have ₽50
+        updatePlayer(poorApplauderId, { rubles: 50 })
+
+        const initialLeninRubles = useGameStore.getState().players[0].rubles
+
+        leninSpeech(leninPlayerId, [poorApplauderId])
+
+        // Verify lenin collected only ₽50
+        const updatedState = useGameStore.getState()
+        const updatedLenin = updatedState.players.find(p => p.id === leninPlayerId)
+        expect(updatedLenin?.rubles).toBe(initialLeninRubles + 50)
+
+        // Verify poor applauder has ₽0
+        const updatedPoor = updatedState.players.find(p => p.id === poorApplauderId)
+        expect(updatedPoor?.rubles).toBe(0)
+      })
+
+      it('should skip eliminated applauders', () => {
+        const { initializePlayers, updatePlayer, leninSpeech } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Lenin Player', piece: 'statueOfLenin', isStalin: false },
+          { name: 'Active Applauder', piece: 'tank', isStalin: false },
+          { name: 'Eliminated Applauder', piece: 'sickle', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const leninPlayerId = state.players[0].id
+        const activeApplauderId = state.players[1].id
+        const eliminatedApplauderId = state.players[2].id
+
+        // Mark one applauder as eliminated
+        updatePlayer(eliminatedApplauderId, { isEliminated: true })
+
+        const initialLeninRubles = useGameStore.getState().players[0].rubles
+
+        leninSpeech(leninPlayerId, [activeApplauderId, eliminatedApplauderId])
+
+        // Verify lenin collected only ₽100 (from active applauder)
+        const updatedState = useGameStore.getState()
+        const updatedLenin = updatedState.players.find(p => p.id === leninPlayerId)
+        expect(updatedLenin?.rubles).toBe(initialLeninRubles + 100)
+
+        // Verify eliminated applauder kept their rubles
+        const updatedEliminated = updatedState.players.find(p => p.id === eliminatedApplauderId)
+        expect(updatedEliminated?.rubles).toBe(1500)
+      })
+
+      it('should work with empty applauders array', () => {
+        const { initializePlayers, leninSpeech } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Lenin Player', piece: 'statueOfLenin', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const leninPlayerId = state.players[0].id
+        const initialLeninRubles = state.players[0].rubles
+
+        leninSpeech(leninPlayerId, [])
+
+        // Verify lenin collected nothing
+        const updatedState = useGameStore.getState()
+        const updatedLenin = updatedState.players.find(p => p.id === leninPlayerId)
+        expect(updatedLenin?.rubles).toBe(initialLeninRubles)
+
+        // Verify ability marked as used
+        expect(updatedLenin?.hasUsedLeninSpeech).toBe(true)
+      })
+
       it('should only allow use once per game', () => {
         const { initializePlayers, leninSpeech } = useGameStore.getState()
 
@@ -820,6 +1169,219 @@ describe('Piece Abilities', () => {
         // Should not gain more money
         expect(leninAfterSecond.rubles).toBe(leninRublesAfterFirst)
       })
+
+      it('should not work if player is not statueOfLenin piece', () => {
+        const { initializePlayers, leninSpeech } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Wrong Player', piece: 'tank', isStalin: false },
+          { name: 'Applauder', piece: 'sickle', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const wrongPlayerId = state.players[0].id
+        const applauderId = state.players[1].id
+
+        const initialWrongRubles = state.players[0].rubles
+        const initialAppRubles = state.players[1].rubles
+
+        leninSpeech(wrongPlayerId, [applauderId])
+
+        // Verify no changes
+        const updatedState = useGameStore.getState()
+        const updatedWrong = updatedState.players.find(p => p.id === wrongPlayerId)
+        const updatedApp = updatedState.players.find(p => p.id === applauderId)
+        expect(updatedWrong?.rubles).toBe(initialWrongRubles)
+        expect(updatedApp?.rubles).toBe(initialAppRubles)
+      })
+
+      it('should not work if player does not exist', () => {
+        const { initializePlayers, leninSpeech } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Applauder', piece: 'tank', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const applauderId = state.players[0].id
+
+        const initialAppRubles = state.players[0].rubles
+        const initialLogLength = state.gameLog.length
+
+        leninSpeech('nonexistent-player', [applauderId])
+
+        // Verify no changes
+        const updatedState = useGameStore.getState()
+        const updatedApp = updatedState.players.find(p => p.id === applauderId)
+        expect(updatedApp?.rubles).toBe(initialAppRubles)
+        expect(updatedState.gameLog.length).toBe(initialLogLength)
+      })
+
+      it('should handle non-existent applauders gracefully', () => {
+        const { initializePlayers, leninSpeech } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Lenin Player', piece: 'statueOfLenin', isStalin: false },
+          { name: 'Applauder', piece: 'tank', isStalin: false }
+        ])
+
+        const state = useGameStore.getState()
+        const leninPlayerId = state.players[0].id
+        const applauderId = state.players[1].id
+
+        const initialLeninRubles = state.players[0].rubles
+
+        // Include non-existent applauder in list
+        leninSpeech(leninPlayerId, [applauderId, 'nonexistent-app'])
+
+        // Verify lenin only collected from existing applauder
+        const updatedState = useGameStore.getState()
+        const updatedLenin = updatedState.players.find(p => p.id === leninPlayerId)
+        expect(updatedLenin?.rubles).toBe(initialLeninRubles + 100)
+
+        // Verify ability still marked as used
+        expect(updatedLenin?.hasUsedLeninSpeech).toBe(true)
+      })
+    })
+  })
+
+  describe('Rank Promotion System', () => {
+    it('should promote proletariat to partyMember', () => {
+      const { initializePlayers, promotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Test Player', piece: 'sickle', isStalin: false }
+      ])
+
+      const state = useGameStore.getState()
+      const playerId = state.players[0].id
+
+      promotePlayer(playerId)
+
+      const updatedState = useGameStore.getState()
+      const updatedPlayer = updatedState.players.find(p => p.id === playerId)
+      expect(updatedPlayer?.rank).toBe('partyMember')
+
+      // Verify log entry
+      const promoteLog = updatedState.gameLog.find(log =>
+        log.message.includes('promoted to partyMember') && log.type === 'rank'
+      )
+      expect(promoteLog).toBeDefined()
+      expect(promoteLog?.message).toContain('Test Player')
+    })
+
+    it('should promote partyMember to commissar', () => {
+      const { initializePlayers, updatePlayer, promotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Test Player', piece: 'sickle', isStalin: false }
+      ])
+
+      const state = useGameStore.getState()
+      const playerId = state.players[0].id
+
+      // Set rank to partyMember
+      updatePlayer(playerId, { rank: 'partyMember' })
+
+      promotePlayer(playerId)
+
+      const updatedState = useGameStore.getState()
+      const updatedPlayer = updatedState.players.find(p => p.id === playerId)
+      expect(updatedPlayer?.rank).toBe('commissar')
+
+      const promoteLog = updatedState.gameLog.find(log =>
+        log.message.includes('promoted to commissar')
+      )
+      expect(promoteLog).toBeDefined()
+    })
+
+    it('should promote commissar to innerCircle', () => {
+      const { initializePlayers, updatePlayer, promotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Test Player', piece: 'sickle', isStalin: false }
+      ])
+
+      const state = useGameStore.getState()
+      const playerId = state.players[0].id
+
+      // Set rank to commissar
+      updatePlayer(playerId, { rank: 'commissar' })
+
+      promotePlayer(playerId)
+
+      const updatedState = useGameStore.getState()
+      const updatedPlayer = updatedState.players.find(p => p.id === playerId)
+      expect(updatedPlayer?.rank).toBe('innerCircle')
+
+      const promoteLog = updatedState.gameLog.find(log =>
+        log.message.includes('promoted to innerCircle')
+      )
+      expect(promoteLog).toBeDefined()
+    })
+
+    it('should not promote player already at innerCircle rank', () => {
+      const { initializePlayers, updatePlayer, promotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Test Player', piece: 'sickle', isStalin: false }
+      ])
+
+      const state = useGameStore.getState()
+      const playerId = state.players[0].id
+
+      // Set rank to innerCircle
+      updatePlayer(playerId, { rank: 'innerCircle' })
+
+      promotePlayer(playerId)
+
+      // Verify rank unchanged
+      const updatedState = useGameStore.getState()
+      const updatedPlayer = updatedState.players.find(p => p.id === playerId)
+      expect(updatedPlayer?.rank).toBe('innerCircle')
+
+      // Verify log entry mentions already at highest rank
+      const alreadyMaxLog = updatedState.gameLog.find(log =>
+        log.message.includes('already at the highest rank') && log.type === 'system'
+      )
+      expect(alreadyMaxLog).toBeDefined()
+      expect(alreadyMaxLog?.message).toContain('Inner Circle')
+    })
+
+    it('should not promote if player does not exist', () => {
+      const { promotePlayer } = useGameStore.getState()
+
+      const initialLogLength = useGameStore.getState().gameLog.length
+
+      promotePlayer('nonexistent-player')
+
+      // Verify no log entries added
+      const updatedState = useGameStore.getState()
+      expect(updatedState.gameLog.length).toBe(initialLogLength)
+    })
+
+    it('should handle multiple promotions correctly', () => {
+      const { initializePlayers, promotePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Test Player', piece: 'sickle', isStalin: false }
+      ])
+
+      const state = useGameStore.getState()
+      const playerId = state.players[0].id
+
+      // Promote multiple times
+      promotePlayer(playerId)  // proletariat -> partyMember
+      promotePlayer(playerId)  // partyMember -> commissar
+      promotePlayer(playerId)  // commissar -> innerCircle
+
+      const updatedState = useGameStore.getState()
+      const updatedPlayer = updatedState.players.find(p => p.id === playerId)
+      expect(updatedPlayer?.rank).toBe('innerCircle')
+
+      // Verify we have 3 promotion log entries
+      const promoteLogs = updatedState.gameLog.filter(log => log.type === 'rank')
+      expect(promoteLogs.length).toBe(3)
     })
   })
 
@@ -839,49 +1401,6 @@ describe('Piece Abilities', () => {
       const updatedHammer = useGameStore.getState().players[0]
       expect(updatedHammer.inGulag).toBe(false)
       // If this were Tank, hasUsedTankGulagImmunity would still be false
-    })
-
-    it('should apply Sickle farm discount to all collectivization levels', () => {
-      // Test that discount applies regardless of collectivization
-      const baseQuota1 = 50
-      const baseQuota2 = 100
-      const baseQuota3 = 200
-
-      const quota1 = calculateQuotaWithPieceAbility(baseQuota1, 'sickle', 'collective')
-      const quota2 = calculateQuotaWithPieceAbility(baseQuota2, 'sickle', 'collective')
-      const quota3 = calculateQuotaWithPieceAbility(baseQuota3, 'sickle', 'collective')
-
-      expect(quota1).toBe(25)
-      expect(quota2).toBe(50)
-      expect(quota3).toBe(100)
-    })
-
-    it('should allow Iron Curtain to disappear property from any player', () => {
-      const { initializePlayers, ironCurtainDisappear } = useGameStore.getState()
-
-      initializePlayers([
-        { name: 'Iron Curtain Player', piece: 'ironCurtain', isStalin: false },
-        { name: 'Tank Player', piece: 'tank', isStalin: false },
-        { name: 'Lenin Player', piece: 'statueOfLenin', isStalin: false }
-      ])
-
-      const ironPlayer = useGameStore.getState().players[0]
-      const tankPlayer = useGameStore.getState().players[1]
-
-      // Create property owned by Tank
-      const property = createTestProperty(8, { custodianId: tankPlayer.id })
-
-      useGameStore.setState(state => ({
-        properties: [property],
-        players: state.players.map(p =>
-          p.id === tankPlayer.id ? { ...p, properties: ['8'] } : p
-        )
-      }))
-
-      ironCurtainDisappear(ironPlayer.id, 8)
-
-      const updatedProperty = useGameStore.getState().properties[0]
-      expect(updatedProperty.custodianId).toBeNull()
     })
   })
 

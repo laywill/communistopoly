@@ -6,7 +6,7 @@ import { persist } from 'zustand/middleware'
 import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, PlayerStatistics, Confession } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
 import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck, type DirectiveCard } from '../data/partyDirectiveCards'
-import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion } from '../data/communistTestQuestions'
+import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion, COMMUNIST_TEST_QUESTIONS_BY_DIFFICULTY } from '../data/communistTestQuestions'
 
 // Helper functions
 function getGulagReasonText (reason: GulagReason, justification?: string): string {
@@ -66,7 +66,8 @@ function getEliminationMessage (playerName: string, reason: EliminationReason): 
   return messages[reason]
 }
 
-function calculateTotalWealth (player: Player, properties: Property[]): number {
+// Export for testing
+export function calculateTotalWealth (player: Player, properties: Property[]): number {
   let total = player.rubles
 
   // Add property values (50% of base cost for mortgaged properties)
@@ -91,7 +92,8 @@ function calculateTotalWealth (player: Player, properties: Property[]): number {
   return total
 }
 
-function initializePlayerStats (): PlayerStatistics {
+// Export for testing
+export function initializePlayerStats (): PlayerStatistics {
   return {
     turnsPlayed: 0,
     denouncementsMade: 0,
@@ -142,6 +144,7 @@ interface GameActions {
   // Gulag management
   sendToGulag: (playerId: string, reason: GulagReason, justification?: string) => void
   demotePlayer: (playerId: string) => void
+  checkRedStarExecutionAfterGulagRelease: (playerId: string) => void
   handleGulagTurn: (playerId: string) => void
   attemptGulagEscape: (playerId: string, method: GulagEscapeMethod, data?: Record<string, unknown>) => void
   checkFor10TurnElimination: (playerId: string) => void
@@ -866,14 +869,40 @@ export const useGameStore = create<GameStore>()(
           })
 
           // RED STAR ABILITY: If demoted to Proletariat, immediate execution
+          // BUT: If player is in Gulag, they stay in Gulag at lower rank
           if (player.piece === 'redStar' && newRank === 'proletariat') {
-            get().addLogEntry({
-              type: 'system',
-              message: `${player.name}'s Red Star has fallen to Proletariat - IMMEDIATE EXECUTION!`,
-              playerId
-            })
-            get().eliminatePlayer(playerId, 'redStarDemotion')
+            if (!player.inGulag) {
+              get().addLogEntry({
+                type: 'system',
+                message: `${player.name}'s Red Star has fallen to Proletariat - IMMEDIATE EXECUTION!`,
+                playerId
+              })
+              get().eliminatePlayer(playerId, 'redStarDemotion')
+            } else {
+              get().addLogEntry({
+                type: 'system',
+                message: `${player.name}'s Red Star has fallen to Proletariat while in the Gulag.`,
+                playerId
+              })
+            }
           }
+        }
+      },
+
+      // Helper: Check if RedStar player at Proletariat rank should be executed after leaving Gulag
+      checkRedStarExecutionAfterGulagRelease: (playerId: string) => {
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
+
+        // RED STAR ABILITY: If released from Gulag at Proletariat rank, immediate execution
+        if (player.piece === 'redStar' && player.rank === 'proletariat' && !player.inGulag) {
+          get().addLogEntry({
+            type: 'system',
+            message: `${player.name}'s Red Star is at Proletariat rank outside the Gulag - IMMEDIATE EXECUTION!`,
+            playerId
+          })
+          get().eliminatePlayer(playerId, 'redStarDemotion')
         }
       },
 
@@ -1181,6 +1210,9 @@ export const useGameStore = create<GameStore>()(
                 playerId
               })
 
+              // Check if RedStar player at Proletariat should be executed
+              get().checkRedStarExecutionAfterGulagRelease(playerId)
+
               set({ turnPhase: 'post-turn', pendingAction: null })
             } else {
               // Failed escape
@@ -1251,6 +1283,9 @@ export const useGameStore = create<GameStore>()(
                 playerId
               })
 
+              // Check if RedStar player at Proletariat should be executed
+              get().checkRedStarExecutionAfterGulagRelease(playerId)
+
               set({ turnPhase: 'post-turn', pendingAction: null })
             }
             break
@@ -1278,6 +1313,9 @@ export const useGameStore = create<GameStore>()(
           inGulag: false,
           gulagTurns: 0
         })
+
+        // Check if RedStar player at Proletariat should be executed
+        get().checkRedStarExecutionAfterGulagRelease(prisonerId)
 
         // Update voucher's state
         get().updatePlayer(voucherId, {
@@ -1404,6 +1442,9 @@ export const useGameStore = create<GameStore>()(
               playerId: bribe.playerId
             })
 
+            // Check if RedStar player at Proletariat should be executed
+            get().checkRedStarExecutionAfterGulagRelease(bribe.playerId)
+
             set({ turnPhase: 'post-turn', pendingAction: null })
           }
         } else {
@@ -1465,10 +1506,16 @@ export const useGameStore = create<GameStore>()(
         const toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
         if ((fromPlayer == null) || (toPlayer == null)) return
 
-        // Transfer offering from fromPlayer to toPlayer
-        if (trade.offering.rubles > 0) {
-          get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles - trade.offering.rubles })
-          get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles + trade.offering.rubles })
+        // Calculate net ruble transfer
+        const fromPlayerRubleChange = -trade.offering.rubles + trade.requesting.rubles
+        const toPlayerRubleChange = trade.offering.rubles - trade.requesting.rubles
+
+        // Apply ruble changes if any
+        if (fromPlayerRubleChange !== 0) {
+          get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles + fromPlayerRubleChange })
+        }
+        if (toPlayerRubleChange !== 0) {
+          get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles + toPlayerRubleChange })
         }
 
         trade.offering.properties.forEach((propId) => {
@@ -1487,12 +1534,7 @@ export const useGameStore = create<GameStore>()(
           get().updatePlayer(fromPlayer.id, { owesFavourTo: updatedFavours })
         }
 
-        // Transfer requesting from toPlayer to fromPlayer
-        if (trade.requesting.rubles > 0) {
-          get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles - trade.requesting.rubles })
-          get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles + trade.requesting.rubles })
-        }
-
+        // Transfer requesting properties
         trade.requesting.properties.forEach((propId) => {
           get().transferProperty(propId, fromPlayer.id)
         })
@@ -1596,10 +1638,15 @@ export const useGameStore = create<GameStore>()(
         if (player == null) return
 
         // Return all properties to State (with improvements removed)
-        player.properties.forEach((propId) => {
-          get().setPropertyCustodian(parseInt(propId), null)
-          get().updateCollectivizationLevel(parseInt(propId), 0)
-        })
+        // Find all properties owned by this player (by custodianId)
+        // This is more reliable than using player.properties array
+        set((currentState) => ({
+          properties: currentState.properties.map((prop) =>
+            prop.custodianId === playerId
+              ? { ...prop, custodianId: null, collectivizationLevel: 0 }
+              : prop
+          )
+        }))
 
         // Update player with elimination details
         get().updatePlayer(playerId, {
@@ -1861,10 +1908,24 @@ export const useGameStore = create<GameStore>()(
       drawCommunistTest: (difficulty) => {
         const state = get()
         const selectedDifficulty = difficulty ?? getRandomDifficulty()
-        const question = getRandomQuestionByDifficulty(selectedDifficulty)
+
+        // Get all questions for this difficulty
+        const allQuestions = COMMUNIST_TEST_QUESTIONS_BY_DIFFICULTY[selectedDifficulty]
+
+        // Filter out already-used questions
+        const availableQuestions = allQuestions.filter(q => !state.communistTestUsedQuestions.has(q.id))
+
+        // If all questions have been used, reset the used set and use all questions
+        const questionsToUse = availableQuestions.length > 0 ? availableQuestions : allQuestions
+
+        // Select a random question from available pool
+        const randomIndex = Math.floor(Math.random() * questionsToUse.length)
+        const question = questionsToUse[randomIndex]
 
         // Mark question as used
-        const newUsedQuestions = new Set(state.communistTestUsedQuestions)
+        const newUsedQuestions = availableQuestions.length > 0
+          ? new Set<string>(state.communistTestUsedQuestions)
+          : new Set<string>()  // Reset if we exhausted all questions
         newUsedQuestions.add(question.id)
 
         set({ communistTestUsedQuestions: newUsedQuestions })
@@ -2534,6 +2595,9 @@ export const useGameStore = create<GameStore>()(
                 type: 'gulag',
                 message: `${accuser.name} is released from Gulag for successful denunciation and receives ₽100 informant bonus.`
               })
+
+              // Check if RedStar player at Proletariat should be executed
+              get().checkRedStarExecutionAfterGulagRelease(accuser.id)
             } else {
               // Give accuser informant bonus
               get().updatePlayer(accuser.id, {
@@ -2661,7 +2725,7 @@ export const useGameStore = create<GameStore>()(
         targets.forEach(playerId => {
           const player = state.players.find(p => p.id === playerId)
           if (player != null && !player.inGulag) {
-            get().sendToGulag(playerId, 'denouncementGuilty')
+            get().sendToGulag(playerId, 'stalinDecree')
           }
         })
 
@@ -2742,16 +2806,50 @@ export const useGameStore = create<GameStore>()(
             message: 'Five-Year Plan SUCCESSFUL! All players receive ₽100 bonus for meeting the quota.'
           })
         } else {
-          // Find poorest player and send to Gulag
-          const poorestPlayer = state.players
+          // Find poorest eligible player and send to Gulag
+          // Keep trying until someone is successfully sent (handles tank immunity, etc.)
+          const eligiblePlayers = state.players
             .filter(p => !p.isStalin && !p.isEliminated && !p.inGulag)
-            .sort((a, b) => a.rubles - b.rubles)[0]
+            .sort((a, b) => a.rubles - b.rubles)
 
-          get().sendToGulag(poorestPlayer.id, 'denouncementGuilty')
-          get().addLogEntry({
-            type: 'system',
-            message: `Five-Year Plan FAILED! ${poorestPlayer.name} (poorest player) has been sent to the Gulag for sabotage.`
-          })
+          let sentToGulag = false
+          for (const player of eligiblePlayers) {
+            const wasInGulag = player.inGulag
+            const hadTankImmunity = player.piece === 'tank' && !player.hasUsedTankGulagImmunity
+
+            get().sendToGulag(player.id, 'stalinDecree')
+
+            // Check if player was punished (sent to Gulag, immunity consumed, or eliminated)
+            const currentState = get()
+            const updatedPlayer = currentState.players.find(p => p.id === player.id)
+
+            if (updatedPlayer) {
+              const nowInGulag = updatedPlayer.inGulag && !wasInGulag
+              const immunityConsumed = hadTankImmunity && updatedPlayer.hasUsedTankGulagImmunity
+              const wasEliminated = updatedPlayer.isEliminated
+
+              if (nowInGulag || immunityConsumed || wasEliminated) {
+                const punishmentType = nowInGulag ? 'sent to the Gulag'
+                  : immunityConsumed ? 'punished (redirected via Tank immunity)'
+                  : 'eliminated'
+
+                get().addLogEntry({
+                  type: 'system',
+                  message: `Five-Year Plan FAILED! ${player.name} (poorest player) has been ${punishmentType} for sabotage.`
+                })
+                sentToGulag = true
+                break
+              }
+            }
+          }
+
+          if (!sentToGulag && eligiblePlayers.length > 0) {
+            // All players had immunity or were redirected
+            get().addLogEntry({
+              type: 'system',
+              message: 'Five-Year Plan FAILED! No player could be sent to the Gulag (all protected).'
+            })
+          }
         }
 
         set({ activeFiveYearPlan: null })

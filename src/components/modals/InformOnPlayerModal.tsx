@@ -62,7 +62,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
     if (!target) return;
 
     const guilty = window.confirm(
-      `STALIN'S JUDGMENT\n\n${informer.name} accuses ${target.name} of:\n"${accusation}"\n\nDoes Stalin find ${target.name} GUILTY?`
+      `STALIN'S JUDGEMENT\n\n${informer.name} accuses ${target.name} of:\n"${accusation}"\n\nDoes Stalin find ${target.name} GUILTY?`
     );
 
     if (guilty) {
@@ -347,7 +347,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                   }
                   style={{ flex: 2 }}
                 >
-                  {submitted ? 'Awaiting Stalin\'s Judgment...' : 'Submit Accusation'}
+                  {submitted ? 'Awaiting Stalin\'s Judgement...' : 'Submit Accusation'}
                 </button>
               </div>
 

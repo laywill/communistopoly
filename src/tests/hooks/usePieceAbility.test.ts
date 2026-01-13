@@ -3,8 +3,8 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import type { Player } from '../../types/game'
 import { useGameStore } from '../../store/gameStore'
+import { createTestPlayer } from '../helpers/gameStateHelpers'
 import {
   usePieceAbility,
   canDenouncePieceByRank,
@@ -29,161 +29,73 @@ import {
 describe('usePieceAbility - Helper Functions', () => {
   describe('canDenouncePieceByRank', () => {
     it('should allow higher rank to denounce Statue of Lenin', () => {
-      const denouncer: Player = {
+      const denouncer = createTestPlayer({
         id: '1',
         name: 'Denouncer',
         piece: 'hammer',
-        rank: 'innerCircle',
-        rubles: 0,
-        position: 0,
-        isInGulag: false,
-        gulagTurnsRemaining: 0,
-        hasUsedSickleHarvest: false,
-        hasUsedIronCurtainDisappear: false,
-        hasUsedLeninSpeech: false,
-        hasUsedTankGulagImmunity: false,
-        tankRequisitionUsedThisLap: false,
-        ironCurtainClaimedRubles: 0,
-        vodkaUseCount: 0
-      }
+        rank: 'innerCircle'
+      })
 
-      const target: Player = {
+      const target = createTestPlayer({
         id: '2',
         name: 'Lenin',
         piece: 'statueOfLenin',
-        rank: 'partyMember',
-        rubles: 0,
-        position: 0,
-        isInGulag: false,
-        gulagTurnsRemaining: 0,
-        hasUsedSickleHarvest: false,
-        hasUsedIronCurtainDisappear: false,
-        hasUsedLeninSpeech: false,
-        hasUsedTankGulagImmunity: false,
-        tankRequisitionUsedThisLap: false,
-        ironCurtainClaimedRubles: 0,
-        vodkaUseCount: 0
-      }
+        rank: 'partyMember'
+      })
 
       expect(canDenouncePieceByRank(denouncer, target)).toBe(true)
     })
 
     it('should allow equal rank to denounce Statue of Lenin', () => {
-      const denouncer: Player = {
+      const denouncer = createTestPlayer({
         id: '1',
         name: 'Denouncer',
         piece: 'hammer',
-        rank: 'commissar',
-        rubles: 0,
-        position: 0,
-        isInGulag: false,
-        gulagTurnsRemaining: 0,
-        hasUsedSickleHarvest: false,
-        hasUsedIronCurtainDisappear: false,
-        hasUsedLeninSpeech: false,
-        hasUsedTankGulagImmunity: false,
-        tankRequisitionUsedThisLap: false,
-        ironCurtainClaimedRubles: 0,
-        vodkaUseCount: 0
-      }
+        rank: 'commissar'
+      })
 
-      const target: Player = {
+      const target = createTestPlayer({
         id: '2',
         name: 'Lenin',
         piece: 'statueOfLenin',
-        rank: 'commissar',
-        rubles: 0,
-        position: 0,
-        isInGulag: false,
-        gulagTurnsRemaining: 0,
-        hasUsedSickleHarvest: false,
-        hasUsedIronCurtainDisappear: false,
-        hasUsedLeninSpeech: false,
-        hasUsedTankGulagImmunity: false,
-        tankRequisitionUsedThisLap: false,
-        ironCurtainClaimedRubles: 0,
-        vodkaUseCount: 0
-      }
+        rank: 'commissar'
+      })
 
       expect(canDenouncePieceByRank(denouncer, target)).toBe(true)
     })
 
     it('should NOT allow lower rank to denounce Statue of Lenin', () => {
-      const denouncer: Player = {
+      const denouncer = createTestPlayer({
         id: '1',
         name: 'Denouncer',
         piece: 'hammer',
-        rank: 'proletariat',
-        rubles: 0,
-        position: 0,
-        isInGulag: false,
-        gulagTurnsRemaining: 0,
-        hasUsedSickleHarvest: false,
-        hasUsedIronCurtainDisappear: false,
-        hasUsedLeninSpeech: false,
-        hasUsedTankGulagImmunity: false,
-        tankRequisitionUsedThisLap: false,
-        ironCurtainClaimedRubles: 0,
-        vodkaUseCount: 0
-      }
+        rank: 'proletariat'
+      })
 
-      const target: Player = {
+      const target = createTestPlayer({
         id: '2',
         name: 'Lenin',
         piece: 'statueOfLenin',
-        rank: 'commissar',
-        rubles: 0,
-        position: 0,
-        isInGulag: false,
-        gulagTurnsRemaining: 0,
-        hasUsedSickleHarvest: false,
-        hasUsedIronCurtainDisappear: false,
-        hasUsedLeninSpeech: false,
-        hasUsedTankGulagImmunity: false,
-        tankRequisitionUsedThisLap: false,
-        ironCurtainClaimedRubles: 0,
-        vodkaUseCount: 0
-      }
+        rank: 'commissar'
+      })
 
       expect(canDenouncePieceByRank(denouncer, target)).toBe(false)
     })
 
     it('should allow anyone to denounce non-Lenin pieces', () => {
-      const denouncer: Player = {
+      const denouncer = createTestPlayer({
         id: '1',
         name: 'Denouncer',
         piece: 'hammer',
-        rank: 'proletariat',
-        rubles: 0,
-        position: 0,
-        isInGulag: false,
-        gulagTurnsRemaining: 0,
-        hasUsedSickleHarvest: false,
-        hasUsedIronCurtainDisappear: false,
-        hasUsedLeninSpeech: false,
-        hasUsedTankGulagImmunity: false,
-        tankRequisitionUsedThisLap: false,
-        ironCurtainClaimedRubles: 0,
-        vodkaUseCount: 0
-      }
+        rank: 'proletariat'
+      })
 
-      const target: Player = {
+      const target = createTestPlayer({
         id: '2',
         name: 'Target',
         piece: 'hammer',
-        rank: 'innerCircle',
-        rubles: 0,
-        position: 0,
-        isInGulag: false,
-        gulagTurnsRemaining: 0,
-        hasUsedSickleHarvest: false,
-        hasUsedIronCurtainDisappear: false,
-        hasUsedLeninSpeech: false,
-        hasUsedTankGulagImmunity: false,
-        tankRequisitionUsedThisLap: false,
-        ironCurtainClaimedRubles: 0,
-        vodkaUseCount: 0
-      }
+        rank: 'innerCircle'
+      })
 
       expect(canDenouncePieceByRank(denouncer, target)).toBe(true)
     })
@@ -693,7 +605,7 @@ describe('usePieceAbility - Hook', () => {
       const targetPropertyId = 5
 
       act(() => {
-        result.current.useSickleHarvest(targetPropertyId)
+        result.current.useSickleHarvest?.(targetPropertyId)
       })
 
       expect(sickleHarvestSpy).toHaveBeenCalledWith(player.id, targetPropertyId)
@@ -713,7 +625,7 @@ describe('usePieceAbility - Hook', () => {
       const targetPlayerId = 'player-2'
 
       act(() => {
-        result.current.useTankRequisition(targetPlayerId)
+        result.current.useTankRequisition?.(targetPlayerId)
       })
 
       expect(tankRequisitionSpy).toHaveBeenCalledWith(player.id, targetPlayerId)
@@ -733,7 +645,7 @@ describe('usePieceAbility - Hook', () => {
       const targetPropertyId = 10
 
       act(() => {
-        result.current.useIronCurtainDisappear(targetPropertyId)
+        result.current.useIronCurtainDisappear?.(targetPropertyId)
       })
 
       expect(ironCurtainDisappearSpy).toHaveBeenCalledWith(player.id, targetPropertyId)
@@ -753,7 +665,7 @@ describe('usePieceAbility - Hook', () => {
       const applauders = ['player-2', 'player-3']
 
       act(() => {
-        result.current.useLeninSpeech(applauders)
+        result.current.useLeninSpeech?.(applauders)
       })
 
       expect(leninSpeechSpy).toHaveBeenCalledWith(player.id, applauders)
@@ -778,7 +690,7 @@ describe('usePieceAbility - Hook', () => {
       const { result } = renderHook(() => usePieceAbility(player))
 
       act(() => {
-        result.current.useVodka3Dice()
+        result.current.useVodka3Dice?.()
       })
 
       expect(rollVodka3DiceSpy).toHaveBeenCalledWith()
