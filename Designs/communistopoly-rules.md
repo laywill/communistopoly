@@ -383,6 +383,9 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
 - Start at Party Member rank instead of Proletariat
 - All Communist Test penalties against you are doubled
 - If you ever fall to Proletariat rank, you are immediately executed (eliminated from game)
+  - **Exception**: If you fall to Proletariat rank while in the Gulag, you remain in the Gulag at that rank
+  - This gives you an opportunity to escape the Gulag and redeem yourself (e.g., by appealing to Stalin for promotion)
+  - However, if you escape or are released from the Gulag while still at Proletariat rank, you are immediately executed
 
 ## THE TANK
 *"The iron fist of the Red Army"*
