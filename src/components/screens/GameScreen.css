@@ -40,11 +40,16 @@
   font-style: italic;
 }
 
-.menu-button {
+.header-buttons {
+  display: flex;
+  gap: 1rem;
   position: absolute;
   right: 2rem;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.menu-button {
   background: linear-gradient(180deg, #4A4A4A 0%, #2A2A2A 100%);
   color: var(--color-aged-white);
   border: 2px solid var(--color-kremlin-gold);
@@ -60,12 +65,12 @@
 }
 
 .menu-button:hover {
-  transform: translateY(-50%) translateY(-2px);
+  transform: translateY(-2px);
   box-shadow: 0 6px 0 #1A1A1A, 0 8px 15px rgb(0 0 0 / 40%);
 }
 
 .menu-button:active {
-  transform: translateY(-50%) translateY(2px);
+  transform: translateY(2px);
   box-shadow: 0 2px 0 #1A1A1A, 0 3px 5px rgb(0 0 0 / 30%);
 }
 
