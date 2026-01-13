@@ -82,6 +82,7 @@ When you land on an unclaimed property and can afford it, you may be able to pur
 ### Paying Quotas (Rent)
 
 When you land on someone else's property, you must pay them a quota based on:
+
 - The property's base quota
 - Whether they own the full group (2× multiplier)
 - The collectivization level (4× to 30× multiplier)
@@ -108,12 +109,14 @@ Your rank determines what you can own and how vulnerable you are:
 | **Inner Circle**   | + Kremlin properties | Unanimous + Stalin approval   | Nearly untouchable         |
 
 **Property Restrictions by Rank:**
+
 - **Proletariat**: Cannot own Elite properties (green), Kremlin properties (dark blue), or Utilities
 - **Party Member**: Unlocks Elite properties (green)
 - **Commissar**: Unlocks Utilities (Means of Production)
 - **Inner Circle**: Unlocks Kremlin properties (dark blue)
 
 **Advancing rank**:
+
 - Pass Communist Tests successfully
 - Stalin can promote/demote anyone
 - Certain card effects
@@ -136,6 +139,7 @@ Once per round (more if Commissar+), you can denounce another player for crimes 
 5. If guilty: Gulag, property confiscation, demotion, or worse
 
 **Popular crimes**:
+
 - Counter-revolutionary activities
 - Capitalist sympathies
 - Hoarding resources
@@ -144,6 +148,7 @@ Once per round (more if Commissar+), you can denounce another player for crimes 
 ### Stalin's Role
 
 Stalin has absolute power:
+
 - Final say in all tribunals
 - Can promote or demote any player
 - Can send anyone to Gulag

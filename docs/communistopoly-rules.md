@@ -2,7 +2,9 @@
 <!-- Licensed under the PolyForm Noncommercial License 1.0.0 -->
 
 # COMMUNISTOPOLY
+
 ## A Satirical House-Rules Variant of Monopoly
+
 ### *"All players are equal, but some players are more equal than others."*
 
 ---
@@ -26,6 +28,7 @@ Communistopoly transforms the capitalist fantasy of Monopoly into a darkly comed
 ## Selecting Stalin
 
 Before the game begins, players must select who will be Stalin. This can be done by:
+
 - The owner of the game automatically becomes Stalin (they bought it, after all—very capitalist of them)
 - Democratic vote (the communist way, where Stalin counts the votes)
 - Whoever has the best mustache
@@ -182,6 +185,7 @@ When you land on Communist Test, another player (chosen by Stalin) asks you a tr
 All players have a Party Rank that determines their privileges and vulnerability. Ranks from lowest to highest:
 
 ## 1. PROLETARIAT (Starting Rank)
+
 - Cannot control utilities
 - Cannot control Green or Dark Blue properties
 - Pay full price for everything
@@ -189,6 +193,7 @@ All players have a Party Rank that determines their privileges and vulnerability
 - *"You are the backbone of the revolution, comrade. Now break your back."*
 
 ## 2. PARTY MEMBER
+
 - May control Green properties
 - 10% discount on all State purchases
 - May vote on denouncements
@@ -197,6 +202,7 @@ All players have a Party Rank that determines their privileges and vulnerability
 **To achieve:** Successfully answer 2 Communist Test questions OR denounce a player who is found guilty OR bribe Stalin (minimum 300₽, Stalin's discretion)
 
 ## 3. COMMISSAR
+
 - May control utilities (Means of Production)
 - 20% discount on all State purchases
 - May call ONE emergency Party meeting per game (pause game to discuss "state matters")
@@ -206,6 +212,7 @@ All players have a Party Rank that determines their privileges and vulnerability
 **To achieve:** Control 3+ properties AND successfully answer 1 Hard Communist Test question OR be personally promoted by Stalin
 
 ## 4. INNER CIRCLE
+
 - May control Dark Blue properties
 - 50% discount on all State purchases
 - May veto ONE denouncement per game
@@ -218,6 +225,7 @@ All players have a Party Rank that determines their privileges and vulnerability
 ## LOSING RANK
 
 You lose one rank when:
+
 - Sent to the Gulag
 - Found guilty of a denouncement
 - Fail 2 Communist Tests in a row
@@ -230,7 +238,9 @@ You lose one rank when:
 The Gulag is not mere jail. It is a crucible of suffering from which few return.
 
 ## Entering the Gulag
+
 You are sent to the Gulag when:
+
 - You land on "Enemy of the State"
 - You are denounced and found guilty
 - You fail to pay a debt within one full round
@@ -240,6 +250,7 @@ You are sent to the Gulag when:
 ## Escaping the Gulag
 
 **Option 1: Serve Your Sentence**
+
 - Roll dice at the start of each turn
 - You need DOUBLES to escape
 - BUT: On your 1st turn, you need double 6s
@@ -249,22 +260,26 @@ You are sent to the Gulag when:
 - On your 5th+ turn, any doubles
 
 **Option 2: Rehabilitation Through labour**
+
 - Pay 500₽ to the State (your "rehabilitation fee")
 - You are released but lose one Party Rank
 
 **Option 3: Someone Vouches For You**
+
 - Another player may vouch for your release
 - If they do, you are released immediately
 - BUT: If you commit ANY offence in the next 3 rounds, your voucher goes to the Gulag too
 - The voucher may not refuse this arrangement once offered
 
 **Option 4: Inform on Another Player**
+
 - Name another player and accuse them of a crime (real or invented)
 - Stalin holds a tribunal (see Denouncement rules)
 - If they are found guilty, you swap places
 - If they are found innocent, add 2 turns to your sentence
 
 **Option 5: Bribe the Guards**
+
 - Pay Stalin directly (minimum 200₽, negotiable)
 - Stalin may accept or reject for any reason
 - If rejected, you lose the money anyway ("confiscated contraband")
@@ -282,6 +297,7 @@ Any player may denounce any other player at any time by declaring:
 *"I denounce [Player Name] for [Crime]!"*
 
 Crimes include (but are not limited to):
+
 - Counter-revolutionary activities
 - Capitalist sympathies
 - Hoarding resources
@@ -302,6 +318,7 @@ Crimes include (but are not limited to):
 5. **Stalin renders judgement**
 
 Stalin's judgement options:
+
 - **GUILTY:** Accused goes to Gulag, loses one Rank, Accuser gains 100₽ "informant bonus"
 - **INNOCENT:** Accuser loses one Rank for "wasting the Party's time"
 - **BOTH GUILTY:** Both go to Gulag (Stalin loves this option)
@@ -373,19 +390,25 @@ When a player lands on Communist Test, another player (chosen by Stalin) draws a
 Each player selects a piece with unique abilities. Stalin assigns pieces to prevent arguments (arguing is counter-revolutionary).
 
 ## THE HAMMER
+
 *"The worker's tool, building the future"*
+
 - +50₽ every time you pass Stoy (offset the tax)
 - Cannot be sent to Gulag by other players (only by Stalin or landing on Enemy of the State)
 - Must always vote "guilty" in tribunals or lose ability for rest of game
 
 ## THE SICKLE
+
 *"The farmer's blade, reaping the harvest"*
+
 - Collective Farm quotas against you are halved
 - Once per game, may "harvest" another player's property (steal custodianship of one property worth less than 150₽)
 - Must announce "For the Motherland!" before each roll or pay 25₽ fine
 
 ## THE RED STAR
+
 *"Shining beacon of the revolution"*
+
 - Start at Party Member rank instead of Proletariat
 - All Communist Test penalties against you are doubled
 - If you ever fall to Proletariat rank, you are immediately executed (eliminated from game)
@@ -394,32 +417,42 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
   - However, if you escape or are released from the Gulag while still at Proletariat rank, you are immediately executed
 
 ## THE TANK
+
 *"The iron fist of the Red Army"*
+
 - May "requisition" 50₽ from any player you pass (once per lap around the board)
 - Immune to first Gulag sentence (return to nearest Railway Station instead)
 - Cannot control any properties in the Collective Farm group
 
 ## THE BREAD LOAF
+
 *"The people's sustenance... when available"*
+
 - Whenever another player cannot pay a debt, you may pay it for them (they now owe YOU, not the state—interest accrues at 20% per round)
 - If you ever have less than 100₽, you are "starving" and must beg other players or Stalin each turn
 - May never have more than 1,000₽ (excess must be "donated" to the State)
 
 ## THE IRON CURTAIN (Thimble replacement)
+
 *"What happens in the USSR stays in the USSR"*
+
 - Other players cannot see your money (keep it hidden)
 - Stalin may audit you at any time; if you have more than you've claimed, Gulag
 - Once per game, may "disappear" a player's property card (shuffle it back into State ownership)
 
 ## THE VODKA BOTTLE
+
 *"The true opiate of the masses"*
+
 - Before any roll, may "drink" to roll 3 dice and choose 2
 - Every time you use this ability, your speech must be slightly more slurred
 - If Stalin judges you "too sober," you must drink (in real life, water is acceptable) or lose the ability
 - Immune to trick questions (too drunk to be held accountable)
 
 ## THE STATUE OF LENIN
+
 *"The eternal revolutionary, watching over us all"*
+
 - Cannot be denounced by players of lower rank
 - Once per game, may give an "inspiring speech" (30 seconds) to gain 100₽ from each player who applauds (Stalin judges sincerity of applause)
 - Must remain standing whenever Lenin is mentioned, or lose 50₽
@@ -431,6 +464,7 @@ Each player selects a piece with unique abilities. Stalin assigns pieces to prev
 The player who is Stalin has absolute authority, limited only by the need to maintain the illusion of fairness (barely).
 
 ## Absolute Powers (No justification needed)
+
 - Set prices for State property sales (within 50-200% of printed value)
 - Decide outcomes of denouncement tribunals
 - Call for "voluntary donations" to the State (players may refuse at their own risk)
@@ -438,6 +472,7 @@ The player who is Stalin has absolute authority, limited only by the need to mai
 - Promote players (but not demote without cause)
 
 ## Powers Requiring Theatrical Justification
+
 - Send a player to the Gulag
 - Confiscate a player's property
 - Execute a player (eliminate them from the game)
@@ -445,6 +480,7 @@ The player who is Stalin has absolute authority, limited only by the need to mai
 - Declare a player "Hero of the Soviet Union" (immune to all negative effects for 3 rounds)
 
 ## Powers Stalin Does NOT Have
+
 - Stalin cannot play as a regular player
 - Stalin cannot take money for personal use (the State is not Stalin's personal bank... officially)
 - Stalin cannot win or lose—Stalin is eternal
@@ -452,6 +488,7 @@ The player who is Stalin has absolute authority, limited only by the need to mai
 ## Bribing Stalin
 
 Players may attempt to bribe Stalin at any time. Bribes may be:
+
 - Money (slides across the table discreetly)
 - Flattery (genuinely creative compliments)
 - Favours (promises of future support)
@@ -523,12 +560,14 @@ Sometimes the burden of maintaining State property becomes too great. In these d
 ## Individual Elimination
 
 A player is eliminated when:
+
 - They cannot pay a debt and have no assets to liquidate
 - They are executed by Stalin (requires serious "crime" or unanimous player vote + Stalin approval)
 - They spend 10 consecutive turns in the Gulag
 - Their piece ability causes elimination (Red Star falling to Proletariat)
 
 Eliminated players become **Ghosts of the Revolution:**
+
 - They may still speak and influence the game
 - They may advise Stalin (who may ignore them)
 - They cannot vote, roll, or own anything
@@ -537,6 +576,7 @@ Eliminated players become **Ghosts of the Revolution:**
 ## Game Victory
 
 The game ends when:
+
 - Only one player remains (SURVIVOR VICTORY)
 - All players are eliminated (STALIN VICTORY—the State wins)
 - Players unanimously agree to end the game (REVOLUTIONARY SPIRIT—everyone was too drunk/tired to continue)
@@ -549,28 +589,36 @@ In case of Survivor Victory, the winner does not celebrate. The winner simply su
 # OPTIONAL RULES FOR MAXIMUM CHAOS
 
 ## The Secret Police
+
 At game start, Stalin secretly designates one player as the "KGB Informant." This player:
+
 - Reports all private conversations to Stalin
 - Receives 50₽ for each successful denouncement they originate
 - Is revealed if they are ever sent to the Gulag (they lose all powers and benefits)
 
 ## Five-Year Plans
+
 Every 30 minutes of real time, Stalin announces a "Five-Year Plan" with specific quotas:
+
 - "The State requires 1,000₽ from the collective within 10 minutes"
 - If met: All players receive 50₽ bonus
 - If not met: The poorest player goes to Gulag for "sabotage"
 
 ## The Great Purge
+
 Once per game, Stalin may declare "The Great Purge":
+
 - All players must simultaneously point at another player
 - The player with the most fingers pointed at them goes to Gulag
 - In case of tie, both go
 - Stalin breaks ties if necessary
 
 ## Rehabilitation
+
 Players in the Gulag may write "confessions" (actual written notes) admitting to crimes. Stalin reads these aloud and may reduce sentences for sufficiently creative/groveling confessions.
 
 ## The Personality Cult
+
 Players may construct a "shrine to Stalin" using game pieces, snacks, or other items. Stalin may reward creativity with Rubles or rank promotions. This is not mandatory, but refusal may be noted.
 
 ---
@@ -578,6 +626,7 @@ Players may construct a "shrine to Stalin" using game pieces, snacks, or other i
 # QUICK REFERENCE CARD
 
 ## Turn Order
+
 1. Praise Stalin (optional but recommended)
 2. Roll dice
 3. Move piece
@@ -587,6 +636,7 @@ Players may construct a "shrine to Stalin" using game pieces, snacks, or other i
 7. Pay respects to Stalin (optional but recommended)
 
 ## Key Costs
+
 - Passing Stoy: Pay 200₽
 - Gulag escape (payment): 500₽
 - Minimum Stalin bribe: 200₽
@@ -594,9 +644,11 @@ Players may construct a "shrine to Stalin" using game pieces, snacks, or other i
 - Communist Test rewards: 100₽/200₽/400₽
 
 ## Party Ranks
+
 Proletariat → Party Member → Commissar → Inner Circle
 
 ## Remember
+
 - There is no winning, only surviving
 - Stalin is always right
 - The Party is always watching

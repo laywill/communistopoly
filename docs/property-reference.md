@@ -95,6 +95,7 @@ Utilities cannot be collectivized. Their quota is based on the dice roll that br
 Many properties grant special abilities when owned. For details on property abilities, see the [complete rules](communistopoly-rules.md#property-special-abilities).
 
 Examples include:
+
 - **Siberian Work Camps** (both): Send one player to Gulag per game (Stalin must approve)
 - **Government Ministries** (all three): Rewrite one rule per game (Stalin has veto power)
 - **Lenin's Mausoleum**: Immunity to denouncement while custodian
