@@ -1296,7 +1296,7 @@ export const useGameStore = create<GameStore>()(
       createVoucher: (prisonerId, voucherId) => {
         const state = get()
         const voucher: VoucherAgreement = {
-          id: `voucher-${String(Date.now())}`,
+          id: `voucher-${String(Date.now())}-${prisonerId}`,
           prisonerId,
           voucherId,
           expiresAtRound: (state.roundNumber) + 3,
