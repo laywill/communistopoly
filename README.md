@@ -20,23 +20,27 @@ This repository contains the web-based implementation built with React, TypeScri
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 22+ (LTS)
 - npm or yarn
 
 ### Local Development
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/communistopoly.git
    cd communistopoly
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -45,12 +49,13 @@ This repository contains the web-based implementation built with React, TypeScri
    Navigate to <http://localhost:5173>
 
 5. **Build for production**
+
    ```bash
    npm run build
    npm run preview
    ```
 
-### Using DevContainer (Recommended)
+### Using DevContainer
 
 If you use Visual Studio Code with the Dev Containers extension:
 
@@ -61,6 +66,7 @@ If you use Visual Studio Code with the Dev Containers extension:
 5. Access the app at <http://localhost:5173>
 
 The devcontainer automatically:
+
 - Uses Node 22 LTS
 - Installs all dependencies
 - Sets up recommended VS Code extensions (ESLint, Prettier)
@@ -109,6 +115,7 @@ communistopoly/
 ## Design Philosophy
 
 The visual design draws from **Soviet Constructivist propaganda art** (1920s-1950s):
+
 - Bold geometric shapes and stark contrasts
 - Limited color palette (Soviet Red, Kremlin Gold, Propaganda Black)
 - Heavy typography with condensed sans-serif fonts
@@ -119,24 +126,19 @@ For complete design specifications, see `Designs/communistopoly-design.md`.
 
 ## Game Rules
 
-For the complete rule set, see `docs/communistopoly-rules.md`. Key mechanics include:
-
-- **Party Rank System**: Proletariat → Party Member → Commissar → Inner Circle
-- **The Gulag**: Not jail—a crucible of suffering with complex escape mechanics
-- **Denouncement System**: Betray your comrades to survive
-- **Communist Tests**: Trivia questions with rewards and penalties
-- **Stalin's Powers**: Absolute authority over all players
-- **Special Mechanics**: Tribunals, property collectivization, pilfering, and more
+For the complete rule set, see `docs/communistopoly-rules.md`.
 
 ## How to Play
 
 ### Setup
+
 1. Launch the game and click "START NEW GAME"
 2. Select 3-6 players (one will be Stalin)
 3. Choose your piece - each has unique abilities
 4. Stalin player gets the control panel
 
 ### Basic Gameplay
+
 - **Turns**: Roll dice, move, resolve the space you land on
 - **Properties**: Land on unclaimed properties to purchase them (if your rank allows)
 - **Quotas**: Pay rent to property custodians when landing on their properties
@@ -148,6 +150,7 @@ For the complete rule set, see `docs/communistopoly-rules.md`. Key mechanics inc
 Properties can be improved through collectivization (similar to houses/hotels in Monopoly). Each collectivization level dramatically increases the quota (rent) owed when other players land on your property.
 
 **Collectivization Levels:**
+
 - **None** (Site Only): Base quota × 1.0
 - **Group Owned**: Base quota x 2.0
 - **★☆☆☆☆** (Worker's Committee): Base quota × 4.0 (costs ₽100)
@@ -159,7 +162,7 @@ Properties can be improved through collectivization (similar to houses/hotels in
 #### Standard Properties
 
 | Property                    | Cost | Mortgage | Rent - Site Only | Rent ★☆☆☆☆ | Rent ★★☆☆☆ | Rent ★★★☆☆ | Rent ★★★★☆ | Rent ★★★★★ |
-|-----------------------------|------|----------|------------------|------------|------------|------------|------------|------------|
+| --------------------------- | ---- | -------- | ---------------- | ---------- | ---------- | ---------- | ---------- | ---------- |
 | **Siberian Work Camps**     |      |          |                  |            |            |            |            |            |
 | Camp Vorkuta                | ₽60  | ₽30      | ₽2               | ₽6         | ₽18        | ₽30        | ₽40        | ₽60        |
 | Camp Kolyma                 | ₽60  | ₽30      | ₽4               | ₽12        | ₽36        | ₽60        | ₽80        | ₽120       |
@@ -194,7 +197,7 @@ Properties can be improved through collectivization (similar to houses/hotels in
 #### Railways (Trans-Siberian Railway Stations)
 
 | Property            | Cost | Mortgage | Rent (1 owned) | Rent (2 owned) | Rent (3 owned) | Rent (4 owned) |
-|---------------------|------|----------|----------------|----------------|----------------|----------------|
+| ------------------- | ---- | -------- | -------------- | -------------- | -------------- | -------------- |
 | Moscow Station      | ₽200 | ₽100     | ₽25            | ₽50            | ₽100           | ₽200           |
 | Novosibirsk Station | ₽200 | ₽100     | ₽25            | ₽50            | ₽100           | ₽200           |
 | Irkutsk Station     | ₽200 | ₽100     | ₽25            | ₽50            | ₽100           | ₽200           |
@@ -203,24 +206,27 @@ Properties can be improved through collectivization (similar to houses/hotels in
 #### Utilities (Means of Production)
 
 | Property                  | Cost | Mortgage | Rent (1 owned) | Rent (2 owned) |
-|---------------------------|------|----------|----------------|----------------|
+| ------------------------- | ---- | -------- | -------------- | -------------- |
 | State Electricity Board   | ₽150 | ₽75      | 4 × dice roll  | 10 × dice roll |
 | People's Water Collective | ₽150 | ₽75      | 4 × dice roll  | 10 × dice roll |
 
 **Note**: Utilities and railways cannot be collectivized. Only COMMISSAR rank or higher may own utilities.
 
 ### The Gulag
+
 - Enter via: Rolling 3 doubles, denouncement, debt default, Stalin's decree
 - Escape by: Rolling required doubles, paying 500₽, getting vouched, informing on another, bribing Stalin
 - Difficulty increases each turn (1st turn: need 6-6, 5th turn: any doubles)
 - **10 turns in Gulag = Elimination!**
 
 ### Winning
+
 - **Survivor Victory**: Be the last player standing (not eliminated)
 - **Stalin Victory**: All players are eliminated
 - **Unanimous End**: All players vote to end the game
 
 ### Special Features
+
 - **Piece Abilities**: Each game piece has unique powers (check rules for details)
 - **Rank System**: Progress from Proletariat → Party Member → Commissar → Inner Circle
 - **Property Abilities**: Some properties grant special powers when owned
@@ -270,24 +276,29 @@ As the developer of this Monopoly game project, it is essential to clarify the f
 ## Features & Highlights
 
 ### Automatic Save/Load
+
 - Game state is automatically saved to browser localStorage
 - Resume interrupted games automatically
 - Clear save data from Main Menu if needed
 
 ### Statistics Tracking
+
 - Individual player stats (turns played, Gulag time, tests passed/failed)
 - Game-wide statistics (total denouncements, tribunals, Gulag sentences)
 - Final statistics display on game end screen
 
 ### Error Handling
+
 - Error boundary catches crashes gracefully
 - Clear error messages with restart option
 - Stack traces in development mode
 
 ### Keyboard Shortcuts
+
 - `Ctrl+Shift+R`: Quick reset game (development feature)
 
 ### Visual Polish
+
 - Smooth animations for dice rolls and movements
 - Soviet-themed color palette throughout
 - Responsive modals for all interactions
