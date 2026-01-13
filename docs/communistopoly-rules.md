@@ -7,6 +7,10 @@
 
 ---
 
+**New to Communistopoly?** Check out the [How to Play Guide](how-to-play.md) for a quick start introduction!
+
+---
+
 # OVERVIEW
 
 Communistopoly transforms the capitalist fantasy of Monopoly into a darkly comedic simulation of Soviet bureaucracy, paranoia, and ideological absurdity. Victory is not achieved through wealth accumulation—it is survived through political manoeuvring, strategic betrayal, and shameless flattery of Comrade Stalin (the Banker).
@@ -51,6 +55,8 @@ Before the game begins, players must select who will be Stalin. This can be done
 ## Property Groups
 
 Properties cannot be "owned" in the capitalist sense. Instead, players become **Custodians** of State property, responsible for its maintenance and collectivization. Rent is replaced with **Productivity Quotas**—failure to meet them reflects poorly on YOU.
+
+**For quick reference tables of all property costs, quotas, and collectivization levels, see the [Property Quick Reference Guide](property-reference.md).**
 
 ### Brown → SIBERIAN WORK CAMPS (Lowest value, highest misery)
 
@@ -470,6 +476,8 @@ Owning all properties in a group immediately doubles the quota; +100% (== 2x bas
 3. **Full Collectivization** (3 houses): +1400% (== 15x base) to quota. Cost: 100₽
 4. **Model Soviet** (4 houses): +1900% (== 20x base) to quota. Cost: 100₽
 5. **People's Palace** (Hotel): +2900% (== 30x base) to quota, other players must salute when landing. Cost: 200₽
+
+**For complete property and collectivization tables, see the [Property Quick Reference Guide](property-reference.md).**
 
 ## Improvement Rules
 

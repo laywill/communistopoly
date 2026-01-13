@@ -11,9 +11,9 @@ A satirical digital board game that transforms Monopoly's capitalist fantasy int
 
 Communistopoly is a shared-screen/hot-seat digital board game for 3-6 players, where one player takes on the role of "Stalin" (the game master) and controls the fate of all other comrades. Victory is not achieved through wealth accumulation—it is survived through political manoeuvring, strategic betrayal, and shameless flattery of Comrade Stalin.
 
-This repository contains the web-based implementation built with React, TypeScript, and Vite, featuring authentic Soviet-era visual design inspired by Constructivist propaganda art.
+Built with React, TypeScript, and Vite, featuring authentic Soviet-era visual design inspired by Constructivist propaganda art.
 
-## Current Status: Fully Playable Game - All Milestones Complete! ✓
+## Current Status: Fully Playable Game ✓
 
 **Communistopoly is now a complete, fully playable board game!** All core mechanics, special features, and victory conditions have been implemented. The game is ready for 3-6 players with one acting as Stalin.
 
@@ -26,81 +26,40 @@ This repository contains the web-based implementation built with React, TypeScri
 
 ### Local Development
 
-1. **Clone the repository**
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/communistopoly.git
+cd communistopoly
 
-   ```bash
-   git clone https://github.com/yourusername/communistopoly.git
-   cd communistopoly
-   ```
+# Install dependencies
+npm install
 
-2. **Install dependencies**
+# Start the development server
+npm run dev
 
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server**
-
-   ```bash
-   npm run dev
-   ```
-
-4. **Open your browser**
-   Navigate to <http://localhost:5173>
-
-5. **Build for production**
-
-   ```bash
-   npm run build
-   npm run preview
-   ```
-
-### Using DevContainer
-
-If you use Visual Studio Code with the Dev Containers extension:
-
-1. Open the project in VS Code
-2. Press `F1` and select "Dev Containers: Reopen in Container"
-3. Wait for the container to build and dependencies to install
-4. Run `npm run dev` in the integrated terminal
-5. Access the app at <http://localhost:5173>
-
-The devcontainer automatically:
-
-- Uses Node 22 LTS
-- Installs all dependencies
-- Sets up recommended VS Code extensions (ESLint, Prettier)
-- Configures auto-formatting on save
-- Exposes port 5173 for the Vite dev server
-
-## Project Structure
-
+# Open your browser to http://localhost:5173
 ```
-communistopoly/
-├── .devcontainer/          # DevContainer configuration
-├── Designs/                # Design documents (rules, visuals, technical spec)
-├── src/
-│   ├── components/
-│   │   ├── board/         # Board and all space components
-│   │   ├── ui/            # Reusable UI components (future)
-│   │   └── layout/        # Layout components (future)
-│   ├── data/
-│   │   ├── spaces.ts      # All 40 board space definitions
-│   │   ├── properties.ts  # Property group information
-│   │   └── constants.ts   # Game constants and colors
-│   ├── types/
-│   │   └── game.ts        # TypeScript interfaces
-│   ├── styles/            # Global styles (CSS variables)
-│   ├── App.tsx            # Main app component
-│   ├── main.tsx           # Entry point
-│   └── index.css          # Global CSS with Soviet theme variables
-├── public/                # Static assets (future: images, sounds)
-├── index.html
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── README.md
+
+### Build for Production
+
+```bash
+npm run build
+npm run preview
 ```
+
+### DevContainer Support
+
+This project includes VS Code DevContainer configuration for containerized development. Open in VS Code and select "Reopen in Container" to get started with a pre-configured environment.
+
+For detailed setup instructions, see the [How to Play Guide](docs/how-to-play.md#what-you-need).
+
+## Documentation
+
+- 📖 **[Game Rules](docs/communistopoly-rules.md)** - Complete rulebook with all mechanics and special abilities
+- 🎮 **[How to Play](docs/how-to-play.md)** - Quick start guide to get playing fast
+- 📊 **[Property Quick Reference](docs/property-reference.md)** - Costs, quotas, and collectivization at a glance
+- 🔧 **[Technical Specification](Designs/communistopoly-technical-spec.md)** - Architecture and implementation guide for developers
+- 🎨 **[Design Document](Designs/communistopoly-design.md)** - Visual design specifications and Soviet aesthetic guidelines
 
 ## Technology Stack
 
@@ -108,140 +67,28 @@ communistopoly/
 - **Build Tool**: Vite 7.3
 - **Styling**: CSS with CSS Modules
 - **State Management**: Zustand with persistence middleware
-- **Fonts**: Google Fonts (Oswald, Roboto Condensed, Roboto Mono)
-- **Error Handling**: React Error Boundaries
 - **Type Safety**: TypeScript strict mode
+- **Fonts**: Google Fonts (Oswald, Roboto Condensed, Roboto Mono)
 
-## Design Philosophy
+## Features
 
-The visual design draws from **Soviet Constructivist propaganda art** (1920s-1950s):
-
-- Bold geometric shapes and stark contrasts
-- Limited color palette (Soviet Red, Kremlin Gold, Propaganda Black)
-- Heavy typography with condensed sans-serif fonts
-- Satirically bureaucratic aesthetic (forms, stamps, official seals)
-- Aged paper textures and weathered appearance
-
-For complete design specifications, see `Designs/communistopoly-design.md`.
-
-## Game Rules
-
-For the complete rule set, see `docs/communistopoly-rules.md`.
-
-## How to Play
-
-### Setup
-
-1. Launch the game and click "START NEW GAME"
-2. Select 3-6 players (one will be Stalin)
-3. Choose your piece - each has unique abilities
-4. Stalin player gets the control panel
-
-### Basic Gameplay
-
-- **Turns**: Roll dice, move, resolve the space you land on
-- **Properties**: Land on unclaimed properties to purchase them (if your rank allows)
-- **Quotas**: Pay rent to property custodians when landing on their properties
-- **Cards**: Draw Party Directives or take Communist Tests when landing on those spaces
-- **Passing STOY**: Collect 200₽ when passing Start the Oligarch Year
-
-### Property Rents and Collectivization Levels
-
-Properties can be improved through collectivization (similar to houses/hotels in Monopoly). Each collectivization level dramatically increases the quota (rent) owed when other players land on your property.
-
-**Collectivization Levels:**
-
-- **None** (Site Only): Base quota × 1.0
-- **Group Owned**: Base quota x 2.0
-- **★☆☆☆☆** (Worker's Committee): Base quota × 4.0 (costs ₽100)
-- **★★☆☆☆** (Party Oversight): Base quota × 9.0 (costs ₽100)
-- **★★★☆☆** (Full Collectivization): Base quota × 15.0 (costs ₽100)
-- **★★★★☆** (Model Soviet): Base quota × 20.0 (costs ₽100)
-- **★★★★★** (People's Palace): Base quota × 30.0 (costs ₽200)
-
-#### Standard Properties
-
-| Property                    | Cost | Mortgage | Rent - Site Only | Rent ★☆☆☆☆ | Rent ★★☆☆☆ | Rent ★★★☆☆ | Rent ★★★★☆ | Rent ★★★★★ |
-| --------------------------- | ---- | -------- | ---------------- | ---------- | ---------- | ---------- | ---------- | ---------- |
-| **Siberian Work Camps**     |      |          |                  |            |            |            |            |            |
-| Camp Vorkuta                | ₽60  | ₽30      | ₽2               | ₽6         | ₽18        | ₽30        | ₽40        | ₽60        |
-| Camp Kolyma                 | ₽60  | ₽30      | ₽4               | ₽12        | ₽36        | ₽60        | ₽80        | ₽120       |
-| **Collective Farms**        |      |          |                  |            |            |            |            |            |
-| Kolkhoz Sunrise             | ₽100 | ₽50      | ₽6               | ₽18        | ₽54        | ₽90        | ₽120       | ₽180       |
-| Kolkhoz Progress            | ₽100 | ₽50      | ₽6               | ₽18        | ₽54        | ₽90        | ₽120       | ₽180       |
-| Kolkhoz Victory             | ₽120 | ₽60      | ₽8               | ₽24        | ₽72        | ₽120       | ₽160       | ₽240       |
-| **Industrial Centers**      |      |          |                  |            |            |            |            |            |
-| Tractor Factory #47         | ₽140 | ₽70      | ₽10              | ₽30        | ₽90        | ₽150       | ₽200       | ₽300       |
-| Steel Mill Molotov          | ₽140 | ₽70      | ₽10              | ₽30        | ₽90        | ₽150       | ₽200       | ₽300       |
-| Munitions Plant Kalashnikov | ₽160 | ₽80      | ₽12              | ₽36        | ₽108       | ₽180       | ₽240       | ₽360       |
-| **Government Ministries**   |      |          |                  |            |            |            |            |            |
-| Ministry of Truth           | ₽180 | ₽90      | ₽14              | ₽42        | ₽126       | ₽210       | ₽280       | ₽420       |
-| Ministry of Plenty          | ₽180 | ₽90      | ₽14              | ₽42        | ₽126       | ₽210       | ₽280       | ₽420       |
-| Ministry of Love            | ₽200 | ₽100     | ₽16              | ₽48        | ₽144       | ₽240       | ₽320       | ₽480       |
-| **Military Installations**  |      |          |                  |            |            |            |            |            |
-| Red Army Barracks           | ₽220 | ₽110     | ₽18              | ₽54        | ₽162       | ₽270       | ₽360       | ₽540       |
-| KGB Headquarters            | ₽220 | ₽110     | ₽18              | ₽54        | ₽162       | ₽270       | ₽360       | ₽540       |
-| Nuclear Bunker Arzamas-16   | ₽240 | ₽120     | ₽20              | ₽60        | ₽180       | ₽300       | ₽400       | ₽600       |
-| **State Media**             |      |          |                  |            |            |            |            |            |
-| Pravda Printing Press       | ₽260 | ₽130     | ₽22              | ₽66        | ₽198       | ₽330       | ₽440       | ₽660       |
-| Radio Moscow                | ₽260 | ₽130     | ₽22              | ₽66        | ₽198       | ₽330       | ₽440       | ₽660       |
-| State Television Center     | ₽280 | ₽140     | ₽22              | ₽66        | ₽198       | ₽330       | ₽440       | ₽660       |
-| **Party Elite District**    |      |          |                  |            |            |            |            |            |
-| Politburo Apartments        | ₽300 | ₽150     | ₽26              | ₽78        | ₽234       | ₽390       | ₽520       | ₽780       |
-| Dachas of the Nomenklatura  | ₽300 | ₽150     | ₽26              | ₽78        | ₽234       | ₽390       | ₽520       | ₽780       |
-| The Lubyanka                | ₽320 | ₽160     | ₽28              | ₽84        | ₽252       | ₽420       | ₽560       | ₽840       |
-| **Kremlin Complex**         |      |          |                  |            |            |            |            |            |
-| Lenin's Mausoleum           | ₽350 | ₽175     | ₽35              | ₽105       | ₽315       | ₽525       | ₽700       | ₽1,050     |
-| Stalin's Private Office     | ₽400 | ₽200     | ₽50              | ₽150       | ₽450       | ₽750       | ₽1,000     | ₽1,500     |
-
-#### Railways (Trans-Siberian Railway Stations)
-
-| Property            | Cost | Mortgage | Rent (1 owned) | Rent (2 owned) | Rent (3 owned) | Rent (4 owned) |
-| ------------------- | ---- | -------- | -------------- | -------------- | -------------- | -------------- |
-| Moscow Station      | ₽200 | ₽100     | ₽25            | ₽50            | ₽100           | ₽200           |
-| Novosibirsk Station | ₽200 | ₽100     | ₽25            | ₽50            | ₽100           | ₽200           |
-| Irkutsk Station     | ₽200 | ₽100     | ₽25            | ₽50            | ₽100           | ₽200           |
-| Vladivostok Station | ₽200 | ₽100     | ₽25            | ₽50            | ₽100           | ₽200           |
-
-#### Utilities (Means of Production)
-
-| Property                  | Cost | Mortgage | Rent (1 owned) | Rent (2 owned) |
-| ------------------------- | ---- | -------- | -------------- | -------------- |
-| State Electricity Board   | ₽150 | ₽75      | 4 × dice roll  | 10 × dice roll |
-| People's Water Collective | ₽150 | ₽75      | 4 × dice roll  | 10 × dice roll |
-
-**Note**: Utilities and railways cannot be collectivized. Only COMMISSAR rank or higher may own utilities.
-
-### The Gulag
-
-- Enter via: Rolling 3 doubles, denouncement, debt default, Stalin's decree
-- Escape by: Rolling required doubles, paying 500₽, getting vouched, informing on another, bribing Stalin
-- Difficulty increases each turn (1st turn: need 6-6, 5th turn: any doubles)
-- **10 turns in Gulag = Elimination!**
-
-### Winning
-
-- **Survivor Victory**: Be the last player standing (not eliminated)
-- **Stalin Victory**: All players are eliminated
-- **Unanimous End**: All players vote to end the game
-
-### Special Features
-
-- **Piece Abilities**: Each game piece has unique powers (check rules for details)
-- **Rank System**: Progress from Proletariat → Party Member → Commissar → Inner Circle
-- **Property Abilities**: Some properties grant special powers when owned
-- **Trading**: Players can trade properties, money, and favours
-- **Confessions**: Players in Gulag can write confessions to Stalin for possible early release
-
-For complete rules, see `docs/communistopoly-rules.md`.
+- **Stalin Control Panel** - One player controls the fate of all others with special powers
+- **8 Unique Player Pieces** - Each with distinct abilities and restrictions
+- **Authentic Soviet Aesthetic** - Bold Constructivist design with propaganda art styling
+- **Automatic Save/Load** - Game state persists in browser localStorage
+- **Statistics Tracking** - Detailed player and game statistics
+- **Property Collectivization** - Transform properties through 5 levels of improvement
+- **Denouncement System** - Accuse other players and hold tribunals
+- **The Gulag** - Multiple entry paths and escape mechanisms
+- **Party Rank System** - Advance from Proletariat to Inner Circle
 
 ## Browser Support
 
 - Chrome/Edge 90+
 - Firefox 88+
 - Safari 14+
-- Minimum viewport: 1024 x 768 (tablet landscape)
-- Optimal viewport: 1280 x 800 or larger
+- Minimum viewport: 1024 × 768 (tablet landscape)
+- Optimal viewport: 1280 × 800 or larger
 
 ## Contributing
 
@@ -272,47 +119,6 @@ As the developer of this Monopoly game project, it is essential to clarify the f
 6. Attribution: This project may include third-party libraries or assets that are appropriately credited and licensed under their respective terms. Any attributions and licenses should be preserved as required by the respective authors.
 
 7. Personal Responsibility: As the developer, you are responsible for complying with all applicable laws, including intellectual property laws, and ensuring that your usage of this project is within legal boundaries.
-
-## Features & Highlights
-
-### Automatic Save/Load
-
-- Game state is automatically saved to browser localStorage
-- Resume interrupted games automatically
-- Clear save data from Main Menu if needed
-
-### Statistics Tracking
-
-- Individual player stats (turns played, Gulag time, tests passed/failed)
-- Game-wide statistics (total denouncements, tribunals, Gulag sentences)
-- Final statistics display on game end screen
-
-### Error Handling
-
-- Error boundary catches crashes gracefully
-- Clear error messages with restart option
-- Stack traces in development mode
-
-### Keyboard Shortcuts
-
-- `Ctrl+Shift+R`: Quick reset game (development feature)
-
-### Visual Polish
-
-- Smooth animations for dice rolls and movements
-- Soviet-themed color palette throughout
-- Responsive modals for all interactions
-- Pulsing animations on important elements
-- Screen shake effects for dramatic moments (eliminated players coming soon)
-
----
-
-## Known Limitations
-
-- **Single Device Only**: This is a hot-seat game requiring all players to share one screen
-- **No AI Players**: All players must be human (including Stalin)
-- **No Undo**: All actions are final once committed
-- **Browser Storage**: Save data is stored locally and will be lost if browser data is cleared
 
 ---
 
