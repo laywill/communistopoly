@@ -49,7 +49,7 @@ Before the game begins, players must select who will be Stalin. This can be done
 ### Corner Spaces
 
 | Original     | Communistopoly               | Function                                                                                                                                                                                                        |
-| ------------ | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|--------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | GO           | **STOY (СТОЙ)** "Checkpoint" | **Passing:** Pay 200₽ "travel tax" to the State. **Landing exactly:** You may attempt to pilfer—roll one die. On 4-6, steal 100₽ from the State coffers. On 1-3, you are caught and sent directly to the Gulag. |
 | Jail         | **THE GULAG**                | See Gulag Rules below                                                                                                                                                                                           |
 | Free Parking | **BREADLINE**                | All players must give you one item (50₽, a property, or a favour owed). If any player refuses, you may denounce them. Stalin adjudicates.                                                                       |
@@ -64,7 +64,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 #### Brown → SIBERIAN WORK CAMPS (Lowest value, highest misery)
 
 | Original          | Communistopoly   | Quota |
-| ----------------- | ---------------- | ----- |
+|-------------------|------------------|-------|
 | Mediterranean Ave | **Camp Vorkuta** | 20₽   |
 | Baltic Ave        | **Camp Kolyma**  | 40₽   |
 
@@ -73,7 +73,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 #### Light Blue → COLLECTIVE FARMS
 
 | Original        | Communistopoly       | Quota |
-| --------------- | -------------------- | ----- |
+|-----------------|----------------------|-------|
 | Oriental Ave    | **Kolkhoz Sunrise**  | 60₽   |
 | Vermont Ave     | **Kolkhoz Progress** | 60₽   |
 | Connecticut Ave | **Kolkhoz Victory**  | 80₽   |
@@ -83,7 +83,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 #### Pink → INDUSTRIAL CENTERS
 
 | Original          | Communistopoly                  | Quota |
-| ----------------- | ------------------------------- | ----- |
+|-------------------|---------------------------------|-------|
 | St. Charles Place | **Tractor Factory #47**         | 100₽  |
 | States Ave        | **Steel Mill Molotov**          | 100₽  |
 | Virginia Ave      | **Munitions Plant Kalashnikov** | 120₽  |
@@ -93,7 +93,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 #### Orange → GOVERNMENT MINISTRIES
 
 | Original        | Communistopoly         | Quota |
-| --------------- | ---------------------- | ----- |
+|-----------------|------------------------|-------|
 | St. James Place | **Ministry of Truth**  | 140₽  |
 | Tennessee Ave   | **Ministry of Plenty** | 140₽  |
 | New York Ave    | **Ministry of Love**   | 160₽  |
@@ -103,7 +103,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 #### Red → MILITARY INSTALLATIONS
 
 | Original     | Communistopoly                | Quota |
-| ------------ | ----------------------------- | ----- |
+|--------------|-------------------------------|-------|
 | Kentucky Ave | **Red Army Barracks**         | 180₽  |
 | Indiana Ave  | **KGB Headquarters**          | 180₽  |
 | Illinois Ave | **Nuclear Bunker Arzamas-16** | 200₽  |
@@ -113,7 +113,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 #### Yellow → STATE MEDIA
 
 | Original       | Communistopoly              | Quota |
-| -------------- | --------------------------- | ----- |
+|----------------|-----------------------------|-------|
 | Atlantic Ave   | **Pravda Printing Press**   | 220₽  |
 | Ventnor Ave    | **Radio Moscow**            | 220₽  |
 | Marvin Gardens | **State Television Center** | 240₽  |
@@ -123,7 +123,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 #### Green → PARTY ELITE DISTRICT
 
 | Original           | Communistopoly                 | Quota |
-| ------------------ | ------------------------------ | ----- |
+|--------------------|--------------------------------|-------|
 | Pacific Ave        | **Politburo Apartments**       | 260₽  |
 | North Carolina Ave | **Dachas of the Nomenklatura** | 260₽  |
 | Pennsylvania Ave   | **The Lubyanka**               | 280₽  |
@@ -133,7 +133,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 #### Dark Blue → THE KREMLIN COMPLEX (Highest value)
 
 | Original   | Communistopoly              | Quota |
-| ---------- | --------------------------- | ----- |
+|------------|-----------------------------|-------|
 | Park Place | **Lenin's Mausoleum**       | 350₽  |
 | Boardwalk  | **Stalin's Private Office** | 500₽  |
 
@@ -142,7 +142,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 ### Railroads → TRANS-SIBERIAN RAILWAY STATIONS
 
 | Original              | Communistopoly          | Function                   |
-| --------------------- | ----------------------- | -------------------------- |
+|-----------------------|-------------------------|----------------------------|
 | Reading Railroad      | **Moscow Station**      | 50₽ per station controlled |
 | Pennsylvania Railroad | **Novosibirsk Station** | 100₽ for 2 stations        |
 | B&O Railroad          | **Irkutsk Station**     | 150₽ for 3 stations        |
@@ -153,7 +153,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 ### Utilities → THE MEANS OF PRODUCTION
 
 | Original         | Communistopoly                | Function  |
-| ---------------- | ----------------------------- | --------- |
+|------------------|-------------------------------|-----------|
 | Electric Company | **State Electricity Board**   | See below |
 | Water Works      | **People's Water Collective** | See below |
 
@@ -166,7 +166,7 @@ Properties cannot be "owned" in the capitalist sense. Instead, players become **
 ### Tax Spaces
 
 | Original   | Communistopoly                 | Function                                                                                                                                         |
-| ---------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+|------------|--------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | Income Tax | **REVOLUTIONARY CONTRIBUTION** | Pay 15% of total wealth OR 200₽ (player's choice). Then Stalin may audit you—if you chose the lower amount, pay the difference plus 50₽ penalty. |
 | Luxury Tax | **BOURGEOIS DECADENCE TAX**    | Pay 100₽. If you are the wealthiest player, pay 200₽ and lose one Party Rank for "capitalist tendencies."                                        |
 
