@@ -10,8 +10,8 @@ describe('gameStore - Great Purge', () => {
     initializePlayers([
       { name: 'Player 1', piece: 'sickle', isStalin: false },
       { name: 'Player 2', piece: 'redStar', isStalin: false },
-      { name: 'Player 3', piece: 'tank', isStalin: false },
-      { name: 'Player 4', piece: 'hammer', isStalin: false }
+      { name: 'Player 3', piece: 'breadLoaf', isStalin: false },
+      { name: 'Player 4', piece: 'ironCurtain', isStalin: false }
     ])
   }
 

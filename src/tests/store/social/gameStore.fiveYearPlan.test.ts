@@ -10,8 +10,8 @@ describe('gameStore - Five Year Plan', () => {
     initializePlayers([
       { name: 'Player 1', piece: 'sickle', isStalin: false },
       { name: 'Player 2', piece: 'redStar', isStalin: false },
-      { name: 'Player 3', piece: 'tank', isStalin: false },
-      { name: 'Player 4', piece: 'hammer', isStalin: false }
+      { name: 'Player 3', piece: 'breadLoaf', isStalin: false },
+      { name: 'Player 4', piece: 'ironCurtain', isStalin: false }
     ])
 
     // Give players some rubles for testing
@@ -518,6 +518,101 @@ describe('gameStore - Five Year Plan', () => {
       // Poorest player (Player 3 with 100 rubles) should be in Gulag
       const poorest = state.players.find(p => p.id === players[3].id)
       expect(poorest?.inGulag).toBe(true)
+    })
+  })
+
+  describe('Tank Piece Ability - Gulag Immunity', () => {
+    const setupTankPlayer = () => {
+      const { initializePlayers } = useGameStore.getState()
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false },
+        { name: 'Player 2', piece: 'tank', isStalin: false },
+        { name: 'Player 3', piece: 'breadLoaf', isStalin: false },
+        { name: 'Player 4', piece: 'ironCurtain', isStalin: false }
+      ])
+
+      const { players, updatePlayer } = useGameStore.getState()
+      updatePlayer(players[0].id, { rubles: 500 })
+      updatePlayer(players[1].id, { rubles: 100 }) // Tank - will be poorest
+      updatePlayer(players[2].id, { rubles: 300 })
+      updatePlayer(players[3].id, { rubles: 400 })
+    }
+
+    beforeEach(() => {
+      useGameStore.getState().resetGame()
+      setupTankPlayer()
+    })
+
+    it('should redirect Tank to railway on first Gulag sentence and consume immunity', () => {
+      const { initiateFiveYearPlan, resolveFiveYearPlan, players } = useGameStore.getState()
+      const tankPlayer = players[1] // Tank piece, poorest
+
+      expect(tankPlayer.hasUsedTankGulagImmunity).toBe(false)
+      expect(tankPlayer.piece).toBe('tank')
+
+      // Initiate a Five Year Plan that will fail
+      initiateFiveYearPlan(1000, 10)
+      // Don't contribute anything - plan will fail
+
+      resolveFiveYearPlan()
+
+      const state = useGameStore.getState()
+      const updated = state.players.find(p => p.id === tankPlayer.id)
+
+      // Tank should NOT be in Gulag (redirected to railway)
+      expect(updated?.inGulag).toBe(false)
+      // Tank immunity should be consumed
+      expect(updated?.hasUsedTankGulagImmunity).toBe(true)
+      // Tank should be at a railway station (5, 15, 25, or 35)
+      expect([5, 15, 25, 35]).toContain(updated?.position)
+      // Tank should still be demoted
+      expect(updated?.rank).toBe('proletariat') // Started as proletariat, stays there (can't go lower)
+    })
+
+    it('should send Tank to Gulag on second Gulag sentence after immunity is consumed', () => {
+      const { sendToGulag, players, updatePlayer } = useGameStore.getState()
+      const tankPlayer = players[1]
+
+      // First Gulag sentence - triggers immunity
+      sendToGulag(tankPlayer.id, 'stalinDecree')
+
+      let updated = useGameStore.getState().players.find(p => p.id === tankPlayer.id)
+      expect(updated?.inGulag).toBe(false) // Redirected to railway
+      expect(updated?.hasUsedTankGulagImmunity).toBe(true) // Immunity consumed
+
+      // Reset position for cleaner test
+      updatePlayer(tankPlayer.id, { position: 20 })
+
+      // Second Gulag sentence - should go to Gulag
+      sendToGulag(tankPlayer.id, 'stalinDecree')
+
+      updated = useGameStore.getState().players.find(p => p.id === tankPlayer.id)
+      expect(updated?.inGulag).toBe(true) // Now in Gulag
+      expect(updated?.position).toBe(10) // Gulag position
+      expect(updated?.hasUsedTankGulagImmunity).toBe(true) // Still marked as used
+    })
+
+    it('should handle Five Year Plan failure with Tank as poorest - count redirect as success', () => {
+      const { initiateFiveYearPlan, resolveFiveYearPlan, players } = useGameStore.getState()
+      const tankPlayer = players[1] // Tank, poorest at 100₽
+      const nextPoorest = players[2] // Bread Loaf, 300₽
+
+      // Initiate a Five Year Plan that will fail
+      initiateFiveYearPlan(1000, 10)
+      // Don't contribute anything - plan will fail
+
+      resolveFiveYearPlan()
+
+      const state = useGameStore.getState()
+      const updatedTank = state.players.find(p => p.id === tankPlayer.id)
+      const updatedNext = state.players.find(p => p.id === nextPoorest.id)
+
+      // Tank was "punished" via redirect (immunity consumed)
+      expect(updatedTank?.hasUsedTankGulagImmunity).toBe(true)
+      expect(updatedTank?.inGulag).toBe(false)
+
+      // Next poorest should NOT be sent (Tank's redirect counts as punishment)
+      expect(updatedNext?.inGulag).toBe(false)
     })
   })
 })
