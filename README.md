@@ -1,8 +1,8 @@
 <!-- Copyright © 2025 William Lay -->
 <!-- Licensed under the PolyForm Noncommercial License 1.0.0 -->
 
-<div align="center" style="background:#F5E6C8;border:8px solid #C41E3A;box-shadow:inset 0 0 0 2px #D4A84B;padding:2rem;margin:2rem 0">
-<h1 style="margin:0;font-size:2.5rem;font-weight:700;letter-spacing:0.15em;color:#1A1A1A;text-shadow:2px 2px 4px rgba(0,0,0,0.2)">☭ COMMUNISTOPOLY ☭</h1>
+<div align="center">
+  <img src=".github/assets/banner.jpg" alt="COMMUNISTOPOLY Banner" />
 </div>
 
 # Communistopoly
