@@ -9,10 +9,12 @@ import GameLog from '../game/GameLog';
 import StalinPanel from '../stalin/StalinPanel';
 import { PendingActionHandler } from '../modals/PendingActionHandler';
 import ExitConfirmModal from '../modals/ExitConfirmModal';
+import RulesModal from '../modals/RulesModal';
 import './GameScreen.css';
 
 export default function GameScreen() {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [showRules, setShowRules] = useState(false);
   const resetGame = useGameStore((state) => state.resetGame);
 
   const handleExitConfirm = () => {
@@ -43,9 +45,14 @@ export default function GameScreen() {
           <h1 className="game-title">COMMUNISTOPOLY</h1>
           <p className="game-tagline">&quot;All players are equal, but some are more equal than others&quot;</p>
         </div>
-        <button className="menu-button" onClick={() => { setShowExitConfirm(true); }}>
-          ☭ MENU
-        </button>
+        <div className="header-buttons">
+          <button className="menu-button" onClick={() => { setShowRules(true); }}>
+            ⚖️ RULES
+          </button>
+          <button className="menu-button" onClick={() => { setShowExitConfirm(true); }}>
+            ☭ MENU
+          </button>
+        </div>
       </header>
 
       <div className="game-layout">
@@ -78,6 +85,10 @@ export default function GameScreen() {
         onClose={() => { setShowExitConfirm(false); }}
         onConfirm={handleExitConfirm}
       />
+
+      {showRules && (
+        <RulesModal onClose={() => { setShowRules(false); }} />
+      )}
     </div>
   );
 }
