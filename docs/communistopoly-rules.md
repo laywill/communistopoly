@@ -3,9 +3,9 @@
 
 # COMMUNISTOPOLY
 
-### A Satirical House-Rules Variant of Monopoly
+A Satirical House-Rules Variant of Monopoly.
 
-#### *"All players are equal, but some players are more equal than others."*
+*"All players are equal, but some players are more equal than others."*
 
 ---
 
