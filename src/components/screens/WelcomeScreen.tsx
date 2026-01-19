@@ -24,15 +24,14 @@ export default function WelcomeScreen({ onShowRules }: WelcomeScreenProps) {
     <div className="welcome-screen">
       <div className="welcome-container">
         <div className="welcome-header">
-          <span className="star-symbol">☭</span>
-          <div className="welcome-title-section">
-            <h1 className="welcome-title">COMMUNISTOPOLY</h1>
-            <p className="welcome-subtitle">
-              &quot;All players are equal, but some players are more equal than others.&quot;
-            </p>
-          </div>
-          <span className="star-symbol">☭</span>
+          <span className="hammer-sickle-symbol">☭</span>
+          <span className="welcome-title">COMMUNISTOPOLY</span>
+          <span className="hammer-sickle-symbol">☭</span>
         </div>
+
+        <p className="welcome-subtitle">
+          &quot;All players are equal, but some players are more equal than others.&quot;
+        </p>
 
         <div className="welcome-buttons">
           <button
