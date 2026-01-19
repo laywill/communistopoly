@@ -3,245 +3,24 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GameState, Player, Property, GamePhase, TurnPhase, LogEntry, PendingAction, GulagReason, VoucherAgreement, BribeRequest, GulagEscapeMethod, EliminationReason, GameEndCondition, PlayerStatistics, Confession } from '../types/game'
+import { GameState, Player, Property, VoucherAgreement, PlayerStatistics, Confession } from '../types/game'
 import { BOARD_SPACES, getSpaceById } from '../data/spaces'
-import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck, type DirectiveCard } from '../data/partyDirectiveCards'
-import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, type TestQuestion, COMMUNIST_TEST_QUESTIONS_BY_DIFFICULTY } from '../data/communistTestQuestions'
+import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck } from '../data/partyDirectiveCards'
+import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, COMMUNIST_TEST_QUESTIONS_BY_DIFFICULTY } from '../data/communistTestQuestions'
+import { getGulagReasonText, getRequiredDoublesForEscape, shouldTriggerVoucherConsequence } from './helpers/gulagHelpers'
+import { calculateTotalWealth } from './helpers/wealthCalculation'
+import { initializePlayerStats } from './helpers/playerStats'
+import { getEliminationMessage } from './helpers/eliminationHelpers'
+import { createUiSlice, initialUiState } from './slices/uiSlice'
+import { createLogSlice, initialLogState } from './slices/logSlice'
+import { createStatisticsSlice, initialStatisticsState } from './slices/statisticsSlice'
+import type { GameStore, GameActions } from './types/storeTypes'
 
-// Helper functions
-function getGulagReasonText (reason: GulagReason, justification?: string): string {
-  const reasonTexts: Record<GulagReason, string> = {
-    enemyOfState: 'Landed on Enemy of the State',
-    threeDoubles: 'Rolled three consecutive doubles - counter-revolutionary dice behavior',
-    denouncementGuilty: 'Found guilty in tribunal',
-    debtDefault: 'Failed to pay debt within one round',
-    pilferingCaught: 'Caught stealing at STOY checkpoint',
-    stalinDecree: justification ?? 'Sent by Stalin',
-    railwayCapture: 'Caught attempting to flee the motherland via railway',
-    campLabour: 'Sent for forced labour by Siberian Camp custodian',
-    voucherConsequence: 'Voucher consequence - vouchee committed an offence'
-  }
+// Re-export helper functions for testing
+export { calculateTotalWealth, initializePlayerStats }
 
-  return reasonTexts[reason]
-}
-
-function getRequiredDoublesForEscape (turnsInGulag: number): number[] {
-  switch (turnsInGulag) {
-    case 1:
-      return [6]
-    case 2:
-      return [5, 6]
-    case 3:
-      return [4, 5, 6]
-    case 4:
-      return [3, 4, 5, 6]
-    default:
-      return [1, 2, 3, 4, 5, 6] // Any doubles after turn 5
-  }
-}
-
-function shouldTriggerVoucherConsequence (reason: GulagReason): boolean {
-  // These reasons trigger voucher consequences
-  const triggeringReasons: GulagReason[] = [
-    'enemyOfState',
-    'threeDoubles',
-    'denouncementGuilty',
-    'pilferingCaught',
-    'stalinDecree',
-    'railwayCapture',
-    'campLabour'
-  ]
-
-  return triggeringReasons.includes(reason)
-}
-
-function getEliminationMessage (playerName: string, reason: EliminationReason): string {
-  const messages: Record<EliminationReason, string> = {
-    bankruptcy: `${playerName} has been eliminated due to bankruptcy. They have been declared an Enemy of the People.`,
-    execution: `${playerName} has been executed by order of Stalin. They are now a Ghost of the Revolution.`,
-    gulagTimeout: `${playerName} died in the Gulag after 10 turns. They are now a Ghost of the Revolution.`,
-    redStarDemotion: `${playerName}'s Red Star has fallen to Proletariat - immediate execution! They are now a Ghost of the Revolution.`,
-    unanimous: `${playerName} was unanimously voted out by all players. They are now a Ghost of the Revolution.`
-  }
-  return messages[reason]
-}
-
-// Export for testing
-export function calculateTotalWealth (player: Player, properties: Property[]): number {
-  let total = player.rubles
-
-  // Add property values (50% of base cost for mortgaged properties)
-  player.properties.forEach(propId => {
-    const property = properties.find(p => p.spaceId === parseInt(propId))
-    if (property != null) {
-      const space = getSpaceById(property.spaceId)
-      const baseValue = space?.baseCost ?? 0
-      const propertyValue = property.mortgaged ? baseValue * 0.5 : baseValue
-      total += propertyValue
-
-      // Add improvement values
-      total += property.collectivizationLevel * 50
-    }
-  })
-
-  // Subtract debts
-  if (player.debt != null) {
-    total -= player.debt.amount
-  }
-
-  return total
-}
-
-// Export for testing
-export function initializePlayerStats (): PlayerStatistics {
-  return {
-    turnsPlayed: 0,
-    denouncementsMade: 0,
-    denouncementsReceived: 0,
-    tribunalsWon: 0,
-    tribunalsLost: 0,
-    totalGulagTurns: 0,
-    gulagEscapes: 0,
-    moneyEarned: 0,
-    moneySpent: 0,
-    propertiesOwned: 0,
-    maxWealth: 1500,
-    testsPassed: 0,
-    testsFailed: 0
-  }
-}
-
-interface GameActions {
-  // Game phase management
-  setGamePhase: (phase: GamePhase) => void
-  startNewGame: () => void
-  resetGame: () => void
-
-  // Player management
-  initializePlayers: (playerSetups: { name: string, piece: Player['piece'], isStalin: boolean }[]) => void
-  setCurrentPlayer: (index: number) => void
-  updatePlayer: (playerId: string, updates: Partial<Player>) => void
-
-  // Property management
-  initializeProperties: () => void
-  setPropertyCustodian: (spaceId: number, custodianId: string | null) => void
-  updateCollectivizationLevel: (spaceId: number, level: number) => void
-  purchaseProperty: (playerId: string, spaceId: number, price: number) => void
-  payQuota: (payerId: string, custodianId: string, amount: number) => void
-  mortgageProperty: (spaceId: number) => void
-  unmortgageProperty: (spaceId: number, playerId: string) => void
-  transferProperty: (propertyId: string, newCustodianId: string) => void
-
-  // Turn management
-  rollDice: () => void
-  rollVodka3Dice: () => void
-  finishRolling: () => void
-  movePlayer: (playerId: string, spaces: number) => void
-  finishMoving: () => void
-  endTurn: () => void
-  setTurnPhase: (phase: TurnPhase) => void
-
-  // Gulag management
-  sendToGulag: (playerId: string, reason: GulagReason, justification?: string) => void
-  demotePlayer: (playerId: string) => void
-  checkRedStarExecutionAfterGulagRelease: (playerId: string) => void
-  handleGulagTurn: (playerId: string) => void
-  attemptGulagEscape: (playerId: string, method: GulagEscapeMethod, data?: Record<string, unknown>) => void
-  checkFor10TurnElimination: (playerId: string) => void
-
-  // Voucher system
-  createVoucher: (prisonerId: string, voucherId: string) => void
-  checkVoucherConsequences: (playerId: string, reason: GulagReason) => void
-  expireVouchers: () => void
-
-  // Bribe system
-  submitBribe: (playerId: string, amount: number, reason: string) => void
-  respondToBribe: (bribeId: string, accepted: boolean) => void
-
-  // Trade system
-  proposeTrade: (fromPlayerId: string, toPlayerId: string, items: { offering: import('../types/game').TradeItems, requesting: import('../types/game').TradeItems }) => void
-  acceptTrade: (tradeId: string) => void
-  rejectTrade: (tradeId: string) => void
-
-  // Debt and liquidation
-  createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => void
-  checkDebtStatus: () => void
-
-  // Elimination and ghosts
-  eliminatePlayer: (playerId: string, reason: EliminationReason) => void
-  checkElimination: (playerId: string) => boolean
-
-  // Game end
-  checkGameEnd: () => GameEndCondition | null
-  endGame: (condition: GameEndCondition, winnerId: string | null) => void
-  calculateFinalStats: () => void
-
-  // Unanimous end vote
-  initiateEndVote: (initiatorId: string) => void
-  castEndVote: (playerId: string, vote: boolean) => void
-
-  // Statistics
-  updatePlayerStat: (playerId: string, statKey: keyof PlayerStatistics, increment: number) => void
-
-  // Confessions
-  submitConfession: (prisonerId: string, confession: string) => void
-  reviewConfession: (confessionId: string, accepted: boolean) => void
-
-  // Round management
-  incrementRound: () => void
-
-  // STOY handling
-  handleStoyPassing: (playerId: string) => void
-  handleStoyPilfer: (playerId: string, diceRoll: number) => void
-
-  // Card system
-  drawPartyDirective: () => DirectiveCard
-  drawCommunistTest: (difficulty?: 'easy' | 'medium' | 'hard' | 'trick') => TestQuestion
-  applyDirectiveEffect: (card: DirectiveCard, playerId: string) => void
-  answerCommunistTest: (question: TestQuestion, answer: string, readerId: string) => void
-
-  // Piece abilities
-  tankRequisition: (tankPlayerId: string, targetPlayerId: string) => void
-  sickleHarvest: (sicklePlayerId: string, targetPropertyId: number) => void
-  ironCurtainDisappear: (ironCurtainPlayerId: string, targetPropertyId: number) => void
-  leninSpeech: (leninPlayerId: string, applauders: string[]) => void
-  promotePlayer: (playerId: string) => void
-
-  // Property special abilities
-  siberianCampsGulag: (custodianId: string, targetPlayerId: string) => void
-  kgbPreviewTest: (custodianId: string) => void
-  ministryTruthRewrite: (custodianId: string, newRule: string) => void
-  pravdaPressRevote: (custodianId: string, decision: string) => void
-
-  // Game log
-  addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void
-
-  // Treasury
-  adjustTreasury: (amount: number) => void
-
-  // Pending actions
-  setPendingAction: (action: PendingAction | null) => void
-
-  // Denouncement and Tribunal
-  canPlayerDenounce: (playerId: string) => { canDenounce: boolean, reason: string }
-  initiateDenouncement: (accuserId: string, accusedId: string, crime: string) => void
-  advanceTribunalPhase: () => void
-  addWitness: (witnessId: string, side: 'for' | 'against') => void
-  renderTribunalVerdict: (verdict: import('../types/game').TribunalVerdict) => void
-  getWitnessRequirement: (playerId: string) => import('../types/game').WitnessRequirement
-
-  // Special Decrees
-  initiateGreatPurge: () => void
-  voteInGreatPurge: (voterId: string, targetId: string) => void
-  resolveGreatPurge: () => void
-  initiateFiveYearPlan: (target: number, durationMinutes: number) => void
-  contributeToFiveYearPlan: (playerId: string, amount: number) => void
-  resolveFiveYearPlan: () => void
-  grantHeroOfSovietUnion: (playerId: string) => void
-  isHeroOfSovietUnion: (playerId: string) => boolean
-}
-
-type GameStore = GameState & GameActions
+// Re-export GameActions for backward compatibility
+export type { GameActions }
 
 const initialState: GameState = {
   gamePhase: 'welcome',
@@ -255,11 +34,9 @@ const initialState: GameState = {
   hasRolled: false,
   roundNumber: 1,
   dice: [1, 1],
-  isRolling: false,
-  gameLog: [],
-  pendingAction: null,
+  ...initialUiState,
+  ...initialLogState,
   activeVouchers: [],
-  pendingBribes: [],
   activeTradeOffers: [],
   partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
   partyDirectiveDiscard: [],
@@ -270,16 +47,7 @@ const initialState: GameState = {
   winnerId: null,
   showEndScreen: false,
 
-  // Statistics
-  gameStatistics: {
-    gameStartTime: new Date(),
-    totalTurns: 0,
-    playerStats: {},
-    totalDenouncements: 0,
-    totalTribunals: 0,
-    totalGulagSentences: 0,
-    stateTreasuryPeak: 0
-  },
+  ...initialStatisticsState,
 
   // Unanimous end vote
   endVoteInProgress: false,
@@ -304,6 +72,9 @@ export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
       ...initialState,
+      ...createUiSlice(set, get),
+      ...createLogSlice(set, get),
+      ...createStatisticsSlice(set, get),
 
       setGamePhase: (phase) => set({ gamePhase: phase }),
 
@@ -505,33 +276,6 @@ export const useGameStore = create<GameStore>()(
           message: `${currentPlayer.name} drank and rolled 3 dice: ${String(die1)}, ${String(die2)}, ${String(die3)}. Using best 2: ${String(bestTwo[0])} + ${String(bestTwo[1])} = ${String(bestTwo[0] + bestTwo[1])}`,
           playerId: currentPlayer.id
         })
-      },
-
-      finishRolling: () => {
-        const { dice, doublesCount } = get()
-        const die1: number = dice[0]
-        const die2: number = dice[1]
-        const isDoubles = die1 === die2
-        const newDoublesCount: number = isDoubles ? (doublesCount) + 1 : 0
-
-        // Check for three doubles (counter-revolutionary behavior)
-        if (newDoublesCount >= 3) {
-          const currentPlayer = get().players[get().currentPlayerIndex]
-          get().sendToGulag(currentPlayer.id, 'threeDoubles')
-          set({ isRolling: false, doublesCount: 0 })
-          return
-        }
-
-        set({
-          isRolling: false,
-          doublesCount: newDoublesCount,
-          turnPhase: 'moving'
-        })
-
-        // Move the player
-        const currentPlayer = get().players[get().currentPlayerIndex]
-        const total = die1 + die2
-        get().movePlayer(currentPlayer.id, total)
       },
 
       movePlayer: (playerId, spaces) => {
@@ -983,19 +727,6 @@ export const useGameStore = create<GameStore>()(
         })
       },
 
-      // Game log
-      addLogEntry: (entry) => {
-        const newEntry: LogEntry = {
-          ...entry,
-          id: `log-${String(Date.now())}-${String(Math.random())}`,
-          timestamp: new Date()
-        }
-
-        set((state) => ({
-          gameLog: [...state.gameLog, newEntry].slice(-50) // Keep last 50 entries
-        }))
-      },
-
       // Treasury
       adjustTreasury: (amount) => {
         set((state) => ({
@@ -1142,11 +873,6 @@ export const useGameStore = create<GameStore>()(
           const updatedProperties = [...newOwner.properties, propertyId]
           get().updatePlayer(newCustodianId, { properties: updatedProperties })
         }
-      },
-
-      // Pending actions
-      setPendingAction: (action) => {
-        set({ pendingAction: action })
       },
 
       // New Gulag system functions
@@ -1390,76 +1116,6 @@ export const useGameStore = create<GameStore>()(
             )
           }))
         }
-      },
-
-      submitBribe: (playerId, amount, reason) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (player == null || player.rubles < amount) return
-
-        const bribe: BribeRequest = {
-          id: `bribe-${String(Date.now())}`,
-          playerId,
-          amount,
-          reason,
-          timestamp: new Date()
-        }
-
-        set((state) => ({
-          pendingBribes: [...state.pendingBribes, bribe]
-        }))
-
-        get().addLogEntry({
-          type: 'system',
-          message: `${player.name} has submitted a bribe of ₽${String(amount)} to Stalin`,
-          playerId
-        })
-      },
-
-      respondToBribe: (bribeId, accepted) => {
-        const state = get()
-        const bribe = state.pendingBribes.find((b) => b.id === bribeId)
-        if (bribe == null) return
-
-        const player = state.players.find((p) => p.id === bribe.playerId)
-        if (player == null) return
-
-        // Always take the money
-        get().updatePlayer(bribe.playerId, { rubles: player.rubles - bribe.amount })
-        get().adjustTreasury(bribe.amount)
-
-        if (accepted) {
-          // Release from Gulag or grant favour
-          if (bribe.reason === 'gulag-escape' && player.inGulag) {
-            get().updatePlayer(bribe.playerId, {
-              inGulag: false,
-              gulagTurns: 0
-            })
-
-            get().addLogEntry({
-              type: 'gulag',
-              message: `Stalin accepted ${player.name}'s bribe of ₽${String(bribe.amount)} and released them from the Gulag`,
-              playerId: bribe.playerId
-            })
-
-            // Check if RedStar player at Proletariat should be executed
-            get().checkRedStarExecutionAfterGulagRelease(bribe.playerId)
-
-            set({ turnPhase: 'post-turn', pendingAction: null })
-          }
-        } else {
-          // Rejected - money confiscated anyway
-          get().addLogEntry({
-            type: 'payment',
-            message: `Stalin rejected ${player.name}'s bribe of ₽${String(bribe.amount)} and confiscated it as contraband`,
-            playerId: bribe.playerId
-          })
-        }
-
-        // Remove bribe from pending
-        set((state) => ({
-          pendingBribes: state.pendingBribes.filter((b) => b.id !== bribeId)
-        }))
       },
 
       // Trade system
@@ -1727,16 +1383,6 @@ export const useGameStore = create<GameStore>()(
         })
       },
 
-      calculateFinalStats: () => {
-        set((state) => ({
-          gameStatistics: {
-            ...state.gameStatistics,
-            gameEndTime: new Date(),
-            totalTurns: state.roundNumber
-          }
-        }))
-      },
-
       initiateEndVote: (initiatorId) => {
         set({
           endVoteInProgress: true,
@@ -1786,21 +1432,6 @@ export const useGameStore = create<GameStore>()(
             })
           }
         }
-      },
-
-      updatePlayerStat: (playerId, statKey, increment) => {
-        set((state) => ({
-          gameStatistics: {
-            ...state.gameStatistics,
-            playerStats: {
-              ...state.gameStatistics.playerStats,
-              [playerId]: {
-                ...state.gameStatistics.playerStats[playerId],
-                [statKey]: state.gameStatistics.playerStats[playerId][statKey] + increment
-              }
-            }
-          }
-        }))
       },
 
       submitConfession: (prisonerId, confession) => {
