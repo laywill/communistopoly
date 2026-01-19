@@ -115,8 +115,14 @@ export const createDiceSlice: StateCreator<
       turnPhase: 'moving'
     })
 
-    // Move the player by the dice total
+    // Move the player by the dice total (only if not in Gulag)
     const currentPlayer = players[currentPlayerIndex]
+
+    // Don't move players in Gulag - attemptGulagEscape handles their movement
+    if (currentPlayer.inGulag) {
+      return
+    }
+
     const diceTotal = die1 + die2
     get().movePlayer(currentPlayer.id, diceTotal)
   },
