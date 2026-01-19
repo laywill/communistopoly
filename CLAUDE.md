@@ -22,6 +22,7 @@ We are decomposing the monolithic `gameStore.ts` (~2960 lines) into organized sl
 - Strict TypeScript (no `any`, no `@ts-ignore`)
 - Copyright header on all source files
 - Follow existing code patterns
+- Commit code regularly to bank progress
 
 ## Slice Extraction Workflow
 
@@ -56,3 +57,7 @@ src/
         ├── social/      # Gulag, tribunal, voting
         └── content/     # Cards, abilities
 ```
+
+## Locale
+
+Use British english where possible.
