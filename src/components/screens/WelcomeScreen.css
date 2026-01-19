@@ -16,7 +16,7 @@
   background: var(--color-parchment);
   border: 8px solid var(--color-soviet-red);
   box-shadow: inset 0 0 0 2px var(--color-kremlin-gold), 0 10px 40px rgb(0 0 0 / 50%);
-  padding: 4rem 3rem;
+  padding: 4rem 5rem;
   text-align: center;
 }
 
@@ -24,17 +24,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
-  margin-bottom: 3rem;
+  gap: 0;
+  margin-bottom: 1.5rem;
 }
 
-.star-symbol {
-  font-size: 3rem;
+.hammer-sickle-symbol {
+  font-size: 4rem;
   color: var(--color-soviet-red);
-}
-
-.welcome-title-section {
-  flex: 1;
+  line-height: 1;
+  flex-shrink: 0;
+  text-shadow: 2px 2px 4px rgb(0 0 0 / 20%);
+  margin: 0.5rem;
 }
 
 .welcome-title {
@@ -42,10 +42,13 @@
   font-size: 3.5rem;
   font-weight: 700;
   letter-spacing: 0.15em;
+  text-align: center;
   color: var(--color-propaganda-black);
-  margin: 0 0 1rem;
+  margin: 0;
+  margin-right: -0.15em;
   text-transform: uppercase;
   text-shadow: 2px 2px 4px rgb(0 0 0 / 20%);
+  line-height: 1;
 }
 
 .welcome-subtitle {
@@ -53,7 +56,7 @@
   font-size: 1.1rem;
   color: var(--color-propaganda-black);
   font-style: italic;
-  margin: 0;
+  margin: 0 0 3rem;
   line-height: 1.5;
 }
 
@@ -127,7 +130,7 @@
     padding: 2rem 1.5rem;
   }
 
-  .star-symbol {
+  .hammer-sickle-symbol {
     font-size: 2rem;
   }
 }
