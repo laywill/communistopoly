@@ -1,13 +1,16 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import type { GameState, Player, GamePhase, TurnPhase, GulagReason, GameEndCondition, EliminationReason } from '../../types/game'
+import type { GameState, Player, GamePhase, GulagReason, GameEndCondition, EliminationReason } from '../../types/game'
 import type { DirectiveCard } from '../../data/partyDirectiveCards'
 import type { TestQuestion } from '../../data/communistTestQuestions'
 import type { GulagEscapeMethod } from '../../types/game'
 import type { UiSlice } from '../slices/uiSlice'
 import type { LogSlice } from '../slices/logSlice'
 import type { StatisticsSlice } from '../slices/statisticsSlice'
+import type { DiceSlice } from '../slices/diceSlice'
+import type { TreasurySlice } from '../slices/treasurySlice'
+import type { PlayerSlice } from '../slices/playerSlice'
 
 // Game Actions interface - all store methods
 export interface GameActions {
@@ -32,12 +35,9 @@ export interface GameActions {
   transferProperty: (propertyId: string, newCustodianId: string) => void
 
   // Turn management
-  rollDice: () => void
-  rollVodka3Dice: () => void
   movePlayer: (playerId: string, spaces: number) => void
   finishMoving: () => void
   endTurn: () => void
-  setTurnPhase: (phase: TurnPhase) => void
 
   // Gulag management
   sendToGulag: (playerId: string, reason: GulagReason, justification?: string) => void
@@ -77,8 +77,6 @@ export interface GameActions {
   submitConfession: (prisonerId: string, confession: string) => void
   reviewConfession: (confessionId: string, accepted: boolean) => void
 
-  // Round management
-  incrementRound: () => void
 
   // STOY handling
   handleStoyPassing: (playerId: string) => void
@@ -126,4 +124,4 @@ export interface GameActions {
 }
 
 // Combined GameStore type - includes all slices
-export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice
+export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice

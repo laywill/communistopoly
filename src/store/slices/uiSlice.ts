@@ -14,7 +14,6 @@ export interface UiSliceState {
 
 // Slice actions interface
 export interface UiSliceActions {
-  finishRolling: () => void
   setPendingAction: (action: PendingAction | null) => void
   submitBribe: (playerId: string, amount: number, reason: string) => void
   respondToBribe: (bribeId: string, accepted: boolean) => void
@@ -38,33 +37,6 @@ export const createUiSlice: StateCreator<
   UiSlice
 > = (set, get) => ({
   ...initialUiState,
-
-  finishRolling: () => {
-    const { dice, doublesCount, currentPlayerIndex, players } = get()
-    const die1: number = dice[0]
-    const die2: number = dice[1]
-    const isDoubles = die1 === die2
-    const newDoublesCount: number = isDoubles ? (doublesCount) + 1 : 0
-
-    // Check for three doubles (counter-revolutionary behavior)
-    if (newDoublesCount >= 3) {
-      const currentPlayer = players[currentPlayerIndex]
-      get().sendToGulag(currentPlayer.id, 'threeDoubles')
-      set({ isRolling: false, doublesCount: 0 })
-      return
-    }
-
-    set({
-      isRolling: false,
-      doublesCount: newDoublesCount,
-      turnPhase: 'moving'
-    })
-
-    // Move the player by the dice total
-    const currentPlayer = players[currentPlayerIndex]
-    const diceTotal = die1 + die2
-    get().movePlayer(currentPlayer.id, diceTotal)
-  },
 
   setPendingAction: (action) => {
     set({ pendingAction: action })
