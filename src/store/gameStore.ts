@@ -14,6 +14,9 @@ import { getEliminationMessage } from './helpers/eliminationHelpers'
 import { createUiSlice, initialUiState } from './slices/uiSlice'
 import { createLogSlice, initialLogState } from './slices/logSlice'
 import { createStatisticsSlice, initialStatisticsState } from './slices/statisticsSlice'
+import { createDiceSlice, initialDiceState } from './slices/diceSlice'
+import { createTreasurySlice, initialTreasuryState } from './slices/treasurySlice'
+import { createPlayerSlice, initialPlayerState } from './slices/playerSlice'
 import type { GameStore, GameActions } from './types/storeTypes'
 
 // Re-export helper functions for testing
@@ -24,16 +27,10 @@ export type { GameActions }
 
 const initialState: GameState = {
   gamePhase: 'welcome',
-  players: [],
-  stalinPlayerId: null,
-  currentPlayerIndex: 0,
+  ...initialPlayerState,
   properties: [],
-  stateTreasury: 0,
-  turnPhase: 'pre-roll',
-  doublesCount: 0,
-  hasRolled: false,
-  roundNumber: 1,
-  dice: [1, 1],
+  ...initialTreasuryState,
+  ...initialDiceState,
   ...initialUiState,
   ...initialLogState,
   activeVouchers: [],
@@ -75,6 +72,9 @@ export const useGameStore = create<GameStore>()(
       ...createUiSlice(set, get),
       ...createLogSlice(set, get),
       ...createStatisticsSlice(set, get),
+      ...createDiceSlice(set, get),
+      ...createTreasurySlice(set, get),
+      ...createPlayerSlice(set, get),
 
       setGamePhase: (phase) => set({ gamePhase: phase }),
 
@@ -168,36 +168,6 @@ export const useGameStore = create<GameStore>()(
         get().initializeProperties()
       },
 
-      setCurrentPlayer: (index) => set({ currentPlayerIndex: index }),
-
-      updatePlayer: (playerId, updates) => {
-        set((state) => {
-          const player = state.players.find(p => p.id === playerId)
-
-          // BREAD LOAF ABILITY: Enforce 1000₽ wealth cap
-          if (player?.piece === 'breadLoaf' && updates.rubles !== undefined) {
-            if (updates.rubles > 1000) {
-              const excess = updates.rubles - 1000
-              updates.rubles = 1000
-
-              // Donate excess to State
-              get().adjustTreasury(excess)
-              get().addLogEntry({
-                type: 'payment',
-                message: `${player.name}'s Bread Loaf forces donation of ₽${String(excess)} to the State (max 1000₽)`,
-                playerId
-              })
-            }
-          }
-
-          return {
-            players: state.players.map((p) =>
-              p.id === playerId ? { ...p, ...updates } : p
-            )
-          }
-        })
-      },
-
       initializeProperties: () => {
         const properties: Property[] = BOARD_SPACES
           .filter((space) => space.type === 'property' || space.type === 'railway' || space.type === 'utility')
@@ -228,56 +198,6 @@ export const useGameStore = create<GameStore>()(
       },
 
       // Turn management
-      rollDice: () => {
-        const die1 = Math.floor(Math.random() * 6) + 1
-        const die2 = Math.floor(Math.random() * 6) + 1
-
-        set({
-          dice: [die1, die2],
-          isRolling: true,
-          hasRolled: true,
-          turnPhase: 'rolling'
-        })
-
-        const currentPlayer = get().players[get().currentPlayerIndex]
-        get().addLogEntry({
-          type: 'dice',
-          message: `Rolled ${String(die1)} + ${String(die2)} = ${String(die1 + die2)}`,
-          playerId: currentPlayer.id
-        })
-      },
-
-      // VODKA BOTTLE ABILITY: Roll 3 dice, use best 2
-      rollVodka3Dice: () => {
-        const die1 = Math.floor(Math.random() * 6) + 1
-        const die2 = Math.floor(Math.random() * 6) + 1
-        const die3 = Math.floor(Math.random() * 6) + 1
-
-        // Find best 2 dice (highest sum)
-        const allDice = [die1, die2, die3].sort((a, b) => b - a)
-        const bestTwo: [number, number] = [allDice[0], allDice[1]]
-
-        set({
-          dice: bestTwo,
-          isRolling: true,
-          hasRolled: true,
-          turnPhase: 'rolling'
-        })
-
-        const currentPlayer = get().players[get().currentPlayerIndex]
-
-        // Increment vodka use count
-        get().updatePlayer(currentPlayer.id, {
-          vodkaUseCount: currentPlayer.vodkaUseCount + 1
-        })
-
-        get().addLogEntry({
-          type: 'dice',
-          message: `${currentPlayer.name} drank and rolled 3 dice: ${String(die1)}, ${String(die2)}, ${String(die3)}. Using best 2: ${String(bestTwo[0])} + ${String(bestTwo[1])} = ${String(bestTwo[0] + bestTwo[1])}`,
-          playerId: currentPlayer.id
-        })
-      },
-
       movePlayer: (playerId, spaces) => {
         const state = get()
         const player = state.players.find((p) => p.id === playerId)
@@ -467,8 +387,6 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      setTurnPhase: (phase) => set({ turnPhase: phase }),
-
       endTurn: () => {
         const state = get()
         const { currentPlayerIndex, players, doublesCount } = state
@@ -595,44 +513,6 @@ export const useGameStore = create<GameStore>()(
         set({ turnPhase: 'post-turn' })
       },
 
-      demotePlayer: (playerId) => {
-        const state = get()
-        const player = state.players.find((p) => p.id === playerId)
-        if (player == null) return
-
-        const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-        const currentRankIndex = rankOrder.indexOf(player.rank)
-
-        if (currentRankIndex > 0) {
-          const newRank = rankOrder[currentRankIndex - 1]
-          get().updatePlayer(playerId, { rank: newRank })
-          get().addLogEntry({
-            type: 'rank',
-            message: `${player.name} demoted to ${newRank}`,
-            playerId
-          })
-
-          // RED STAR ABILITY: If demoted to Proletariat, immediate execution
-          // BUT: If player is in Gulag, they stay in Gulag at lower rank
-          if (player.piece === 'redStar' && newRank === 'proletariat') {
-            if (!player.inGulag) {
-              get().addLogEntry({
-                type: 'system',
-                message: `${player.name}'s Red Star has fallen to Proletariat - IMMEDIATE EXECUTION!`,
-                playerId
-              })
-              get().eliminatePlayer(playerId, 'redStarDemotion')
-            } else {
-              get().addLogEntry({
-                type: 'system',
-                message: `${player.name}'s Red Star has fallen to Proletariat while in the Gulag.`,
-                playerId
-              })
-            }
-          }
-        }
-      },
-
       // Helper: Check if RedStar player at Proletariat rank should be executed after leaving Gulag
       checkRedStarExecutionAfterGulagRelease: (playerId: string) => {
         const state = get()
@@ -725,13 +605,6 @@ export const useGameStore = create<GameStore>()(
           message: `${tankPlayer.name}'s Tank requisitioned ₽${String(requisitionAmount)} from ${targetPlayer.name}!`,
           playerId: tankPlayerId
         })
-      },
-
-      // Treasury
-      adjustTreasury: (amount) => {
-        set((state) => ({
-          stateTreasury: Math.max(0, (state.stateTreasury) + (amount))
-        }))
       },
 
       // Property transactions
@@ -1853,31 +1726,6 @@ export const useGameStore = create<GameStore>()(
         set({ pendingAction: null })
       },
 
-      promotePlayer: (playerId) => {
-        const state = get()
-        const player = state.players.find(p => p.id === playerId)
-        if (player == null) return
-
-        const rankOrder: Player['rank'][] = ['proletariat', 'partyMember', 'commissar', 'innerCircle']
-        const currentRankIndex = rankOrder.indexOf(player.rank)
-
-        if (currentRankIndex < rankOrder.length - 1) {
-          const newRank = rankOrder[currentRankIndex + 1]
-          get().updatePlayer(playerId, { rank: newRank })
-          get().addLogEntry({
-            type: 'rank',
-            message: `${player.name} promoted to ${newRank}!`,
-            playerId
-          })
-        } else {
-          get().addLogEntry({
-            type: 'system',
-            message: `${player.name} is already at the highest rank (Inner Circle)`,
-            playerId
-          })
-        }
-      },
-
       // Property special abilities
       siberianCampsGulag: (custodianId, targetPlayerId) => {
         const state = get()
@@ -2523,33 +2371,6 @@ export const useGameStore = create<GameStore>()(
         return state.heroesOfSovietUnion.some(
           h => h.playerId === playerId && h.expiresAtRound > state.roundNumber
         )
-      },
-
-      incrementRound: () => {
-        const state = get()
-        const newRound: number = (state.roundNumber) + 1
-        set({ roundNumber: newRound })
-
-        // Clear denouncements from last round
-        set({ denouncementsThisRound: [] })
-
-        // Reset KGB test preview counter for all players
-        state.players.forEach(player => {
-          if (player.kgbTestPreviewsUsedThisRound > 0) {
-            get().updatePlayer(player.id, { kgbTestPreviewsUsedThisRound: 0 })
-          }
-        })
-
-        // Expire vouchers
-        get().expireVouchers()
-
-        // Check debt status
-        get().checkDebtStatus()
-
-        get().addLogEntry({
-          type: 'system',
-          message: `Round ${String(newRound)} begins`
-        })
       }
     }),
     {
