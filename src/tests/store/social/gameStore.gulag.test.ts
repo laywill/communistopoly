@@ -446,6 +446,62 @@ describe('gameStore - Gulag System', () => {
         expect(updatedPlayer?.inGulag).toBe(true)
       })
 
+      it('should NOT move player when rolling non-doubles in Gulag (finishRolling bug)', () => {
+        const { initializePlayers, updatePlayer, finishRolling, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        // Player needs double 5s or 6s (gulagTurns: 2)
+        updatePlayer(player1.id, { inGulag: true, gulagTurns: 2, position: 10 })
+
+        // Roll 5 and 6 (NOT doubles, but total = 11)
+        useGameStore.setState({ dice: [5, 6], currentPlayerIndex: 0 })
+
+        // This simulates what GulagEscapeModal does: finishRolling() then attemptGulagEscape()
+        finishRolling()
+        attemptGulagEscape(player1.id, 'roll')
+
+        const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+
+        // Player should still be in Gulag
+        expect(updatedPlayer?.inGulag).toBe(true)
+
+        // Player should NOT have moved from position 10
+        expect(updatedPlayer?.position).toBe(10)
+      })
+
+      it('should NOT move player when rolling incorrect doubles in Gulag', () => {
+        const { initializePlayers, updatePlayer, finishRolling, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player1] = useGameStore.getState().players
+
+        // Player needs double 5s or 6s (gulagTurns: 2)
+        updatePlayer(player1.id, { inGulag: true, gulagTurns: 2, position: 10 })
+
+        // Roll double 4s (valid doubles, but not high enough for turn 2)
+        useGameStore.setState({ dice: [4, 4], currentPlayerIndex: 0 })
+
+        // This simulates what GulagEscapeModal does
+        finishRolling()
+        attemptGulagEscape(player1.id, 'roll')
+
+        const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
+
+        // Player should still be in Gulag
+        expect(updatedPlayer?.inGulag).toBe(true)
+
+        // Player should NOT have moved from position 10
+        expect(updatedPlayer?.position).toBe(10)
+      })
+
       it('should set turnPhase to post-turn after escape attempt', () => {
         const { initializePlayers, updatePlayer, attemptGulagEscape } = useGameStore.getState()
 
