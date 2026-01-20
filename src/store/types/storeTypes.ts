@@ -36,6 +36,7 @@ export interface GameActions {
 
   // Turn management
   movePlayer: (playerId: string, spaces: number) => void
+  resolveCurrentSpace: (playerId: string) => void
   finishMoving: () => void
   endTurn: () => void
 
