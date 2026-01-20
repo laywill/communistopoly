@@ -11,6 +11,7 @@ import { getGulagReasonText, getRequiredDoublesForEscape, shouldTriggerVoucherCo
 import { calculateTotalWealth } from './helpers/wealthCalculation'
 import { initializePlayerStats } from './helpers/playerStats'
 import { getEliminationMessage } from './helpers/eliminationHelpers'
+import { calculateRailwayFee } from '../utils/propertyUtils'
 import { createUiSlice, initialUiState } from './slices/uiSlice'
 import { createLogSlice, initialLogState } from './slices/logSlice'
 import { createStatisticsSlice, initialStatisticsState } from './slices/statisticsSlice'
@@ -1543,12 +1544,74 @@ export const useGameStore = create<GameStore>()(
           }
 
           case 'custom':
-            // Handle custom effects in modal
-            get().addLogEntry({
-              type: 'system',
-              message: `Custom effect: ${card.effect.handler ?? 'unknown'} - requires special handling`,
-              playerId
-            })
+            // Handle custom effects
+            if (card.effect.handler === 'advanceToNearestRailway') {
+              const railwayPositions = [5, 15, 25, 35]
+              const currentPosition = player.position
+
+              // Find the nearest railway ahead (wrapping around)
+              let nearestRailway = railwayPositions[0]
+              for (const railwayPos of railwayPositions) {
+                if (railwayPos > currentPosition) {
+                  nearestRailway = railwayPos
+                  break
+                }
+              }
+
+              // Move player to railway
+              const oldPosition = player.position
+              get().updatePlayer(playerId, { position: nearestRailway })
+
+              // Check if passed STOY (position 0)
+              if (oldPosition > nearestRailway || (oldPosition < nearestRailway && nearestRailway < 40)) {
+                // Only give STOY bonus if we actually passed it (wrapped around)
+                if (oldPosition > nearestRailway) {
+                  get().handleStoyPassing(playerId)
+                }
+              }
+
+              // Check railway property ownership
+              const railwayProperty = state.properties.find(p => p.spaceId === nearestRailway)
+
+              if (railwayProperty != null) {
+                if (railwayProperty.custodianId === null) {
+                  // Railway is unowned - set pending action for purchase
+                  set({
+                    pendingAction: {
+                      type: 'property-purchase',
+                      data: { spaceId: nearestRailway, playerId }
+                    },
+                    turnPhase: 'awaiting-action'
+                  })
+                  return
+                } else if (railwayProperty.custodianId !== playerId && !railwayProperty.isMortgaged) {
+                  // Railway is owned by another player - charge fee
+                  const fee = calculateRailwayFee(railwayProperty.custodianId, state.properties)
+                  get().payQuota(playerId, railwayProperty.custodianId, fee)
+                }
+                // If owned by current player or mortgaged, no fee charged
+              }
+            } else if (card.effect.handler === 'triggerAnonymousTribunal') {
+              // Trigger tribunal with Stalin as accuser
+              const stalin = state.players.find(p => p.isStalin)
+              if (stalin != null) {
+                set({
+                  pendingAction: {
+                    type: 'tribunal',
+                    data: { targetId: playerId, accuserId: stalin.id, isAnonymous: true }
+                  },
+                  turnPhase: 'awaiting-action'
+                })
+                return
+              }
+            } else {
+              // Unknown custom handler
+              get().addLogEntry({
+                type: 'system',
+                message: `Custom effect: ${card.effect.handler ?? 'unknown'} - requires special handling`,
+                playerId
+              })
+            }
             break
         }
 
