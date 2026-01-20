@@ -11,6 +11,7 @@ tmpclaude*
 
 # Claude - planning-with-files skill cache
 notes.md
+notes_*.md
 task_plan.md
 task_plan_*.md
 

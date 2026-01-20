@@ -232,45 +232,48 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
-      finishMoving: () => {
+      // Helper function to resolve the space a player has landed on
+      // This is called after movement completes (dice roll, card effect, etc.)
+      resolveCurrentSpace: (playerId: string) => {
         const state = get()
-        const currentPlayer = state.players[state.currentPlayerIndex]
-        const space = getSpaceById(currentPlayer.position)
+        const player = state.players.find(p => p.id === playerId)
+        if (player == null) return
 
-        set({ turnPhase: 'resolving' })
-
-        // Handle landing on the space
-        if (space == null) return
+        const space = getSpaceById(player.position)
+        if (space == null) {
+          set({ turnPhase: 'post-turn' })
+          return
+        }
 
         switch (space.type) {
           case 'corner':
-            if (space.id === 0 && currentPlayer.position === 0) {
+            if (space.id === 0 && player.position === 0) {
               // Landed exactly on STOY - pilfering opportunity
               set({ pendingAction: { type: 'stoy-pilfer' } })
             } else if (space.id === 10) {
               // The Gulag - just visiting
               get().addLogEntry({
                 type: 'movement',
-                message: `${currentPlayer.name} is just visiting the Gulag`,
-                playerId: currentPlayer.id
+                message: `${player.name} is just visiting the Gulag`,
+                playerId: player.id
               })
               set({ turnPhase: 'post-turn' })
             } else if (space.id === 20) {
               // Breadline - all players must contribute
               get().addLogEntry({
                 type: 'system',
-                message: `${currentPlayer.name} landed on Breadline - all comrades must contribute!`,
-                playerId: currentPlayer.id
+                message: `${player.name} landed on Breadline - all comrades must contribute!`,
+                playerId: player.id
               })
               set({
                 pendingAction: {
                   type: 'breadline-contribution',
-                  data: { landingPlayerId: currentPlayer.id }
+                  data: { landingPlayerId: player.id }
                 }
               })
             } else if (space.id === 30) {
               // Enemy of the State - go to Gulag
-              get().sendToGulag(currentPlayer.id, 'enemyOfState')
+              get().sendToGulag(player.id, 'enemyOfState')
             }
             break
 
@@ -288,17 +291,17 @@ export const useGameStore = create<GameStore>()(
               set({
                 pendingAction: {
                   type: 'property-purchase',
-                  data: { spaceId: space.id, playerId: currentPlayer.id }
+                  data: { spaceId: space.id, playerId: player.id }
                 }
               })
-            } else if (property.custodianId !== currentPlayer.id) {
+            } else if (property.custodianId !== player.id) {
               // Check if property is mortgaged - mortgaged properties don't charge quota
               if (property.mortgaged) {
                 const custodian = state.players.find(p => p.id === property.custodianId)
                 get().addLogEntry({
                   type: 'system',
-                  message: `${currentPlayer.name} landed on ${space.name} (mortgaged by ${custodian?.name ?? 'unknown'}) - no quota charged`,
-                  playerId: currentPlayer.id
+                  message: `${player.name} landed on ${space.name} (mortgaged by ${custodian?.name ?? 'unknown'}) - no quota charged`,
+                  playerId: player.id
                 })
                 set({ turnPhase: 'post-turn' })
               } else {
@@ -307,7 +310,7 @@ export const useGameStore = create<GameStore>()(
                   set({
                     pendingAction: {
                       type: 'railway-fee',
-                      data: { spaceId: space.id, payerId: currentPlayer.id }
+                      data: { spaceId: space.id, payerId: player.id }
                     }
                   })
                 } else if (space.type === 'utility') {
@@ -316,14 +319,14 @@ export const useGameStore = create<GameStore>()(
                   set({
                     pendingAction: {
                       type: 'utility-fee',
-                      data: { spaceId: space.id, payerId: currentPlayer.id, diceTotal: die1 + die2 }
+                      data: { spaceId: space.id, payerId: player.id, diceTotal: die1 + die2 }
                     }
                   })
                 } else {
                   set({
                     pendingAction: {
                       type: 'quota-payment',
-                      data: { spaceId: space.id, payerId: currentPlayer.id }
+                      data: { spaceId: space.id, payerId: player.id }
                     }
                   })
                 }
@@ -332,8 +335,8 @@ export const useGameStore = create<GameStore>()(
               // Player owns this property - just visiting
               get().addLogEntry({
                 type: 'system',
-                message: `${currentPlayer.name} landed on their own property: ${space.name}`,
-                playerId: currentPlayer.id
+                message: `${player.name} landed on their own property: ${space.name}`,
+                playerId: player.id
               })
               set({ turnPhase: 'post-turn' })
             }
@@ -344,7 +347,7 @@ export const useGameStore = create<GameStore>()(
             set({
               pendingAction: {
                 type: 'tax-payment',
-                data: { spaceId: space.id, playerId: currentPlayer.id }
+                data: { spaceId: space.id, playerId: player.id }
               }
             })
             break
@@ -356,25 +359,25 @@ export const useGameStore = create<GameStore>()(
             if (cardSpace.cardType === 'party-directive') {
               get().addLogEntry({
                 type: 'system',
-                message: `${currentPlayer.name} landed on Party Directive`,
-                playerId: currentPlayer.id
+                message: `${player.name} landed on Party Directive`,
+                playerId: player.id
               })
               set({
                 pendingAction: {
                   type: 'draw-party-directive',
-                  data: { playerId: currentPlayer.id }
+                  data: { playerId: player.id }
                 }
               })
             } else if (cardSpace.cardType === 'communist-test') {
               get().addLogEntry({
                 type: 'system',
-                message: `${currentPlayer.name} landed on Communist Test`,
-                playerId: currentPlayer.id
+                message: `${player.name} landed on Communist Test`,
+                playerId: player.id
               })
               set({
                 pendingAction: {
                   type: 'draw-communist-test',
-                  data: { playerId: currentPlayer.id }
+                  data: { playerId: player.id }
                 }
               })
             } else {
@@ -386,6 +389,14 @@ export const useGameStore = create<GameStore>()(
           default:
             set({ turnPhase: 'post-turn' })
         }
+      },
+
+      finishMoving: () => {
+        const state = get()
+        const currentPlayer = state.players[state.currentPlayerIndex]
+
+        set({ turnPhase: 'resolving' })
+        get().resolveCurrentSpace(currentPlayer.id)
       },
 
       endTurn: () => {
@@ -1451,17 +1462,31 @@ export const useGameStore = create<GameStore>()(
         switch (card.effect.type) {
           case 'move':
             if (card.effect.destination !== undefined) {
+              const oldPosition = player.position
               get().updatePlayer(playerId, { position: card.effect.destination })
-              // Check if passed STOY
-              if (player.position < card.effect.destination && card.effect.destination !== 0) {
+              // Check if passed STOY (wrapped around the board)
+              // If moving to position 0 from a higher position, or if destination > oldPosition for normal forward movement
+              if (oldPosition > card.effect.destination && card.effect.destination === 0) {
+                // Moving backwards to STOY (wrapping around) - pay travel tax
+                get().handleStoyPassing(playerId)
+              } else if (oldPosition < card.effect.destination && card.effect.destination !== 0) {
+                // Moving forward past STOY (not landing on it)
                 get().handleStoyPassing(playerId)
               }
+              // Resolve the space the player landed on
+              set({ turnPhase: 'resolving' })
+              get().resolveCurrentSpace(playerId)
+              return // Exit early to prevent setting turnPhase to 'post-turn' at the end
             }
             break
 
           case 'moveRelative':
             if (card.effect.spaces !== undefined) {
               get().movePlayer(playerId, card.effect.spaces)
+              // Resolve the space the player landed on
+              set({ turnPhase: 'resolving' })
+              get().resolveCurrentSpace(playerId)
+              return // Exit early to prevent setting turnPhase to 'post-turn' at the end
             }
             break
 
