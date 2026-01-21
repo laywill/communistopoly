@@ -168,22 +168,6 @@ setShowConfirm(true);
 )}
 ```
 
-## Locations to Replace window.confirm
-
-There are 4 `window.confirm` calls in the codebase to replace:
-
-1. **src/store/gameStore.ts:1839** - Stalin approval for Hammer ability (send to Gulag)
-   - Use `variant="stalin"`
-
-2. **src/store/gameStore.ts:1933** - Stalin veto for Ministry of Truth ability (rewrite rule)
-   - Use `variant="danger"`
-
-3. **src/components/modals/InformOnPlayerModal.tsx:64** - Stalin's judgement on informer accusation
-   - Use `variant="stalin"` and `nested={true}`
-
-4. **src/components/modals/VoucherRequestModal.tsx:40** - Voucher acceptance
-   - Use `variant="primary"` and `nested={true}`
-
 ## Features
 
 ### Click Outside to Close
@@ -219,11 +203,7 @@ Clicking inside the modal content does not trigger the overlay click handler.
 
 ## Test Coverage
 
-The component has comprehensive test coverage:
-- **Statements**: 100%
-- **Branches**: 93.75%
-- **Functions**: 100%
-- **Lines**: 100%
+The component has comprehensive test coverage.
 
 ### Test Cases
 1. Renders with title and message
@@ -244,6 +224,6 @@ The component has comprehensive test coverage:
 
 - **Zero lint errors**
 - **All 983 tests passing**
-- **Coverage**: 96.65% (increased from 94.52%)
+- **Coverage**: 96.65%
 - **Strict TypeScript**: No `any` types
 - **Copyright header**: Present on all files
