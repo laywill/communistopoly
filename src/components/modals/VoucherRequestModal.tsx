@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import styles from './Modal.module.css';
+import { ConfirmationModal } from './ConfirmationModal';
 
 interface VoucherRequestModalProps {
   prisonerId: string;
@@ -15,6 +16,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
   const [selectedVoucherId, setSelectedVoucherId] = useState<string | null>(null);
   const [requestSent, setRequestSent] = useState(false);
   const [voucherResponse, setVoucherResponse] = useState<'accepted' | 'declined' | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   if (!prisoner) return null;
 
@@ -31,31 +33,34 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
     if (!selectedVoucherId) return;
 
     setRequestSent(true);
+    setShowConfirmation(true);
+  };
 
-    // In a real implementation, this would wait for the voucher player to respond
-    // For now, we'll simulate with a confirmation dialog
+  const handleAcceptVoucher = () => {
+    if (!selectedVoucherId) return;
+
+    setShowConfirmation(false);
+    setVoucherResponse('accepted');
+    createVoucher(prisonerId, selectedVoucherId);
+  };
+
+  const handleDeclineVoucher = () => {
+    if (!selectedVoucherId) return;
+
     const voucherPlayer = players.find((p) => p.id === selectedVoucherId);
     if (!voucherPlayer) return;
 
-    const accepted = window.confirm(
-      `${voucherPlayer.name}, do you accept to vouch for ${prisoner.name}'s release from the Gulag?\n\nWARNING: If ${prisoner.name} commits ANY offence in the next 3 rounds, YOU will also go to the Gulag!`
-    );
+    setShowConfirmation(false);
+    setVoucherResponse('declined');
+    addLogEntry({
+      type: 'gulag',
+      message: `${voucherPlayer.name} declined to vouch for ${prisoner.name}'s release`,
+    });
 
-    if (accepted) {
-      setVoucherResponse('accepted');
-      createVoucher(prisonerId, selectedVoucherId);
-    } else {
-      setVoucherResponse('declined');
-      addLogEntry({
-        type: 'gulag',
-        message: `${voucherPlayer.name} declined to vouch for ${prisoner.name}'s release`,
-      });
-
-      // Close modal after a delay
-      setTimeout(() => {
-        setPendingAction(null);
-      }, 2000);
-    }
+    // Close modal after a delay
+    setTimeout(() => {
+      setPendingAction(null);
+    }, 2000);
   };
 
   const handleCancel = () => {
@@ -207,6 +212,23 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
           )}
         </div>
       </div>
+
+      {showConfirmation && selectedVoucherId && (() => {
+        const voucherPlayer = players.find((p) => p.id === selectedVoucherId);
+        if (!voucherPlayer) return null;
+        return (
+          <ConfirmationModal
+            title="VOUCHER REQUEST"
+            message={`${voucherPlayer.name}, do you accept to vouch for ${prisoner.name}'s release from the Gulag?\n\nWARNING: If ${prisoner.name} commits ANY offence in the next 3 rounds, YOU will also go to the Gulag!`}
+            confirmText="Accept"
+            cancelText="Decline"
+            variant="primary"
+            nested={true}
+            onConfirm={handleAcceptVoucher}
+            onCancel={handleDeclineVoucher}
+          />
+        );
+      })()}
     </div>
   );
 };

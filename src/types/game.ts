@@ -214,6 +214,8 @@ export type PendingActionType =
   | 'trade-response'
   | 'write-confession'
   | 'review-confession'
+  | 'hammer-approval'
+  | 'ministry-truth-approval'
 
 export interface PendingAction {
   type: PendingActionType

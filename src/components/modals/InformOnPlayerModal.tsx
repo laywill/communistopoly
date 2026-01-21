@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import { canBeDenouncedBy } from '../../utils/pieceAbilityUtils';
 import styles from './Modal.module.css';
+import { ConfirmationModal } from './ConfirmationModal';
 
 interface InformOnPlayerModalProps {
   informerId: string;
@@ -18,6 +19,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
   const [accusation, setAccusation] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [verdict, setVerdict] = useState<'guilty' | 'innocent' | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   if (!informer) return null;
 
@@ -55,54 +57,56 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
     if (!selectedTargetId || !accusation.trim()) return;
 
     setSubmitted(true);
+    setShowConfirmation(true);
+  };
 
-    // In a real implementation, this would pause for Stalin to judge
-    // For now, we'll simulate with a confirmation dialog
+  const handleConfirmGuilty = () => {
     const target = players.find((p) => p.id === selectedTargetId);
     if (!target) return;
 
-    const guilty = window.confirm(
-      `STALIN'S JUDGEMENT\n\n${informer.name} accuses ${target.name} of:\n"${accusation}"\n\nDoes Stalin find ${target.name} GUILTY?`
-    );
+    setShowConfirmation(false);
+    setVerdict('guilty');
 
-    if (guilty) {
-      setVerdict('guilty');
+    // Swap places: informer released, accused goes to Gulag
+    updatePlayer(informerId, {
+      inGulag: false,
+      gulagTurns: 0,
+    });
 
-      // Swap places: informer released, accused goes to Gulag
-      updatePlayer(informerId, {
-        inGulag: false,
-        gulagTurns: 0,
-      });
+    sendToGulag(selectedTargetId, 'denouncementGuilty');
 
-      sendToGulag(selectedTargetId, 'denouncementGuilty');
+    addLogEntry({
+      type: 'gulag',
+      message: `${informer.name} informed on ${target.name}. Stalin found ${target.name} GUILTY. They have swapped places!`,
+    });
 
-      addLogEntry({
-        type: 'gulag',
-        message: `${informer.name} informed on ${target.name}. Stalin found ${target.name} GUILTY. They have swapped places!`,
-      });
+    // Close modal after delay
+    setTimeout(() => {
+      setPendingAction(null);
+    }, 3000);
+  };
 
-      // Close modal after delay
-      setTimeout(() => {
-        setPendingAction(null);
-      }, 3000);
-    } else {
-      setVerdict('innocent');
+  const handleConfirmInnocent = () => {
+    const target = players.find((p) => p.id === selectedTargetId);
+    if (!target) return;
 
-      // Add 2 turns to informer's sentence
-      updatePlayer(informerId, {
-        gulagTurns: informer.gulagTurns + 2,
-      });
+    setShowConfirmation(false);
+    setVerdict('innocent');
 
-      addLogEntry({
-        type: 'gulag',
-        message: `${informer.name} falsely accused ${target.name}. Stalin found them INNOCENT. ${informer.name}'s sentence extended by 2 turns!`,
-      });
+    // Add 2 turns to informer's sentence
+    updatePlayer(informerId, {
+      gulagTurns: informer.gulagTurns + 2,
+    });
 
-      // Close modal after delay
-      setTimeout(() => {
-        setPendingAction(null);
-      }, 3000);
-    }
+    addLogEntry({
+      type: 'gulag',
+      message: `${informer.name} falsely accused ${target.name}. Stalin found them INNOCENT. ${informer.name}'s sentence extended by 2 turns!`,
+    });
+
+    // Close modal after delay
+    setTimeout(() => {
+      setPendingAction(null);
+    }, 3000);
   };
 
   const handleCancel = () => {
@@ -374,6 +378,23 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
           )}
         </div>
       </div>
+
+      {showConfirmation && selectedTargetId && (() => {
+        const target = players.find((p) => p.id === selectedTargetId);
+        if (!target) return null;
+        return (
+          <ConfirmationModal
+            title="STALIN'S JUDGEMENT"
+            message={`${informer.name} accuses ${target.name} of:\n"${accusation}"\n\nDoes Stalin find ${target.name} GUILTY?`}
+            confirmText="Guilty"
+            cancelText="Innocent"
+            variant="stalin"
+            nested={true}
+            onConfirm={handleConfirmGuilty}
+            onCancel={handleConfirmInnocent}
+          />
+        );
+      })()}
     </div>
   );
 };

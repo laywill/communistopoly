@@ -98,8 +98,10 @@ export interface GameActions {
 
   // Property special abilities
   siberianCampsGulag: (custodianId: string, targetPlayerId: string) => void
+  approveHammerAbility: (custodianId: string, targetPlayerId: string, approved: boolean) => void
   kgbPreviewTest: (custodianId: string) => void
   ministryTruthRewrite: (custodianId: string, newRule: string) => void
+  approveMinistryTruthRewrite: (custodianId: string, newRule: string, approved: boolean) => void
   pravdaPressRevote: (custodianId: string, decision: string) => void
 
   // Treasury
