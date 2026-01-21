@@ -46,7 +46,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
           </div>
           <div className={styles.content} style={{ textAlign: 'center', padding: '32px' }}>
             <p style={{ fontSize: '48px', margin: '0 0 16px 0' }}>💸</p>
-            <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
+            <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--color-propaganda-black)' }}>
               Your bribe of ₽{bribeAmount} has been submitted to Stalin
             </p>
             <p style={{ fontSize: '14px', color: 'var(--color-gulag-grey)' }}>
@@ -78,10 +78,10 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
               marginBottom: '20px',
             }}
           >
-            <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px' }}>
+            <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px', color: 'var(--color-propaganda-black)' }}>
               Your Financial Situation:
             </p>
-            <p style={{ margin: '0', fontSize: '16px', fontFamily: 'var(--font-mono)' }}>
+            <p style={{ margin: '0', fontSize: '16px', fontFamily: 'var(--font-mono)', color: 'var(--color-propaganda-black)' }}>
               Current Rubles: <strong>₽{player.rubles}</strong>
             </p>
           </div>
@@ -98,7 +98,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
             <p style={{ margin: 0, fontSize: '13px', color: 'var(--color-propaganda-black)', fontWeight: 'bold' }}>
               ⚠️ WARNING
             </p>
-            <p style={{ margin: '4px 0 0 0', fontSize: '12px', lineHeight: '1.5' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '12px', lineHeight: '1.5', color: 'var(--color-propaganda-black)' }}>
               Stalin may accept or reject your bribe. If rejected, the money will be confiscated as &quot;contraband&quot;!
             </p>
           </div>
@@ -113,6 +113,7 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
                 fontWeight: 'bold',
                 marginBottom: '8px',
                 textTransform: 'uppercase',
+                color: 'var(--color-propaganda-black)',
               }}
             >
               Bribe Amount (Minimum ₽{minBribe}):
@@ -158,10 +159,10 @@ export const BribeStalinModal: React.FC<BribeStalinModalProps> = ({ playerId, re
           </div>
 
           <div style={{ marginBottom: '16px', fontSize: '13px', color: 'var(--color-gulag-grey)' }}>
-            <p style={{ margin: '0 0 8px 0' }}>
+            <p style={{ margin: '0 0 8px 0', color: 'var(--color-gulag-grey)' }}>
               <strong>Purpose:</strong> {getReasonText(reason)}
             </p>
-            <p style={{ margin: 0 }}>
+            <p style={{ margin: 0, color: 'var(--color-gulag-grey)' }}>
               Higher bribes may be more persuasive, but there are no guarantees with Stalin...
             </p>
           </div>

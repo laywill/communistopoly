@@ -123,11 +123,11 @@ export const TribunalModal: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
               <div>
                 <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-gulag-grey)' }}>ACCUSER</p>
-                <p style={{ margin: '4px 0 0 0', fontSize: '16px', fontWeight: 'bold' }}>{accuser?.name}</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '16px', fontWeight: 'bold', color: 'var(--color-propaganda-black)' }}>{accuser?.name}</p>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-gulag-grey)' }}>ACCUSED</p>
-                <p style={{ margin: '4px 0 0 0', fontSize: '16px', fontWeight: 'bold' }}>{accused?.name}</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '16px', fontWeight: 'bold', color: 'var(--color-propaganda-black)' }}>{accused?.name}</p>
               </div>
             </div>
             <div
@@ -139,7 +139,7 @@ export const TribunalModal: React.FC = () => {
               }}
             >
               <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-gulag-grey)' }}>CRIME</p>
-              <p style={{ margin: '4px 0 0 0', fontSize: '14px', fontStyle: 'italic' }}>
+              <p style={{ margin: '4px 0 0 0', fontSize: '14px', fontStyle: 'italic', color: 'var(--color-propaganda-black)' }}>
                 &quot;{activeTribunal.crime}&quot;
               </p>
             </div>
