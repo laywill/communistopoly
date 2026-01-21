@@ -71,13 +71,13 @@ export const GulagEscapeModal: React.FC<GulagEscapeModalProps> = ({ playerId }) 
 
         <div className={styles.content}>
           <div style={{ textAlign: 'center', marginBottom: '16px', padding: '12px', background: 'var(--color-aged-white)', border: '2px solid var(--color-propaganda-black)' }}>
-            <p style={{ margin: '0 0 8px 0', fontFamily: 'var(--font-display)', fontSize: '18px' }}>
+            <p style={{ margin: '0 0 8px 0', fontFamily: 'var(--font-display)', fontSize: '18px', color: 'var(--color-propaganda-black)' }}>
               COMRADE {player.name.toUpperCase()}
             </p>
             <p style={{ margin: '0', fontSize: '16px', color: 'var(--color-gulag-grey)' }}>
               <strong>Sentence: Day {player.gulagTurns + 1} of ???</strong>
             </p>
-            <p style={{ margin: '8px 0 0 0', fontSize: '14px' }}>
+            <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: 'var(--color-propaganda-black)' }}>
               Required to escape: <strong>{requiredDoubles}</strong>
             </p>
           </div>

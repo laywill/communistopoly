@@ -251,7 +251,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
                 </p>
               </div>
             </div>
-            <p style={{ margin: '12px 0 0 0', fontSize: '13px', fontStyle: 'italic' }}>
+            <p style={{ margin: '12px 0 0 0', fontSize: '13px', fontStyle: 'italic', color: 'var(--color-propaganda-black)' }}>
               Reason: {reason}
             </p>
           </div>
@@ -280,10 +280,10 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
                   borderRadius: '4px',
                 }}
               >
-                <p style={{ margin: 0, fontSize: '14px', fontWeight: 'bold' }}>
+                <p style={{ margin: 0, fontSize: '14px', fontWeight: 'bold', color: 'var(--color-propaganda-black)' }}>
                   ⚠️ Insufficient Rubles - Liquidate Assets or Face Consequences
                 </p>
-                <p style={{ margin: '8px 0 0 0', fontSize: '12px', lineHeight: '1.5' }}>
+                <p style={{ margin: '8px 0 0 0', fontSize: '12px', lineHeight: '1.5', color: 'var(--color-propaganda-black)' }}>
                   Sell improvements (50₽ per level, 100₽ for Palace) or mortgage properties (50% of base cost).
                   If you cannot pay, a debt will be created and you must pay within one round or face the Gulag!
                 </p>
@@ -335,7 +335,7 @@ export const LiquidationModal: React.FC<LiquidationModalProps> = ({
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
                             <div style={{ flex: 1 }}>
-                              <h4 style={{ margin: '0 0 4px 0', fontSize: '16px', fontWeight: 'bold' }}>
+                              <h4 style={{ margin: '0 0 4px 0', fontSize: '16px', fontWeight: 'bold', color: 'var(--color-propaganda-black)' }}>
                                 {space.name}
                               </h4>
                               <p style={{ margin: 0, fontSize: '13px', color: 'var(--color-gulag-grey)' }}>

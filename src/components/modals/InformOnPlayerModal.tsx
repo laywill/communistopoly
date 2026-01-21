@@ -181,10 +181,10 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
               marginBottom: '20px',
             }}
           >
-            <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px' }}>
+            <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', fontSize: '14px', color: 'var(--color-propaganda-black)' }}>
               Your Situation:
             </p>
-            <p style={{ margin: '0', fontSize: '14px' }}>
+            <p style={{ margin: '0', fontSize: '14px', color: 'var(--color-propaganda-black)' }}>
               <strong>{informer.name}</strong> - Day {informer.gulagTurns + 1} in the Gulag
             </p>
           </div>
@@ -254,7 +254,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '15px' }}>{target.name}</p>
+                          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '15px', color: 'var(--color-propaganda-black)' }}>{target.name}</p>
                           <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gulag-grey)' }}>
                             Rank: {getRankDisplayName(target.rank)} • ₽{target.rubles} • Props: {target.properties.length}
                           </p>
@@ -282,14 +282,14 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
                     <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: 'var(--color-gold)', fontWeight: 'bold' }}>
                       🗿 PROTECTED COMRADES
                     </p>
-                    <p style={{ margin: '0 0 8px 0', fontSize: '12px', lineHeight: '1.5' }}>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '12px', lineHeight: '1.5', color: 'var(--color-propaganda-black)' }}>
                       The following comrades cannot be denounced by you:
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       {protectedPlayers.map((target) => {
                         const denouncementCheck = canBeDenouncedBy(target, informer)
                         return (
-                          <div key={target.id} style={{ fontSize: '12px', color: 'var(--color-cream)' }}>
+                          <div key={target.id} style={{ fontSize: '12px', color: 'var(--color-propaganda-black)' }}>
                             • <strong>{target.name}</strong> - {denouncementCheck.reason}
                           </div>
                         )

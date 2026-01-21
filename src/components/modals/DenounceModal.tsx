@@ -103,7 +103,7 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
                 <p style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: 'var(--color-blood-burgundy)' }}>
                   ⚠️ CANNOT DENOUNCE
                 </p>
-                <p style={{ margin: '8px 0 0 0', fontSize: '14px' }}>
+                <p style={{ margin: '8px 0 0 0', fontSize: '14px', color: 'var(--color-propaganda-black)' }}>
                   {denounceCheck.reason}
                 </p>
               </div>
@@ -133,7 +133,7 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
                     {protectedPlayers.map((target) => {
                       const denouncementCheck = canBeDenouncedBy(target, accuser);
                       return (
-                        <div key={target.id} style={{ fontSize: '12px', color: 'var(--color-cream)' }}>
+                        <div key={target.id} style={{ fontSize: '12px', color: 'var(--color-propaganda-black)' }}>
                           • <strong>{target.name}</strong> - {denouncementCheck.reason}
                         </div>
                       );
@@ -201,7 +201,7 @@ export const DenounceModal: React.FC<DenounceModalProps> = ({ accuserId, onClose
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '15px' }}>{target.name}</p>
+                          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '15px', color: 'var(--color-propaganda-black)' }}>{target.name}</p>
                           <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gulag-grey)' }}>
                             Rank: {getRankDisplayName(target.rank)} • ₽{target.rubles} • Props: {target.properties.length}
                           </p>
