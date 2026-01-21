@@ -21,6 +21,7 @@ import { PartyDirectiveModal } from './PartyDirectiveModal';
 import { CommunistTestModal } from './CommunistTestModal';
 import ConfessionModal from './ConfessionModal';
 import ReviewConfessionModal from './ReviewConfessionModal';
+import { ConfirmationModal } from './ConfirmationModal';
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -31,6 +32,8 @@ export function PendingActionHandler() {
   const currentPlayer = useGameStore((state) => state.players[state.currentPlayerIndex]);
   const drawPartyDirective = useGameStore((state) => state.drawPartyDirective);
   const drawCommunistTest = useGameStore((state) => state.drawCommunistTest);
+  const approveHammerAbility = useGameStore((state) => state.approveHammerAbility);
+  const approveMinistryTruthRewrite = useGameStore((state) => state.approveMinistryTruthRewrite);
 
   const handleClose = () => {
     setPendingAction(null);
@@ -250,6 +253,73 @@ export function PendingActionHandler() {
         );
       }
       return null;
+
+    case 'hammer-approval':
+      if (!pendingAction.data) return null;
+      if (typeof pendingAction.data.custodianId !== 'string' ||
+          typeof pendingAction.data.targetPlayerId !== 'string' ||
+          typeof pendingAction.data.custodianName !== 'string' ||
+          typeof pendingAction.data.targetName !== 'string') {
+        return null;
+      }
+      return (
+        <ConfirmationModal
+          title="STALIN'S APPROVAL"
+          message={`${pendingAction.data.custodianName} wants to send ${pendingAction.data.targetName} to the Gulag for "labour needs".\n\nDo you approve?`}
+          confirmText="Approve"
+          cancelText="Deny"
+          variant="stalin"
+          onConfirm={() => {
+            if (!pendingAction.data) return;
+            approveHammerAbility(
+              pendingAction.data.custodianId as string,
+              pendingAction.data.targetPlayerId as string,
+              true
+            );
+          }}
+          onCancel={() => {
+            if (!pendingAction.data) return;
+            approveHammerAbility(
+              pendingAction.data.custodianId as string,
+              pendingAction.data.targetPlayerId as string,
+              false
+            );
+          }}
+        />
+      );
+
+    case 'ministry-truth-approval':
+      if (!pendingAction.data) return null;
+      if (typeof pendingAction.data.custodianId !== 'string' ||
+          typeof pendingAction.data.custodianName !== 'string' ||
+          typeof pendingAction.data.newRule !== 'string') {
+        return null;
+      }
+      return (
+        <ConfirmationModal
+          title="STALIN'S VETO POWER"
+          message={`${pendingAction.data.custodianName} wants to rewrite a rule:\n\n"${pendingAction.data.newRule}"\n\nDo you approve this rule change?`}
+          confirmText="Approve"
+          cancelText="Veto"
+          variant="danger"
+          onConfirm={() => {
+            if (!pendingAction.data) return;
+            approveMinistryTruthRewrite(
+              pendingAction.data.custodianId as string,
+              pendingAction.data.newRule as string,
+              true
+            );
+          }}
+          onCancel={() => {
+            if (!pendingAction.data) return;
+            approveMinistryTruthRewrite(
+              pendingAction.data.custodianId as string,
+              pendingAction.data.newRule as string,
+              false
+            );
+          }}
+        />
+      );
 
     default:
       return null;

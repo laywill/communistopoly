@@ -29,11 +29,15 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(1, custodianId)
       store.setPropertyCustodian(3, custodianId)
 
-      // Mock Stalin's approval
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
-
-      // Execute
+      // Execute: Request to send to Gulag (creates pending action)
       store.siberianCampsGulag(custodianId, targetId)
+
+      // Verify pending action was created
+      const pendingAction = useGameStore.getState().pendingAction
+      expect(pendingAction?.type).toBe('hammer-approval')
+
+      // Approve the action
+      store.approveHammerAbility(custodianId, targetId, true)
 
       // Verify target is in Gulag
       const updatedTarget = useGameStore.getState().players.find(p => p.id === targetId)
@@ -50,8 +54,6 @@ describe('Property Group Abilities', () => {
         log.message.includes('sent') &&
         log.message.includes('to the Gulag')
       )).toBe(true)
-
-      expect(window.confirm).toHaveBeenCalled()
     })
 
     it('should not send target to Gulag when Stalin denies', () => {
@@ -68,11 +70,15 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(1, custodian.id)
       store.setPropertyCustodian(3, custodian.id)
 
-      // Mock Stalin's denial
-      vi.spyOn(window, 'confirm').mockReturnValue(false)
-
-      // Execute
+      // Execute: Request to send to Gulag (creates pending action)
       store.siberianCampsGulag(custodian.id, target.id)
+
+      // Verify pending action was created
+      const pendingAction = useGameStore.getState().pendingAction
+      expect(pendingAction?.type).toBe('hammer-approval')
+
+      // Deny the action
+      store.approveHammerAbility(custodian.id, target.id, false)
 
       // Verify target is NOT in Gulag
       const updatedTarget = useGameStore.getState().players.find(p => p.id === target.id)
@@ -335,13 +341,17 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(18, custodian.id)
       store.setPropertyCustodian(19, custodian.id)
 
-      // Mock Stalin's approval
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
-
       const newRule = 'All players must salute Stalin before rolling dice'
 
-      // Execute
+      // Execute: Request rule rewrite (creates pending action)
       store.ministryTruthRewrite(custodian.id, newRule)
+
+      // Verify pending action was created
+      const pendingAction = useGameStore.getState().pendingAction
+      expect(pendingAction?.type).toBe('ministry-truth-approval')
+
+      // Approve the rule change
+      store.approveMinistryTruthRewrite(custodian.id, newRule, true)
 
       // Verify custodian marked as having used ability
       const updatedCustodian = useGameStore.getState().players.find(p => p.id === custodian.id)
@@ -354,8 +364,6 @@ describe('Property Group Abilities', () => {
         log.message.includes('Ministry of Truth') &&
         log.message.includes(newRule)
       )).toBe(true)
-
-      expect(window.confirm).toHaveBeenCalled()
     })
 
     it('should not rewrite rule when Stalin vetoes', () => {
@@ -372,13 +380,17 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(18, custodian.id)
       store.setPropertyCustodian(19, custodian.id)
 
-      // Mock Stalin's veto
-      vi.spyOn(window, 'confirm').mockReturnValue(false)
-
       const newRule = 'Players can skip Gulag by singing anthem'
 
-      // Execute
+      // Execute: Request rule rewrite (creates pending action)
       store.ministryTruthRewrite(custodian.id, newRule)
+
+      // Verify pending action was created
+      const pendingAction = useGameStore.getState().pendingAction
+      expect(pendingAction?.type).toBe('ministry-truth-approval')
+
+      // Veto the rule change
+      store.approveMinistryTruthRewrite(custodian.id, newRule, false)
 
       // Verify custodian NOT marked as having used ability
       const updatedCustodian = useGameStore.getState().players.find(p => p.id === custodian.id)

@@ -1835,10 +1835,29 @@ export const useGameStore = create<GameStore>()(
           return
         }
 
-        // Ask Stalin for approval (in real game, this would be a modal)
-        const approved = window.confirm(
-          `STALIN'S APPROVAL REQUIRED\n\n${custodian.name} wants to send ${target.name} to the Gulag for "labour needs".\n\nDo you approve?`
-        )
+        // Ask Stalin for approval via modal
+        set({
+          pendingAction: {
+            type: 'hammer-approval',
+            data: {
+              custodianId,
+              custodianName: custodian.name,
+              targetPlayerId,
+              targetName: target.name
+            }
+          }
+        })
+      },
+
+      approveHammerAbility: (custodianId, targetPlayerId, approved) => {
+        const state = get()
+        const custodian = state.players.find(p => p.id === custodianId)
+        const target = state.players.find(p => p.id === targetPlayerId)
+
+        if ((custodian == null) || (target == null)) {
+          set({ pendingAction: null })
+          return
+        }
 
         if (approved) {
           get().sendToGulag(targetPlayerId, 'campLabour')
@@ -1929,10 +1948,27 @@ export const useGameStore = create<GameStore>()(
           return
         }
 
-        // Ask Stalin for approval
-        const approved = window.confirm(
-          `STALIN'S VETO POWER\n\n${custodian.name} wants to rewrite a rule:\n\n"${newRule}"\n\nDo you approve this rule change?`
-        )
+        // Ask Stalin for approval via modal
+        set({
+          pendingAction: {
+            type: 'ministry-truth-approval',
+            data: {
+              custodianId,
+              custodianName: custodian.name,
+              newRule
+            }
+          }
+        })
+      },
+
+      approveMinistryTruthRewrite: (custodianId, newRule, approved) => {
+        const state = get()
+        const custodian = state.players.find(p => p.id === custodianId)
+
+        if (custodian == null) {
+          set({ pendingAction: null })
+          return
+        }
 
         if (approved) {
           get().updatePlayer(custodianId, { hasUsedMinistryTruthRewrite: true })
