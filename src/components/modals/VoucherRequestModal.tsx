@@ -76,7 +76,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
           </div>
           <div className={styles.content} style={{ textAlign: 'center', padding: '32px' }}>
             <p style={{ fontSize: '48px', margin: '0 0 16px 0' }}>✓</p>
-            <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
+            <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--color-propaganda-black)' }}>
               {prisoner.name} has been released!
             </p>
             <p style={{ fontSize: '14px', color: 'var(--color-gulag-grey)' }}>
@@ -97,7 +97,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
           </div>
           <div className={styles.content} style={{ textAlign: 'center', padding: '32px' }}>
             <p style={{ fontSize: '48px', margin: '0 0 16px 0' }}>✗</p>
-            <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px' }}>
+            <p style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--color-propaganda-black)' }}>
               No one will vouch for you
             </p>
             <p style={{ fontSize: '14px', color: 'var(--color-gulag-grey)' }}>
@@ -117,7 +117,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
         </div>
 
         <div className={styles.content}>
-          <p style={{ marginBottom: '16px', fontSize: '14px' }}>
+          <p style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--color-propaganda-black)' }}>
             <strong>{prisoner.name}</strong>, select a comrade to request a voucher for your release.
           </p>
 
@@ -133,7 +133,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
             <p style={{ margin: 0, fontSize: '13px', color: 'var(--color-propaganda-black)', fontWeight: 'bold' }}>
               ⚠️ WARNING
             </p>
-            <p style={{ margin: '4px 0 0 0', fontSize: '12px', lineHeight: '1.5' }}>
+            <p style={{ margin: '4px 0 0 0', fontSize: '12px', lineHeight: '1.5', color: 'var(--color-propaganda-black)' }}>
               If you commit ANY offence in the next 3 rounds, your voucher will also be sent to the Gulag!
             </p>
           </div>
@@ -156,6 +156,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
                     fontSize: '14px',
                     marginBottom: '12px',
                     textTransform: 'uppercase',
+                    color: 'var(--color-propaganda-black)',
                   }}
                 >
                   Eligible Comrades:
@@ -181,7 +182,7 @@ export const VoucherRequestModal: React.FC<VoucherRequestModalProps> = ({ prison
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '15px' }}>{voucher.name}</p>
+                          <p style={{ margin: 0, fontWeight: 'bold', fontSize: '15px', color: 'var(--color-propaganda-black)' }}>{voucher.name}</p>
                           <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: 'var(--color-gulag-grey)' }}>
                             Rank: {getRankDisplayName(voucher.rank)} • ₽{voucher.rubles}
                           </p>
