@@ -11,6 +11,7 @@ import type { StatisticsSlice } from '../slices/statisticsSlice'
 import type { DiceSlice } from '../slices/diceSlice'
 import type { TreasurySlice } from '../slices/treasurySlice'
 import type { PlayerSlice } from '../slices/playerSlice'
+import type { PropertySlice } from '../slices/propertySlice'
 
 // Game Actions interface - all store methods
 export interface GameActions {
@@ -24,15 +25,8 @@ export interface GameActions {
   setCurrentPlayer: (index: number) => void
   updatePlayer: (playerId: string, updates: Partial<Player>) => void
 
-  // Property management
-  initializeProperties: () => void
-  setPropertyCustodian: (spaceId: number, custodianId: string | null) => void
-  updateCollectivizationLevel: (spaceId: number, level: number) => void
-  purchaseProperty: (playerId: string, spaceId: number, price: number) => void
+  // Property management (payQuota remains in GameActions as it's a payment action, not property state)
   payQuota: (payerId: string, custodianId: string, amount: number) => void
-  mortgageProperty: (spaceId: number) => void
-  unmortgageProperty: (spaceId: number, playerId: string) => void
-  transferProperty: (propertyId: string, newCustodianId: string) => void
 
   // Turn management
   movePlayer: (playerId: string, spaces: number) => void
@@ -127,4 +121,4 @@ export interface GameActions {
 }
 
 // Combined GameStore type - includes all slices
-export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice
+export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice
