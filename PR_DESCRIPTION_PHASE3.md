@@ -30,19 +30,21 @@ This is Phase 3 of the ongoing refactoring effort to decompose the ~2960-line ga
 ## Quality Metrics
 
 ### Tests
-- ✅ **983/983 tests passing** (70 more tests than Phase 2 baseline)
+- ✅ **987/987 tests passing** (74 more tests than Phase 2 baseline)
 - ✅ All existing test files work without modification
-- ✅ Duration: ~18 seconds
+- ✅ 4 additional tests added for movementSlice coverage (railway fees, tax spaces, log verification)
+- ✅ Duration: ~20 seconds
 
 ### Linting
 - ✅ **Zero ESLint errors**
 - ✅ Zero warnings
 
 ### Coverage
-- ✅ **96.44% overall coverage** (exceeds 85% requirement)
+- ✅ **96.63% overall coverage** (exceeds 85% requirement)
   - propertySlice: 100% statements, 82.35% branches
-  - movementSlice: 85.12% statements, 78.37% branches
-- Branch coverage in movementSlice is lower due to many legitimate conditional paths for different space types (properties, cards, tax, corners, etc.)
+  - movementSlice: 87.6% statements, 81.08% branches (improved with 4 additional tests)
+- Added tests for railway fees, tax spaces, and log verification to cover core game mechanics
+- Remaining uncovered paths are defensive programming for malformed data (low priority)
 
 ### TypeScript
 - ✅ Full `StateCreator` typing with no `any` types
@@ -83,6 +85,20 @@ export const createPropertySlice: StateCreator<
 - `gameStore` - Calls `sendToGulag()` (not yet extracted)
 
 All cross-slice calls use the proper `get()` pattern for type-safe access.
+
+## Test Coverage Improvements
+
+After initial extraction, a coverage analysis identified gaps in movementSlice tests for core game mechanics. Added 4 targeted tests:
+
+1. **Railway fee test** - Validates pending action when landing on railway owned by another player (position 5)
+2. **Income tax test** - Validates tax payment when landing on Revolutionary Contribution space (position 4)
+3. **Luxury tax test** - Validates tax payment when landing on Bourgeois Decadence Tax space (position 38)
+4. **Own property log test** - Enhanced existing test to verify log entry creation
+
+**Impact:**
+- movementSlice statements: 85.12% → 87.6%
+- movementSlice branches: 78.37% → 81.08%
+- Overall project: 96.44% → 96.63%
 
 ## Progress Update
 
