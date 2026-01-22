@@ -416,6 +416,28 @@ describe('gameStore - Dice Rolling & Movement', () => {
       expect(state.pendingAction).toBeNull()
     })
 
+    it('should log entry when landing on own property', () => {
+      const { updatePlayer, setPropertyCustodian, finishMoving } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Player owns property at space 3
+      setPropertyCustodian(3, player.id)
+
+      // Player lands on their own property
+      updatePlayer(player.id, { position: 3 })
+
+      finishMoving()
+
+      const state = useGameStore.getState()
+      const logEntry = state.gameLog.find(
+        log => log.type === 'system' && log.message.includes('landed on their own property')
+      )
+      expect(logEntry).toBeDefined()
+      expect(logEntry?.message).toContain(player.name)
+      expect(logEntry?.message).toContain('Camp Kolyma')
+    })
+
     it('should set pendingAction for Party Directive card space', () => {
       const { updatePlayer, finishMoving } = useGameStore.getState()
       const currentIndex = useGameStore.getState().currentPlayerIndex
@@ -474,6 +496,62 @@ describe('gameStore - Dice Rolling & Movement', () => {
       const state = useGameStore.getState()
       expect(state.turnPhase).toBe('post-turn')
       expect(state.pendingAction).toBeNull()
+    })
+
+    it('should set pendingAction for railway fee when landing on railway owned by another player', () => {
+      const { updatePlayer, setPropertyCustodian, finishMoving } = useGameStore.getState()
+      const players = useGameStore.getState().players
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player1 = players[currentIndex]
+      const player2 = players[currentIndex === 0 ? 1 : 0]
+
+      // Player 2 owns railway at space 5 (Moscow Station)
+      setPropertyCustodian(5, player2.id)
+
+      // Player 1 lands on player 2's railway
+      updatePlayer(player1.id, { position: 5 })
+
+      finishMoving()
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).toBeDefined()
+      expect(state.pendingAction?.type).toBe('railway-fee')
+      expect(state.pendingAction?.data?.spaceId).toBe(5)
+      expect(state.pendingAction?.data?.payerId).toBe(player1.id)
+    })
+
+    it('should set pendingAction for income tax when landing on position 4', () => {
+      const { updatePlayer, finishMoving } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Position player on Income Tax space (space 4)
+      updatePlayer(player.id, { position: 4 })
+
+      finishMoving()
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).toBeDefined()
+      expect(state.pendingAction?.type).toBe('tax-payment')
+      expect(state.pendingAction?.data?.spaceId).toBe(4)
+      expect(state.pendingAction?.data?.playerId).toBe(player.id)
+    })
+
+    it('should set pendingAction for luxury tax when landing on position 38', () => {
+      const { updatePlayer, finishMoving } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Position player on Luxury Tax space (space 38)
+      updatePlayer(player.id, { position: 38 })
+
+      finishMoving()
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).toBeDefined()
+      expect(state.pendingAction?.type).toBe('tax-payment')
+      expect(state.pendingAction?.data?.spaceId).toBe(38)
+      expect(state.pendingAction?.data?.playerId).toBe(player.id)
     })
   })
 })
