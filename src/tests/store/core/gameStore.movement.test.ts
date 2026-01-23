@@ -334,6 +334,38 @@ describe('gameStore - Dice Rolling & Movement', () => {
       const updatedPlayer = useGameStore.getState().players[0]
       expect(updatedPlayer.tankRequisitionUsedThisLap).toBe(false)
     })
+
+    it('should not trigger passedStoy when starting from position 0', () => {
+      const { updatePlayer, movePlayer } = useGameStore.getState()
+      const player = useGameStore.getState().players[0]
+
+      // Start exactly on STOY (position 0) with laps = 1
+      updatePlayer(player.id, { position: 0, lapsCompleted: 1 })
+
+      // Move 5 spaces (should not increment laps because oldPosition === 0)
+      movePlayer(player.id, 5)
+
+      const updatedPlayer = useGameStore.getState().players[0]
+      expect(updatedPlayer.position).toBe(5)
+      expect(updatedPlayer.lapsCompleted).toBe(1) // Should NOT increment
+    })
+
+    it('should increment laps but not deduct travel tax when passing STOY and landing exactly on 0', () => {
+      const { updatePlayer, movePlayer } = useGameStore.getState()
+      const player = useGameStore.getState().players[0]
+
+      // Start at position 39 with laps = 0 and record initial rubles
+      updatePlayer(player.id, { position: 39, lapsCompleted: 0 })
+      const initialRubles = useGameStore.getState().players[0].rubles
+
+      // Move 1 space (wraps to position 0: 39 + 1 = 40, 40 % 40 = 0)
+      movePlayer(player.id, 1)
+
+      const updatedPlayer = useGameStore.getState().players[0]
+      expect(updatedPlayer.position).toBe(0) // Landed exactly on STOY
+      expect(updatedPlayer.lapsCompleted).toBe(1) // Lap counter incremented
+      expect(updatedPlayer.rubles).toBe(initialRubles) // No travel tax deducted (didn't call handleStoyPassing)
+    })
   })
 
   describe('finishMoving', () => {
@@ -625,6 +657,35 @@ describe('gameStore - Dice Rolling & Movement', () => {
       )
       expect(logEntry).toBeDefined()
       expect(logEntry?.message).toContain('all comrades must contribute')
+    })
+
+    it('should send player to Gulag when landing on Enemy of the State corner', () => {
+      const { updatePlayer, resolveCurrentSpace } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Position player on Enemy of the State space (position 30)
+      updatePlayer(player.id, { position: 30 })
+
+      resolveCurrentSpace(player.id)
+
+      const state = useGameStore.getState()
+      const updatedPlayer = state.players[currentIndex]
+
+      // Verify player is sent to Gulag
+      expect(updatedPlayer.inGulag).toBe(true)
+      expect(updatedPlayer.gulagTurns).toBe(0)
+      expect(updatedPlayer.position).toBe(10) // Gulag position
+
+      // Verify turnPhase is set to post-turn
+      expect(state.turnPhase).toBe('post-turn')
+
+      // Verify log entry was created
+      const logEntry = state.gameLog.find(
+        log => log.type === 'gulag' && log.message.includes('sent to Gulag')
+      )
+      expect(logEntry).toBeDefined()
+      expect(logEntry?.playerId).toBe(player.id)
     })
 
     it('should set pendingAction for stoy-pilfer when landing exactly on STOY', () => {
