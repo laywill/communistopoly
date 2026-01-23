@@ -1054,6 +1054,50 @@ describe('gameStore - Gulag System', () => {
   })
 
   describe('Gulag Escape - Vouching', () => {
+    it('should set pendingAction for voucher selection when vouch method chosen', () => {
+      const { initializePlayers, sendToGulag, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Prisoner', piece: 'sickle', isStalin: false },
+        { name: 'Voucher', piece: 'hammer', isStalin: false }
+      ])
+
+      const [prisoner] = useGameStore.getState().players
+      sendToGulag(prisoner.id, 'enemyOfState')
+      updatePlayer(prisoner.id, { gulagTurns: 1 })
+
+      // Clear any existing pendingAction
+      useGameStore.setState({ pendingAction: null })
+
+      // Attempt to escape by vouching
+      attemptGulagEscape(prisoner.id, 'vouch')
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).not.toBeNull()
+      expect(state.pendingAction?.type).toBe('voucher-request')
+      expect(state.pendingAction?.data?.prisonerId).toBe(prisoner.id)
+    })
+
+    it('should not complete escape immediately when vouch method chosen', () => {
+      const { initializePlayers, sendToGulag, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Prisoner', piece: 'sickle', isStalin: false },
+        { name: 'Voucher', piece: 'hammer', isStalin: false }
+      ])
+
+      const [prisoner] = useGameStore.getState().players
+      sendToGulag(prisoner.id, 'enemyOfState')
+      updatePlayer(prisoner.id, { gulagTurns: 1 })
+
+      attemptGulagEscape(prisoner.id, 'vouch')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === prisoner.id)
+      // Player should still be in Gulag until voucher is selected
+      expect(updatedPlayer?.inGulag).toBe(true)
+      expect(updatedPlayer?.gulagTurns).toBe(1)
+    })
+
     it('should release prisoner when another player vouches', () => {
       const { initializePlayers, sendToGulag, createVoucher } = useGameStore.getState()
 
@@ -1133,6 +1177,49 @@ describe('gameStore - Gulag System', () => {
   })
 
   describe('Gulag Escape - Bribe', () => {
+    it('should set pendingAction for bribe submission when bribe method chosen', () => {
+      const { initializePlayers, sendToGulag, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player] = useGameStore.getState().players
+      sendToGulag(player.id, 'enemyOfState')
+      updatePlayer(player.id, { gulagTurns: 1 })
+
+      // Clear any existing pendingAction
+      useGameStore.setState({ pendingAction: null })
+
+      // Attempt to escape by bribing
+      attemptGulagEscape(player.id, 'bribe')
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).not.toBeNull()
+      expect(state.pendingAction?.type).toBe('bribe-stalin')
+      expect(state.pendingAction?.data?.playerId).toBe(player.id)
+      expect(state.pendingAction?.data?.reason).toBe('gulag-escape')
+    })
+
+    it('should not complete escape immediately when bribe method chosen', () => {
+      const { initializePlayers, sendToGulag, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player] = useGameStore.getState().players
+      sendToGulag(player.id, 'enemyOfState')
+      updatePlayer(player.id, { gulagTurns: 1 })
+
+      attemptGulagEscape(player.id, 'bribe')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
+      // Player should still be in Gulag until bribe is submitted and accepted
+      expect(updatedPlayer?.inGulag).toBe(true)
+      expect(updatedPlayer?.gulagTurns).toBe(1)
+    })
+
     it('should release player when Stalin accepts bribe', () => {
       const { initializePlayers, sendToGulag, submitBribe, respondToBribe } = useGameStore.getState()
 
@@ -1212,6 +1299,50 @@ describe('gameStore - Gulag System', () => {
   })
 
   describe('Gulag Escape - Informing', () => {
+    it('should set pendingAction for informant selection when inform method chosen', () => {
+      const { initializePlayers, sendToGulag, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Prisoner', piece: 'sickle', isStalin: false },
+        { name: 'Target', piece: 'hammer', isStalin: false }
+      ])
+
+      const [prisoner] = useGameStore.getState().players
+      sendToGulag(prisoner.id, 'enemyOfState')
+      updatePlayer(prisoner.id, { gulagTurns: 1 })
+
+      // Clear any existing pendingAction
+      useGameStore.setState({ pendingAction: null })
+
+      // Attempt to escape by informing
+      attemptGulagEscape(prisoner.id, 'inform')
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).not.toBeNull()
+      expect(state.pendingAction?.type).toBe('inform-on-player')
+      expect(state.pendingAction?.data?.informerId).toBe(prisoner.id)
+    })
+
+    it('should not complete escape immediately when inform method chosen', () => {
+      const { initializePlayers, sendToGulag, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Prisoner', piece: 'sickle', isStalin: false },
+        { name: 'Target', piece: 'hammer', isStalin: false }
+      ])
+
+      const [prisoner] = useGameStore.getState().players
+      sendToGulag(prisoner.id, 'enemyOfState')
+      updatePlayer(prisoner.id, { gulagTurns: 1 })
+
+      attemptGulagEscape(prisoner.id, 'inform')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === prisoner.id)
+      // Player should still be in Gulag until informant is selected and tribunal resolves
+      expect(updatedPlayer?.inGulag).toBe(true)
+      expect(updatedPlayer?.gulagTurns).toBe(1)
+    })
+
     it('should trigger tribunal when informing on another player', () => {
       const { initializePlayers, sendToGulag, attemptGulagEscape } = useGameStore.getState()
 
@@ -1446,6 +1577,198 @@ describe('gameStore - Gulag System', () => {
 
       const updatedPlayer = useGameStore.getState().players[0]
       expect(updatedPlayer.position).toBe(10)
+    })
+  })
+
+  describe('Gulag Escape - pendingAction Transitions', () => {
+    describe('vouch method', () => {
+      it('should set pendingAction with type voucher-request', () => {
+        const { initializePlayers, sendToGulag, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Prisoner', piece: 'sickle', isStalin: false },
+          { name: 'Voucher', piece: 'hammer', isStalin: false }
+        ])
+
+        const [prisoner] = useGameStore.getState().players
+        sendToGulag(prisoner.id, 'enemyOfState')
+
+        useGameStore.setState({ pendingAction: null })
+        attemptGulagEscape(prisoner.id, 'vouch')
+
+        const state = useGameStore.getState()
+        expect(state.pendingAction?.type).toBe('voucher-request')
+      })
+
+      it('should include prisonerId in pendingAction data', () => {
+        const { initializePlayers, sendToGulag, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Prisoner', piece: 'sickle', isStalin: false },
+          { name: 'Voucher', piece: 'hammer', isStalin: false }
+        ])
+
+        const [prisoner] = useGameStore.getState().players
+        sendToGulag(prisoner.id, 'enemyOfState')
+
+        attemptGulagEscape(prisoner.id, 'vouch')
+
+        const state = useGameStore.getState()
+        expect(state.pendingAction?.data?.prisonerId).toBe(prisoner.id)
+      })
+
+      it('should not modify player state when setting pendingAction', () => {
+        const { initializePlayers, sendToGulag, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Prisoner', piece: 'sickle', isStalin: false },
+          { name: 'Voucher', piece: 'hammer', isStalin: false }
+        ])
+
+        const [prisoner] = useGameStore.getState().players
+        sendToGulag(prisoner.id, 'enemyOfState')
+        updatePlayer(prisoner.id, { gulagTurns: 3 })
+
+        const beforeState = useGameStore.getState().players.find(p => p.id === prisoner.id)
+
+        attemptGulagEscape(prisoner.id, 'vouch')
+
+        const afterState = useGameStore.getState().players.find(p => p.id === prisoner.id)
+        expect(afterState?.inGulag).toBe(beforeState?.inGulag)
+        expect(afterState?.gulagTurns).toBe(beforeState?.gulagTurns)
+        expect(afterState?.rubles).toBe(beforeState?.rubles)
+      })
+    })
+
+    describe('inform method', () => {
+      it('should set pendingAction with type inform-on-player', () => {
+        const { initializePlayers, sendToGulag, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Prisoner', piece: 'sickle', isStalin: false },
+          { name: 'Target', piece: 'hammer', isStalin: false }
+        ])
+
+        const [prisoner] = useGameStore.getState().players
+        sendToGulag(prisoner.id, 'enemyOfState')
+
+        useGameStore.setState({ pendingAction: null })
+        attemptGulagEscape(prisoner.id, 'inform')
+
+        const state = useGameStore.getState()
+        expect(state.pendingAction?.type).toBe('inform-on-player')
+      })
+
+      it('should include informerId in pendingAction data', () => {
+        const { initializePlayers, sendToGulag, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Prisoner', piece: 'sickle', isStalin: false },
+          { name: 'Target', piece: 'hammer', isStalin: false }
+        ])
+
+        const [prisoner] = useGameStore.getState().players
+        sendToGulag(prisoner.id, 'enemyOfState')
+
+        attemptGulagEscape(prisoner.id, 'inform')
+
+        const state = useGameStore.getState()
+        expect(state.pendingAction?.data?.informerId).toBe(prisoner.id)
+      })
+
+      it('should not modify player state when setting pendingAction', () => {
+        const { initializePlayers, sendToGulag, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Prisoner', piece: 'sickle', isStalin: false },
+          { name: 'Target', piece: 'hammer', isStalin: false }
+        ])
+
+        const [prisoner] = useGameStore.getState().players
+        sendToGulag(prisoner.id, 'enemyOfState')
+        updatePlayer(prisoner.id, { gulagTurns: 2 })
+
+        const beforeState = useGameStore.getState().players.find(p => p.id === prisoner.id)
+
+        attemptGulagEscape(prisoner.id, 'inform')
+
+        const afterState = useGameStore.getState().players.find(p => p.id === prisoner.id)
+        expect(afterState?.inGulag).toBe(beforeState?.inGulag)
+        expect(afterState?.gulagTurns).toBe(beforeState?.gulagTurns)
+        expect(afterState?.rubles).toBe(beforeState?.rubles)
+      })
+    })
+
+    describe('bribe method', () => {
+      it('should set pendingAction with type bribe-stalin', () => {
+        const { initializePlayers, sendToGulag, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player] = useGameStore.getState().players
+        sendToGulag(player.id, 'enemyOfState')
+
+        useGameStore.setState({ pendingAction: null })
+        attemptGulagEscape(player.id, 'bribe')
+
+        const state = useGameStore.getState()
+        expect(state.pendingAction?.type).toBe('bribe-stalin')
+      })
+
+      it('should include playerId in pendingAction data', () => {
+        const { initializePlayers, sendToGulag, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player] = useGameStore.getState().players
+        sendToGulag(player.id, 'enemyOfState')
+
+        attemptGulagEscape(player.id, 'bribe')
+
+        const state = useGameStore.getState()
+        expect(state.pendingAction?.data?.playerId).toBe(player.id)
+      })
+
+      it('should include reason as gulag-escape in pendingAction data', () => {
+        const { initializePlayers, sendToGulag, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player] = useGameStore.getState().players
+        sendToGulag(player.id, 'enemyOfState')
+
+        attemptGulagEscape(player.id, 'bribe')
+
+        const state = useGameStore.getState()
+        expect(state.pendingAction?.data?.reason).toBe('gulag-escape')
+      })
+
+      it('should not modify player state when setting pendingAction', () => {
+        const { initializePlayers, sendToGulag, updatePlayer, attemptGulagEscape } = useGameStore.getState()
+
+        initializePlayers([
+          { name: 'Player 1', piece: 'sickle', isStalin: false }
+        ])
+
+        const [player] = useGameStore.getState().players
+        sendToGulag(player.id, 'enemyOfState')
+        updatePlayer(player.id, { gulagTurns: 4, rubles: 1000 })
+
+        const beforeState = useGameStore.getState().players.find(p => p.id === player.id)
+
+        attemptGulagEscape(player.id, 'bribe')
+
+        const afterState = useGameStore.getState().players.find(p => p.id === player.id)
+        expect(afterState?.inGulag).toBe(beforeState?.inGulag)
+        expect(afterState?.gulagTurns).toBe(beforeState?.gulagTurns)
+        expect(afterState?.rubles).toBe(beforeState?.rubles)
+      })
     })
   })
 })
