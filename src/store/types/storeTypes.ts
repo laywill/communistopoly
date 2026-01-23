@@ -1,10 +1,9 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import type { GameState, Player, GamePhase, GulagReason, GameEndCondition, EliminationReason } from '../../types/game'
+import type { GameState, Player, GamePhase, GameEndCondition } from '../../types/game'
 import type { DirectiveCard } from '../../data/partyDirectiveCards'
 import type { TestQuestion } from '../../data/communistTestQuestions'
-import type { GulagEscapeMethod } from '../../types/game'
 import type { UiSlice } from '../slices/uiSlice'
 import type { LogSlice } from '../slices/logSlice'
 import type { StatisticsSlice } from '../slices/statisticsSlice'
@@ -13,6 +12,11 @@ import type { TreasurySlice } from '../slices/treasurySlice'
 import type { PlayerSlice } from '../slices/playerSlice'
 import type { PropertySlice } from '../slices/propertySlice'
 import type { MovementSlice } from '../slices/movementSlice'
+import type { GulagSlice } from '../slices/gulagSlice'
+import type { VoucherSlice } from '../slices/voucherSlice'
+import type { ConfessionSlice } from '../slices/confessionSlice'
+import type { TradeSlice } from '../slices/tradeSlice'
+import type { DebtSlice } from '../slices/debtSlice'
 
 // Game Actions interface - all store methods
 export interface GameActions {
@@ -32,31 +36,21 @@ export interface GameActions {
   // Turn management - moved to MovementSlice
   // movePlayer, resolveCurrentSpace, finishMoving, endTurn are now in MovementSlice
 
-  // Gulag management
-  sendToGulag: (playerId: string, reason: GulagReason, justification?: string) => void
+  // Gulag management - moved to GulagSlice
+  // sendToGulag, checkRedStarExecutionAfterGulagRelease, handleGulagTurn, attemptGulagEscape, checkFor10TurnElimination are now in GulagSlice
   demotePlayer: (playerId: string) => void
-  checkRedStarExecutionAfterGulagRelease: (playerId: string) => void
-  handleGulagTurn: (playerId: string) => void
-  attemptGulagEscape: (playerId: string, method: GulagEscapeMethod, data?: Record<string, unknown>) => void
-  checkFor10TurnElimination: (playerId: string) => void
 
-  // Voucher system
-  createVoucher: (prisonerId: string, voucherId: string) => void
-  checkVoucherConsequences: (playerId: string, reason: GulagReason) => void
-  expireVouchers: () => void
+  // Voucher system - moved to VoucherSlice
+  // createVoucher, checkVoucherConsequences, expireVouchers are now in VoucherSlice
 
-  // Trade system
-  proposeTrade: (fromPlayerId: string, toPlayerId: string, items: { offering: import('../../types/game').TradeItems, requesting: import('../../types/game').TradeItems }) => void
-  acceptTrade: (tradeId: string) => void
-  rejectTrade: (tradeId: string) => void
+  // Confession system - moved to ConfessionSlice
+  // submitConfession, reviewConfession are now in ConfessionSlice
 
-  // Debt and liquidation
-  createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => void
-  checkDebtStatus: () => void
+  // Trade system - moved to TradeSlice
+  // proposeTrade, acceptTrade, rejectTrade are now in TradeSlice
 
-  // Elimination and ghosts
-  eliminatePlayer: (playerId: string, reason: EliminationReason) => void
-  checkElimination: (playerId: string) => boolean
+  // Debt and liquidation - moved to DebtSlice
+  // createDebt, checkDebtStatus, eliminatePlayer, checkElimination are now in DebtSlice
 
   // Game end
   checkGameEnd: () => GameEndCondition | null
@@ -65,11 +59,6 @@ export interface GameActions {
   // Unanimous end vote
   initiateEndVote: (initiatorId: string) => void
   castEndVote: (playerId: string, vote: boolean) => void
-
-  // Confessions
-  submitConfession: (prisonerId: string, confession: string) => void
-  reviewConfession: (confessionId: string, accepted: boolean) => void
-
 
   // STOY handling - moved to MovementSlice
   // handleStoyPassing, handleStoyPilfer are now in MovementSlice
@@ -118,4 +107,4 @@ export interface GameActions {
 }
 
 // Combined GameStore type - includes all slices
-export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice & MovementSlice
+export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice & MovementSlice & GulagSlice & VoucherSlice & ConfessionSlice & TradeSlice & DebtSlice
