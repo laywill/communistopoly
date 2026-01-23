@@ -334,6 +334,38 @@ describe('gameStore - Dice Rolling & Movement', () => {
       const updatedPlayer = useGameStore.getState().players[0]
       expect(updatedPlayer.tankRequisitionUsedThisLap).toBe(false)
     })
+
+    it('should not trigger passedStoy when starting from position 0', () => {
+      const { updatePlayer, movePlayer } = useGameStore.getState()
+      const player = useGameStore.getState().players[0]
+
+      // Start exactly on STOY (position 0) with laps = 1
+      updatePlayer(player.id, { position: 0, lapsCompleted: 1 })
+
+      // Move 5 spaces (should not increment laps because oldPosition === 0)
+      movePlayer(player.id, 5)
+
+      const updatedPlayer = useGameStore.getState().players[0]
+      expect(updatedPlayer.position).toBe(5)
+      expect(updatedPlayer.lapsCompleted).toBe(1) // Should NOT increment
+    })
+
+    it('should increment laps but not deduct travel tax when passing STOY and landing exactly on 0', () => {
+      const { updatePlayer, movePlayer } = useGameStore.getState()
+      const player = useGameStore.getState().players[0]
+
+      // Start at position 39 with laps = 0 and record initial rubles
+      updatePlayer(player.id, { position: 39, lapsCompleted: 0 })
+      const initialRubles = useGameStore.getState().players[0].rubles
+
+      // Move 1 space (wraps to position 0: 39 + 1 = 40, 40 % 40 = 0)
+      movePlayer(player.id, 1)
+
+      const updatedPlayer = useGameStore.getState().players[0]
+      expect(updatedPlayer.position).toBe(0) // Landed exactly on STOY
+      expect(updatedPlayer.lapsCompleted).toBe(1) // Lap counter incremented
+      expect(updatedPlayer.rubles).toBe(initialRubles) // No travel tax deducted (didn't call handleStoyPassing)
+    })
   })
 
   describe('finishMoving', () => {
@@ -416,6 +448,28 @@ describe('gameStore - Dice Rolling & Movement', () => {
       expect(state.pendingAction).toBeNull()
     })
 
+    it('should log entry when landing on own property', () => {
+      const { updatePlayer, setPropertyCustodian, finishMoving } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Player owns property at space 3
+      setPropertyCustodian(3, player.id)
+
+      // Player lands on their own property
+      updatePlayer(player.id, { position: 3 })
+
+      finishMoving()
+
+      const state = useGameStore.getState()
+      const logEntry = state.gameLog.find(
+        log => log.type === 'system' && log.message.includes('landed on their own property')
+      )
+      expect(logEntry).toBeDefined()
+      expect(logEntry?.message).toContain(player.name)
+      expect(logEntry?.message).toContain('Camp Kolyma')
+    })
+
     it('should set pendingAction for Party Directive card space', () => {
       const { updatePlayer, finishMoving } = useGameStore.getState()
       const currentIndex = useGameStore.getState().currentPlayerIndex
@@ -474,6 +528,199 @@ describe('gameStore - Dice Rolling & Movement', () => {
       const state = useGameStore.getState()
       expect(state.turnPhase).toBe('post-turn')
       expect(state.pendingAction).toBeNull()
+    })
+
+    it('should set pendingAction for railway fee when landing on railway owned by another player', () => {
+      const { updatePlayer, setPropertyCustodian, finishMoving } = useGameStore.getState()
+      const players = useGameStore.getState().players
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player1 = players[currentIndex]
+      const player2 = players[currentIndex === 0 ? 1 : 0]
+
+      // Player 2 owns railway at space 5 (Moscow Station)
+      setPropertyCustodian(5, player2.id)
+
+      // Player 1 lands on player 2's railway
+      updatePlayer(player1.id, { position: 5 })
+
+      finishMoving()
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).toBeDefined()
+      expect(state.pendingAction?.type).toBe('railway-fee')
+      expect(state.pendingAction?.data?.spaceId).toBe(5)
+      expect(state.pendingAction?.data?.payerId).toBe(player1.id)
+    })
+
+    it('should set pendingAction for income tax when landing on position 4', () => {
+      const { updatePlayer, finishMoving } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Position player on Income Tax space (space 4)
+      updatePlayer(player.id, { position: 4 })
+
+      finishMoving()
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).toBeDefined()
+      expect(state.pendingAction?.type).toBe('tax-payment')
+      expect(state.pendingAction?.data?.spaceId).toBe(4)
+      expect(state.pendingAction?.data?.playerId).toBe(player.id)
+    })
+
+    it('should set pendingAction for luxury tax when landing on position 38', () => {
+      const { updatePlayer, finishMoving } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Position player on Luxury Tax space (space 38)
+      updatePlayer(player.id, { position: 38 })
+
+      finishMoving()
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).toBeDefined()
+      expect(state.pendingAction?.type).toBe('tax-payment')
+      expect(state.pendingAction?.data?.spaceId).toBe(38)
+      expect(state.pendingAction?.data?.playerId).toBe(player.id)
+    })
+
+    it('should set pendingAction for utility fee when landing on utility owned by another player', () => {
+      const { updatePlayer, setPropertyCustodian, finishMoving } = useGameStore.getState()
+      const players = useGameStore.getState().players
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player1 = players[currentIndex]
+      const player2 = players[currentIndex === 0 ? 1 : 0]
+
+      // Player 2 owns utility at space 12 (State Electricity Board)
+      setPropertyCustodian(12, player2.id)
+
+      // Set dice values to simulate a roll
+      useGameStore.setState({ dice: [4, 3] })
+
+      // Player 1 lands on player 2's utility
+      updatePlayer(player1.id, { position: 12 })
+
+      finishMoving()
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).toBeDefined()
+      expect(state.pendingAction?.type).toBe('utility-fee')
+      expect(state.pendingAction?.data?.spaceId).toBe(12)
+      expect(state.pendingAction?.data?.payerId).toBe(player1.id)
+      expect(state.pendingAction?.data?.diceTotal).toBe(7) // 4 + 3
+    })
+
+    it('should set turnPhase to post-turn when landing on Gulag as just visiting', () => {
+      const { updatePlayer, resolveCurrentSpace } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Ensure player is NOT in Gulag
+      updatePlayer(player.id, { inGulag: false })
+
+      // Position player on Gulag space (position 10)
+      updatePlayer(player.id, { position: 10 })
+
+      resolveCurrentSpace(player.id)
+
+      const state = useGameStore.getState()
+      expect(state.turnPhase).toBe('post-turn')
+
+      // Verify log entry was created
+      const logEntry = state.gameLog.find(
+        log => log.type === 'movement' && log.message.includes('just visiting the Gulag')
+      )
+      expect(logEntry).toBeDefined()
+      expect(logEntry?.playerId).toBe(player.id)
+    })
+
+    it('should set pendingAction for breadline-contribution when landing on Breadline', () => {
+      const { updatePlayer, resolveCurrentSpace } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Position player on Breadline space (position 20)
+      updatePlayer(player.id, { position: 20 })
+
+      resolveCurrentSpace(player.id)
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).toBeDefined()
+      expect(state.pendingAction?.type).toBe('breadline-contribution')
+      expect(state.pendingAction?.data?.landingPlayerId).toBe(player.id)
+
+      // Verify log entry was created
+      const logEntry = state.gameLog.find(
+        log => log.type === 'system' && log.message.includes('landed on Breadline')
+      )
+      expect(logEntry).toBeDefined()
+      expect(logEntry?.message).toContain('all comrades must contribute')
+    })
+
+    it('should send player to Gulag when landing on Enemy of the State corner', () => {
+      const { updatePlayer, resolveCurrentSpace } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Position player on Enemy of the State space (position 30)
+      updatePlayer(player.id, { position: 30 })
+
+      resolveCurrentSpace(player.id)
+
+      const state = useGameStore.getState()
+      const updatedPlayer = state.players[currentIndex]
+
+      // Verify player is sent to Gulag
+      expect(updatedPlayer.inGulag).toBe(true)
+      expect(updatedPlayer.gulagTurns).toBe(0)
+      expect(updatedPlayer.position).toBe(10) // Gulag position
+
+      // Verify turnPhase is set to post-turn
+      expect(state.turnPhase).toBe('post-turn')
+
+      // Verify log entry was created
+      const logEntry = state.gameLog.find(
+        log => log.type === 'gulag' && log.message.includes('sent to Gulag')
+      )
+      expect(logEntry).toBeDefined()
+      expect(logEntry?.playerId).toBe(player.id)
+    })
+
+    it('should set pendingAction for stoy-pilfer when landing exactly on STOY', () => {
+      const { updatePlayer, resolveCurrentSpace } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Position player exactly on STOY (position 0)
+      updatePlayer(player.id, { position: 0 })
+
+      resolveCurrentSpace(player.id)
+
+      const state = useGameStore.getState()
+      expect(state.pendingAction).toBeDefined()
+      expect(state.pendingAction?.type).toBe('stoy-pilfer')
+    })
+
+    it('should set turnPhase to post-turn when property not found for railway/utility space', () => {
+      const { updatePlayer, resolveCurrentSpace } = useGameStore.getState()
+      const currentIndex = useGameStore.getState().currentPlayerIndex
+      const player = useGameStore.getState().players[currentIndex]
+
+      // Position player on utility space (position 12)
+      updatePlayer(player.id, { position: 12 })
+
+      // Remove property from properties array to trigger error case
+      const state = useGameStore.getState()
+      useGameStore.setState({
+        properties: state.properties.filter(p => p.spaceId !== 12)
+      })
+
+      resolveCurrentSpace(player.id)
+
+      const newState = useGameStore.getState()
+      expect(newState.turnPhase).toBe('post-turn')
     })
   })
 })
