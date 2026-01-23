@@ -334,5 +334,34 @@ describe('gameStore - Confession System', () => {
       // Players should remain unchanged since prisoner wasn't found
       expect(newState.players).toEqual(initialPlayerState)
     })
+
+    it('should execute Red Star player at Proletariat rank when confession is accepted', () => {
+      const { submitConfession, reviewConfession, sendToGulag, demotePlayer, players } = useGameStore.getState()
+      const redStarPlayer = players[2] // Red Star piece from setupPlayers
+
+      // Demote Red Star player to Proletariat rank (Red Star starts at partyMember)
+      demotePlayer(redStarPlayer.id)
+
+      // Send to Gulag
+      sendToGulag(redStarPlayer.id, 'campLabour')
+      submitConfession(redStarPlayer.id, 'I confess to my counter-revolutionary acts')
+
+      const confessionId = useGameStore.getState().confessions[0].id
+
+      // Accept confession - should trigger Red Star execution
+      reviewConfession(confessionId, true)
+
+      const state = useGameStore.getState()
+      const updatedPlayer = state.players.find(p => p.id === redStarPlayer.id)
+
+      // Red Star player at Proletariat should be eliminated
+      expect(updatedPlayer?.isEliminated).toBe(true)
+      expect(updatedPlayer?.inGulag).toBe(false)
+
+      // Check log contains execution message
+      const logs = state.gameLog
+      const executionLog = logs.find(log => log.message.includes('EXECUTION') && log.message.includes(redStarPlayer.name))
+      expect(executionLog).toBeDefined()
+    })
   })
 })
