@@ -87,6 +87,9 @@ export const createConfessionSlice: StateCreator<
         gulagTurns: 0
       })
 
+      // Check if RedStar player at Proletariat should be executed
+      get().checkRedStarExecutionAfterGulagRelease(confession.prisonerId)
+
       get().addLogEntry({
         type: 'gulag',
         message: `Stalin accepted ${prisoner.name}'s rehabilitation confession and released them from the Gulag!`,
