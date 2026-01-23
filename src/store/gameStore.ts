@@ -3,8 +3,8 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GameState, Player, VoucherAgreement, PlayerStatistics, Confession } from '../types/game'
-import { getSpaceById } from '../data/spaces'
+import { GameState, Player, Property, VoucherAgreement, PlayerStatistics, Confession } from '../types/game'
+import { BOARD_SPACES, getSpaceById } from '../data/spaces'
 import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck } from '../data/partyDirectiveCards'
 import { getRandomQuestionByDifficulty, getRandomDifficulty, isAnswerCorrect, COMMUNIST_TEST_QUESTIONS_BY_DIFFICULTY } from '../data/communistTestQuestions'
 import { getGulagReasonText, getRequiredDoublesForEscape, shouldTriggerVoucherConsequence } from './helpers/gulagHelpers'
@@ -18,8 +18,6 @@ import { createStatisticsSlice, initialStatisticsState } from './slices/statisti
 import { createDiceSlice, initialDiceState } from './slices/diceSlice'
 import { createTreasurySlice, initialTreasuryState } from './slices/treasurySlice'
 import { createPlayerSlice, initialPlayerState } from './slices/playerSlice'
-import { createPropertySlice, initialPropertyState } from './slices/propertySlice'
-import { createMovementSlice } from './slices/movementSlice'
 import type { GameStore, GameActions } from './types/storeTypes'
 
 // Re-export helper functions for testing
@@ -31,7 +29,7 @@ export type { GameActions }
 const initialState: GameState = {
   gamePhase: 'welcome',
   ...initialPlayerState,
-  ...initialPropertyState,
+  properties: [],
   ...initialTreasuryState,
   ...initialDiceState,
   ...initialUiState,
@@ -78,8 +76,6 @@ export const useGameStore = create<GameStore>()(
       ...createDiceSlice(set, get),
       ...createTreasurySlice(set, get),
       ...createPlayerSlice(set, get),
-      ...createPropertySlice(set, get),
-      ...createMovementSlice(set, get),
 
       setGamePhase: (phase) => set({ gamePhase: phase }),
 
@@ -173,8 +169,284 @@ export const useGameStore = create<GameStore>()(
         get().initializeProperties()
       },
 
-      // Turn management and movement - moved to movementSlice
-      // movePlayer, resolveCurrentSpace, finishMoving, endTurn, handleStoyPassing, handleStoyPilfer
+      initializeProperties: () => {
+        const properties: Property[] = BOARD_SPACES
+          .filter((space) => space.type === 'property' || space.type === 'railway' || space.type === 'utility')
+          .map((space) => ({
+            spaceId: space.id,
+            custodianId: null, // All start owned by the STATE
+            collectivizationLevel: 0,
+            mortgaged: false
+          }))
+
+        set({ properties })
+      },
+
+      setPropertyCustodian: (spaceId, custodianId) => {
+        set((state) => ({
+          properties: state.properties.map((prop) =>
+            prop.spaceId === spaceId ? { ...prop, custodianId } : prop
+          )
+        }))
+      },
+
+      updateCollectivizationLevel: (spaceId, level) => {
+        set((state) => ({
+          properties: state.properties.map((prop) =>
+            prop.spaceId === spaceId ? { ...prop, collectivizationLevel: level } : prop
+          )
+        }))
+      },
+
+      // Turn management
+      movePlayer: (playerId, spaces) => {
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
+
+        const oldPosition: number = player.position
+        const newPosition = (oldPosition + spaces) % 40
+
+        // Check if player passed STOY (position 0)
+        const passedStoy = oldPosition !== 0 && (oldPosition + spaces >= 40)
+
+        // Update player position and track laps
+        const updates: Partial<Player> = { position: newPosition }
+        if (passedStoy) {
+          updates.lapsCompleted = (player.lapsCompleted) + 1
+          updates.tankRequisitionUsedThisLap = false // Reset Tank requisition for new lap
+        }
+        get().updatePlayer(playerId, updates)
+
+        const fromSpace = getSpaceById(oldPosition)
+        const toSpace = getSpaceById(newPosition)
+        get().addLogEntry({
+          type: 'movement',
+          message: `${player.name} moved from ${fromSpace?.name ?? 'Unknown'} to ${toSpace?.name ?? 'Unknown'}`,
+          playerId
+        })
+
+        // Handle passing STOY
+        if (passedStoy && newPosition !== 0) {
+          get().handleStoyPassing(playerId)
+        }
+      },
+
+      // Helper function to resolve the space a player has landed on
+      // This is called after movement completes (dice roll, card effect, etc.)
+      resolveCurrentSpace: (playerId: string) => {
+        const state = get()
+        const player = state.players.find(p => p.id === playerId)
+        if (player == null) return
+
+        const space = getSpaceById(player.position)
+        if (space == null) {
+          set({ turnPhase: 'post-turn' })
+          return
+        }
+
+        switch (space.type) {
+          case 'corner':
+            if (space.id === 0 && player.position === 0) {
+              // Landed exactly on STOY - pilfering opportunity
+              set({ pendingAction: { type: 'stoy-pilfer' } })
+            } else if (space.id === 10) {
+              // The Gulag - just visiting
+              get().addLogEntry({
+                type: 'movement',
+                message: `${player.name} is just visiting the Gulag`,
+                playerId: player.id
+              })
+              set({ turnPhase: 'post-turn' })
+            } else if (space.id === 20) {
+              // Breadline - all players must contribute
+              get().addLogEntry({
+                type: 'system',
+                message: `${player.name} landed on Breadline - all comrades must contribute!`,
+                playerId: player.id
+              })
+              set({
+                pendingAction: {
+                  type: 'breadline-contribution',
+                  data: { landingPlayerId: player.id }
+                }
+              })
+            } else if (space.id === 30) {
+              // Enemy of the State - go to Gulag
+              get().sendToGulag(player.id, 'enemyOfState')
+            }
+            break
+
+          case 'property':
+          case 'railway':
+          case 'utility': {
+            const property = state.properties.find((p) => p.spaceId === space.id)
+            if (property == null) {
+              set({ turnPhase: 'post-turn' })
+              break
+            }
+
+            // Check if property is owned by State (available for purchase)
+            if (property.custodianId === null) {
+              set({
+                pendingAction: {
+                  type: 'property-purchase',
+                  data: { spaceId: space.id, playerId: player.id }
+                }
+              })
+            } else if (property.custodianId !== player.id) {
+              // Check if property is mortgaged - mortgaged properties don't charge quota
+              if (property.mortgaged) {
+                const custodian = state.players.find(p => p.id === property.custodianId)
+                get().addLogEntry({
+                  type: 'system',
+                  message: `${player.name} landed on ${space.name} (mortgaged by ${custodian?.name ?? 'unknown'}) - no quota charged`,
+                  playerId: player.id
+                })
+                set({ turnPhase: 'post-turn' })
+              } else {
+                // Check if property is owned by another player (must pay quota)
+                if (space.type === 'railway') {
+                  set({
+                    pendingAction: {
+                      type: 'railway-fee',
+                      data: { spaceId: space.id, payerId: player.id }
+                    }
+                  })
+                } else if (space.type === 'utility') {
+                  const die1: number = state.dice[0]
+                  const die2: number = state.dice[1]
+                  set({
+                    pendingAction: {
+                      type: 'utility-fee',
+                      data: { spaceId: space.id, payerId: player.id, diceTotal: die1 + die2 }
+                    }
+                  })
+                } else {
+                  set({
+                    pendingAction: {
+                      type: 'quota-payment',
+                      data: { spaceId: space.id, payerId: player.id }
+                    }
+                  })
+                }
+              }
+            } else {
+              // Player owns this property - just visiting
+              get().addLogEntry({
+                type: 'system',
+                message: `${player.name} landed on their own property: ${space.name}`,
+                playerId: player.id
+              })
+              set({ turnPhase: 'post-turn' })
+            }
+            break
+          }
+
+          case 'tax':
+            set({
+              pendingAction: {
+                type: 'tax-payment',
+                data: { spaceId: space.id, playerId: player.id }
+              }
+            })
+            break
+
+          case 'card': {
+            // Determine card type from space
+            const cardSpace = space as { cardType?: 'party-directive' | 'communist-test' }
+
+            if (cardSpace.cardType === 'party-directive') {
+              get().addLogEntry({
+                type: 'system',
+                message: `${player.name} landed on Party Directive`,
+                playerId: player.id
+              })
+              set({
+                pendingAction: {
+                  type: 'draw-party-directive',
+                  data: { playerId: player.id }
+                }
+              })
+            } else if (cardSpace.cardType === 'communist-test') {
+              get().addLogEntry({
+                type: 'system',
+                message: `${player.name} landed on Communist Test`,
+                playerId: player.id
+              })
+              set({
+                pendingAction: {
+                  type: 'draw-communist-test',
+                  data: { playerId: player.id }
+                }
+              })
+            } else {
+              set({ turnPhase: 'post-turn' })
+            }
+            break
+          }
+
+          default:
+            set({ turnPhase: 'post-turn' })
+        }
+      },
+
+      finishMoving: () => {
+        const state = get()
+        const currentPlayer = state.players[state.currentPlayerIndex]
+
+        set({ turnPhase: 'resolving' })
+        get().resolveCurrentSpace(currentPlayer.id)
+      },
+
+      endTurn: () => {
+        const state = get()
+        const { currentPlayerIndex, players, doublesCount } = state
+
+        // If player rolled doubles and not in gulag, they get another turn
+        if ((doublesCount) > 0 && !players[currentPlayerIndex]?.inGulag) {
+          set({
+            turnPhase: 'pre-roll',
+            hasRolled: false,
+            pendingAction: null
+          })
+          return
+        }
+
+        // Find next player (skip Stalin and eliminated players, but include Gulag players)
+        let nextIndex: number = (currentPlayerIndex + 1) % players.length
+        let attempts = 0
+
+        while (
+          (players[nextIndex].isStalin || players[nextIndex].isEliminated) &&
+          attempts < players.length
+        ) {
+          nextIndex = (nextIndex + 1) % players.length
+          attempts++
+        }
+
+        // Check if we've completed a round (cycling back to first non-Stalin player)
+        // First non-Stalin player is typically at index 1
+        const firstNonStalinIndex: number = players.findIndex((p) => !p.isStalin && !p.isEliminated)
+        if (nextIndex === firstNonStalinIndex && currentPlayerIndex !== firstNonStalinIndex) {
+          get().incrementRound()
+        }
+
+        set({
+          currentPlayerIndex: nextIndex,
+          turnPhase: 'pre-roll',
+          doublesCount: 0,
+          hasRolled: false,
+          pendingAction: null
+        })
+
+        const nextPlayer = players[nextIndex]
+        get().addLogEntry({
+          type: 'system',
+          message: `${nextPlayer.name}'s turn`,
+          playerId: nextPlayer.id
+        })
+      },
 
       // Gulag management
       sendToGulag: (playerId, reason, justification) => {
@@ -270,6 +542,57 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
+      // STOY handling
+      handleStoyPassing: (playerId) => {
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
+
+        // Deduct 200₽ travel tax
+        get().updatePlayer(playerId, { rubles: player.rubles - 200 })
+        get().adjustTreasury(200)
+
+        get().addLogEntry({
+          type: 'payment',
+          message: `${player.name} paid ₽200 travel tax at STOY`,
+          playerId
+        })
+
+        // HAMMER ABILITY: +50₽ bonus when passing STOY
+        if (player.piece === 'hammer') {
+          get().updatePlayer(playerId, { rubles: player.rubles - 200 + 50 }) // Net: -150₽
+          get().addLogEntry({
+            type: 'payment',
+            message: `${player.name}'s Hammer earns +₽50 bonus at STOY!`,
+            playerId
+          })
+        }
+      },
+
+      handleStoyPilfer: (playerId, diceRoll) => {
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null) return
+
+        if (diceRoll >= 4) {
+          // Success! Steal 100₽ from State
+          const newRubles: number = player.rubles + 100
+          get().updatePlayer(playerId, { rubles: newRubles })
+          get().adjustTreasury(-100)
+
+          get().addLogEntry({
+            type: 'payment',
+            message: `${player.name} successfully pilfered ₽100 from the State Treasury!`,
+            playerId
+          })
+        } else {
+          // Caught! Go to Gulag
+          get().sendToGulag(playerId, 'pilferingCaught')
+        }
+
+        set({ pendingAction: null, turnPhase: 'post-turn' })
+      },
+
       // Piece abilities
       tankRequisition: (tankPlayerId, targetPlayerId) => {
         const state = get()
@@ -296,6 +619,45 @@ export const useGameStore = create<GameStore>()(
         })
       },
 
+      // Property transactions
+      purchaseProperty: (playerId, spaceId, price) => {
+        const state = get()
+        const player = state.players.find((p) => p.id === playerId)
+        if (player == null || player.rubles < price) return
+
+        // TANK ABILITY: Cannot control any Collective Farm properties
+        const collectiveFarmSpaces = [6, 8, 9]
+        if (player.piece === 'tank' && collectiveFarmSpaces.includes(spaceId)) {
+          const space = getSpaceById(spaceId)
+          get().addLogEntry({
+            type: 'system',
+            message: `${player.name}'s Tank cannot control Collective Farm properties! ${space?.name ?? 'Property'} purchase blocked.`,
+            playerId
+          })
+          set({ pendingAction: null, turnPhase: 'post-turn' })
+          return
+        }
+
+        // Deduct rubles
+        get().updatePlayer(playerId, {
+          rubles: player.rubles - price,
+          properties: [...player.properties, spaceId.toString()]
+        })
+
+        // Set custodian
+        get().setPropertyCustodian(spaceId, playerId)
+
+        // Add to treasury
+        get().adjustTreasury(price)
+
+        const space = getSpaceById(spaceId)
+        get().addLogEntry({
+          type: 'property',
+          message: `${player.name} became Custodian of ${space?.name ?? 'Unknown'} for ₽${String(price)}`,
+          playerId
+        })
+      },
+
       payQuota: (payerId, custodianId, amount) => {
         const state = get()
         const payer = state.players.find((p) => p.id === payerId)
@@ -311,6 +673,91 @@ export const useGameStore = create<GameStore>()(
           message: `${payer.name} paid ₽${String(amount)} quota to ${custodian.name}`,
           playerId: payerId
         })
+      },
+
+      mortgageProperty: (spaceId) => {
+        const state = get()
+        const property = state.properties.find((p) => p.spaceId === spaceId)
+        if (property?.custodianId == null) return
+
+        const space = getSpaceById(spaceId)
+        const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5)
+
+        // Give player half the base cost
+        const player = state.players.find((p) => p.id === property.custodianId)
+        if (player != null) {
+          const newRubles: number = (player.rubles) + mortgageValue
+          get().updatePlayer(player.id, { rubles: newRubles })
+        }
+
+        // Mark as mortgaged
+        set((state) => ({
+          properties: state.properties.map((prop) =>
+            prop.spaceId === spaceId ? { ...prop, mortgaged: true } : prop
+          )
+        }))
+
+        get().addLogEntry({
+          type: 'property',
+          message: `${player?.name ?? 'Unknown'} mortgaged ${space?.name ?? 'Unknown'} for ₽${String(mortgageValue)}`,
+          playerId: property.custodianId
+        })
+      },
+
+      unmortgageProperty: (spaceId, playerId) => {
+        const state = get()
+        const property = state.properties.find((p) => p.spaceId === spaceId)
+        const player = state.players.find((p) => p.id === playerId)
+        if (property == null || player == null) return
+
+        const space = getSpaceById(spaceId)
+        const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6)
+
+        if (player.rubles < unmortgageCost) return
+
+        // Deduct cost
+        get().updatePlayer(playerId, { rubles: player.rubles - unmortgageCost })
+
+        // Unmark mortgaged
+        set((state) => ({
+          properties: state.properties.map((prop) =>
+            prop.spaceId === spaceId ? { ...prop, mortgaged: false } : prop
+          )
+        }))
+
+        get().addLogEntry({
+          type: 'property',
+          message: `${player.name} unmortgaged ${space?.name ?? 'Unknown'} for ₽${String(unmortgageCost)}`,
+          playerId
+        })
+      },
+
+      transferProperty: (propertyId, newCustodianId) => {
+        const state = get()
+        const spaceId = parseInt(propertyId)
+        const property = state.properties.find((p) => p.spaceId === spaceId)
+        if (property == null) return
+
+        const oldCustodianId = property.custodianId
+
+        // Update property custodian
+        get().setPropertyCustodian(spaceId, newCustodianId)
+
+        // Remove from old owner's properties array
+        if (oldCustodianId != null) {
+          const oldOwner = state.players.find((p) => p.id === oldCustodianId)
+          if (oldOwner != null) {
+            const updatedProperties = oldOwner.properties.filter((id) => id !== propertyId)
+            get().updatePlayer(oldCustodianId, { properties: updatedProperties })
+          }
+        }
+
+        // Add to new owner's properties array
+        const newOwner = state.players.find((p) => p.id === newCustodianId)
+        if (newOwner != null) {
+          const updatedProperties = [...newOwner.properties, propertyId]
+          get().updatePlayer(newCustodianId, { properties: updatedProperties })
+        }
       },
 
       // New Gulag system functions
