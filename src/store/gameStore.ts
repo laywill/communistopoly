@@ -22,7 +22,7 @@ import { createGulagSlice } from './slices/gulagSlice'
 import { createVoucherSlice, initialVoucherState } from './slices/voucherSlice'
 import { createConfessionSlice, initialConfessionState } from './slices/confessionSlice'
 import { createTradeSlice, initialTradeState } from './slices/tradeSlice'
-import { createDebtSlice } from './slices/debtSlice'
+import { createDebtAndEliminationSlice } from './slices/debtAndEliminationSlice'
 import type { GameStore, GameActions } from './types/storeTypes'
 
 // Re-export helper functions for testing
@@ -85,7 +85,7 @@ export const useGameStore = create<GameStore>()(
       ...createVoucherSlice(set, get),
       ...createConfessionSlice(set, get),
       ...createTradeSlice(set, get),
-      ...createDebtSlice(set, get),
+      ...createDebtAndEliminationSlice(set, get),
 
       setGamePhase: (phase) => set({ gamePhase: phase }),
 

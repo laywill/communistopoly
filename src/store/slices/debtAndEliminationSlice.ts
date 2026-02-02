@@ -11,12 +11,12 @@ import { calculateTotalWealth } from '../helpers/wealthCalculation'
 // Note: Debt information is stored in player state (player.debt, player.debtCreatedAtRound)
 // This slice has no dedicated state properties
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface DebtSliceState {
+export interface DebtAndEliminationSliceState {
   // No dedicated state - debt data is stored in player objects
 }
 
 // Slice actions interface
-export interface DebtSliceActions {
+export interface DebtAndEliminationSliceActions {
   createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => void
   checkDebtStatus: () => void
   eliminatePlayer: (playerId: string, reason: EliminationReason) => void
@@ -24,21 +24,21 @@ export interface DebtSliceActions {
 }
 
 // Combined slice type
-export type DebtSlice = DebtSliceState & DebtSliceActions
+export type DebtAndEliminationSlice = DebtAndEliminationSliceState & DebtAndEliminationSliceActions
 
 // Initial state for this slice
-export const initialDebtState: DebtSliceState = {
+export const initialDebtAndEliminationState: DebtAndEliminationSliceState = {
   // No state properties
 }
 
 // Slice creator with full typing
-export const createDebtSlice: StateCreator<
+export const createDebtAndEliminationSlice: StateCreator<
   GameStore,
   [],
   [],
-  DebtSlice
+  DebtAndEliminationSlice
 > = (set, get) => ({
-  ...initialDebtState,
+  ...initialDebtAndEliminationState,
 
   createDebt: (debtorId, creditorId, amount, reason) => {
     const state = get()

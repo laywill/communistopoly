@@ -16,7 +16,7 @@ import type { GulagSlice } from '../slices/gulagSlice'
 import type { VoucherSlice } from '../slices/voucherSlice'
 import type { ConfessionSlice } from '../slices/confessionSlice'
 import type { TradeSlice } from '../slices/tradeSlice'
-import type { DebtSlice } from '../slices/debtSlice'
+import type { DebtAndEliminationSlice } from '../slices/debtAndEliminationSlice'
 
 // Game Actions interface - all store methods
 export interface GameActions {
@@ -107,4 +107,4 @@ export interface GameActions {
 }
 
 // Combined GameStore type - includes all slices
-export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice & MovementSlice & GulagSlice & VoucherSlice & ConfessionSlice & TradeSlice & DebtSlice
+export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice & MovementSlice & GulagSlice & VoucherSlice & ConfessionSlice & TradeSlice & DebtAndEliminationSlice
