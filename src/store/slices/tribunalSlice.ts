@@ -5,6 +5,9 @@ import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { Denouncement, ActiveTribunal, TribunalPhase, TribunalVerdict, WitnessRequirement } from '../../types/game'
 
+// Constants
+const INFORMANT_BONUS = 100
+
 // Slice state interface
 export interface TribunalSliceState {
   denouncementsThisRound: Denouncement[]
@@ -191,7 +194,17 @@ export const createTribunalSlice: StateCreator<
     })
   },
 
-  // Render the final verdict of the tribunal
+  /**
+   * Renders the final verdict of a tribunal and applies consequences.
+   *
+   * Handles four verdict types:
+   * - guilty: Accused sent to Gulag, accuser receives bonus
+   * - innocent: Accuser demoted for false accusation
+   * - bothGuilty: Both parties sent to Gulag
+   * - insufficient: Accused marked under suspicion
+   *
+   * @param verdict - The tribunal verdict to apply
+   */
   renderTribunalVerdict: (verdict) => {
     const state = get()
     if (state.activeTribunal == null) return
@@ -212,11 +225,11 @@ export const createTribunalSlice: StateCreator<
             inGulag: false,
             gulagTurns: 0,
             position: 10, // Release to Just Visiting
-            rubles: accuser.rubles + 100
+            rubles: accuser.rubles + INFORMANT_BONUS
           })
           get().addLogEntry({
             type: 'gulag',
-            message: `${accuser.name} is released from Gulag for successful denunciation and receives ₽100 informant bonus.`
+            message: `${accuser.name} is released from Gulag for successful denunciation and receives ₽${String(INFORMANT_BONUS)} informant bonus.`
           })
 
           // Check if RedStar player at Proletariat should be executed
@@ -224,11 +237,11 @@ export const createTribunalSlice: StateCreator<
         } else {
           // Give accuser informant bonus
           get().updatePlayer(accuser.id, {
-            rubles: accuser.rubles + 100
+            rubles: accuser.rubles + INFORMANT_BONUS
           })
           get().addLogEntry({
             type: 'tribunal',
-            message: `GUILTY! ${accused.name} has been sent to the Gulag. ${accuser.name} receives ₽100 informant bonus.`
+            message: `GUILTY! ${accused.name} has been sent to the Gulag. ${accuser.name} receives ₽${String(INFORMANT_BONUS)} informant bonus.`
           })
         }
 

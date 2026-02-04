@@ -5,6 +5,10 @@ import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { GreatPurge, FiveYearPlan, HeroOfSovietUnion } from '../../types/game'
 
+// Constants
+const HERO_DURATION_ROUNDS = 3
+const FIVE_YEAR_PLAN_BONUS = 100
+
 // Slice state interface
 export interface SpecialDecreesSliceState {
   greatPurgeUsed: boolean
@@ -93,6 +97,13 @@ export const createSpecialDecreesSlice: StateCreator<
     })
   },
 
+  /**
+   * Resolves the Great Purge by counting votes and sending the most-voted player(s) to the Gulag.
+   *
+   * Counts all votes, finds the player(s) with the maximum votes, and sends them to the Gulag
+   * via the `sendToGulag` action with the 'stalinDecree' reason. In case of a tie, all tied
+   * players are sent to the Gulag. If no votes are cast, the purge ends with a warning message.
+   */
   resolveGreatPurge: () => {
     const state = get()
     if (state.activeGreatPurge == null) return
@@ -102,6 +113,16 @@ export const createSpecialDecreesSlice: StateCreator<
     Object.values(state.activeGreatPurge.votes).forEach(targetId => {
       voteCounts[targetId] = (voteCounts[targetId] ?? 0) + 1
     })
+
+    // Guard against no votes
+    if (Object.keys(voteCounts).length === 0) {
+      get().addLogEntry({
+        type: 'system',
+        message: 'The Great Purge ended with no votes cast. The Party is watching...'
+      })
+      set({ activeGreatPurge: null })
+      return
+    }
 
     // Find max votes
     const maxVotes = Math.max(...Object.values(voteCounts))
@@ -175,6 +196,14 @@ export const createSpecialDecreesSlice: StateCreator<
     })
   },
 
+  /**
+   * Resolves the Five-Year Plan by checking if the target was met.
+   *
+   * If successful, all non-Stalin, non-eliminated players receive a bonus.
+   * If failed, the poorest eligible player is sent to the Gulag for sabotage.
+   * The method handles tank immunity and continues trying eligible players until
+   * one is successfully punished or all are immune.
+   */
   resolveFiveYearPlan: () => {
     const state = get()
     if (state.activeFiveYearPlan == null) return
@@ -183,16 +212,23 @@ export const createSpecialDecreesSlice: StateCreator<
     const success = plan.collected >= plan.target
 
     if (success) {
-      // Give bonus to all players
-      state.players.filter(p => !p.isStalin && !p.isEliminated).forEach(player => {
-        get().updatePlayer(player.id, {
-          rubles: player.rubles + 100
-        })
+      // Give bonus to all players - get fresh state for each player
+      const eligiblePlayerIds = state.players
+        .filter(p => !p.isStalin && !p.isEliminated)
+        .map(p => p.id)
+
+      eligiblePlayerIds.forEach(playerId => {
+        const currentPlayer = get().players.find(p => p.id === playerId)
+        if (currentPlayer) {
+          get().updatePlayer(playerId, {
+            rubles: currentPlayer.rubles + FIVE_YEAR_PLAN_BONUS
+          })
+        }
       })
 
       get().addLogEntry({
         type: 'system',
-        message: 'Five-Year Plan SUCCESSFUL! All players receive ₽100 bonus for meeting the quota.'
+        message: `Five-Year Plan SUCCESSFUL! All players receive ₽${String(FIVE_YEAR_PLAN_BONUS)} bonus for meeting the quota.`
       })
     } else {
       // Find poorest eligible player and send to Gulag
@@ -264,7 +300,7 @@ export const createSpecialDecreesSlice: StateCreator<
     const hero: HeroOfSovietUnion = {
       playerId,
       grantedAtRound: state.roundNumber,
-      expiresAtRound: state.roundNumber + 3
+      expiresAtRound: state.roundNumber + HERO_DURATION_ROUNDS
     }
 
     set({
