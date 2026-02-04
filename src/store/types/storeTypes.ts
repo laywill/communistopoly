@@ -17,6 +17,8 @@ import type { VoucherSlice } from '../slices/voucherSlice'
 import type { ConfessionSlice } from '../slices/confessionSlice'
 import type { TradeSlice } from '../slices/tradeSlice'
 import type { DebtAndEliminationSlice } from '../slices/debtAndEliminationSlice'
+import type { TribunalSlice } from '../slices/tribunalSlice'
+import type { SpecialDecreesSlice } from '../slices/specialDecreesSlice'
 
 // Game Actions interface - all store methods
 export interface GameActions {
@@ -87,24 +89,12 @@ export interface GameActions {
   // Treasury
   adjustTreasury: (amount: number) => void
 
-  // Denouncement and Tribunal
-  canPlayerDenounce: (playerId: string) => { canDenounce: boolean, reason: string }
-  initiateDenouncement: (accuserId: string, accusedId: string, crime: string) => void
-  advanceTribunalPhase: () => void
-  addWitness: (witnessId: string, side: 'for' | 'against') => void
-  renderTribunalVerdict: (verdict: import('../../types/game').TribunalVerdict) => void
-  getWitnessRequirement: (playerId: string) => import('../../types/game').WitnessRequirement
+  // Denouncement and Tribunal - moved to TribunalSlice
+  // canPlayerDenounce, initiateDenouncement, advanceTribunalPhase, addWitness, renderTribunalVerdict, getWitnessRequirement are now in TribunalSlice
 
-  // Special Decrees
-  initiateGreatPurge: () => void
-  voteInGreatPurge: (voterId: string, targetId: string) => void
-  resolveGreatPurge: () => void
-  initiateFiveYearPlan: (target: number, durationMinutes: number) => void
-  contributeToFiveYearPlan: (playerId: string, amount: number) => void
-  resolveFiveYearPlan: () => void
-  grantHeroOfSovietUnion: (playerId: string) => void
-  isHeroOfSovietUnion: (playerId: string) => boolean
+  // Special Decrees - moved to SpecialDecreesSlice
+  // initiateGreatPurge, voteInGreatPurge, resolveGreatPurge, initiateFiveYearPlan, contributeToFiveYearPlan, resolveFiveYearPlan, grantHeroOfSovietUnion, isHeroOfSovietUnion are now in SpecialDecreesSlice
 }
 
 // Combined GameStore type - includes all slices
-export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice & MovementSlice & GulagSlice & VoucherSlice & ConfessionSlice & TradeSlice & DebtAndEliminationSlice
+export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice & MovementSlice & GulagSlice & VoucherSlice & ConfessionSlice & TradeSlice & DebtAndEliminationSlice & TribunalSlice & SpecialDecreesSlice
