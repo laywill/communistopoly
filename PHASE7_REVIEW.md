@@ -12,11 +12,11 @@ Phase 7 successfully extracted the card and ability systems from `gameStore.ts`.
 
 ### Files Created
 
-| File | Lines | Stmt Coverage | Branch Coverage |
-|------|-------|---------------|-----------------|
-| `cardSlice.ts` | 387 | 94.23% | 80.00% |
-| `pieceAbilitiesSlice.ts` | 168 | 100% | 97.72% |
-| `propertyAbilitiesSlice.ts` | 290 | ~97% | ~90% |
+| File                        | Lines | Stmt Coverage | Branch Coverage |
+|-----------------------------|-------|---------------|-----------------|
+| `cardSlice.ts`              | 387   | 94.23%        | 80.00%          |
+| `pieceAbilitiesSlice.ts`    | 168   | 100%          | 97.72%          |
+| `propertyAbilitiesSlice.ts` | 290   | ~97%          | ~90%            |
 
 ### Verification Results (Phase 7)
 - ✅ Lint: 0 errors
@@ -85,15 +85,15 @@ All magic numbers in Phase 7 slices have been extracted to named constants:
 
 ## Quality Metrics (Phase 7)
 
-| Metric | Value |
-|--------|-------|
-| gameStore.ts lines | 343 (from 993; 65% reduction in Phase 7) |
-| Total reduction from original | 88% (2960 → 343) |
-| New slices created | 3 |
-| All slices in project | 17 |
-| Tests | 1,012 passing |
-| Coverage | 97.66% |
-| Lint errors | 0 |
+| Metric                        | Value                                    |
+|-------------------------------|------------------------------------------|
+| gameStore.ts lines            | 343 (from 993; 65% reduction in Phase 7) |
+| Total reduction from original | 88% (2960 → 343)                         |
+| New slices created            | 3                                        |
+| All slices in project         | 17                                       |
+| Tests                         | 1,012 passing                            |
+| Coverage                      | 97.66%                                   |
+| Lint errors                   | 0                                        |
 
 ---
 
