@@ -2,8 +2,6 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import type { GameState, Player, GamePhase, GameEndCondition } from '../../types/game'
-import type { DirectiveCard } from '../../data/partyDirectiveCards'
-import type { TestQuestion } from '../../data/communistTestQuestions'
 import type { UiSlice } from '../slices/uiSlice'
 import type { LogSlice } from '../slices/logSlice'
 import type { StatisticsSlice } from '../slices/statisticsSlice'
@@ -19,6 +17,9 @@ import type { TradeSlice } from '../slices/tradeSlice'
 import type { DebtAndEliminationSlice } from '../slices/debtAndEliminationSlice'
 import type { TribunalSlice } from '../slices/tribunalSlice'
 import type { SpecialDecreesSlice } from '../slices/specialDecreesSlice'
+import type { CardSlice } from '../slices/cardSlice'
+import type { PieceAbilitiesSlice } from '../slices/pieceAbilitiesSlice'
+import type { PropertyAbilitiesSlice } from '../slices/propertyAbilitiesSlice'
 
 // Game Actions interface - all store methods
 export interface GameActions {
@@ -65,26 +66,15 @@ export interface GameActions {
   // STOY handling - moved to MovementSlice
   // handleStoyPassing, handleStoyPilfer are now in MovementSlice
 
-  // Card system
-  drawPartyDirective: () => DirectiveCard
-  drawCommunistTest: (difficulty?: 'easy' | 'medium' | 'hard' | 'trick') => TestQuestion
-  applyDirectiveEffect: (card: DirectiveCard, playerId: string) => void
-  answerCommunistTest: (question: TestQuestion, answer: string, readerId: string) => void
+  // Card system - moved to CardSlice
+  // drawPartyDirective, drawCommunistTest, applyDirectiveEffect, answerCommunistTest are now in CardSlice
 
-  // Piece abilities
-  tankRequisition: (tankPlayerId: string, targetPlayerId: string) => void
-  sickleHarvest: (sicklePlayerId: string, targetPropertyId: number) => void
-  ironCurtainDisappear: (ironCurtainPlayerId: string, targetPropertyId: number) => void
-  leninSpeech: (leninPlayerId: string, applauders: string[]) => void
-  promotePlayer: (playerId: string) => void
+  // Piece abilities - moved to PieceAbilitiesSlice
+  // tankRequisition, sickleHarvest, ironCurtainDisappear, leninSpeech are now in PieceAbilitiesSlice
 
-  // Property special abilities
-  siberianCampsGulag: (custodianId: string, targetPlayerId: string) => void
-  approveHammerAbility: (custodianId: string, targetPlayerId: string, approved: boolean) => void
-  kgbPreviewTest: (custodianId: string) => void
-  ministryTruthRewrite: (custodianId: string, newRule: string) => void
-  approveMinistryTruthRewrite: (custodianId: string, newRule: string, approved: boolean) => void
-  pravdaPressRevote: (custodianId: string, decision: string) => void
+  // Property special abilities - moved to PropertyAbilitiesSlice
+  // siberianCampsGulag, approveHammerAbility, kgbPreviewTest, ministryTruthRewrite,
+  // approveMinistryTruthRewrite, pravdaPressRevote are now in PropertyAbilitiesSlice
 
   // Treasury
   adjustTreasury: (amount: number) => void
@@ -97,4 +87,4 @@ export interface GameActions {
 }
 
 // Combined GameStore type - includes all slices
-export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice & MovementSlice & GulagSlice & VoucherSlice & ConfessionSlice & TradeSlice & DebtAndEliminationSlice & TribunalSlice & SpecialDecreesSlice
+export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice & MovementSlice & GulagSlice & VoucherSlice & ConfessionSlice & TradeSlice & DebtAndEliminationSlice & TribunalSlice & SpecialDecreesSlice & CardSlice & PieceAbilitiesSlice & PropertyAbilitiesSlice
