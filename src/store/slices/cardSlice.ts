@@ -13,6 +13,9 @@ import {
 import type { TestQuestion, TestDifficulty } from '../../data/communistTestQuestions'
 import { calculateRailwayFee } from '../../utils/propertyUtils'
 
+/** Board positions of the four Railway stations */
+const RAILWAY_SPACE_IDS = [5, 15, 25, 35] as const
+
 // Slice state interface
 export interface CardSliceState {
   partyDirectiveDeck: string[]
@@ -235,7 +238,7 @@ export const createCardSlice: StateCreator<
       case 'custom':
         // Handle custom effects
         if (card.effect.handler === 'advanceToNearestRailway') {
-          const railwayPositions = [5, 15, 25, 35]
+          const railwayPositions = [...RAILWAY_SPACE_IDS]
           const currentPosition = player.position
 
           // Find the nearest railway ahead (wrapping around)

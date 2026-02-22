@@ -9,6 +9,19 @@ import { getRandomQuestionByDifficulty, getRandomDifficulty } from '../../data/c
 // on the Player object (e.g. hasUsedSiberianCampsGulag, kgbTestPreviewsUsedThisRound).
 // It is therefore a pure actions-only slice.
 
+/** Space IDs for the Siberian Camps property group */
+const SPACE_ID_CAMP_VORKUTA = 1
+const SPACE_ID_CAMP_KOLYMA = 3
+
+/** Space ID for KGB Headquarters */
+const SPACE_ID_KGB_HEADQUARTERS = 23
+
+/** Space IDs for the Government Ministries property group */
+const SPACE_IDS_MINISTRIES = [16, 18, 19] as const
+
+/** Space IDs for the State Media property group */
+const SPACE_IDS_STATE_MEDIA = [26, 27, 29] as const
+
 // Slice actions interface
 export interface PropertyAbilitiesSliceActions {
   // Siberian Camps group ability: send a target player to the Gulag.
@@ -59,8 +72,8 @@ export const createPropertyAbilitiesSlice: StateCreator<
     if (custodian.hasUsedSiberianCampsGulag) return
 
     // Check if custodian owns both Siberian Camps (spaces 1 and 3)
-    const ownsCampVorkuta = state.properties.find(p => p.spaceId === 1 && p.custodianId === custodianId)
-    const ownsCampKolyma = state.properties.find(p => p.spaceId === 3 && p.custodianId === custodianId)
+    const ownsCampVorkuta = state.properties.find(p => p.spaceId === SPACE_ID_CAMP_VORKUTA && p.custodianId === custodianId)
+    const ownsCampKolyma = state.properties.find(p => p.spaceId === SPACE_ID_CAMP_KOLYMA && p.custodianId === custodianId)
 
     if ((ownsCampVorkuta == null) || (ownsCampKolyma == null)) {
       get().addLogEntry({
@@ -125,7 +138,7 @@ export const createPropertyAbilitiesSlice: StateCreator<
     if (custodian == null) return
 
     // Check if custodian owns KGB Headquarters (space 23)
-    const ownsKGB = state.properties.find(p => p.spaceId === 23 && p.custodianId === custodianId)
+    const ownsKGB = state.properties.find(p => p.spaceId === SPACE_ID_KGB_HEADQUARTERS && p.custodianId === custodianId)
 
     if (ownsKGB == null) {
       get().addLogEntry({
@@ -179,7 +192,7 @@ export const createPropertyAbilitiesSlice: StateCreator<
     if (custodian.hasUsedMinistryTruthRewrite) return
 
     // Check if custodian owns all three Ministry properties (16, 18, 19)
-    const ownsMinistries = [16, 18, 19].every(spaceId =>
+    const ownsMinistries = SPACE_IDS_MINISTRIES.every(spaceId =>
       state.properties.find(p => p.spaceId === spaceId && p.custodianId === custodianId)
     )
 
@@ -245,7 +258,7 @@ export const createPropertyAbilitiesSlice: StateCreator<
     if (custodian.hasUsedPravdaPressRevote) return
 
     // Check if custodian owns all three State Media properties (26, 27, 29)
-    const ownsMedia = [26, 27, 29].every(spaceId =>
+    const ownsMedia = SPACE_IDS_STATE_MEDIA.every(spaceId =>
       state.properties.find(p => p.spaceId === spaceId && p.custodianId === custodianId)
     )
 

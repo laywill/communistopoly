@@ -9,6 +9,15 @@ import { getSpaceById } from '../../data/spaces'
 // on the Player object itself (e.g. tankRequisitionUsedThisLap, hasUsedSickleHarvest).
 // It is therefore a pure actions-only slice.
 
+/** Amount requisitioned by the Tank piece per lap */
+const TANK_REQUISITION_AMOUNT = 50
+
+/** Maximum property value (base cost) eligible for Sickle Harvest */
+const SICKLE_HARVEST_VALUE_THRESHOLD = 150
+
+/** Amount collected per applauder by the Lenin Speech ability */
+const LENIN_SPEECH_COLLECTION_AMOUNT = 100
+
 // Slice actions interface
 export interface PieceAbilitiesSliceActions {
   // Tank piece: requisition ₽50 from a target player once per lap
@@ -47,7 +56,7 @@ export const createPieceAbilitiesSlice: StateCreator<
     if (tankPlayer.tankRequisitionUsedThisLap) return
 
     // Requisition ₽50 from target (or all their money if they have less)
-    const requisitionAmount = Math.min(50, targetPlayer.rubles)
+    const requisitionAmount = Math.min(TANK_REQUISITION_AMOUNT, targetPlayer.rubles)
 
     get().updatePlayer(targetPlayerId, { rubles: targetPlayer.rubles - requisitionAmount })
     get().updatePlayer(tankPlayerId, {
@@ -75,10 +84,10 @@ export const createPieceAbilitiesSlice: StateCreator<
     if (sicklePlayer.hasUsedSickleHarvest) return
 
     // Check property value is less than ₽150
-    if ((space.baseCost ?? 0) >= 150) {
+    if ((space.baseCost ?? 0) >= SICKLE_HARVEST_VALUE_THRESHOLD) {
       get().addLogEntry({
         type: 'system',
-        message: `Cannot harvest ${space.name} - value must be less than ₽150!`,
+        message: `Cannot harvest ${space.name} - value must be less than ₽${String(SICKLE_HARVEST_VALUE_THRESHOLD)}!`,
         playerId: sicklePlayerId
       })
       return
@@ -143,7 +152,7 @@ export const createPieceAbilitiesSlice: StateCreator<
     applauders.forEach(applauderId => {
       const applauder = state.players.find(p => p.id === applauderId)
       if ((applauder != null) && !applauder.isEliminated) {
-        const amount = Math.min(100, applauder.rubles)
+        const amount = Math.min(LENIN_SPEECH_COLLECTION_AMOUNT, applauder.rubles)
         get().updatePlayer(applauderId, { rubles: applauder.rubles - amount })
         totalCollected += amount
       }
