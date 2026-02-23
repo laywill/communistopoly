@@ -11,10 +11,7 @@ import {
   COMMUNIST_TEST_QUESTIONS_BY_DIFFICULTY
 } from '../../data/communistTestQuestions'
 import type { TestQuestion, TestDifficulty } from '../../data/communistTestQuestions'
-import { calculateRailwayFee } from '../../utils/propertyUtils'
-
-/** Board positions of the four Railway stations */
-const RAILWAY_SPACE_IDS = [5, 15, 25, 35] as const
+import { applyDirectiveEffectHandler } from '../helpers/directiveEffectHandlers'
 
 // Slice state interface
 export interface CardSliceState {
@@ -116,8 +113,7 @@ export const createCardSlice: StateCreator<
 
   // Apply the effect of a drawn Party Directive card to the specified player.
   applyDirectiveEffect: (card, playerId) => {
-    const state = get()
-    const player = state.players.find(p => p.id === playerId)
+    const player = get().players.find(p => p.id === playerId)
     if (player == null) return
 
     get().addLogEntry({
@@ -125,189 +121,7 @@ export const createCardSlice: StateCreator<
       message: `${player.name} drew: ${card.title} - ${card.description}`
     })
 
-    switch (card.effect.type) {
-      case 'move':
-        if (card.effect.destination !== undefined) {
-          const oldPosition = player.position
-          get().updatePlayer(playerId, { position: card.effect.destination })
-          // Check if passed STOY (wrapped around the board).
-          // Moving to position 0 from a higher position = backwards wrap past STOY.
-          // Moving forward to a position higher than the old position = forward past STOY.
-          if (oldPosition > card.effect.destination && card.effect.destination === 0) {
-            // Moving backwards to STOY (wrapping around) - pay travel tax
-            get().handleStoyPassing(playerId)
-          } else if (oldPosition < card.effect.destination && card.effect.destination !== 0) {
-            // Moving forward past STOY (not landing on it)
-            get().handleStoyPassing(playerId)
-          }
-          // Resolve the space the player landed on
-          set({ turnPhase: 'resolving' })
-          get().resolveCurrentSpace(playerId)
-          return // Exit early to prevent setting turnPhase to 'post-turn' at the end
-        }
-        break
-
-      case 'moveRelative':
-        if (card.effect.spaces !== undefined) {
-          get().movePlayer(playerId, card.effect.spaces)
-          // Resolve the space the player landed on
-          set({ turnPhase: 'resolving' })
-          get().resolveCurrentSpace(playerId)
-          return // Exit early to prevent setting turnPhase to 'post-turn' at the end
-        }
-        break
-
-      case 'money':
-        if (card.effect.amount !== undefined) {
-          get().updatePlayer(playerId, { rubles: player.rubles + card.effect.amount })
-          if (card.effect.amount > 0) {
-            get().adjustTreasury(-card.effect.amount)
-          } else {
-            get().adjustTreasury(Math.abs(card.effect.amount))
-          }
-        }
-        break
-
-      case 'gulag':
-        get().sendToGulag(playerId, 'stalinDecree', 'Party Directive card')
-        break
-
-      case 'freeFromGulag':
-        get().updatePlayer(playerId, { hasFreeFromGulagCard: true })
-        get().addLogEntry({
-          type: 'system',
-          message: `${player.name} received a "Get out of Gulag free" card!`,
-          playerId
-        })
-        break
-
-      case 'rankChange':
-        if (card.effect.direction === 'up') {
-          get().promotePlayer(playerId)
-        } else {
-          get().demotePlayer(playerId)
-        }
-        break
-
-      case 'collectFromAll':
-        if (card.effect.amount !== undefined) {
-          const effectAmount = card.effect.amount
-          state.players.forEach(p => {
-            if (!p.isStalin && p.id !== playerId && !p.isEliminated) {
-              const amount = Math.min(effectAmount, p.rubles)
-              get().updatePlayer(p.id, { rubles: p.rubles - amount })
-              get().updatePlayer(playerId, { rubles: player.rubles + amount })
-            }
-          })
-        }
-        break
-
-      case 'payToAll':
-        if (card.effect.amount !== undefined) {
-          const effectAmount = card.effect.amount
-          state.players.forEach(p => {
-            if (!p.isStalin && p.id !== playerId && !p.isEliminated) {
-              const amount = Math.min(effectAmount, player.rubles)
-              get().updatePlayer(playerId, { rubles: player.rubles - amount })
-              get().updatePlayer(p.id, { rubles: p.rubles + amount })
-            }
-          })
-        }
-        break
-
-      case 'propertyTax': {
-        const properties = state.properties.filter(p => p.custodianId === playerId)
-        let totalTax = 0
-        if (card.effect.perProperty) {
-          totalTax += properties.length * card.effect.perProperty
-        }
-        if (card.effect.perImprovement) {
-          const totalImprovements = properties.reduce((sum, p) => sum + p.collectivizationLevel, 0)
-          totalTax += totalImprovements * card.effect.perImprovement
-        }
-        get().updatePlayer(playerId, { rubles: player.rubles - totalTax })
-        get().adjustTreasury(totalTax)
-        get().addLogEntry({
-          type: 'payment',
-          message: `${player.name} paid ₽${String(totalTax)} in property taxes`,
-          playerId
-        })
-        break
-      }
-
-      case 'custom':
-        // Handle custom effects
-        if (card.effect.handler === 'advanceToNearestRailway') {
-          const railwayPositions = [...RAILWAY_SPACE_IDS]
-          const currentPosition = player.position
-
-          // Find the nearest railway ahead (wrapping around)
-          let nearestRailway = railwayPositions[0]
-          for (const railwayPos of railwayPositions) {
-            if (railwayPos > currentPosition) {
-              nearestRailway = railwayPos
-              break
-            }
-          }
-
-          // Move player to railway
-          const oldPosition = player.position
-          get().updatePlayer(playerId, { position: nearestRailway })
-
-          // Check if passed STOY (position 0)
-          if (oldPosition > nearestRailway || (oldPosition < nearestRailway && nearestRailway < 40)) {
-            // Only give STOY bonus if we actually passed it (wrapped around)
-            if (oldPosition > nearestRailway) {
-              get().handleStoyPassing(playerId)
-            }
-          }
-
-          // Check railway property ownership
-          const railwayProperty = state.properties.find(p => p.spaceId === nearestRailway)
-
-          if (railwayProperty != null) {
-            if (railwayProperty.custodianId === null) {
-              // Railway is unowned - set pending action for purchase
-              set({
-                pendingAction: {
-                  type: 'property-purchase',
-                  data: { spaceId: nearestRailway, playerId }
-                },
-                turnPhase: 'awaiting-action'
-              })
-              return
-            } else if (railwayProperty.custodianId !== playerId && !railwayProperty.isMortgaged) {
-              // Railway is owned by another player - charge fee
-              const fee = calculateRailwayFee(railwayProperty.custodianId, state.properties)
-              get().payQuota(playerId, railwayProperty.custodianId, fee)
-            }
-            // If owned by current player or mortgaged, no fee charged
-          }
-        } else if (card.effect.handler === 'triggerAnonymousTribunal') {
-          // Trigger tribunal with Stalin as accuser
-          const stalin = state.players.find(p => p.isStalin)
-          if (stalin != null) {
-            set({
-              pendingAction: {
-                type: 'tribunal',
-                data: { targetId: playerId, accuserId: stalin.id, isAnonymous: true }
-              },
-              turnPhase: 'awaiting-action'
-            })
-            return
-          }
-        } else {
-          // Unknown custom handler
-          get().addLogEntry({
-            type: 'system',
-            message: `Custom effect: ${card.effect.handler ?? 'unknown'} - requires special handling`,
-            playerId
-          })
-        }
-        break
-    }
-
-    set({ pendingAction: null, turnPhase: 'post-turn' })
+    applyDirectiveEffectHandler(card.effect, playerId, get)
   },
 
   // Handle a player's answer to a Communist Test question.
