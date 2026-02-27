@@ -161,14 +161,17 @@ export const createPropertyAbilitiesSlice: StateCreator<
     const difficulty = getRandomDifficulty()
     const question = getRandomQuestionByDifficulty(difficulty)
 
-    // Show the question to the custodian
-    alert(
-      'KGB HEADQUARTERS - TEST PREVIEW\n\n' +
-      `Difficulty: ${difficulty.toUpperCase()}\n` +
-      `Question: ${question.question}\n\n` +
-      `Answer: ${question.answer}\n\n` +
-      'This preview has been noted by the KGB.'
-    )
+    // Show the question to the custodian via a pending action modal
+    set({
+      pendingAction: {
+        type: 'kgb-test-preview',
+        data: {
+          difficulty,
+          question: question.question,
+          answer: question.answer
+        }
+      }
+    })
 
     get().updatePlayer(custodianId, {
       kgbTestPreviewsUsedThisRound: custodian.kgbTestPreviewsUsedThisRound + 1
@@ -278,12 +281,14 @@ export const createPropertyAbilitiesSlice: StateCreator<
       playerId: custodianId
     })
 
-    alert(
-      'PRAVDA PRESS - PROPAGANDA SPREAD\n\n' +
-      `${custodian.name} demands a re-vote on:\n"${decision}"\n\n` +
-      'THE PEOPLE DEMAND IT!'
-    )
-
-    set({ pendingAction: null })
+    set({
+      pendingAction: {
+        type: 'pravda-press-revote',
+        data: {
+          custodianName: custodian.name,
+          decision
+        }
+      }
+    })
   }
 })
