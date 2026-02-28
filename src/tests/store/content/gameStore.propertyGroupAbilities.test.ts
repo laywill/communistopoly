@@ -200,19 +200,15 @@ describe('Property Group Abilities', () => {
       // Setup: Give custodian KGB Headquarters (space 23)
       store.setPropertyCustodian(23, custodian.id)
 
-      // Mock alert
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined)
-
       // Execute
       store.kgbPreviewTest(custodian.id)
 
-      // Verify alert was called with question preview
-      expect(alertSpy).toHaveBeenCalled()
-      const alertMessage = alertSpy.mock.calls[0][0] as string
-      expect(alertMessage).toContain('KGB HEADQUARTERS')
-      expect(alertMessage).toContain('Difficulty:')
-      expect(alertMessage).toContain('Question:')
-      expect(alertMessage).toContain('Answer:')
+      // Verify pending action was set with question preview
+      const pendingAction = useGameStore.getState().pendingAction
+      expect(pendingAction?.type).toBe('kgb-test-preview')
+      expect(pendingAction?.data?.difficulty).toBeDefined()
+      expect(pendingAction?.data?.question).toBeDefined()
+      expect(pendingAction?.data?.answer).toBeDefined()
 
       // Verify counter incremented
       const updatedCustodian = useGameStore.getState().players.find(p => p.id === custodian.id)
@@ -263,13 +259,12 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(23, custodian.id)
       store.updatePlayer(custodian.id, { kgbTestPreviewsUsedThisRound: 1 })
 
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined)
-
       // Execute
       store.kgbPreviewTest(custodian.id)
 
-      // Verify alert was NOT called
-      expect(alertSpy).not.toHaveBeenCalled()
+      // Verify no pending action was set (ability blocked)
+      const pendingAction = useGameStore.getState().pendingAction
+      expect(pendingAction).toBeNull()
 
       // Verify counter still at 1
       const updatedCustodian = useGameStore.getState().players.find(p => p.id === custodian.id)
@@ -312,13 +307,12 @@ describe('Property Group Abilities', () => {
       // Simulate round end (counter should reset)
       store.updatePlayer(custodian.id, { kgbTestPreviewsUsedThisRound: 0 })
 
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined)
-
       // Execute
       store.kgbPreviewTest(custodian.id)
 
-      // Verify alert was called (ability works again)
-      expect(alertSpy).toHaveBeenCalled()
+      // Verify pending action was set (ability works again)
+      const pendingAction = useGameStore.getState().pendingAction
+      expect(pendingAction?.type).toBe('kgb-test-preview')
 
       // Verify counter incremented to 1
       const updatedCustodian = useGameStore.getState().players.find(p => p.id === custodian.id)
@@ -486,9 +480,6 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(27, custodian.id)
       store.setPropertyCustodian(29, custodian.id)
 
-      // Mock alert
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined)
-
       const decision = 'Should Player 2 be eliminated?'
 
       // Execute
@@ -506,12 +497,10 @@ describe('Property Group Abilities', () => {
         log.message.includes(decision)
       )).toBe(true)
 
-      // Verify alert was called
-      expect(alertSpy).toHaveBeenCalled()
-      const alertMessage = alertSpy.mock.calls[0][0] as string
-      expect(alertMessage).toContain('PRAVDA PRESS')
-      expect(alertMessage).toContain(decision)
-      expect(alertMessage).toContain('THE PEOPLE DEMAND IT')
+      // Verify pending action was set with re-vote announcement
+      const pendingAction = useGameStore.getState().pendingAction
+      expect(pendingAction?.type).toBe('pravda-press-revote')
+      expect(pendingAction?.data?.decision).toBe(decision)
     })
 
     it('should fail when custodian does not own all three media properties', () => {
@@ -560,15 +549,14 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(29, custodian.id)
       store.updatePlayer(custodian.id, { hasUsedPravdaPressRevote: true })
 
-      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => undefined)
-
       const decision = 'Test decision'
 
       // Execute
       store.pravdaPressRevote(custodian.id, decision)
 
-      // Verify alert was not called (ability already used)
-      expect(alertSpy).not.toHaveBeenCalled()
+      // Verify no pending action was set (ability already used)
+      const pendingAction = useGameStore.getState().pendingAction
+      expect(pendingAction).toBeNull()
 
       // Verify custodian still marked as having used ability
       const updatedCustodian = useGameStore.getState().players.find(p => p.id === custodian.id)

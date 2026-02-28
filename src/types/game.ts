@@ -216,6 +216,8 @@ export type PendingActionType =
   | 'review-confession'
   | 'hammer-approval'
   | 'ministry-truth-approval'
+  | 'kgb-test-preview'
+  | 'pravda-press-revote'
 
 export interface PendingAction {
   type: PendingActionType
