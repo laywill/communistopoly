@@ -1,7 +1,7 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
-import type { GameState, Player, GamePhase, GameEndCondition } from '../../types/game'
+import type { GameState, Player } from '../../types/game'
 import type { UiSlice } from '../slices/uiSlice'
 import type { LogSlice } from '../slices/logSlice'
 import type { StatisticsSlice } from '../slices/statisticsSlice'
@@ -20,21 +20,14 @@ import type { SpecialDecreesSlice } from '../slices/specialDecreesSlice'
 import type { CardSlice } from '../slices/cardSlice'
 import type { PieceAbilitiesSlice } from '../slices/pieceAbilitiesSlice'
 import type { PropertyAbilitiesSlice } from '../slices/propertyAbilitiesSlice'
+import type { GameEndSlice } from '../slices/gameEndSlice'
+import type { GamePhaseSlice } from '../slices/gamePhaseSlice'
 
-// Game Actions interface - all store methods
+// Game Actions interface - remaining store methods not yet moved to a dedicated slice
 export interface GameActions {
-  // Game phase management
-  setGamePhase: (phase: GamePhase) => void
-  startNewGame: () => void
-  resetGame: () => void
-
   // Player management
-  initializePlayers: (playerSetups: { name: string, piece: Player['piece'], isStalin: boolean }[]) => void
   setCurrentPlayer: (index: number) => void
   updatePlayer: (playerId: string, updates: Partial<Player>) => void
-
-  // Property management (payQuota remains in GameActions as it's a payment action, not property state)
-  payQuota: (payerId: string, custodianId: string, amount: number) => void
 
   // Turn management - moved to MovementSlice
   // movePlayer, resolveCurrentSpace, finishMoving, endTurn are now in MovementSlice
@@ -55,13 +48,11 @@ export interface GameActions {
   // Debt and liquidation - moved to DebtSlice
   // createDebt, checkDebtStatus, eliminatePlayer, checkElimination are now in DebtSlice
 
-  // Game end
-  checkGameEnd: () => GameEndCondition | null
-  endGame: (condition: GameEndCondition, winnerId: string | null) => void
+  // Game phase management - moved to GamePhaseSlice
+  // setGamePhase, startNewGame, resetGame, initializePlayers, payQuota are now in GamePhaseSlice
 
-  // Unanimous end vote
-  initiateEndVote: (initiatorId: string) => void
-  castEndVote: (playerId: string, vote: boolean) => void
+  // Game end - moved to GameEndSlice
+  // checkGameEnd, endGame, initiateEndVote, castEndVote are now in GameEndSlice
 
   // STOY handling - moved to MovementSlice
   // handleStoyPassing, handleStoyPilfer are now in MovementSlice
@@ -87,4 +78,4 @@ export interface GameActions {
 }
 
 // Combined GameStore type - includes all slices
-export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice & MovementSlice & GulagSlice & VoucherSlice & ConfessionSlice & TradeSlice & DebtAndEliminationSlice & TribunalSlice & SpecialDecreesSlice & CardSlice & PieceAbilitiesSlice & PropertyAbilitiesSlice
+export type GameStore = GameState & GameActions & UiSlice & LogSlice & StatisticsSlice & DiceSlice & TreasurySlice & PlayerSlice & PropertySlice & MovementSlice & GulagSlice & VoucherSlice & ConfessionSlice & TradeSlice & DebtAndEliminationSlice & TribunalSlice & SpecialDecreesSlice & CardSlice & PieceAbilitiesSlice & PropertyAbilitiesSlice & GameEndSlice & GamePhaseSlice
