@@ -321,6 +321,43 @@ export function PendingActionHandler() {
         />
       );
 
+    case 'kgb-test-preview':
+      if (!pendingAction.data) return null;
+      if (typeof pendingAction.data.difficulty !== 'string' ||
+          typeof pendingAction.data.question !== 'string' ||
+          typeof pendingAction.data.answer !== 'string') {
+        return null;
+      }
+      return (
+        <ConfirmationModal
+          title="KGB HEADQUARTERS - TEST PREVIEW"
+          message={`Difficulty: ${pendingAction.data.difficulty.toUpperCase()}\n\nQuestion: ${pendingAction.data.question}\n\nAnswer: ${pendingAction.data.answer}\n\nThis preview has been noted by the KGB.`}
+          confirmText="Acknowledged"
+          cancelText="Close"
+          variant="primary"
+          onConfirm={handleClose}
+          onCancel={handleClose}
+        />
+      );
+
+    case 'pravda-press-revote':
+      if (!pendingAction.data) return null;
+      if (typeof pendingAction.data.custodianName !== 'string' ||
+          typeof pendingAction.data.decision !== 'string') {
+        return null;
+      }
+      return (
+        <ConfirmationModal
+          title="PRAVDA PRESS - PROPAGANDA SPREAD"
+          message={`${pendingAction.data.custodianName} demands a re-vote on:\n"${pendingAction.data.decision}"\n\nTHE PEOPLE DEMAND IT!`}
+          confirmText="Acknowledged"
+          cancelText="Close"
+          variant="danger"
+          onConfirm={handleClose}
+          onCancel={handleClose}
+        />
+      );
+
     default:
       return null;
   }
