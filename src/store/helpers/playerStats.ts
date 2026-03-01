@@ -2,6 +2,7 @@
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
 import type { PlayerStatistics } from '../../types/game'
+import { INITIAL_MAX_WEALTH } from '../constants'
 
 export function initializePlayerStats (): PlayerStatistics {
   return {
@@ -15,7 +16,7 @@ export function initializePlayerStats (): PlayerStatistics {
     moneyEarned: 0,
     moneySpent: 0,
     propertiesOwned: 0,
-    maxWealth: 1500,
+    maxWealth: INITIAL_MAX_WEALTH,
     testsPassed: 0,
     testsFailed: 0
   }

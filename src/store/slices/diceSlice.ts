@@ -4,6 +4,7 @@
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { TurnPhase } from '../../types/game'
+import { THREE_DOUBLES_THRESHOLD } from '../constants'
 
 // Slice state interface
 export interface DiceSliceState {
@@ -102,7 +103,7 @@ export const createDiceSlice: StateCreator<
     const newDoublesCount: number = isDoubles ? (doublesCount) + 1 : 0
 
     // Check for three doubles (counter-revolutionary behaviour)
-    if (newDoublesCount >= 3) {
+    if (newDoublesCount >= THREE_DOUBLES_THRESHOLD) {
       const currentPlayer = players[currentPlayerIndex]
       get().sendToGulag(currentPlayer.id, 'threeDoubles')
       set({ isRolling: false, doublesCount: 0 })

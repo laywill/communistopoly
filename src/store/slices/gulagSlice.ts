@@ -5,6 +5,7 @@ import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { GulagReason, GulagEscapeMethod } from '../../types/game'
 import { getGulagReasonText, getRequiredDoublesForEscape } from '../helpers/gulagHelpers'
+import { CORNER_GULAG, RAILWAY_SPACE_IDS, GULAG_ESCAPE_COST, GULAG_TIMEOUT_TURNS } from '../constants'
 
 // Gulag slice state interface
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -60,7 +61,7 @@ export const createGulagSlice: StateCreator<
 
     // TANK ABILITY: Immune to first Gulag sentence (return to nearest Railway Station instead)
     if (player.piece === 'tank' && !player.hasUsedTankGulagImmunity) {
-      const railwayPositions = [5, 15, 25, 35]
+      const railwayPositions = [...RAILWAY_SPACE_IDS]
       const currentPos = player.position
 
       // Find nearest railway station
@@ -98,7 +99,7 @@ export const createGulagSlice: StateCreator<
     get().updatePlayer(playerId, {
       inGulag: true,
       gulagTurns: 0,
-      position: 10 // Gulag position
+      position: CORNER_GULAG
     })
 
     // Demote player
@@ -163,7 +164,7 @@ export const createGulagSlice: StateCreator<
     const player = state.players.find((p) => p.id === playerId)
     if (!player?.inGulag) return
 
-    if (player.gulagTurns >= 10) {
+    if (player.gulagTurns >= GULAG_TIMEOUT_TURNS) {
       get().eliminatePlayer(playerId, 'gulagTimeout')
     }
   },
@@ -211,20 +212,20 @@ export const createGulagSlice: StateCreator<
       }
 
       case 'pay': {
-        // Pay 500₽ and lose one rank
-        if (player.rubles >= 500) {
+        // Pay rehabilitation cost and lose one rank
+        if (player.rubles >= GULAG_ESCAPE_COST) {
           get().updatePlayer(playerId, {
-            rubles: player.rubles - 500,
+            rubles: player.rubles - GULAG_ESCAPE_COST,
             inGulag: false,
             gulagTurns: 0
           })
 
-          get().adjustTreasury(500)
+          get().adjustTreasury(GULAG_ESCAPE_COST)
           get().demotePlayer(playerId)
 
           get().addLogEntry({
             type: 'gulag',
-            message: `${player.name} paid ₽500 for rehabilitation and was released (with demotion)`,
+            message: `${player.name} paid ₽${String(GULAG_ESCAPE_COST)} for rehabilitation and was released (with demotion)`,
             playerId
           })
 

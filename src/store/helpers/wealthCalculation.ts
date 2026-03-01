@@ -3,6 +3,7 @@
 
 import type { Player, Property } from '../../types/game'
 import { getSpaceById } from '../../data/spaces'
+import { MORTGAGE_VALUE_RATIO, IMPROVEMENT_VALUE } from '../constants'
 
 export function calculateTotalWealth (player: Player, properties: Property[]): number {
   let total = player.rubles
@@ -13,11 +14,11 @@ export function calculateTotalWealth (player: Player, properties: Property[]): n
     if (property != null) {
       const space = getSpaceById(property.spaceId)
       const baseValue = space?.baseCost ?? 0
-      const propertyValue = property.mortgaged ? baseValue * 0.5 : baseValue
+      const propertyValue = property.mortgaged ? baseValue * MORTGAGE_VALUE_RATIO : baseValue
       total += propertyValue
 
       // Add improvement values
-      total += property.collectivizationLevel * 50
+      total += property.collectivizationLevel * IMPROVEMENT_VALUE
     }
   })
 

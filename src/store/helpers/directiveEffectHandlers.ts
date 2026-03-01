@@ -4,9 +4,7 @@
 import type { DirectiveEffect } from '../../data/partyDirectiveCards'
 import type { GameStore } from '../types/storeTypes'
 import { calculateRailwayFee } from '../../utils/propertyUtils'
-
-/** Board positions of the four Railway stations */
-const RAILWAY_SPACE_IDS = [5, 15, 25, 35] as const
+import { RAILWAY_SPACE_IDS } from '../constants'
 
 /**
  * Applies the effect of a Party Directive card for the given player.

@@ -5,6 +5,7 @@ import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { VoucherAgreement, GulagReason } from '../../types/game'
 import { shouldTriggerVoucherConsequence } from '../helpers/gulagHelpers'
+import { VOUCHER_EXPIRY_ROUNDS } from '../constants'
 
 // Slice state interface
 export interface VoucherSliceState {
@@ -41,7 +42,7 @@ export const createVoucherSlice: StateCreator<
       id: `voucher-${String(Date.now())}-${prisonerId}`,
       prisonerId,
       voucherId,
-      expiresAtRound: (state.roundNumber) + 3,
+      expiresAtRound: (state.roundNumber) + VOUCHER_EXPIRY_ROUNDS,
       isActive: true
     }
 
@@ -72,7 +73,7 @@ export const createVoucherSlice: StateCreator<
 
     get().addLogEntry({
       type: 'gulag',
-      message: `${voucherPlayer.name} vouched for ${prisoner.name}'s release. WARNING: If ${prisoner.name} commits ANY offence in the next 3 rounds, ${voucherPlayer.name} goes to Gulag too!`
+      message: `${voucherPlayer.name} vouched for ${prisoner.name}'s release. WARNING: If ${prisoner.name} commits ANY offence in the next ${String(VOUCHER_EXPIRY_ROUNDS)} rounds, ${voucherPlayer.name} goes to Gulag too!`
     })
 
     set({ turnPhase: 'post-turn' })

@@ -6,6 +6,7 @@ import type { GameStore } from '../types/storeTypes'
 import type { GamePhase, Player, PlayerStatistics } from '../../types/game'
 import { shuffleDirectiveDeck } from '../../data/partyDirectiveCards'
 import { initializePlayerStats } from '../helpers/playerStats'
+import { STARTING_RUBLES } from '../constants'
 import { initialPlayerState } from './playerSlice'
 import { initialPropertyState } from './propertySlice'
 import { initialTreasuryState } from './treasurySlice'
@@ -97,7 +98,7 @@ export const createGamePhaseSlice: StateCreator<
       name: setup.name,
       piece: setup.piece,
       rank: setup.piece === 'redStar' ? 'partyMember' : 'proletariat',
-      rubles: 1500,
+      rubles: STARTING_RUBLES,
       position: 0,
       properties: [],
       inGulag: false,
@@ -122,7 +123,7 @@ export const createGamePhaseSlice: StateCreator<
       hasUsedIronCurtainDisappear: false,
       hasFreeFromGulagCard: false,
       vodkaUseCount: 0,
-      ironCurtainClaimedRubles: 1500, // Start with initial amount claimed
+      ironCurtainClaimedRubles: STARTING_RUBLES, // Start with initial amount claimed
       owesFavourTo: [],
       hasUsedSiberianCampsGulag: false,
       kgbTestPreviewsUsedThisRound: 0,
@@ -135,7 +136,7 @@ export const createGamePhaseSlice: StateCreator<
 
     // Calculate state treasury based on player count
     const playerCount = nonStalinPlayers.length
-    const stateTreasury = playerCount * 1500 // Starting treasury
+    const stateTreasury = playerCount * STARTING_RUBLES // Starting treasury
 
     // Initialise player statistics for non-Stalin players
     const playerStats: Record<string, PlayerStatistics> = {}

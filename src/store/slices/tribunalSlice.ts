@@ -4,6 +4,7 @@
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { Denouncement, ActiveTribunal, TribunalPhase, TribunalVerdict, WitnessRequirement } from '../../types/game'
+import { CORNER_GULAG } from '../constants'
 
 // Constants
 const INFORMANT_BONUS = 100
@@ -231,7 +232,7 @@ export const createTribunalSlice: StateCreator<
           get().updatePlayer(accuser.id, {
             inGulag: false,
             gulagTurns: 0,
-            position: 10, // Release to Just Visiting
+            position: CORNER_GULAG, // Release to Just Visiting
             rubles: accuser.rubles + INFORMANT_BONUS
           })
           get().addLogEntry({
