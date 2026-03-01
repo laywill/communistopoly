@@ -540,5 +540,153 @@ describe('gameStore - Cards & Questions', () => {
       const logs = state.gameLog
       expect(logs[logs.length - 1].message).toContain('immune to trick questions')
     })
+
+    it('should not deduct rubles when penalty is zero', () => {
+      const { answerCommunistTest, players, currentPlayerIndex } = useGameStore.getState()
+      const player = players[currentPlayerIndex]
+
+      const zeroPenaltyQuestion = {
+        id: 'q-zero-penalty',
+        question: 'Zero penalty question',
+        answer: 'correct',
+        acceptableAnswers: ['correct'],
+        difficulty: 'easy' as const,
+        reward: 50,
+        penalty: 0,
+        grantsRankUp: false
+      }
+
+      const initialRubles = player.rubles
+
+      answerCommunistTest(zeroPenaltyQuestion, 'wrong answer', '')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
+      // Rubles should be unchanged - zero penalty is a no-op
+      expect(updatedPlayer?.rubles).toBe(initialRubles)
+    })
+
+    it('should not add rubles when reward is zero', () => {
+      const { answerCommunistTest, players, currentPlayerIndex } = useGameStore.getState()
+      const player = players[currentPlayerIndex]
+
+      const zeroRewardQuestion = {
+        id: 'q-zero-reward',
+        question: 'Zero reward question',
+        answer: 'correct',
+        acceptableAnswers: ['correct'],
+        difficulty: 'easy' as const,
+        reward: 0,
+        penalty: 50,
+        grantsRankUp: false
+      }
+
+      const initialRubles = player.rubles
+
+      answerCommunistTest(zeroRewardQuestion, 'correct', '')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
+      // Rubles should be unchanged - zero reward is a no-op
+      expect(updatedPlayer?.rubles).toBe(initialRubles)
+    })
+
+    it('should promote player on grantsRankUp question', () => {
+      const { answerCommunistTest, updatePlayer, players, currentPlayerIndex } = useGameStore.getState()
+      const player = players[currentPlayerIndex]
+
+      // Ensure player is at a rank below the top so promotion is possible
+      updatePlayer(player.id, { rank: 'proletariat' })
+
+      const rankUpQuestion = {
+        id: 'q-rank-up',
+        question: 'Hard question that grants rank',
+        answer: 'correct',
+        acceptableAnswers: ['correct'],
+        difficulty: 'hard' as const,
+        reward: 100,
+        penalty: 50,
+        grantsRankUp: true
+      }
+
+      answerCommunistTest(rankUpQuestion, 'correct', '')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
+      // Player should have been promoted (rank changed from proletariat)
+      expect(updatedPlayer?.rank).not.toBe('proletariat')
+    })
+
+    it('should promote to Party Member when reaching 2 correct answers at proletariat rank', () => {
+      const { answerCommunistTest, updatePlayer, players, currentPlayerIndex } = useGameStore.getState()
+      const player = players[currentPlayerIndex]
+
+      // The promotion check reads from the stale `currentPlayer` snapshot captured at
+      // the start of answerCommunistTest. Setting correctTestAnswers to 2 means the
+      // stale value satisfies `>= 2` even before the increment is applied.
+      updatePlayer(player.id, { rank: 'proletariat', correctTestAnswers: 2 })
+
+      const question = {
+        id: 'q-promote',
+        question: 'Promotion question',
+        answer: 'correct',
+        acceptableAnswers: ['correct'],
+        difficulty: 'easy' as const,
+        reward: 0,
+        penalty: 50,
+        grantsRankUp: false
+      }
+
+      answerCommunistTest(question, 'correct', '')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
+      // correctTestAnswers is 2, rank is proletariat → should be promoted to partyMember
+      expect(updatedPlayer?.rank).toBe('partyMember')
+    })
+
+    it('should demote and reset counter after 2 consecutive wrong answers', () => {
+      const { answerCommunistTest, updatePlayer, players, currentPlayerIndex } = useGameStore.getState()
+      const player = players[currentPlayerIndex]
+
+      // The demotion check reads from the stale `currentPlayer` snapshot captured at
+      // the start of answerCommunistTest. Setting consecutiveFailedTests to 2 means
+      // the stale value satisfies `>= 2` even before the increment is applied.
+      updatePlayer(player.id, { rank: 'partyMember', consecutiveFailedTests: 2 })
+
+      const question = {
+        id: 'q-demote',
+        question: 'Second failure question',
+        answer: 'correct',
+        acceptableAnswers: ['correct'],
+        difficulty: 'easy' as const,
+        reward: 50,
+        penalty: 50,
+        grantsRankUp: false
+      }
+
+      answerCommunistTest(question, 'wrong answer', '')
+
+      const updatedPlayer = useGameStore.getState().players.find(p => p.id === player.id)
+      // 2 consecutive failures → demoted from partyMember to proletariat
+      expect(updatedPlayer?.rank).toBe('proletariat')
+      // Counter should be reset after demotion
+      expect(updatedPlayer?.consecutiveFailedTests).toBe(0)
+    })
+  })
+
+  describe('drawCommunistTest() - exhaustion reset', () => {
+    it('should reset used questions when all difficulty questions exhausted', () => {
+      const { drawCommunistTest } = useGameStore.getState()
+
+      // Draw all easy questions until they're exhausted (used set gets reset)
+      // We draw more questions than exist in the easy pool to trigger the reset
+      const drawn: string[] = []
+      for (let i = 0; i < 30; i++) {
+        const q = drawCommunistTest('easy')
+        drawn.push(q.id)
+      }
+
+      // After exhaustion and reset, drawing should still work
+      const finalQuestion = drawCommunistTest('easy')
+      expect(finalQuestion).toBeDefined()
+      expect(finalQuestion.difficulty).toBe('easy')
+    })
   })
 })

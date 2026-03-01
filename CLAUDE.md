@@ -61,3 +61,7 @@ src/
 ## Locale
 
 Use British english where possible.
+
+## Self Improvement
+
+If you make a mistake or the User has to correct you on something: update your CLAUDE.md so you don't make that mistake again.
