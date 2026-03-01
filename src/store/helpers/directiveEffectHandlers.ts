@@ -167,9 +167,9 @@ export function applyDirectiveEffectHandler(
               type: 'property-purchase',
               data: { spaceId: nearestRailway, playerId }
             })
-            get().setTurnPhase('awaiting-action')
+            get().setTurnPhase('resolving')
             return // Exit early; awaiting player decision
-          } else if (railwayProperty.custodianId !== playerId && !railwayProperty.isMortgaged) {
+          } else if (railwayProperty.custodianId !== playerId && !railwayProperty.mortgaged) {
             // Railway is owned by another player - charge fee
             const fee = calculateRailwayFee(railwayProperty.custodianId, state.properties)
             get().payQuota(playerId, railwayProperty.custodianId, fee)
@@ -184,7 +184,7 @@ export function applyDirectiveEffectHandler(
             type: 'tribunal',
             data: { targetId: playerId, accuserId: stalin.id, isAnonymous: true }
           })
-          get().setTurnPhase('awaiting-action')
+          get().setTurnPhase('resolving')
           return // Exit early; awaiting tribunal resolution
         }
       } else {
