@@ -740,6 +740,48 @@ describe('Denouncement & Tribunal System', () => {
       expect(useGameStore.getState().activeTribunal).toBeNull()
     })
 
+    it('should handle verdict when accuser was eliminated between initiation and verdict', () => {
+      const store = useGameStore.getState()
+
+      store.initializePlayers([
+        { name: 'Accuser', piece: 'hammer', isStalin: false },
+        { name: 'Accused', piece: 'sickle', isStalin: false }
+      ])
+      const [accuser, accused] = useGameStore.getState().players
+
+      store.initiateDenouncement(accuser.id, accused.id, 'Test crime')
+
+      // Eliminate the accuser between initiation and verdict
+      store.eliminatePlayer(accuser.id, 'bankruptcy')
+
+      // Should not crash when rendering verdict with eliminated accuser
+      store.renderTribunalVerdict('innocent')
+
+      // Tribunal should be closed after verdict
+      expect(useGameStore.getState().activeTribunal).toBeNull()
+    })
+
+    it('should handle verdict when accused was eliminated between initiation and verdict', () => {
+      const store = useGameStore.getState()
+
+      store.initializePlayers([
+        { name: 'Accuser', piece: 'hammer', isStalin: false },
+        { name: 'Accused', piece: 'sickle', isStalin: false }
+      ])
+      const [accuser, accused] = useGameStore.getState().players
+
+      store.initiateDenouncement(accuser.id, accused.id, 'Test crime')
+
+      // Eliminate the accused between initiation and verdict
+      store.eliminatePlayer(accused.id, 'bankruptcy')
+
+      // Should not crash when rendering verdict with eliminated accused
+      store.renderTribunalVerdict('guilty')
+
+      // Tribunal should be closed after verdict
+      expect(useGameStore.getState().activeTribunal).toBeNull()
+    })
+
     it('should release accuser from Gulag with bonus on guilty verdict if accuser in Gulag', () => {
       const store = useGameStore.getState()
 

@@ -4,6 +4,7 @@
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { Player, PartyRank } from '../../types/game'
+import { BREAD_LOAF_WEALTH_CAP } from '../constants'
 
 // Slice state interface
 export interface PlayerSliceState {
@@ -47,17 +48,17 @@ export const createPlayerSlice: StateCreator<
     set((state) => {
       const player = state.players.find(p => p.id === playerId)
 
-      // BREAD LOAF ABILITY: Enforce 1000₽ wealth cap
+      // BREAD LOAF ABILITY: Enforce wealth cap
       if (player?.piece === 'breadLoaf' && updates.rubles !== undefined) {
-        if (updates.rubles > 1000) {
-          const excess = updates.rubles - 1000
-          updates.rubles = 1000
+        if (updates.rubles > BREAD_LOAF_WEALTH_CAP) {
+          const excess = updates.rubles - BREAD_LOAF_WEALTH_CAP
+          updates.rubles = BREAD_LOAF_WEALTH_CAP
 
           // Donate excess to State
           get().adjustTreasury(excess)
           get().addLogEntry({
             type: 'payment',
-            message: `${player.name}'s Bread Loaf forces donation of ₽${String(excess)} to the State (max 1000₽)`,
+            message: `${player.name}'s Bread Loaf forces donation of ₽${String(excess)} to the State (max ${String(BREAD_LOAF_WEALTH_CAP)}₽)`,
             playerId
           })
         }

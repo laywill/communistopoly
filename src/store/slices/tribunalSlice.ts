@@ -4,6 +4,7 @@
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { Denouncement, ActiveTribunal, TribunalPhase, TribunalVerdict, WitnessRequirement } from '../../types/game'
+import { CORNER_GULAG } from '../constants'
 
 // Constants
 const INFORMANT_BONUS = 100
@@ -115,7 +116,14 @@ export const createTribunalSlice: StateCreator<
     })
   },
 
-  // Get the witness requirement for denouncing a specific player
+  /**
+   * Determines the number of witnesses required to bring a tribunal against a player.
+   *
+   * Requirements vary by rank: proletariat/partyMember need 0, commissar needs 2,
+   * and innerCircle requires unanimous agreement. Players under suspicion always
+   * need 0 witnesses. Heroes of the Soviet Union require unanimous agreement
+   * regardless of rank.
+   */
   getWitnessRequirement: (playerId) => {
     const state = get()
     const player = state.players.find(p => p.id === playerId)
@@ -224,7 +232,7 @@ export const createTribunalSlice: StateCreator<
           get().updatePlayer(accuser.id, {
             inGulag: false,
             gulagTurns: 0,
-            position: 10, // Release to Just Visiting
+            position: CORNER_GULAG, // Release to Just Visiting
             rubles: accuser.rubles + INFORMANT_BONUS
           })
           get().addLogEntry({

@@ -138,7 +138,7 @@ export const createSpecialDecreesSlice: StateCreator<
       }
     })
 
-    const targetNames = targets.map(id => state.players.find(p => p.id === id)?.name).join(' and ')
+    const targetNames = targets.map(id => state.players.find(p => p.id === id)?.name).filter(Boolean).join(' and ') || 'Unknown'
     get().addLogEntry({
       type: 'system',
       message: `The Great Purge is complete. ${targetNames} received the most votes (${String(maxVotes)}) and have been sent to the Gulag!`

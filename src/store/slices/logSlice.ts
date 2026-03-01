@@ -4,6 +4,7 @@
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { LogEntry } from '../../types/game'
+import { MAX_LOG_ENTRIES } from '../constants'
 
 // Slice state interface
 export interface LogSliceState {
@@ -40,7 +41,7 @@ export const createLogSlice: StateCreator<
     }
 
     set((state) => ({
-      gameLog: [...state.gameLog, newEntry].slice(-50) // Keep last 50 entries
+      gameLog: [...state.gameLog, newEntry].slice(-MAX_LOG_ENTRIES)
     }))
   }
 })

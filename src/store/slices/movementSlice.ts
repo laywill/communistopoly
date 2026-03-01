@@ -4,6 +4,10 @@
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import { getSpaceById } from '../../data/spaces'
+import {
+  BOARD_SIZE, CORNER_STOY, CORNER_GULAG, CORNER_BREADLINE, CORNER_ENEMY_OF_STATE,
+  STOY_TRAVEL_TAX, HAMMER_STOY_BONUS, PILFER_AMOUNT, PILFER_DICE_THRESHOLD
+} from '../constants'
 
 // Slice state interface
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -44,10 +48,10 @@ export const createMovementSlice: StateCreator<
     if (player == null) return
 
     const oldPosition: number = player.position
-    const newPosition = (oldPosition + spaces) % 40
+    const newPosition = (oldPosition + spaces) % BOARD_SIZE
 
     // Check if player passed STOY (position 0)
-    const passedStoy = oldPosition !== 0 && (oldPosition + spaces >= 40)
+    const passedStoy = oldPosition !== CORNER_STOY && (oldPosition + spaces >= BOARD_SIZE)
 
     // Update player position and track laps
     const updates: Partial<typeof player> = { position: newPosition }
@@ -66,7 +70,7 @@ export const createMovementSlice: StateCreator<
     })
 
     // Handle passing STOY
-    if (passedStoy && newPosition !== 0) {
+    if (passedStoy && newPosition !== CORNER_STOY) {
       get().handleStoyPassing(playerId)
     }
   },
@@ -86,10 +90,10 @@ export const createMovementSlice: StateCreator<
 
     switch (space.type) {
       case 'corner':
-        if (space.id === 0 && player.position === 0) {
+        if (space.id === CORNER_STOY && player.position === CORNER_STOY) {
           // Landed exactly on STOY - pilfering opportunity
           set({ pendingAction: { type: 'stoy-pilfer' } })
-        } else if (space.id === 10) {
+        } else if (space.id === CORNER_GULAG) {
           // The Gulag - just visiting
           get().addLogEntry({
             type: 'movement',
@@ -97,7 +101,7 @@ export const createMovementSlice: StateCreator<
             playerId: player.id
           })
           set({ turnPhase: 'post-turn' })
-        } else if (space.id === 20) {
+        } else if (space.id === CORNER_BREADLINE) {
           // Breadline - all players must contribute
           get().addLogEntry({
             type: 'system',
@@ -110,7 +114,7 @@ export const createMovementSlice: StateCreator<
               data: { landingPlayerId: player.id }
             }
           })
-        } else if (space.id === 30) {
+        } else if (space.id === CORNER_ENEMY_OF_STATE) {
           // Enemy of the State - go to Gulag
           get().sendToGulag(player.id, 'enemyOfState')
         }
@@ -293,22 +297,22 @@ export const createMovementSlice: StateCreator<
     const player = state.players.find((p) => p.id === playerId)
     if (player == null) return
 
-    // Deduct 200₽ travel tax
-    get().updatePlayer(playerId, { rubles: player.rubles - 200 })
-    get().adjustTreasury(200)
+    // Deduct travel tax
+    get().updatePlayer(playerId, { rubles: player.rubles - STOY_TRAVEL_TAX })
+    get().adjustTreasury(STOY_TRAVEL_TAX)
 
     get().addLogEntry({
       type: 'payment',
-      message: `${player.name} paid ₽200 travel tax at STOY`,
+      message: `${player.name} paid ₽${String(STOY_TRAVEL_TAX)} travel tax at STOY`,
       playerId
     })
 
-    // HAMMER ABILITY: +50₽ bonus when passing STOY
+    // HAMMER ABILITY: bonus when passing STOY
     if (player.piece === 'hammer') {
-      get().updatePlayer(playerId, { rubles: player.rubles - 200 + 50 }) // Net: -150₽
+      get().updatePlayer(playerId, { rubles: player.rubles - STOY_TRAVEL_TAX + HAMMER_STOY_BONUS })
       get().addLogEntry({
         type: 'payment',
-        message: `${player.name}'s Hammer earns +₽50 bonus at STOY!`,
+        message: `${player.name}'s Hammer earns +₽${String(HAMMER_STOY_BONUS)} bonus at STOY!`,
         playerId
       })
     }
@@ -319,15 +323,15 @@ export const createMovementSlice: StateCreator<
     const player = state.players.find((p) => p.id === playerId)
     if (player == null) return
 
-    if (diceRoll >= 4) {
-      // Success! Steal 100₽ from State
-      const newRubles: number = player.rubles + 100
+    if (diceRoll >= PILFER_DICE_THRESHOLD) {
+      // Success! Steal from State
+      const newRubles: number = player.rubles + PILFER_AMOUNT
       get().updatePlayer(playerId, { rubles: newRubles })
-      get().adjustTreasury(-100)
+      get().adjustTreasury(-PILFER_AMOUNT)
 
       get().addLogEntry({
         type: 'payment',
-        message: `${player.name} successfully pilfered ₽100 from the State Treasury!`,
+        message: `${player.name} successfully pilfered ₽${String(PILFER_AMOUNT)} from the State Treasury!`,
         playerId
       })
     } else {

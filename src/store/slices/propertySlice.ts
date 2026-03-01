@@ -5,6 +5,7 @@ import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { Property } from '../../types/game'
 import { BOARD_SPACES, getSpaceById } from '../../data/spaces'
+import { COLLECTIVE_FARM_SPACE_IDS, MORTGAGE_VALUE_RATIO, UNMORTGAGE_COST_RATIO } from '../constants'
 
 // Slice state interface
 export interface PropertySliceState {
@@ -74,8 +75,7 @@ export const createPropertySlice: StateCreator<
     if (player == null || player.rubles < price) return
 
     // TANK ABILITY: Cannot control any Collective Farm properties
-    const collectiveFarmSpaces = [6, 8, 9]
-    if (player.piece === 'tank' && collectiveFarmSpaces.includes(spaceId)) {
+    if (player.piece === 'tank' && (COLLECTIVE_FARM_SPACE_IDS as readonly number[]).includes(spaceId)) {
       const space = getSpaceById(spaceId)
       get().addLogEntry({
         type: 'system',
@@ -112,7 +112,7 @@ export const createPropertySlice: StateCreator<
     if (property?.custodianId == null) return
 
     const space = getSpaceById(spaceId)
-    const mortgageValue = Math.floor((space?.baseCost ?? 0) * 0.5)
+    const mortgageValue = Math.floor((space?.baseCost ?? 0) * MORTGAGE_VALUE_RATIO)
 
     // Give player half the base cost
     const player = state.players.find((p) => p.id === property.custodianId)
@@ -142,7 +142,7 @@ export const createPropertySlice: StateCreator<
     if (property == null || player == null) return
 
     const space = getSpaceById(spaceId)
-    const unmortgageCost = Math.floor((space?.baseCost ?? 0) * 0.6)
+    const unmortgageCost = Math.floor((space?.baseCost ?? 0) * UNMORTGAGE_COST_RATIO)
 
     if (player.rubles < unmortgageCost) return
 
