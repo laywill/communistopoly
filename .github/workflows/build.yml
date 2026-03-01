@@ -1,5 +1,5 @@
 ---
-name: Vitest
+name: Build
 
 on: # yamllint disable-line rule:truthy
   push:
@@ -19,8 +19,8 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    name: Run Vitest Tests
+  build:
+    name: TypeScript Build
     runs-on: ubuntu-latest
 
     steps:
@@ -36,5 +36,5 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Tests with Coverage
-        run: npm run test:coverage
+      - name: Build
+        run: npm run build
