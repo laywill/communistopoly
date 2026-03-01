@@ -521,6 +521,80 @@ describe('gameStore - Five Year Plan', () => {
     })
   })
 
+  describe('Five Year Plan failure - all players protected', () => {
+    it('should handle failure gracefully when all eligible players have Tank immunity', () => {
+      useGameStore.getState().resetGame()
+
+      const { initializePlayers } = useGameStore.getState()
+      initializePlayers([
+        { name: 'Tank 1', piece: 'tank', isStalin: false },
+        { name: 'Tank 2', piece: 'tank', isStalin: false },
+        { name: 'Stalin', piece: null, isStalin: true }
+      ])
+
+      const { players, updatePlayer, initiateFiveYearPlan } = useGameStore.getState()
+      updatePlayer(players[0].id, { rubles: 200 })
+      updatePlayer(players[1].id, { rubles: 100 })
+
+      // Initiate a Five Year Plan that will fail
+      initiateFiveYearPlan(1000, 10)
+
+      // Don't contribute - plan will fail
+      // Both eligible players are Tanks with unused immunity
+      useGameStore.getState().resolveFiveYearPlan()
+
+      const state = useGameStore.getState()
+
+      // Plan should be resolved
+      expect(state.activeFiveYearPlan).toBeNull()
+
+      // The poorest Tank should have had immunity consumed (counts as punishment)
+      const tank2 = state.players.find(p => p.id === players[1].id)
+      expect(tank2?.hasUsedTankGulagImmunity).toBe(true)
+      expect(tank2?.inGulag).toBe(false)
+
+      // Second Tank should NOT have been punished (first Tank's redirect counted)
+      const tank1 = state.players.find(p => p.id === players[0].id)
+      expect(tank1?.hasUsedTankGulagImmunity).toBe(false)
+      expect(tank1?.inGulag).toBe(false)
+
+      // Verify failure log was generated
+      const failureLog = state.gameLog.find(log => log.message.includes('FAILED'))
+      expect(failureLog).toBeDefined()
+    })
+
+    it('should resolve without crash when no eligible players exist (all in Gulag)', () => {
+      useGameStore.getState().resetGame()
+
+      const { initializePlayers } = useGameStore.getState()
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false },
+        { name: 'Player 2', piece: 'hammer', isStalin: false },
+        { name: 'Stalin', piece: null, isStalin: true }
+      ])
+
+      const { players, updatePlayer, sendToGulag, initiateFiveYearPlan } = useGameStore.getState()
+      updatePlayer(players[0].id, { rubles: 200 })
+      updatePlayer(players[1].id, { rubles: 100 })
+
+      // Send all eligible players to Gulag (they'll be filtered out as inGulag)
+      sendToGulag(players[0].id, 'stalinDecree')
+      sendToGulag(players[1].id, 'stalinDecree')
+
+      initiateFiveYearPlan(1000, 10)
+      useGameStore.getState().resolveFiveYearPlan()
+
+      const state = useGameStore.getState()
+
+      // Plan should be resolved without crash
+      expect(state.activeFiveYearPlan).toBeNull()
+
+      // Both players should still be in Gulag (no one was punished further)
+      expect(state.players.find(p => p.id === players[0].id)?.inGulag).toBe(true)
+      expect(state.players.find(p => p.id === players[1].id)?.inGulag).toBe(true)
+    })
+  })
+
   describe('Tank Piece Ability - Gulag Immunity', () => {
     const setupTankPlayer = () => {
       const { initializePlayers } = useGameStore.getState()
