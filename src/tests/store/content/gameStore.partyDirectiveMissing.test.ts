@@ -748,14 +748,14 @@ describe('gameStore - Party Directive: Missing Card Coverage', () => {
         expect(state.pendingAction?.type).toBe('tribunal')
       })
 
-      it('should set turnPhase to awaiting-action', () => {
+      it('should set turnPhase to resolving', () => {
         const { applyDirectiveEffect, players } = useGameStore.getState()
         const player = players[0]
 
         applyDirectiveEffect(denouncedCard, player.id)
 
         const state = useGameStore.getState()
-        expect(state.turnPhase).toBe('awaiting-action')
+        expect(state.turnPhase).toBe('resolving')
       })
 
       it('should set isAnonymous to true in pending action data', () => {

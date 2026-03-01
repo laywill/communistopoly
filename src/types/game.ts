@@ -218,6 +218,7 @@ export type PendingActionType =
   | 'ministry-truth-approval'
   | 'kgb-test-preview'
   | 'pravda-press-revote'
+  | 'tribunal'
 
 export interface PendingAction {
   type: PendingActionType
