@@ -62,7 +62,7 @@ export const InformOnPlayerModal: React.FC<InformOnPlayerModalProps> = ({ inform
 
   const handleConfirmGuilty = () => {
     const target = players.find((p) => p.id === selectedTargetId);
-    if (!target) return;
+    if (!target || selectedTargetId === null) return;
 
     setShowConfirmation(false);
     setVerdict('guilty');
