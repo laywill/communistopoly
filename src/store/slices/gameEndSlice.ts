@@ -4,6 +4,10 @@
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
 import type { GameEndCondition } from '../../types/game'
+import { calculateTotalWealth } from '../helpers/wealthCalculation'
+
+// Constants
+const GAME_TIMEOUT_MS = 3 * 60 * 60 * 1000 // 3 hours
 
 // Slice state interface
 export interface GameEndSliceState {
@@ -61,6 +65,17 @@ export const createGameEndSlice: StateCreator<
       return 'stalinWins'
     }
 
+    // Timeout: game has lasted 3+ hours - wealthiest player wins
+    const elapsed = Date.now() - state.gameStatistics.gameStartTime.getTime()
+    if (elapsed >= GAME_TIMEOUT_MS) {
+      const wealthiest = activePlayers.reduce((richest, p) =>
+        calculateTotalWealth(p, state.properties) > calculateTotalWealth(richest, state.properties)
+          ? p : richest
+      )
+      get().endGame('timeout', wealthiest.id)
+      return 'timeout'
+    }
+
     return null
   },
 
@@ -77,7 +92,7 @@ export const createGameEndSlice: StateCreator<
 
     get().addLogEntry({
       type: 'system',
-      message: `Game Over: ${condition === 'survivor' ? 'Survivor Victory!' : condition === 'stalinWins' ? 'Stalin Wins!' : condition === 'unanimous' ? 'Unanimous Vote to End' : 'Game Ended'}`
+      message: `Game Over: ${condition === 'survivor' ? 'Survivor Victory!' : condition === 'stalinWins' ? 'Stalin Wins!' : condition === 'timeout' ? 'Time Limit Reached!' : 'Unanimous Vote to End'}`
     })
   },
 

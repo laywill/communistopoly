@@ -145,10 +145,11 @@ export const createGamePhaseSlice: StateCreator<
       }
     })
 
+    const firstNonStalinIndex = players.findIndex(p => !p.isStalin)
     set({
       players,
       stalinPlayerId: stalinPlayer?.id ?? null,
-      currentPlayerIndex: 1, // Start with first non-Stalin player
+      currentPlayerIndex: firstNonStalinIndex >= 0 ? firstNonStalinIndex : 0,
       stateTreasury,
       partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
       partyDirectiveDiscard: [],
@@ -175,9 +176,12 @@ export const createGamePhaseSlice: StateCreator<
     const custodian = state.players.find((p) => p.id === custodianId)
     if (payer == null || custodian == null) return
 
-    // Transfer rubles
+    // Transfer rubles - fetch fresh custodian balance after payer update
     get().updatePlayer(payerId, { rubles: payer.rubles - amount })
-    get().updatePlayer(custodianId, { rubles: custodian.rubles + amount })
+    const freshCustodian = get().players.find(p => p.id === custodianId)
+    if (freshCustodian != null) {
+      get().updatePlayer(custodianId, { rubles: freshCustodian.rubles + amount })
+    }
 
     get().addLogEntry({
       type: 'payment',
