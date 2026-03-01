@@ -115,7 +115,14 @@ export const createTribunalSlice: StateCreator<
     })
   },
 
-  // Get the witness requirement for denouncing a specific player
+  /**
+   * Determines the number of witnesses required to bring a tribunal against a player.
+   *
+   * Requirements vary by rank: proletariat/partyMember need 0, commissar needs 2,
+   * and innerCircle requires unanimous agreement. Players under suspicion always
+   * need 0 witnesses. Heroes of the Soviet Union require unanimous agreement
+   * regardless of rank.
+   */
   getWitnessRequirement: (playerId) => {
     const state = get()
     const player = state.players.find(p => p.id === playerId)
