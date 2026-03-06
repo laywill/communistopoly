@@ -9,7 +9,6 @@ import {
   calculateUtilityFee,
   canPurchaseProperty,
   getRankDiscount,
-  calculateTotalWealth,
   canImproveProperty,
   getRailwayCount,
   getUtilityCount
@@ -192,67 +191,6 @@ describe('propertyUtils', () => {
 
     it('should return 50% discount for inner circle', () => {
       expect(getRankDiscount('innerCircle')).toBe(0.5)
-    })
-  })
-
-  describe('calculateTotalWealth', () => {
-    it('should calculate wealth as just rubles when player has no properties', () => {
-      const player = createTestPlayer({ rubles: 1500, properties: [] })
-      const properties: Property[] = []
-      const wealth = calculateTotalWealth(player, properties)
-      expect(wealth).toBe(1500)
-    })
-
-    it('should include base property values in wealth calculation', () => {
-      const player = createTestPlayer({
-        rubles: 1500,
-        properties: ['1', '3'] // Siberian properties
-      })
-      const properties: Property[] = [
-        createTestProperty(1, { custodianId: 'player-1' }), // Camp Vorkuta - 60 rubles
-        createTestProperty(3, { custodianId: 'player-1' })  // Camp Kolyma - 60 rubles
-      ]
-      const wealth = calculateTotalWealth(player, properties)
-      expect(wealth).toBe(1500 + 60 + 60) // 1620
-    })
-
-    it('should include collectivization value in wealth calculation', () => {
-      const player = createTestPlayer({
-        rubles: 1500,
-        properties: ['1']
-      })
-      const properties: Property[] = [
-        createTestProperty(1, { custodianId: 'player-1', collectivizationLevel: 3 }) // 60 base + 300 improvements
-      ]
-      const wealth = calculateTotalWealth(player, properties)
-      expect(wealth).toBe(1500 + 60 + 300) // 1860
-    })
-
-    it('should handle multiple properties with different collectivization levels', () => {
-      const player = createTestPlayer({
-        rubles: 2000,
-        properties: ['1', '3', '6']
-      })
-      const properties: Property[] = [
-        createTestProperty(1, { custodianId: 'player-1', collectivizationLevel: 2 }), // 60 + 200
-        createTestProperty(3, { custodianId: 'player-1', collectivizationLevel: 0 }), // 60 + 0
-        createTestProperty(6, { custodianId: 'player-1', collectivizationLevel: 4 })  // 100 + 400
-      ]
-      const wealth = calculateTotalWealth(player, properties)
-      expect(wealth).toBe(2000 + 60 + 200 + 60 + 0 + 100 + 400) // 2820
-    })
-
-    it('should ignore properties not owned by player', () => {
-      const player = createTestPlayer({
-        rubles: 1500,
-        properties: ['1']
-      })
-      const properties: Property[] = [
-        createTestProperty(1, { custodianId: 'player-1' }), // Owned
-        createTestProperty(3, { custodianId: 'player-2' })  // Not owned
-      ]
-      const wealth = calculateTotalWealth(player, properties)
-      expect(wealth).toBe(1500 + 60) // Only includes property 1
     })
   })
 

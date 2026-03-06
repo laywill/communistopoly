@@ -144,36 +144,6 @@ export function getRankDiscount (rank: PartyRank): number {
 }
 
 /**
- * Calculate total wealth of a player (for tax purposes)
- */
-export function calculateTotalWealth (
-  player: Player,
-  properties: Property[]
-): number {
-  let wealth = player.rubles
-
-  // Add property values
-  for (const propertyId of player.properties) {
-    const spaceId = parseInt(propertyId)
-    const space = getSpaceById(spaceId)
-    const property = properties.find((p) => p.spaceId === spaceId)
-
-    if ((space?.baseCost != null) && (space.baseCost > 0)) {
-      // Base cost
-      wealth += space.baseCost
-
-      // Add collectivization value
-      if (property != null) {
-        const improvementCost = property.collectivizationLevel * 100
-        wealth += improvementCost
-      }
-    }
-  }
-
-  return wealth
-}
-
-/**
  * Check if a property can be improved
  */
 export function canImproveProperty (

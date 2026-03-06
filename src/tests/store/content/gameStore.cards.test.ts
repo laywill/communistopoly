@@ -119,7 +119,7 @@ describe('gameStore - Cards & Questions', () => {
       const question = drawCommunistTest()
 
       const state = useGameStore.getState()
-      expect(state.communistTestUsedQuestions.has(question.id)).toBe(true)
+      expect(state.communistTestUsedQuestions.includes(question.id)).toBe(true)
     })
 
     it('should track multiple used questions', () => {
@@ -130,10 +130,10 @@ describe('gameStore - Cards & Questions', () => {
       const q3 = drawCommunistTest()
 
       const state = useGameStore.getState()
-      expect(state.communistTestUsedQuestions.has(q1.id)).toBe(true)
-      expect(state.communistTestUsedQuestions.has(q2.id)).toBe(true)
-      expect(state.communistTestUsedQuestions.has(q3.id)).toBe(true)
-      expect(state.communistTestUsedQuestions.size).toBe(3)
+      expect(state.communistTestUsedQuestions.includes(q1.id)).toBe(true)
+      expect(state.communistTestUsedQuestions.includes(q2.id)).toBe(true)
+      expect(state.communistTestUsedQuestions.includes(q3.id)).toBe(true)
+      expect(state.communistTestUsedQuestions.length).toBe(3)
     })
   })
 

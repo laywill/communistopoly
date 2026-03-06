@@ -17,7 +17,7 @@ import { applyDirectiveEffectHandler } from '../helpers/directiveEffectHandlers'
 export interface CardSliceState {
   partyDirectiveDeck: string[]
   partyDirectiveDiscard: string[]
-  communistTestUsedQuestions: Set<string>
+  communistTestUsedQuestions: string[]
 }
 
 // Slice actions interface
@@ -37,7 +37,7 @@ export type CardSlice = CardSliceState & CardSliceActions
 export const initialCardState: CardSliceState = {
   partyDirectiveDeck: [],
   partyDirectiveDiscard: [],
-  communistTestUsedQuestions: new Set<string>()
+  communistTestUsedQuestions: []
 }
 
 // Slice creator with full typing
@@ -91,7 +91,7 @@ export const createCardSlice: StateCreator<
     const allQuestions = COMMUNIST_TEST_QUESTIONS_BY_DIFFICULTY[selectedDifficulty]
 
     // Filter out already-used questions
-    const availableQuestions = allQuestions.filter(q => !state.communistTestUsedQuestions.has(q.id))
+    const availableQuestions = allQuestions.filter(q => !state.communistTestUsedQuestions.includes(q.id))
 
     // If all questions have been used, reset the used set and use all questions
     const questionsToUse = availableQuestions.length > 0 ? availableQuestions : allQuestions
@@ -102,9 +102,8 @@ export const createCardSlice: StateCreator<
 
     // Mark question as used
     const newUsedQuestions = availableQuestions.length > 0
-      ? new Set<string>(state.communistTestUsedQuestions)
-      : new Set<string>()  // Reset if we exhausted all questions
-    newUsedQuestions.add(question.id)
+      ? [...state.communistTestUsedQuestions, question.id]
+      : [question.id]  // Reset if we exhausted all questions
 
     set({ communistTestUsedQuestions: newUsedQuestions })
 

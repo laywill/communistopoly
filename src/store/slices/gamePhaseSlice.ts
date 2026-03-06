@@ -34,6 +34,7 @@ export interface GamePhaseSliceActions {
   resetGame: () => void
   initializePlayers: (playerSetups: { name: string, piece: Player['piece'], isStalin: boolean }[]) => void
   payQuota: (payerId: string, custodianId: string, amount: number) => void
+  recoverStuckTurnPhase: () => void
 }
 
 // Combined slice type
@@ -154,7 +155,7 @@ export const createGamePhaseSlice: StateCreator<
       stateTreasury,
       partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
       partyDirectiveDiscard: [],
-      communistTestUsedQuestions: new Set(),
+      communistTestUsedQuestions: [],
       gameStatistics: {
         gameStartTime: new Date(),
         totalTurns: 0,
@@ -189,5 +190,28 @@ export const createGamePhaseSlice: StateCreator<
       message: `${payer.name} paid ₽${String(amount)} quota to ${custodian.name}`,
       playerId: payerId
     })
+  },
+
+  // Recover from intermediate turn phases that become unrecoverable after a
+  // page refresh. The persist middleware saves turnPhase but NOT pendingAction,
+  // so if the browser reloads while a modal is open (turnPhase 'resolving',
+  // 'moving', or 'rolling'), the pending action is lost and no UI buttons
+  // appear. This function resets the turn to 'post-turn' so the player can
+  // continue via End Turn.
+  recoverStuckTurnPhase: () => {
+    const state = get()
+    if (state.gamePhase !== 'playing') return
+
+    const stuckPhases = ['rolling', 'moving', 'resolving'] as const
+    const isStuck = (stuckPhases as readonly string[]).includes(state.turnPhase)
+
+    if (isStuck && state.pendingAction == null) {
+      set({ turnPhase: 'post-turn', hasRolled: true })
+
+      get().addLogEntry({
+        type: 'system',
+        message: 'Turn recovered after page reload'
+      })
+    }
   }
 })
