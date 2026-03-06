@@ -111,7 +111,13 @@ export const useGameStore = create<GameStore>()(
         activeGreatPurge: state.activeGreatPurge,
         activeFiveYearPlan: state.activeFiveYearPlan,
         heroesOfSovietUnion: state.heroesOfSovietUnion
-      })
+      }),
+      onRehydrateStorage: () => {
+        return (state) => {
+          // Recover from stuck intermediate turn phases after page refresh
+          state?.recoverStuckTurnPhase()
+        }
+      }
     }
   )
 )
