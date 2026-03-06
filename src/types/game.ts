@@ -408,7 +408,7 @@ export interface GameState {
   // Card decks
   partyDirectiveDeck: string[] // Card IDs (shuffled)
   partyDirectiveDiscard: string[] // Used cards
-  communistTestUsedQuestions: Set<string> // Question IDs already used
+  communistTestUsedQuestions: string[] // Question IDs already used
 
   // Game end tracking
   gameEndCondition: GameEndCondition | null

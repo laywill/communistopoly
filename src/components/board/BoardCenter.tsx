@@ -84,7 +84,7 @@ const BoardCenter = () => {
             <div className={styles.cardDeck}>
               <div className={styles.cardIcon}>★</div>
               <div className={styles.cardLabel}>Communist<br/>Test</div>
-              <div className={styles.cardCount}>{communistTestUsedQuestions.size} used</div>
+              <div className={styles.cardCount}>{communistTestUsedQuestions.length} used</div>
             </div>
           </div>
         </div>

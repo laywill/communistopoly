@@ -154,7 +154,7 @@ export const createGamePhaseSlice: StateCreator<
       stateTreasury,
       partyDirectiveDeck: shuffleDirectiveDeck().map(card => card.id),
       partyDirectiveDiscard: [],
-      communistTestUsedQuestions: new Set(),
+      communistTestUsedQuestions: [],
       gameStatistics: {
         gameStartTime: new Date(),
         totalTurns: 0,

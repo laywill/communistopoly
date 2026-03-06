@@ -1,6 +1,7 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
+import { useState, useEffect } from 'react';
 import { useGameStore } from '../../store/gameStore';
 import StoyPilferModal from './StoyPilferModal';
 import { PropertyPurchaseModal } from './PropertyPurchaseModal';
@@ -19,9 +20,49 @@ import { BeggingModal } from './BeggingModal';
 import { TradeModal } from './TradeModal';
 import { PartyDirectiveModal } from './PartyDirectiveModal';
 import { CommunistTestModal } from './CommunistTestModal';
+import { DirectiveCard } from '../../data/partyDirectiveCards';
+import { TestQuestion } from '../../data/communistTestQuestions';
 import ConfessionModal from './ConfessionModal';
 import ReviewConfessionModal from './ReviewConfessionModal';
 import { ConfirmationModal } from './ConfirmationModal';
+
+interface DrawPartyDirectiveCaseProps {
+  playerId: string;
+  onClose: () => void;
+}
+
+/** Draws a party directive card exactly once on mount, avoiding render-phase state mutations. */
+function DrawPartyDirectiveCase({ playerId, onClose }: DrawPartyDirectiveCaseProps) {
+  const drawPartyDirective = useGameStore((state) => state.drawPartyDirective);
+  const [card, setCard] = useState<DirectiveCard | null>(null);
+
+  useEffect(() => {
+    setCard(drawPartyDirective());
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!card) return null;
+
+  return <PartyDirectiveModal card={card} playerId={playerId} onClose={onClose} />;
+}
+
+interface DrawCommunistTestCaseProps {
+  playerId: string;
+  onClose: () => void;
+}
+
+/** Draws a communist test question exactly once on mount, avoiding render-phase state mutations. */
+function DrawCommunistTestCase({ playerId, onClose }: DrawCommunistTestCaseProps) {
+  const drawCommunistTest = useGameStore((state) => state.drawCommunistTest);
+  const [question, setQuestion] = useState<TestQuestion | null>(null);
+
+  useEffect(() => {
+    setQuestion(drawCommunistTest());
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!question) return null;
+
+  return <CommunistTestModal question={question} testedPlayerId={playerId} onClose={onClose} />;
+}
 
 /**
  * This component renders the appropriate modal based on the current pending action
@@ -30,8 +71,6 @@ export function PendingActionHandler() {
   const pendingAction = useGameStore((state) => state.pendingAction);
   const setPendingAction = useGameStore((state) => state.setPendingAction);
   const currentPlayer = useGameStore((state) => state.players[state.currentPlayerIndex]);
-  const drawPartyDirective = useGameStore((state) => state.drawPartyDirective);
-  const drawCommunistTest = useGameStore((state) => state.drawCommunistTest);
   const approveHammerAbility = useGameStore((state) => state.approveHammerAbility);
   const approveMinistryTruthRewrite = useGameStore((state) => state.approveMinistryTruthRewrite);
 
@@ -207,11 +246,8 @@ export function PendingActionHandler() {
 
     case 'draw-party-directive':
       if (pendingAction.data?.playerId) {
-        // Draw a card from the deck
-        const card = drawPartyDirective();
         return (
-          <PartyDirectiveModal
-            card={card}
+          <DrawPartyDirectiveCase
             playerId={pendingAction.data.playerId as string}
             onClose={handleClose}
           />
@@ -221,12 +257,9 @@ export function PendingActionHandler() {
 
     case 'draw-communist-test':
       if (pendingAction.data?.playerId) {
-        // Draw a question
-        const question = drawCommunistTest();
         return (
-          <CommunistTestModal
-            question={question}
-            testedPlayerId={pendingAction.data.playerId as string}
+          <DrawCommunistTestCase
+            playerId={pendingAction.data.playerId as string}
             onClose={handleClose}
           />
         );
