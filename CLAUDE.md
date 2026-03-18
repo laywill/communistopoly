@@ -40,6 +40,9 @@ npm run test:coverage -- --run  # Coverage report
 npm run build         # Production build
 ```
 
+Do not chain commands after a `cd` command as it forces the user to have to approve each command.
+Instead run the `cd` as a seperate command.
+
 ## File Structure
 ```
 src/
@@ -61,7 +64,3 @@ src/
 ## Locale
 
 Use British english where possible.
-
-## Self Improvement
-
-If you make a mistake or the User has to correct you on something: update your CLAUDE.md so you don't make that mistake again.
