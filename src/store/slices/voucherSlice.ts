@@ -39,7 +39,7 @@ export const createVoucherSlice: StateCreator<
   createVoucher: (prisonerId, voucherId) => {
     const state = get()
     const voucher: VoucherAgreement = {
-      id: `voucher-${String(Date.now())}-${prisonerId}`,
+      id: `voucher-${crypto.randomUUID()}`,
       prisonerId,
       voucherId,
       expiresAtRound: (state.roundNumber) + VOUCHER_EXPIRY_ROUNDS,

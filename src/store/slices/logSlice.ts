@@ -36,7 +36,7 @@ export const createLogSlice: StateCreator<
   addLogEntry: (entry) => {
     const newEntry: LogEntry = {
       ...entry,
-      id: `log-${String(Date.now())}-${String(Math.random())}`,
+      id: `log-${crypto.randomUUID()}`,
       timestamp: new Date()
     }
 
