@@ -137,8 +137,8 @@ export const createDiceSlice: StateCreator<
     const newRound: number = (state.roundNumber) + 1
     set({ roundNumber: newRound })
 
-    // Clear denouncements from last round
-    set({ denouncementsThisRound: [] })
+    // Clear denouncements from last round (delegated to tribunal slice)
+    get().clearDenouncements()
 
     // Reset KGB test preview counter for all players
     state.players.forEach((player) => {

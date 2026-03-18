@@ -23,6 +23,7 @@ export interface TribunalSliceActions {
   advanceTribunalPhase: () => void
   addWitness: (witnessId: string, side: 'for' | 'against') => void
   renderTribunalVerdict: (verdict: TribunalVerdict) => void
+  clearDenouncements: () => void
 }
 
 // Combined slice type
@@ -72,7 +73,7 @@ export const createTribunalSlice: StateCreator<
 
     // Create denouncement record
     const denouncement: Denouncement = {
-      id: `denouncement-${String(Date.now())}`,
+      id: `denouncement-${crypto.randomUUID()}`,
       accuserId,
       accusedId,
       crime,
@@ -85,7 +86,7 @@ export const createTribunalSlice: StateCreator<
 
     // Create tribunal
     const tribunal: ActiveTribunal = {
-      id: `tribunal-${String(Date.now())}`,
+      id: `tribunal-${crypto.randomUUID()}`,
       accuserId,
       accusedId,
       crime,
@@ -305,5 +306,10 @@ export const createTribunalSlice: StateCreator<
 
     // Close tribunal
     set({ activeTribunal: null })
+  },
+
+  // Clear all denouncements from the current round (called at round boundary)
+  clearDenouncements: () => {
+    set({ denouncementsThisRound: [] })
   }
 })

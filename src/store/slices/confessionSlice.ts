@@ -39,7 +39,7 @@ export const createConfessionSlice: StateCreator<
     if (!prisoner?.inGulag) return
 
     const newConfession: Confession = {
-      id: `confession-${String(Date.now())}`,
+      id: `confession-${crypto.randomUUID()}`,
       prisonerId,
       confession,
       timestamp: new Date(),

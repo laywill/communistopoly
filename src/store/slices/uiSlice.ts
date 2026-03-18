@@ -48,7 +48,7 @@ export const createUiSlice: StateCreator<
     if (player == null || player.rubles < amount) return
 
     const bribe: BribeRequest = {
-      id: `bribe-${String(Date.now())}`,
+      id: `bribe-${crypto.randomUUID()}`,
       playerId,
       amount,
       reason,

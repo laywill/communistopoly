@@ -65,7 +65,7 @@ export default function StalinPanel() {
 
   const handleSendToGulag = () => {
     if (selectedPlayer && justification.trim()) {
-      sendToGulag(selectedPlayer, 'stalinDecree', justification);
+      sendToGulag(selectedPlayer, 'stalinDecree', justification.trim());
       setSelectedPlayer('');
       setJustification('');
     }
@@ -107,7 +107,7 @@ export default function StalinPanel() {
   const handleInitiateFiveYearPlan = () => {
     const target = parseInt(fiveYearTarget);
     const duration = parseInt(fiveYearDuration);
-    if (!isNaN(target) && !isNaN(duration) && target > 0 && duration > 0) {
+    if (!isNaN(target) && !isNaN(duration) && target > 0 && target <= 99999 && duration > 0 && duration <= 60) {
       initiateFiveYearPlan(target, duration);
     }
   };
@@ -245,6 +245,7 @@ export default function StalinPanel() {
                   value={justification}
                   onChange={(e) => { setJustification(e.target.value); }}
                   rows={3}
+                  maxLength={200}
                 />
 
                 <button
@@ -318,6 +319,7 @@ export default function StalinPanel() {
                   value={demoteJustification}
                   onChange={(e) => { setDemoteJustification(e.target.value); }}
                   rows={2}
+                  maxLength={200}
                   style={{ marginBottom: '8px' }}
                 />
                 <button
@@ -373,6 +375,8 @@ export default function StalinPanel() {
                     placeholder="Target ₽"
                     value={fiveYearTarget}
                     onChange={(e) => { setFiveYearTarget(e.target.value); }}
+                    min={1}
+                    max={99999}
                     style={{ flex: 1, padding: '8px' }}
                   />
                   <input
@@ -380,6 +384,8 @@ export default function StalinPanel() {
                     placeholder="Minutes"
                     value={fiveYearDuration}
                     onChange={(e) => { setFiveYearDuration(e.target.value); }}
+                    min={1}
+                    max={60}
                     style={{ flex: 1, padding: '8px' }}
                   />
                 </div>

@@ -43,19 +43,16 @@ describe('gameStore - Confession System', () => {
       expect(state.confessions[0].reviewed).toBe(false)
     })
 
-    it('should generate unique confession ID', () => {
+    it('should generate unique confession ID with UUID format', () => {
       const { submitConfession, sendToGulag, players } = useGameStore.getState()
       const prisoner = players[0]
 
       sendToGulag(prisoner.id, 'campLabour')
 
-      const now = Date.now()
-      vi.setSystemTime(now)
-
       submitConfession(prisoner.id, 'First confession')
 
       const state = useGameStore.getState()
-      expect(state.confessions[0].id).toBe(`confession-${now.toString()}`)
+      expect(state.confessions[0].id).toMatch(/^confession-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
     })
 
     it('should set confession timestamp', () => {

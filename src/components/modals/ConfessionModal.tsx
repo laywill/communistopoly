@@ -23,7 +23,7 @@ export default function ConfessionModal({ prisonerId, onClose }: ConfessionModal
       return;
     }
 
-    submitConfession(prisonerId, confession);
+    submitConfession(prisonerId, confession.trim());
     onClose();
   };
 
