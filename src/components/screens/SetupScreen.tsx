@@ -75,7 +75,8 @@ export default function SetupScreen() {
   const handleBeginGame = () => {
     if (!isValid()) return;
 
-    initializePlayers(players);
+    const trimmedPlayers = players.map(p => ({ ...p, name: p.name.trim() }));
+    initializePlayers(trimmedPlayers);
     setGamePhase('playing');
   };
 
@@ -134,6 +135,7 @@ export default function SetupScreen() {
                     onChange={(e) => { handleNameChange(index, e.target.value); }}
                     placeholder="Enter name..."
                     className="player-input"
+                    maxLength={20}
                   />
                 </div>
 

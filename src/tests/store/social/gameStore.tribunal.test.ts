@@ -813,4 +813,47 @@ describe('Denouncement & Tribunal System', () => {
       expect(updatedAccuser?.rubles).toBe(initialRubles + 100)
     })
   })
+
+  describe('clearDenouncements', () => {
+    it('should clear all denouncements from the current round', () => {
+      const store = useGameStore.getState()
+
+      store.initializePlayers([
+        { name: 'Player 1', piece: 'hammer', isStalin: false },
+        { name: 'Player 2', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1, player2] = useGameStore.getState().players
+
+      // Add some denouncements
+      useGameStore.setState({
+        denouncementsThisRound: [
+          { id: 'test-1', accuserId: player1.id, accusedId: player2.id, crime: 'Test', timestamp: new Date(), roundNumber: 1 },
+          { id: 'test-2', accuserId: player2.id, accusedId: player1.id, crime: 'Test 2', timestamp: new Date(), roundNumber: 1 }
+        ]
+      })
+
+      expect(useGameStore.getState().denouncementsThisRound).toHaveLength(2)
+
+      // Call clearDenouncements
+      useGameStore.getState().clearDenouncements()
+
+      expect(useGameStore.getState().denouncementsThisRound).toHaveLength(0)
+    })
+
+    it('should be a no-op when there are no denouncements', () => {
+      const store = useGameStore.getState()
+
+      store.initializePlayers([
+        { name: 'Player 1', piece: 'hammer', isStalin: false }
+      ])
+
+      expect(useGameStore.getState().denouncementsThisRound).toHaveLength(0)
+
+      // Should not throw
+      useGameStore.getState().clearDenouncements()
+
+      expect(useGameStore.getState().denouncementsThisRound).toHaveLength(0)
+    })
+  })
 })

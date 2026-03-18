@@ -46,7 +46,7 @@ export const createDebtAndEliminationSlice: StateCreator<
     if (debtor == null) return
 
     const debt = {
-      id: `debt-${String(Date.now())}`,
+      id: `debt-${crypto.randomUUID()}`,
       debtorId,
       creditorId,
       amount,

@@ -42,7 +42,7 @@ export const createTradeSlice: StateCreator<
     if ((fromPlayer == null) || (toPlayer == null)) return
 
     const tradeOffer: TradeOffer = {
-      id: `trade-${String(Date.now())}`,
+      id: `trade-${crypto.randomUUID()}`,
       fromPlayerId,
       toPlayerId,
       offering: items.offering,
