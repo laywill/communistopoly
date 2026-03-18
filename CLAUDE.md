@@ -41,7 +41,7 @@ npm run build         # Production build
 ```
 
 Do not chain commands after a `cd` command as it forces the user to have to approve each command.
-Instead run the `cd` as a seperate command.
+Instead run the `cd` as a separate command.
 
 ## File Structure
 ```
