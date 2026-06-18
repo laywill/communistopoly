@@ -34,7 +34,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --force
 
       - name: Run eslint
         run: npx eslint
