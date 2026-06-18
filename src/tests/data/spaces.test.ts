@@ -100,7 +100,7 @@ describe('Spaces Filter Functions', () => {
       expect(propertyGroups.length).toBeGreaterThan(0)
 
       propertyGroups.forEach(group => {
-        const properties = getPropertiesByGroup(group as string)
+        const properties = getPropertiesByGroup(group)
         expect(properties.length).toBeGreaterThan(0)
         expect(properties.every(space => space.type === 'property')).toBe(true)
         expect(properties.every(space => space.group === group)).toBe(true)
