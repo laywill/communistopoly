@@ -137,7 +137,7 @@ describe('Property Group Abilities', () => {
       store.updatePlayer(custodian.id, { hasUsedSiberianCampsGulag: true })
 
       // Mock Stalin's approval
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
 
       // Execute
       store.siberianCampsGulag(custodian.id, target.id)
@@ -147,7 +147,7 @@ describe('Property Group Abilities', () => {
       expect(updatedTarget?.inGulag).toBe(false)
 
       // Verify confirm was not called
-      expect(window.confirm).not.toHaveBeenCalled()
+      expect(confirmSpy).not.toHaveBeenCalled()
     })
 
     it('should handle invalid custodian ID gracefully', () => {
@@ -440,7 +440,7 @@ describe('Property Group Abilities', () => {
       store.setPropertyCustodian(19, custodian.id)
       store.updatePlayer(custodian.id, { hasUsedMinistryTruthRewrite: true })
 
-      vi.spyOn(window, 'confirm').mockReturnValue(true)
+      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
 
       const newRule = 'Test rule'
 
@@ -448,7 +448,7 @@ describe('Property Group Abilities', () => {
       store.ministryTruthRewrite(custodian.id, newRule)
 
       // Verify confirm was not called (ability already used)
-      expect(window.confirm).not.toHaveBeenCalled()
+      expect(confirmSpy).not.toHaveBeenCalled()
     })
 
     it('should handle invalid custodian ID gracefully', () => {
