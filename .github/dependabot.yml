@@ -26,32 +26,59 @@ updates:
       - "dependencies"
       - "chore"
     groups:
-      typescript-eslint:
+      # The ESLint + TypeScript toolchain is peer-coupled: eslint,
+      # typescript-eslint, the eslint plugins and the TypeScript compiler
+      # all constrain one another, so they must move together. Keeping them
+      # in one group avoids inconsistent partial upgrades (e.g. bumping
+      # TypeScript without a matching typescript-eslint that supports it).
+      linting-and-types:
         patterns:
+          - "eslint"
+          - "@eslint/*"
           - "@typescript-eslint/*"
           - "typescript-eslint"
+          - "eslint-plugin-*"
+          - "typescript"
+        update-types:
+          - "minor"
+          - "patch"
       vite-ecosystem:
         patterns:
           - "vite"
           - "@vitejs/*"
+        update-types:
+          - "minor"
+          - "patch"
       vitest-ecosystem:
         patterns:
           - "vitest"
           - "@vitest/*"
-      eslint-plugins:
-        patterns:
-          - "eslint-plugin-*"
+        update-types:
+          - "minor"
+          - "patch"
       testing:
         patterns:
           - "@testing-library/*"
+        update-types:
+          - "minor"
+          - "patch"
       react:
         patterns:
           - "react"
           - "react-dom"
           - "@types/react*"
+        update-types:
+          - "minor"
+          - "patch"
+      # Everything else, minor and patch only. Major upgrades are excluded
+      # from all groups so they arrive as individual PRs for deliberate,
+      # isolated review rather than blocking a batch of routine updates.
       other-dependencies:
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"
   # Maintain dependencies for Devcontainer dependencies
   - package-ecosystem: "devcontainers"
     directory: "/"
