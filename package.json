@@ -22,7 +22,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@eslint/create-config": "^1.11.0",
+    "@eslint/create-config": "^2.0.0",
     "@eslint/js": "^9.39.2",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
