@@ -24,7 +24,7 @@
   "devDependencies": {
     "@eslint/create-config": "^2.0.0",
     "@eslint/js": "^9.39.2",
-    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^26.1.2",
     "@types/react-dom": "^19.2.4",
