@@ -19,7 +19,7 @@
   "dependencies": {
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "zustand": "^5.0.11"
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@eslint/create-config": "^2.0.0",
@@ -37,7 +37,7 @@
     "eslint-plugin-react-refresh": "^0.5.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint": "^9.39.2",
-    "globals": "^17.10.0",
+    "globals": "^17.11.0",
     "jsdom": "^30.0.1",
     "typescript-eslint": "^8.67.0",
     "typescript": "^6.0.3",
