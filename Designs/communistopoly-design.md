@@ -846,9 +846,12 @@ A scrolling log of all game events, styled as official Soviet records:
 - [ ] Background textures (paper, worn)
 
 ## Fonts to Include
-- [ ] Oswald (or Bebas Neue)
-- [ ] Roboto Condensed
-- [ ] Roboto Mono
+All three are loaded via Google Fonts in `index.html` and wired to the `--font-*` custom properties
+in `src/index.css`.
+
+- [x] Oswald (or Bebas Neue)
+- [x] Roboto Condensed
+- [x] Roboto Mono
 
 ## Optional Audio Assets
 - [ ] Dice roll sound

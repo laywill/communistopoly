@@ -1220,11 +1220,14 @@ volumes:
 
 Build the game in this order for best results:
 
+> This is the original build ordering, retained for reference. It is not a live progress tracker —
+> the game is complete and playable (see `README.md`).
+
 ## Phase 1: Foundation
-1. ✅ Project setup (Vite, TypeScript, folder structure)
-2. ✅ CSS variables and base styling
-3. ✅ Board rendering (the hardest visual part)
-4. ✅ Basic player tokens on board
+1. Project setup (Vite, TypeScript, folder structure)
+2. CSS variables and base styling
+3. Board rendering (the hardest visual part)
+4. Basic player tokens on board
 
 ## Phase 2: Core Game Loop
 5. Game state context and reducer
