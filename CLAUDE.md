@@ -83,7 +83,7 @@ src/
     ├── integration/  # Cross-slice integration tests
     ├── utils/        # Utility tests
     └── store/        # Store slice tests
-        ├── core/     # Initialization, movement, turn flow
+        ├── core/     # Initialisation, movement, turn flow
         ├── economy/  # Debt, property, trading
         ├── social/   # Gulag, tribunal, voting
         └── content/  # Cards, abilities

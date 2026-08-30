@@ -4,8 +4,8 @@
 > (1 March 2026). `src/store/gameStore.ts` is now a 123-line composition root with no business
 > logic, assembling the 20 slices in `src/store/slices/`.
 >
-> **Refactor 2 (SERVICES) is deliberately deferred and unstarted** — a standing decision, not an
-> oversight. See the "Refactor 2: SERVICES" section below for the criteria that would justify
+> **Refactor 2 (SERVICES) is deliberately deferred and not yet started** — a standing decision, not
+> an oversight. See the "Refactor 2: SERVICES" section below for the criteria that would justify
 > revisiting it.
 >
 > This document is retained as design rationale. Descriptions of the pre-refactor monolith below are
