@@ -26,7 +26,7 @@ it — so it does not go stale the way a copied snippet does.
 ## 2. Technology Stack
 
 | Layer     | Choice                                                  |
-| --------- | ------------------------------------------------------- |
+|-----------|---------------------------------------------------------|
 | Framework | React 19, TypeScript                                    |
 | Bundler   | Vite 8                                                  |
 | Styling   | CSS Modules, plus plain CSS for a handful of components |
@@ -85,7 +85,7 @@ communistopoly/
 `gamePhase: 'welcome' | 'setup' | 'playing' | 'ended'`:
 
 | Phase     | Component                                  |
-| --------- | ------------------------------------------ |
+|-----------|--------------------------------------------|
 | `welcome` | `src/components/screens/WelcomeScreen.tsx` |
 | `setup`   | `src/components/screens/SetupScreen.tsx`   |
 | `playing` | `src/components/screens/GameScreen.tsx`    |
@@ -153,7 +153,7 @@ type safety.
 All 20 slices in `src/store/slices/`:
 
 | Slice                     | Responsibility                                        |
-| ------------------------- | ----------------------------------------------------- |
+|---------------------------|-------------------------------------------------------|
 | `cardSlice`               | Party Directive / Communist Test deck state and draws |
 | `confessionSlice`         | Rehabilitation confessions                            |
 | `debtAndEliminationSlice` | Debt tracking, bankruptcy, player elimination         |

@@ -23,7 +23,7 @@ The visual design draws from **Soviet Constructivist propaganda art** (1920s-195
 ## Primary Colors
 
 | Name                 | Hex       | RGB           | Token                      | Usage                                                    |
-| -------------------- | --------- | ------------- | -------------------------- | -------------------------------------------------------- |
+|----------------------|-----------|---------------|----------------------------|----------------------------------------------------------|
 | **Soviet Red**       | `#C41E3A` | 196, 30, 58   | `--color-soviet-red`       | Primary accent, headers, important buttons, board border |
 | **Kremlin Gold**     | `#D4A84B` | 212, 168, 75  | `--color-kremlin-gold`     | Secondary accent, highlights, rank badges, currency      |
 | **Propaganda Black** | `#1A1A1A` | 26, 26, 26    | `--color-propaganda-black` | Text, borders, shadows                                   |
@@ -33,7 +33,7 @@ The visual design draws from **Soviet Constructivist propaganda art** (1920s-195
 ## Secondary Colors
 
 | Name               | Hex       | RGB          | Token                    | Usage                                     |
-| ------------------ | --------- | ------------ | ------------------------ | ----------------------------------------- |
+|--------------------|-----------|--------------|--------------------------|-------------------------------------------|
 | **Gulag Grey**     | `#4A4A4A` | 74, 74, 74   | `--color-gulag-grey`     | Disabled states, Gulag UI, secondary text |
 | **Steel Blue**     | `#2C3E50` | 44, 62, 80   | `--color-steel-blue`     | Stalin's interface, authority elements    |
 | **Military Olive** | `#4A5D23` | 74, 93, 35   | `--color-military-olive` | Success states, positive feedback         |
@@ -43,7 +43,7 @@ The visual design draws from **Soviet Constructivist propaganda art** (1920s-195
 ## Property Group Colors
 
 | Group                          | Background | Border/Accent | Text      | Token                      |
-| ------------------------------ | ---------- | ------------- | --------- | -------------------------- |
+|--------------------------------|------------|---------------|-----------|----------------------------|
 | Siberian Work Camps (Brown)    | `#8B6914`  | `#5D4E37`     | `#FAF6EF` | `--color-group-siberian`   |
 | Collective Farms (Light Blue)  | `#87CEEB`  | `#5F9EA0`     | `#1A1A1A` | `--color-group-collective` |
 | Industrial Centers (Pink)      | `#DB7093`  | `#C71585`     | `#FAF6EF` | `--color-group-industrial` |
@@ -90,7 +90,7 @@ font-family: 'Roboto Mono', 'Share Tech Mono', 'Courier New', monospace;
 ## Type Scale
 
 | Element          | Size | Weight | Style                             |
-| ---------------- | ---- | ------ | --------------------------------- |
+|------------------|------|--------|-----------------------------------|
 | Game Title       | 48px | 700    | Uppercase, letter-spacing: 0.15em |
 | Section Header   | 28px | 700    | Uppercase, letter-spacing: 0.1em  |
 | Card Title       | 22px | 600    | Uppercase                         |
@@ -108,7 +108,7 @@ of reusable border shorthands as CSS custom properties. Implementation: `src/ind
 ### Spacing Scale
 
 | Name        | Value | Token        |
-| ----------- | ----- | ------------ |
+|-------------|-------|--------------|
 | Extra Small | 4px   | `--space-xs` |
 | Small       | 8px   | `--space-sm` |
 | Medium      | 16px  | `--space-md` |
@@ -118,7 +118,7 @@ of reusable border shorthands as CSS custom properties. Implementation: `src/ind
 ### Border Tokens
 
 | Name     | Value                                     | Token               |
-| -------- | ----------------------------------------- | ------------------- |
+|----------|-------------------------------------------|---------------------|
 | Standard | `2px solid var(--color-propaganda-black)` | `--border-standard` |
 | Gold     | `2px solid var(--color-kremlin-gold)`     | `--border-gold`     |
 | Soviet   | `4px solid var(--color-soviet-red)`       | `--border-soviet`   |
@@ -614,7 +614,7 @@ Stalin gets a special elevated interface, styled as the "Kremlin Command Center.
 Design simple, recognizable silhouette icons (32x32px base, scalable):
 
 | Piece           | Icon Description               |
-| --------------- | ------------------------------ |
+|-----------------|--------------------------------|
 | Hammer          | Classic claw hammer silhouette |
 | Sickle          | Curved farming sickle          |
 | Red Star        | Five-pointed Soviet star       |
@@ -684,7 +684,7 @@ Design simple, recognizable silhouette icons (32x32px base, scalable):
 If implementing audio, use these guidelines:
 
 | Event           | Sound Description             |
-| --------------- | ----------------------------- |
+|-----------------|-------------------------------|
 | Dice Roll       | Wooden dice clatter           |
 | Move            | Footstep or piece sliding     |
 | Purchase        | Cash register / coin drop     |
@@ -706,7 +706,7 @@ If implementing audio, use these guidelines:
 ## Breakpoints
 
 | Size        | Layout Adjustment                                 |
-| ----------- | ------------------------------------------------- |
+|-------------|---------------------------------------------------|
 | < 1024px    | Not supported - show "rotate device" message      |
 | 1024-1279px | Compact mode - smaller board, stacked dashboards  |
 | 1280-1699px | Standard mode - side-by-side layout               |
