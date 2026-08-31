@@ -68,10 +68,10 @@ For detailed setup instructions, see the [How to Play Guide](docs/how-to-play.md
 
 ## Technology Stack
 
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite 7.3
-- **Styling**: CSS with CSS Modules
-- **State Management**: Zustand with persistence middleware
+- **Framework**: React 19 with TypeScript
+- **Build Tool**: Vite 8
+- **Styling**: CSS Modules, plus plain CSS for a handful of components
+- **State Management**: Zustand 5, with the `persist` middleware for save/load
 - **Type Safety**: TypeScript strict mode
 - **Fonts**: Google Fonts (Oswald, Roboto Condensed, Roboto Mono)
 
