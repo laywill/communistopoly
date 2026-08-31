@@ -28,9 +28,9 @@ it — so it does not go stale the way a copied snippet does.
 | Layer     | Choice                                                  |
 |-----------|---------------------------------------------------------|
 | Framework | React, TypeScript                                       |
-| Bundler   | Vite                                                   |
+| Bundler   | Vite                                                    |
 | Styling   | CSS Modules, plus plain CSS for a handful of components |
-| State     | Zustand, with the `persist` middleware                 |
+| State     | Zustand, with the `persist` middleware                  |
 | Fonts     | Google Fonts (Oswald, Roboto Condensed, Roboto Mono)    |
 | Testing   | Vitest + React Testing Library, on jsdom                |
 
