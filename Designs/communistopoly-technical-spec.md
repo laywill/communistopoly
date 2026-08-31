@@ -27,15 +27,15 @@ it — so it does not go stale the way a copied snippet does.
 
 | Layer     | Choice                                                  |
 |-----------|---------------------------------------------------------|
-| Framework | React 19, TypeScript                                    |
-| Bundler   | Vite 8                                                  |
+| Framework | React, TypeScript                                       |
+| Bundler   | Vite                                                   |
 | Styling   | CSS Modules, plus plain CSS for a handful of components |
-| State     | Zustand 5, with the `persist` middleware                |
+| State     | Zustand, with the `persist` middleware                 |
 | Fonts     | Google Fonts (Oswald, Roboto Condensed, Roboto Mono)    |
-| Testing   | Vitest 4 + React Testing Library, on jsdom              |
+| Testing   | Vitest + React Testing Library, on jsdom                |
 
-Versions are deliberately given as majors only. `package.json` is the source of truth for exact
-versions — restating them here is how the previous version of this document went stale.
+Exact versions live in `package.json` — restating them here is how the previous version of this
+document went stale.
 
 There is no backend and no audio; all state is client-side, held in memory and persisted to
 `localStorage`.
@@ -101,9 +101,9 @@ the phase switch — `RulesModal` on local `showRules` state, `TribunalModal` wh
 
 ### Composition root
 
-`src/store/gameStore.ts` is 123 lines and contains no business logic. It imports every slice
-creator and its `initial*State` object, concatenates the initial states into one `initialState`,
-and wraps the combined slice creators in `persist(...)`.
+`src/store/gameStore.ts` contains no business logic. It imports every slice creator and its
+`initial*State` object, concatenates the initial states into one `initialState`, and wraps the
+combined slice creators in `persist(...)`.
 
 ### The slice pattern
 
