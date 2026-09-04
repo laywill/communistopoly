@@ -3,7 +3,7 @@
 
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
-import { PARTY_DIRECTIVE_CARDS } from '../../data/partyDirectiveCards'
+import { PARTY_DIRECTIVE_CARDS, shuffleDirectiveDeck } from '../../data/partyDirectiveCards'
 import type { DirectiveCard } from '../../data/partyDirectiveCards'
 import {
   getRandomDifficulty,
@@ -55,9 +55,12 @@ export const createCardSlice: StateCreator<
     const state = get()
     let { partyDirectiveDeck, partyDirectiveDiscard } = state
 
-    // If deck is empty, reshuffle discard pile
+    // If deck is empty, reshuffle discard pile using Fisher-Yates.
+    // Every drawn card is pushed to the discard pile (see below), so once the deck
+    // empties the discard pile holds the full set of cards - reshuffling the full
+    // card list is behaviourally equivalent to shuffling the discard pile itself.
     if (partyDirectiveDeck.length === 0) {
-      partyDirectiveDeck = [...partyDirectiveDiscard].sort(() => Math.random() - 0.5)
+      partyDirectiveDeck = shuffleDirectiveDeck().map(card => card.id)
       partyDirectiveDiscard = []
       get().addLogEntry({
         type: 'system',
