@@ -71,7 +71,7 @@ export function PendingActionHandler() {
   const pendingAction = useGameStore((state) => state.pendingAction);
   const setPendingAction = useGameStore((state) => state.setPendingAction);
   const currentPlayer = useGameStore((state) => state.players[state.currentPlayerIndex]);
-  const approveHammerAbility = useGameStore((state) => state.approveHammerAbility);
+  const approveSiberianCampsAbility = useGameStore((state) => state.approveSiberianCampsAbility);
   const approveMinistryTruthRewrite = useGameStore((state) => state.approveMinistryTruthRewrite);
 
   const handleClose = () => {
@@ -287,7 +287,7 @@ export function PendingActionHandler() {
       }
       return null;
 
-    case 'hammer-approval':
+    case 'siberian-camps-approval':
       if (!pendingAction.data) return null;
       if (typeof pendingAction.data.custodianId !== 'string' ||
           typeof pendingAction.data.targetPlayerId !== 'string' ||
@@ -304,7 +304,7 @@ export function PendingActionHandler() {
           variant="stalin"
           onConfirm={() => {
             if (!pendingAction.data) return;
-            approveHammerAbility(
+            approveSiberianCampsAbility(
               pendingAction.data.custodianId as string,
               pendingAction.data.targetPlayerId as string,
               true
@@ -312,7 +312,7 @@ export function PendingActionHandler() {
           }}
           onCancel={() => {
             if (!pendingAction.data) return;
-            approveHammerAbility(
+            approveSiberianCampsAbility(
               pendingAction.data.custodianId as string,
               pendingAction.data.targetPlayerId as string,
               false

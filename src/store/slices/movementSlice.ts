@@ -268,6 +268,15 @@ export const createMovementSlice: StateCreator<
       attempts++
     }
 
+    // If the loop exhausted every player without finding a valid turn-taker,
+    // every non-Stalin comrade has been eliminated - Stalin has won. Route to
+    // the standard game-end path rather than handing the turn to Stalin or an
+    // eliminated player.
+    if (players[nextIndex].isStalin || players[nextIndex].isEliminated) {
+      get().endGame('stalinWins', null)
+      return
+    }
+
     // Check if we've completed a round (cycling back to first non-Stalin player)
     // First non-Stalin player is typically at index 1
     const firstNonStalinIndex: number = players.findIndex((p) => !p.isStalin && !p.isEliminated)
