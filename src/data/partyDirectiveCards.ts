@@ -13,6 +13,9 @@ export type DirectiveEffectType =
   | 'propertyTax' // Pay based on properties and improvements
   | 'custom' // Custom handler (for special cases)
 
+/** Names of the bespoke handler functions a 'custom' DirectiveEffect may dispatch to. */
+export type CustomHandlerType = 'advanceToNearestRailway' | 'triggerAnonymousTribunal'
+
 export interface DirectiveEffect {
   type: DirectiveEffectType
   // Move effects
@@ -30,7 +33,7 @@ export interface DirectiveEffect {
   perImprovement?: number // Amount per collectivization level
 
   // Custom handler
-  handler?: string // Handler function name
+  handler?: CustomHandlerType // Handler function name
 }
 
 export interface DirectiveCard {
