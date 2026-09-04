@@ -3,6 +3,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useGameStore } from '../../../store/gameStore'
+import { BREAD_LOAF_WEALTH_CAP } from '../../../store/constants'
 
 describe('gameStore - Trading System', () => {
   beforeEach(() => {
@@ -468,6 +469,45 @@ describe('gameStore - Trading System', () => {
 
       const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
       expect(updatedPlayer?.rubles).toBe(500) // No change
+    })
+
+    it('should enforce the Bread Loaf wealth cap on rubles received in a trade', () => {
+      const { initializePlayers, proposeTrade, acceptTrade, updatePlayer } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false },
+        { name: 'Player 2', piece: 'breadLoaf', isStalin: false }
+      ])
+
+      const [player1, player2] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { rubles: 2000 })
+      updatePlayer(player2.id, { rubles: 800 })
+
+      const treasuryBefore = useGameStore.getState().stateTreasury
+
+      // Player 2 (Bread Loaf) receives 500 rubles, taking them past the cap
+      proposeTrade(player1.id, player2.id, {
+        offering: { rubles: 500, properties: [], gulagCards: 0, favours: 0 },
+        requesting: { rubles: 0, properties: [], gulagCards: 0, favours: 0 }
+      })
+
+      const tradeId = useGameStore.getState().activeTradeOffers[0].id
+      acceptTrade(tradeId)
+
+      const updatedPlayer2 = useGameStore.getState().players.find(p => p.id === player2.id)
+      expect(updatedPlayer2?.rubles).toBe(BREAD_LOAF_WEALTH_CAP)
+
+      // The excess (800 + 500 - 1000 = 300) should be donated to the State
+      expect(useGameStore.getState().stateTreasury).toBe(treasuryBefore + 300)
+
+      const { gameLog } = useGameStore.getState()
+      const donationLog = gameLog.find(log => log.message.includes('Bread Loaf forces donation'))
+      expect(donationLog).toBeDefined()
+      expect(donationLog?.message).toContain('₽300')
+
+      // The trade-accepted log entry should still be the final entry
+      expect(gameLog[gameLog.length - 1].message).toContain('Player 2 accepted trade from Player 1')
     })
 
     it('should do nothing if fromPlayer does not exist', () => {
