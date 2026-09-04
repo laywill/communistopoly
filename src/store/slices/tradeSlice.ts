@@ -3,7 +3,8 @@
 
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
-import type { TradeOffer, TradeItems } from '../../types/game'
+import type { TradeOffer, TradeItems, Player } from '../../types/game'
+import { BREAD_LOAF_WEALTH_CAP } from '../constants'
 
 // Slice state interface
 export interface TradeSliceState {
@@ -77,54 +78,124 @@ export const createTradeSlice: StateCreator<
     const toPlayer = state.players.find((p) => p.id === trade.toPlayerId)
     if ((fromPlayer == null) || (toPlayer == null)) return
 
+    // Accumulate every player/property change this trade causes so the
+    // whole thing can be committed in a single set() call, rather than the
+    // one set() per field that updatePlayer/transferProperty/
+    // setPropertyCustodian would otherwise each trigger individually.
+    const playerPatches = new Map<string, Player>()
+    const custodianPatches = new Map<number, string>()
+
+    const readPlayer = (id: string): Player | undefined =>
+      playerPatches.get(id) ?? state.players.find((p) => p.id === id)
+
+    const readCustodian = (spaceId: number): string | null | undefined =>
+      custodianPatches.has(spaceId)
+        ? custodianPatches.get(spaceId)
+        : state.properties.find((p) => p.spaceId === spaceId)?.custodianId
+
+    // Mirrors updatePlayer's Bread Loaf wealth-cap enforcement (donating
+    // the excess to the State and logging it), so batching these writes
+    // doesn't change that behaviour.
+    const applyPlayerUpdate = (id: string, updates: Partial<Player>): void => {
+      const player = readPlayer(id)
+      if (player == null) return
+
+      const resolvedUpdates = { ...updates }
+      if (player.piece === 'breadLoaf' && resolvedUpdates.rubles !== undefined && resolvedUpdates.rubles > BREAD_LOAF_WEALTH_CAP) {
+        const excess = resolvedUpdates.rubles - BREAD_LOAF_WEALTH_CAP
+        resolvedUpdates.rubles = BREAD_LOAF_WEALTH_CAP
+
+        get().adjustTreasury(excess)
+        get().addLogEntry({
+          type: 'payment',
+          message: `${player.name}'s Bread Loaf forces donation of ₽${String(excess)} to the State (max ${String(BREAD_LOAF_WEALTH_CAP)}₽)`,
+          playerId: id
+        })
+      }
+
+      playerPatches.set(id, { ...player, ...resolvedUpdates })
+    }
+
+    // Mirrors transferProperty: moves a property's custodianship and keeps
+    // both the old and new owner's `properties` arrays in sync.
+    const applyPropertyTransfer = (propertyId: string, newCustodianId: string): void => {
+      const spaceId = parseInt(propertyId)
+      const propertyExists = state.properties.some((p) => p.spaceId === spaceId)
+      if (!propertyExists) return
+
+      const oldCustodianId = readCustodian(spaceId)
+      custodianPatches.set(spaceId, newCustodianId)
+
+      if (oldCustodianId != null) {
+        const oldOwner = readPlayer(oldCustodianId)
+        if (oldOwner != null) {
+          applyPlayerUpdate(oldCustodianId, { properties: oldOwner.properties.filter((id) => id !== propertyId) })
+        }
+      }
+
+      const newOwner = readPlayer(newCustodianId)
+      if (newOwner != null) {
+        applyPlayerUpdate(newCustodianId, { properties: [...newOwner.properties, propertyId] })
+      }
+    }
+
     // Calculate net ruble transfer
     const fromPlayerRubleChange = -trade.offering.rubles + trade.requesting.rubles
     const toPlayerRubleChange = trade.offering.rubles - trade.requesting.rubles
 
     // Apply ruble changes if any
     if (fromPlayerRubleChange !== 0) {
-      get().updatePlayer(fromPlayer.id, { rubles: fromPlayer.rubles + fromPlayerRubleChange })
+      applyPlayerUpdate(fromPlayer.id, { rubles: fromPlayer.rubles + fromPlayerRubleChange })
     }
     if (toPlayerRubleChange !== 0) {
-      get().updatePlayer(toPlayer.id, { rubles: toPlayer.rubles + toPlayerRubleChange })
+      applyPlayerUpdate(toPlayer.id, { rubles: toPlayer.rubles + toPlayerRubleChange })
     }
 
     trade.offering.properties.forEach((propId) => {
-      get().transferProperty(propId, toPlayer.id)
+      applyPropertyTransfer(propId, toPlayer.id)
     })
 
     if (trade.offering.gulagCards > 0 && fromPlayer.hasFreeFromGulagCard) {
-      get().updatePlayer(fromPlayer.id, { hasFreeFromGulagCard: false })
-      get().updatePlayer(toPlayer.id, { hasFreeFromGulagCard: true })
+      applyPlayerUpdate(fromPlayer.id, { hasFreeFromGulagCard: false })
+      applyPlayerUpdate(toPlayer.id, { hasFreeFromGulagCard: true })
     }
 
     if (trade.offering.favours > 0) {
-      const updatedFavours = fromPlayer.owesFavourTo.filter((id, index) =>
+      const currentFromPlayer = readPlayer(fromPlayer.id) ?? fromPlayer
+      const updatedFavours = currentFromPlayer.owesFavourTo.filter((id, index) =>
         !(id === toPlayer.id && index < trade.offering.favours)
       )
-      get().updatePlayer(fromPlayer.id, { owesFavourTo: updatedFavours })
+      applyPlayerUpdate(fromPlayer.id, { owesFavourTo: updatedFavours })
     }
 
     // Transfer requesting properties
     trade.requesting.properties.forEach((propId) => {
-      get().transferProperty(propId, fromPlayer.id)
+      applyPropertyTransfer(propId, fromPlayer.id)
     })
 
     if (trade.requesting.gulagCards > 0 && toPlayer.hasFreeFromGulagCard) {
-      get().updatePlayer(toPlayer.id, { hasFreeFromGulagCard: false })
-      get().updatePlayer(fromPlayer.id, { hasFreeFromGulagCard: true })
+      applyPlayerUpdate(toPlayer.id, { hasFreeFromGulagCard: false })
+      applyPlayerUpdate(fromPlayer.id, { hasFreeFromGulagCard: true })
     }
 
     if (trade.requesting.favours > 0) {
-      const updatedFavours = toPlayer.owesFavourTo.filter((id, index) =>
+      const currentToPlayer = readPlayer(toPlayer.id) ?? toPlayer
+      const updatedFavours = currentToPlayer.owesFavourTo.filter((id, index) =>
         !(id === fromPlayer.id && index < trade.requesting.favours)
       )
-      get().updatePlayer(toPlayer.id, { owesFavourTo: updatedFavours })
+      applyPlayerUpdate(toPlayer.id, { owesFavourTo: updatedFavours })
     }
 
-    // Mark trade as accepted and remove
-    set((state) => ({
-      activeTradeOffers: state.activeTradeOffers.filter((t) => t.id !== tradeId)
+    // Commit every accumulated player/property change plus the trade-offer
+    // removal in a single write.
+    set((current) => ({
+      players: playerPatches.size > 0
+        ? current.players.map((p) => playerPatches.get(p.id) ?? p)
+        : current.players,
+      properties: custodianPatches.size > 0
+        ? current.properties.map((p) => custodianPatches.has(p.spaceId) ? { ...p, custodianId: custodianPatches.get(p.spaceId) ?? null } : p)
+        : current.properties,
+      activeTradeOffers: current.activeTradeOffers.filter((t) => t.id !== tradeId)
     }))
 
     get().addLogEntry({
