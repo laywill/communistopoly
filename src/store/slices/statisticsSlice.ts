@@ -42,18 +42,26 @@ export const createStatisticsSlice: StateCreator<
   ...initialStatisticsState,
 
   updatePlayerStat: (playerId, statKey, increment) => {
-    set((state) => ({
-      gameStatistics: {
-        ...state.gameStatistics,
-        playerStats: {
-          ...state.gameStatistics.playerStats,
-          [playerId]: {
-            ...state.gameStatistics.playerStats[playerId],
-            [statKey]: state.gameStatistics.playerStats[playerId][statKey] + increment
+    set((state) => {
+      // Stalin (and any player from a game whose statistics were never
+      // initialised) has no playerStats entry — skip the update rather
+      // than throwing on the undefined lookup.
+      if (!(playerId in state.gameStatistics.playerStats)) return {}
+
+      const existing = state.gameStatistics.playerStats[playerId]
+      return {
+        gameStatistics: {
+          ...state.gameStatistics,
+          playerStats: {
+            ...state.gameStatistics.playerStats,
+            [playerId]: {
+              ...existing,
+              [statKey]: existing[statKey] + increment
+            }
           }
         }
       }
-    }))
+    })
   },
 
   calculateFinalStats: () => {
