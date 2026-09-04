@@ -34,10 +34,10 @@ describe('Property Group Abilities', () => {
 
       // Verify pending action was created
       const pendingAction = useGameStore.getState().pendingAction
-      expect(pendingAction?.type).toBe('hammer-approval')
+      expect(pendingAction?.type).toBe('siberian-camps-approval')
 
       // Approve the action
-      store.approveHammerAbility(custodianId, targetId, true)
+      store.approveSiberianCampsAbility(custodianId, targetId, true)
 
       // Verify target is in Gulag
       const updatedTarget = useGameStore.getState().players.find(p => p.id === targetId)
@@ -75,10 +75,10 @@ describe('Property Group Abilities', () => {
 
       // Verify pending action was created
       const pendingAction = useGameStore.getState().pendingAction
-      expect(pendingAction?.type).toBe('hammer-approval')
+      expect(pendingAction?.type).toBe('siberian-camps-approval')
 
       // Deny the action
-      store.approveHammerAbility(custodian.id, target.id, false)
+      store.approveSiberianCampsAbility(custodian.id, target.id, false)
 
       // Verify target is NOT in Gulag
       const updatedTarget = useGameStore.getState().players.find(p => p.id === target.id)

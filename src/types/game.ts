@@ -214,7 +214,7 @@ export type PendingActionType =
   | 'trade-response'
   | 'write-confession'
   | 'review-confession'
-  | 'hammer-approval'
+  | 'siberian-camps-approval'
   | 'ministry-truth-approval'
   | 'kgb-test-preview'
   | 'pravda-press-revote'
