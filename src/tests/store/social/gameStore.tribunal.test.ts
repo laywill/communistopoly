@@ -3,6 +3,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useGameStore } from '../../../store/gameStore'
+import type { TribunalPhase } from '../../../types/game'
 
 describe('Denouncement & Tribunal System', () => {
   beforeEach(() => {
@@ -413,6 +414,61 @@ describe('Denouncement & Tribunal System', () => {
       store.advanceTribunalPhase()
 
       expect(useGameStore.getState().activeTribunal).toBeNull()
+    })
+
+    it('should not advance past judgement, and must never set phase to undefined', () => {
+      const store = useGameStore.getState()
+
+      store.initializePlayers([
+        { name: 'Accuser', piece: 'hammer', isStalin: false },
+        { name: 'Accused', piece: 'sickle', isStalin: false }
+      ])
+      const [accuser, accused] = useGameStore.getState().players
+
+      store.initiateDenouncement(accuser.id, accused.id, 'Test crime')
+      store.advanceTribunalPhase() // accusation → defence
+      store.advanceTribunalPhase() // defence → witnesses
+      store.advanceTribunalPhase() // witnesses → judgement
+
+      expect(useGameStore.getState().activeTribunal?.phase).toBe('judgement')
+
+      // Regression: advancing from the final phase must be a no-op, not
+      // write `undefined` into activeTribunal.phase.
+      store.advanceTribunalPhase()
+
+      expect(useGameStore.getState().activeTribunal?.phase).toBe('judgement')
+      expect(useGameStore.getState().activeTribunal?.phase).not.toBeUndefined()
+    })
+
+    it('should not advance (and not reset to accusation) when phase is unrecognised', () => {
+      const store = useGameStore.getState()
+
+      store.initializePlayers([
+        { name: 'Accuser', piece: 'hammer', isStalin: false },
+        { name: 'Accused', piece: 'sickle', isStalin: false }
+      ])
+      const [accuser, accused] = useGameStore.getState().players
+
+      store.initiateDenouncement(accuser.id, accused.id, 'Test crime')
+
+      const activeTribunal = useGameStore.getState().activeTribunal
+      if (activeTribunal == null) {
+        throw new Error('Expected initiateDenouncement to create an active tribunal')
+      }
+
+      // Force the tribunal into a phase that isn't in phaseOrder, simulating
+      // corrupted/unexpected state. indexOf returns -1 here, which must not
+      // be treated as "restart at accusation".
+      useGameStore.setState({
+        activeTribunal: {
+          ...activeTribunal,
+          phase: 'unrecognised' as unknown as TribunalPhase
+        }
+      })
+
+      store.advanceTribunalPhase()
+
+      expect(useGameStore.getState().activeTribunal?.phase).toBe('unrecognised')
     })
   })
 
