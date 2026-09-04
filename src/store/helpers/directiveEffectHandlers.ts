@@ -3,8 +3,85 @@
 
 import type { DirectiveEffect } from '../../data/partyDirectiveCards'
 import type { GameStore } from '../types/storeTypes'
+import type { Player } from '../../types/game'
 import { calculateRailwayFee } from '../../utils/propertyUtils'
 import { RAILWAY_SPACE_IDS } from '../constants'
+
+/**
+ * Handles the 'advanceToNearestRailway' custom directive: moves the player to
+ * the nearest railway ahead (wrapping around the board), pays STOY passing
+ * bonus if applicable, and either charges quota or sets a pending purchase.
+ *
+ * Returns `true` if the caller should exit early (a pending action has been
+ * set and is awaiting player input), or `false` if normal post-turn cleanup
+ * should proceed.
+ */
+function handleAdvanceToNearestRailway(player: Player, playerId: string, get: () => GameStore): boolean {
+  const state = get()
+  const railwayPositions = [...RAILWAY_SPACE_IDS]
+  const currentPosition = player.position
+
+  // Find the nearest railway ahead (wrapping around)
+  let nearestRailway = railwayPositions[0]
+  for (const railwayPos of railwayPositions) {
+    if (railwayPos > currentPosition) {
+      nearestRailway = railwayPos
+      break
+    }
+  }
+
+  // Move player to railway
+  const oldPosition = player.position
+  get().updatePlayer(playerId, { position: nearestRailway })
+
+  // Only give STOY bonus if we actually wrapped around
+  if (oldPosition > nearestRailway) {
+    get().handleStoyPassing(playerId)
+  }
+
+  // Check railway property ownership
+  const railwayProperty = state.properties.find(p => p.spaceId === nearestRailway)
+
+  if (railwayProperty != null) {
+    if (railwayProperty.custodianId === null) {
+      // Railway is unowned - set pending action for purchase
+      get().setPendingAction({
+        type: 'property-purchase',
+        data: { spaceId: nearestRailway, playerId }
+      })
+      get().setTurnPhase('resolving')
+      return true // Exit early; awaiting player decision
+    } else if (railwayProperty.custodianId !== playerId && !railwayProperty.mortgaged) {
+      // Railway is owned by another player - charge fee
+      const fee = calculateRailwayFee(railwayProperty.custodianId, state.properties)
+      get().payQuota(playerId, railwayProperty.custodianId, fee)
+    }
+    // If owned by current player or mortgaged, no fee charged
+  }
+
+  return false
+}
+
+/**
+ * Handles the 'triggerAnonymousTribunal' custom directive: raises a tribunal
+ * against the player with Stalin as the (anonymous) accuser.
+ *
+ * Returns `true` if the caller should exit early (tribunal pending action
+ * set, awaiting resolution), or `false` if no Stalin player was found and
+ * normal post-turn cleanup should proceed.
+ */
+function handleTriggerAnonymousTribunal(playerId: string, get: () => GameStore): boolean {
+  const state = get()
+  const stalin = state.players.find(p => p.isStalin)
+  if (stalin == null) return false
+
+  get().setPendingAction({
+    type: 'tribunal',
+    data: { targetId: playerId, accuserId: stalin.id, isAnonymous: true }
+  })
+  get().setTurnPhase('resolving')
+  return true // Exit early; awaiting tribunal resolution
+}
 
 /**
  * Applies the effect of a Party Directive card for the given player.
@@ -133,65 +210,34 @@ export function applyDirectiveEffectHandler(
     }
 
     case 'custom':
-      if (effect.handler === 'advanceToNearestRailway') {
-        const railwayPositions = [...RAILWAY_SPACE_IDS]
-        const currentPosition = player.position
-
-        // Find the nearest railway ahead (wrapping around)
-        let nearestRailway = railwayPositions[0]
-        for (const railwayPos of railwayPositions) {
-          if (railwayPos > currentPosition) {
-            nearestRailway = railwayPos
-            break
-          }
-        }
-
-        // Move player to railway
-        const oldPosition = player.position
-        get().updatePlayer(playerId, { position: nearestRailway })
-
-        // Only give STOY bonus if we actually wrapped around
-        if (oldPosition > nearestRailway) {
-          get().handleStoyPassing(playerId)
-        }
-
-        // Check railway property ownership
-        const railwayProperty = state.properties.find(p => p.spaceId === nearestRailway)
-
-        if (railwayProperty != null) {
-          if (railwayProperty.custodianId === null) {
-            // Railway is unowned - set pending action for purchase
-            get().setPendingAction({
-              type: 'property-purchase',
-              data: { spaceId: nearestRailway, playerId }
-            })
-            get().setTurnPhase('resolving')
+      switch (effect.handler) {
+        case 'advanceToNearestRailway':
+          if (handleAdvanceToNearestRailway(player, playerId, get)) {
             return // Exit early; awaiting player decision
-          } else if (railwayProperty.custodianId !== playerId && !railwayProperty.mortgaged) {
-            // Railway is owned by another player - charge fee
-            const fee = calculateRailwayFee(railwayProperty.custodianId, state.properties)
-            get().payQuota(playerId, railwayProperty.custodianId, fee)
           }
-          // If owned by current player or mortgaged, no fee charged
-        }
-      } else if (effect.handler === 'triggerAnonymousTribunal') {
-        // Trigger tribunal with Stalin as accuser
-        const stalin = state.players.find(p => p.isStalin)
-        if (stalin != null) {
-          get().setPendingAction({
-            type: 'tribunal',
-            data: { targetId: playerId, accuserId: stalin.id, isAnonymous: true }
+          break
+
+        case 'triggerAnonymousTribunal':
+          if (handleTriggerAnonymousTribunal(playerId, get)) {
+            return // Exit early; awaiting tribunal resolution
+          }
+          break
+
+        case undefined:
+          // Card declared a 'custom' effect without a handler name
+          get().addLogEntry({
+            type: 'system',
+            message: 'Custom effect: unknown - requires special handling',
+            playerId
           })
-          get().setTurnPhase('resolving')
-          return // Exit early; awaiting tribunal resolution
+          break
+
+        default: {
+          // Exhaustiveness check: fails to compile if a new CustomHandlerType
+          // member is added without a corresponding case above.
+          const unhandled: never = effect.handler
+          throw new Error(`Unhandled custom directive handler: ${String(unhandled)}`)
         }
-      } else {
-        // Unknown custom handler
-        get().addLogEntry({
-          type: 'system',
-          message: `Custom effect: ${effect.handler ?? 'unknown'} - requires special handling`,
-          playerId
-        })
       }
       break
   }
