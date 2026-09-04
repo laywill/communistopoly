@@ -30,7 +30,7 @@ export interface PropertyAbilitiesSliceActions {
   siberianCampsGulag: (custodianId: string, targetPlayerId: string) => void
 
   // Resolves Stalin's approval or denial for the Siberian Camps ability.
-  approveHammerAbility: (custodianId: string, targetPlayerId: string, approved: boolean) => void
+  approveSiberianCampsAbility: (custodianId: string, targetPlayerId: string, approved: boolean) => void
 
   // KGB Headquarters group ability: preview the next Communist Test question.
   // Requires the custodian to control KGB Headquarters (space 23).
@@ -86,7 +86,7 @@ export const createPropertyAbilitiesSlice: StateCreator<
     // Ask Stalin for approval via modal
     set({
       pendingAction: {
-        type: 'hammer-approval',
+        type: 'siberian-camps-approval',
         data: {
           custodianId,
           custodianName: custodian.name,
@@ -99,7 +99,7 @@ export const createPropertyAbilitiesSlice: StateCreator<
 
   // Resolves the Siberian Camps pending approval. If approved, the target is sent to the
   // Gulag and the custodian's ability flag is set. The pending action is cleared regardless.
-  approveHammerAbility: (custodianId, targetPlayerId, approved) => {
+  approveSiberianCampsAbility: (custodianId, targetPlayerId, approved) => {
     const state = get()
     const custodian = state.players.find(p => p.id === custodianId)
     const target = state.players.find(p => p.id === targetPlayerId)
