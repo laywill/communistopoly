@@ -22,38 +22,38 @@ The visual design draws from **Soviet Constructivist propaganda art** (1920s-195
 
 ## Primary Colors
 
-| Name                 | Hex       | RGB           | Usage                                                    |
-|----------------------|-----------|---------------|----------------------------------------------------------|
-| **Soviet Red**       | `#C41E3A` | 196, 30, 58   | Primary accent, headers, important buttons, board border |
-| **Kremlin Gold**     | `#D4A84B` | 212, 168, 75  | Secondary accent, highlights, rank badges, currency      |
-| **Propaganda Black** | `#1A1A1A` | 26, 26, 26    | Text, borders, shadows                                   |
-| **Parchment Cream**  | `#F5E6C8` | 245, 230, 200 | Backgrounds, card faces, paper elements                  |
-| **Aged White**       | `#FAF6EF` | 250, 246, 239 | Lighter backgrounds, contrast areas                      |
+| Name                 | Hex       | RGB           | Token                      | Usage                                                    |
+|----------------------|-----------|---------------|----------------------------|----------------------------------------------------------|
+| **Soviet Red**       | `#C41E3A` | 196, 30, 58   | `--color-soviet-red`       | Primary accent, headers, important buttons, board border |
+| **Kremlin Gold**     | `#D4A84B` | 212, 168, 75  | `--color-kremlin-gold`     | Secondary accent, highlights, rank badges, currency      |
+| **Propaganda Black** | `#1A1A1A` | 26, 26, 26    | `--color-propaganda-black` | Text, borders, shadows                                   |
+| **Parchment Cream**  | `#F5E6C8` | 245, 230, 200 | `--color-parchment`        | Backgrounds, card faces, paper elements                  |
+| **Aged White**       | `#FAF6EF` | 250, 246, 239 | `--color-aged-white`       | Lighter backgrounds, contrast areas                      |
 
 ## Secondary Colors
 
-| Name               | Hex       | RGB          | Usage                                     |
-|--------------------|-----------|--------------|-------------------------------------------|
-| **Gulag Grey**     | `#4A4A4A` | 74, 74, 74   | Disabled states, Gulag UI, secondary text |
-| **Steel Blue**     | `#2C3E50` | 44, 62, 80   | Stalin's interface, authority elements    |
-| **Military Olive** | `#4A5D23` | 74, 93, 35   | Success states, positive feedback         |
-| **Warning Amber**  | `#B8860B` | 184, 134, 11 | Warnings, caution states                  |
-| **Blood Burgundy** | `#722F37` | 114, 47, 55  | Danger, elimination, negative states      |
+| Name               | Hex       | RGB          | Token                    | Usage                                     |
+|--------------------|-----------|--------------|--------------------------|-------------------------------------------|
+| **Gulag Grey**     | `#4A4A4A` | 74, 74, 74   | `--color-gulag-grey`     | Disabled states, Gulag UI, secondary text |
+| **Steel Blue**     | `#2C3E50` | 44, 62, 80   | `--color-steel-blue`     | Stalin's interface, authority elements    |
+| **Military Olive** | `#4A5D23` | 74, 93, 35   | `--color-military-olive` | Success states, positive feedback         |
+| **Warning Amber**  | `#B8860B` | 184, 134, 11 | `--color-warning-amber`  | Warnings, caution states                  |
+| **Blood Burgundy** | `#722F37` | 114, 47, 55  | `--color-blood-burgundy` | Danger, elimination, negative states      |
 
 ## Property Group Colors
 
-| Group                          | Background | Border/Accent | Text      |
-|--------------------------------|------------|---------------|-----------|
-| Siberian Work Camps (Brown)    | `#8B6914`  | `#5D4E37`     | `#FAF6EF` |
-| Collective Farms (Light Blue)  | `#87CEEB`  | `#5F9EA0`     | `#1A1A1A` |
-| Industrial Centers (Pink)      | `#DB7093`  | `#C71585`     | `#FAF6EF` |
-| Government Ministries (Orange) | `#E86D1F`  | `#CC5500`     | `#FAF6EF` |
-| Military Installations (Red)   | `#C41E3A`  | `#8B0000`     | `#FAF6EF` |
-| State Media (Yellow)           | `#F4D03F`  | `#D4A84B`     | `#1A1A1A` |
-| Party Elite District (Green)   | `#228B22`  | `#006400`     | `#FAF6EF` |
-| Kremlin Complex (Dark Blue)    | `#1C3A5F`  | `#0D2137`     | `#D4A84B` |
-| Railways                       | `#1A1A1A`  | `#C41E3A`     | `#FAF6EF` |
-| Utilities                      | `#F5E6C8`  | `#1A1A1A`     | `#1A1A1A` |
+| Group                          | Background | Border/Accent | Text      | Token                      |
+|--------------------------------|------------|---------------|-----------|----------------------------|
+| Siberian Work Camps (Brown)    | `#8B6914`  | `#5D4E37`     | `#FAF6EF` | `--color-group-siberian`   |
+| Collective Farms (Light Blue)  | `#87CEEB`  | `#5F9EA0`     | `#1A1A1A` | `--color-group-collective` |
+| Industrial Centers (Pink)      | `#DB7093`  | `#C71585`     | `#FAF6EF` | `--color-group-industrial` |
+| Government Ministries (Orange) | `#E86D1F`  | `#CC5500`     | `#FAF6EF` | `--color-group-ministry`   |
+| Military Installations (Red)   | `#C41E3A`  | `#8B0000`     | `#FAF6EF` | `--color-group-military`   |
+| State Media (Yellow)           | `#F4D03F`  | `#D4A84B`     | `#1A1A1A` | `--color-group-media`      |
+| Party Elite District (Green)   | `#228B22`  | `#006400`     | `#FAF6EF` | `--color-group-elite`      |
+| Kremlin Complex (Dark Blue)    | `#1C3A5F`  | `#0D2137`     | `#D4A84B` | `--color-group-kremlin`    |
+| Railways                       | `#1A1A1A`  | `#C41E3A`     | `#FAF6EF` | `--color-group-railroad`   |
+| Utilities                      | `#F5E6C8`  | `#1A1A1A`     | `#1A1A1A` | `--color-group-utility`    |
 
 ---
 
@@ -100,6 +100,29 @@ font-family: 'Roboto Mono', 'Share Tech Mono', 'Courier New', monospace;
 | Caption/Small    | 12px | 400    | Normal                            |
 | Currency Display | 24px | 700    | Monospace                         |
 
+## Design Tokens
+
+Beyond the color and typography tokens above, the implementation defines a spacing scale and a set
+of reusable border shorthands as CSS custom properties. Implementation: `src/index.css:4-47`.
+
+### Spacing Scale
+
+| Name        | Value | Token        |
+|-------------|-------|--------------|
+| Extra Small | 4px   | `--space-xs` |
+| Small       | 8px   | `--space-sm` |
+| Medium      | 16px  | `--space-md` |
+| Large       | 24px  | `--space-lg` |
+| Extra Large | 32px  | `--space-xl` |
+
+### Border Tokens
+
+| Name     | Value                                     | Token               |
+|----------|-------------------------------------------|---------------------|
+| Standard | `2px solid var(--color-propaganda-black)` | `--border-standard` |
+| Gold     | `2px solid var(--color-kremlin-gold)`     | `--border-gold`     |
+| Soviet   | `4px solid var(--color-soviet-red)`       | `--border-soviet`   |
+
 ---
 
 # 4. BOARD DESIGN
@@ -145,6 +168,29 @@ font-family: 'Roboto Mono', 'Share Tech Mono', 'Courier New', monospace;
 - **Corner Spaces**: 100x100px (larger, square)
 - **Edge Spaces**: 60x100px (property orientation perpendicular to edge)
 - **Center Area**: Contains dice, card draw pile, current turn indicator
+
+> **As implemented:** the shipped board uses a base of 70×112px edge spaces and 112×112px corners
+> (with responsive overrides — see below) rather than the 60×100 / 100×100 figures above. The design
+> intent is left as originally written rather than silently rewritten to match; the CSS is the
+> record of what actually shipped.
+
+## Board Layout Technique (as implemented)
+
+The board is built from a nested flex ring, not a CSS grid:
+
+- `.topRow` / `.middleSection` / `.bottomRow` stack vertically. `.middleSection` itself splits into
+  a `.leftColumn`, a `.centerArea`, and a `.rightColumn`.
+- Side spaces (left/right columns) are wrapped in `.rotateLeft` / `.rotateRight` containers. The
+  `transform: rotate(±90deg)` is applied to the wrapper's **child**, not the wrapper itself — so the
+  wrapper keeps its untransformed layout box (for flex sizing) while its contents visually rotate to
+  face the center of the board.
+- All sizing derives from three custom properties — `--space-width`, `--corner-size`, and
+  `--space-padding` — with `--board-size` computed from them, so the whole board scales from a
+  single set of numbers.
+- Responsive breakpoints override those custom properties: 70px / 112px by default, dropping to
+  60px / 96px at ≤1024px viewport width and growing to 80px / 128px at ≥1700px.
+
+Implementation: `src/components/board/Board.module.css`.
 
 ## Space Design
 
@@ -846,9 +892,12 @@ A scrolling log of all game events, styled as official Soviet records:
 - [ ] Background textures (paper, worn)
 
 ## Fonts to Include
-- [ ] Oswald (or Bebas Neue)
-- [ ] Roboto Condensed
-- [ ] Roboto Mono
+All three are loaded via Google Fonts in `index.html` and wired to the `--font-*` custom properties
+in `src/index.css`.
+
+- [x] Oswald (or Bebas Neue)
+- [x] Roboto Condensed
+- [x] Roboto Mono
 
 ## Optional Audio Assets
 - [ ] Dice roll sound
