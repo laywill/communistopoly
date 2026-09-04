@@ -66,15 +66,6 @@ For detailed setup instructions, see the [How to Play Guide](docs/how-to-play.md
 - 🔧 **[Technical Specification](Designs/communistopoly-technical-spec.md)** - Architecture and implementation guide for developers
 - 🎨 **[Design Document](Designs/communistopoly-design.md)** - Visual design specifications and Soviet aesthetic guidelines
 
-## Technology Stack
-
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite 7.3
-- **Styling**: CSS with CSS Modules
-- **State Management**: Zustand with persistence middleware
-- **Type Safety**: TypeScript strict mode
-- **Fonts**: Google Fonts (Oswald, Roboto Condensed, Roboto Mono)
-
 ## Features
 
 - **Stalin Control Panel** - One player controls the fate of all others with special powers
