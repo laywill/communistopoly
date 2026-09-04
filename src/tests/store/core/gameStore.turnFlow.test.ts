@@ -561,5 +561,48 @@ describe('gameStore - Turn & Game Flow', () => {
       const state = useGameStore.getState()
       expect(state.currentPlayerIndex).toBe(3) // Skip players 2 and 3
     })
+
+    it('should end the game instead of advancing when every non-Stalin player is eliminated', () => {
+      const { initializePlayers, updatePlayer, endTurn } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false },
+        { name: 'Stalin', piece: null, isStalin: true },
+        { name: 'Player 2', piece: 'hammer', isStalin: false }
+      ])
+
+      const [player1, , player2] = useGameStore.getState().players
+
+      // Eliminate every non-Stalin player
+      updatePlayer(player1.id, { isEliminated: true })
+      updatePlayer(player2.id, { isEliminated: true })
+
+      useGameStore.setState({
+        currentPlayerIndex: 0,
+        doublesCount: 0,
+        gameLog: [],
+        gamePhase: 'playing',
+        gameEndCondition: null,
+        winnerId: null
+      })
+
+      endTurn()
+
+      const state = useGameStore.getState()
+
+      // Must not hand the turn to Stalin or an eliminated player
+      expect(state.currentPlayerIndex).toBe(0)
+      const turnTaker = state.players[state.currentPlayerIndex]
+      expect(turnTaker.isStalin || turnTaker.isEliminated).toBe(true) // no valid turn-taker exists
+
+      // Should route to the standard game-end path instead
+      expect(state.gamePhase).toBe('ended')
+      expect(state.gameEndCondition).toBe('stalinWins')
+      expect(state.winnerId).toBeNull()
+
+      // No spurious "...'s turn" log entry should have been written
+      const turnLog = state.gameLog.find(log => log.message.includes("'s turn"))
+      expect(turnLog).toBeUndefined()
+    })
   })
 })
