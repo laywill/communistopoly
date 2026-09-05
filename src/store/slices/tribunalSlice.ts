@@ -103,13 +103,8 @@ export const createTribunalSlice: StateCreator<
     })
 
     // Update statistics
-    set({
-      gameStatistics: {
-        ...state.gameStatistics,
-        totalDenouncements: state.gameStatistics.totalDenouncements + 1,
-        totalTribunals: state.gameStatistics.totalTribunals + 1
-      }
-    })
+    get().updateGlobalStat('totalDenouncements', 1)
+    get().updateGlobalStat('totalTribunals', 1)
 
     get().addLogEntry({
       type: 'tribunal',

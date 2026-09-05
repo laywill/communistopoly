@@ -10,9 +10,21 @@ export interface StatisticsSliceState {
   gameStatistics: GameStatistics
 }
 
+/**
+ * Keys of {@link GameStatistics} that represent simple, incrementable global
+ * counters. Derived from `GameStatistics` (rather than hand-written) so a new
+ * numeric counter is picked up automatically, but `stateTreasuryPeak` is
+ * excluded deliberately — it is tracked via peak comparison, not increment.
+ */
+export type GlobalCounterKey = Exclude<
+  { [K in keyof GameStatistics]-?: GameStatistics[K] extends number ? K : never }[keyof GameStatistics],
+  'stateTreasuryPeak'
+>
+
 // Slice actions interface
 export interface StatisticsSliceActions {
   updatePlayerStat: (playerId: string, statKey: keyof PlayerStatistics, increment: number) => void
+  updateGlobalStat: (statKey: GlobalCounterKey, increment: number) => void
   calculateFinalStats: () => void
 }
 
@@ -62,6 +74,15 @@ export const createStatisticsSlice: StateCreator<
         }
       }
     })
+  },
+
+  updateGlobalStat: (statKey, increment) => {
+    set((state) => ({
+      gameStatistics: {
+        ...state.gameStatistics,
+        [statKey]: state.gameStatistics[statKey] + increment
+      }
+    }))
   },
 
   calculateFinalStats: () => {

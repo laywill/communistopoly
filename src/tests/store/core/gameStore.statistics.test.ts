@@ -73,4 +73,85 @@ describe('gameStore - Statistics', () => {
       expect(after).toBe(before + 100)
     })
   })
+
+  describe('updateGlobalStat', () => {
+    it('should increment totalDenouncements by the given amount', () => {
+      const { initializePlayers, updateGlobalStat } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const before = useGameStore.getState().gameStatistics.totalDenouncements
+
+      updateGlobalStat('totalDenouncements', 1)
+
+      expect(useGameStore.getState().gameStatistics.totalDenouncements).toBe(before + 1)
+    })
+
+    it('should increment totalTribunals by the given amount', () => {
+      const { initializePlayers, updateGlobalStat } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const before = useGameStore.getState().gameStatistics.totalTribunals
+
+      updateGlobalStat('totalTribunals', 1)
+
+      expect(useGameStore.getState().gameStatistics.totalTribunals).toBe(before + 1)
+    })
+
+    it('should increment totalGulagSentences and totalTurns independently', () => {
+      const { initializePlayers, updateGlobalStat } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const before = useGameStore.getState().gameStatistics
+
+      updateGlobalStat('totalGulagSentences', 2)
+      updateGlobalStat('totalTurns', 3)
+
+      const after = useGameStore.getState().gameStatistics
+      expect(after.totalGulagSentences).toBe(before.totalGulagSentences + 2)
+      expect(after.totalTurns).toBe(before.totalTurns + 3)
+      // Unrelated counters must be untouched by the calls above
+      expect(after.totalDenouncements).toBe(before.totalDenouncements)
+      expect(after.totalTribunals).toBe(before.totalTribunals)
+    })
+
+    it('should not mutate the previous gameStatistics object (immutability)', () => {
+      const { initializePlayers, updateGlobalStat } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const before = useGameStore.getState().gameStatistics
+
+      updateGlobalStat('totalTribunals', 1)
+
+      const after = useGameStore.getState().gameStatistics
+      expect(after).not.toBe(before)
+      expect(before.totalTribunals).not.toBe(after.totalTribunals)
+    })
+
+    it('should support decrementing via a negative increment', () => {
+      const { initializePlayers, updateGlobalStat } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      updateGlobalStat('totalTurns', 5)
+      const before = useGameStore.getState().gameStatistics.totalTurns
+
+      updateGlobalStat('totalTurns', -2)
+
+      expect(useGameStore.getState().gameStatistics.totalTurns).toBe(before - 2)
+    })
+  })
 })
