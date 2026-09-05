@@ -9,12 +9,7 @@ import {
   STOY_TRAVEL_TAX, HAMMER_STOY_BONUS, PILFER_AMOUNT, PILFER_DICE_THRESHOLD
 } from '../constants'
 
-// Slice state interface
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface MovementSliceState {
-  // Movement uses player state for position (no dedicated state properties)
-}
-
+// Movement uses player state for position (no dedicated state properties)
 // Slice actions interface
 export interface MovementSliceActions {
   movePlayer: (playerId: string, spaces: number) => void
@@ -25,13 +20,8 @@ export interface MovementSliceActions {
   handleStoyPilfer: (playerId: string, diceRoll: number) => void
 }
 
-// Combined slice type
-export type MovementSlice = MovementSliceState & MovementSliceActions
-
-// Initial state for this slice
-export const initialMovementState: MovementSliceState = {
-  // No dedicated state properties
-}
+// Combined slice type (actions only — no store-level state)
+export type MovementSlice = MovementSliceActions
 
 // Slice creator with full typing
 export const createMovementSlice: StateCreator<
@@ -40,8 +30,6 @@ export const createMovementSlice: StateCreator<
   [],
   MovementSlice
 > = (set, get) => ({
-  ...initialMovementState,
-
   movePlayer: (playerId, spaces) => {
     const state = get()
     const player = state.players.find((p) => p.id === playerId)

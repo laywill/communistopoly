@@ -7,13 +7,8 @@ import type { GulagReason, GulagEscapeMethod } from '../../types/game'
 import { getGulagReasonText, getRequiredDoublesForEscape } from '../helpers/gulagHelpers'
 import { CORNER_GULAG, RAILWAY_SPACE_IDS, GULAG_ESCAPE_COST, GULAG_TIMEOUT_TURNS } from '../constants'
 
-// Gulag slice state interface
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface GulagSliceState {
-  // The gulag system uses player state (inGulag, gulagTurns) directly
-  // No dedicated gulag state properties needed
-}
-
+// The gulag system uses player state (inGulag, gulagTurns) directly
+// No dedicated gulag state properties needed
 // Gulag slice actions interface
 export interface GulagSliceActions {
   sendToGulag: (playerId: string, reason: GulagReason, justification?: string) => void
@@ -23,13 +18,8 @@ export interface GulagSliceActions {
   checkFor10TurnElimination: (playerId: string) => void
 }
 
-// Combined slice type
-export type GulagSlice = GulagSliceState & GulagSliceActions
-
-// Initial state for this slice
-export const initialGulagState: GulagSliceState = {
-  // No state properties for this slice
-}
+// Combined slice type (actions only — no store-level state)
+export type GulagSlice = GulagSliceActions
 
 // Slice creator with full typing
 export const createGulagSlice: StateCreator<
@@ -38,9 +28,6 @@ export const createGulagSlice: StateCreator<
   [],         // Middleware tuple (empty)
   GulagSlice  // This slice's return type
 > = (set, get) => ({
-  // Spread initial state
-  ...initialGulagState,
-
   // Action implementations
   sendToGulag: (playerId, reason, justification) => {
     const state = get()
