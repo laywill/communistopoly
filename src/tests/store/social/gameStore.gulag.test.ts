@@ -350,6 +350,37 @@ describe('gameStore - Gulag System', () => {
       const updatedPlayer = useGameStore.getState().players.find(p => p.id === player1.id)
       expect(updatedPlayer?.gulagTurns).toBe(0) // No change
     })
+
+    it('should not set gulag-escape-choice pendingAction when the 10th turn eliminates the player', () => {
+      // Regression test for a stale-read hazard: handleGulagTurn used to
+      // decide whether to show the escape modal from a `state` snapshot
+      // captured *before* checkFor10TurnElimination ran, so a player
+      // eliminated on their 10th turn would still see isEliminated: false
+      // and incorrectly get offered an escape choice.
+      const { initializePlayers, updatePlayer, handleGulagTurn } = useGameStore.getState()
+
+      initializePlayers([
+        { name: 'Player 1', piece: 'sickle', isStalin: false }
+      ])
+
+      const [player1] = useGameStore.getState().players
+
+      updatePlayer(player1.id, { inGulag: true, gulagTurns: 9 })
+
+      // Clear any pendingAction left over from a previous test so the
+      // assertion below proves handleGulagTurn doesn't set it, rather than
+      // merely failing to clear a stale value.
+      useGameStore.setState({ pendingAction: null })
+
+      handleGulagTurn(player1.id)
+
+      const state = useGameStore.getState()
+      const updatedPlayer = state.players.find(p => p.id === player1.id)
+
+      expect(updatedPlayer?.gulagTurns).toBe(10)
+      expect(updatedPlayer?.isEliminated).toBe(true)
+      expect(state.pendingAction).toBeNull()
+    })
   })
 
   describe('checkFor10TurnElimination', () => {
