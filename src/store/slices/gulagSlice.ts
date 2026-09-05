@@ -152,8 +152,13 @@ export const createGulagSlice: StateCreator<
     // Check for 10-turn elimination
     get().checkFor10TurnElimination(playerId)
 
-    // Show Gulag escape options if not eliminated
-    const updatedPlayer = state.players.find((p) => p.id === playerId)
+    // Show Gulag escape options if not eliminated. Re-read via get() rather
+    // than the `state` snapshot captured above: checkFor10TurnElimination
+    // may have just eliminated the player (via eliminatePlayer's own
+    // updatePlayer call), and reusing the stale snapshot here would still
+    // see isEliminated: false, incorrectly popping the escape-choice modal
+    // for an eliminated player.
+    const updatedPlayer = get().players.find((p) => p.id === playerId)
     if (updatedPlayer != null && !updatedPlayer.isEliminated) {
       set({ pendingAction: { type: 'gulag-escape-choice', data: { playerId } } })
     }
