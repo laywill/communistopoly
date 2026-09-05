@@ -7,20 +7,7 @@ import type { GamePhase, Player, PlayerStatistics } from '../../types/game'
 import { shuffleDirectiveDeck } from '../../data/partyDirectiveCards'
 import { initializePlayerStats } from '../helpers/playerStats'
 import { STARTING_RUBLES } from '../constants'
-import { initialPlayerState } from './playerSlice'
-import { initialPropertyState } from './propertySlice'
-import { initialTreasuryState } from './treasurySlice'
-import { initialDiceState } from './diceSlice'
-import { initialUiState } from './uiSlice'
-import { initialLogState } from './logSlice'
-import { initialVoucherState } from './voucherSlice'
-import { initialConfessionState } from './confessionSlice'
-import { initialTradeState } from './tradeSlice'
-import { initialTribunalState } from './tribunalSlice'
-import { initialSpecialDecreesState } from './specialDecreesSlice'
-import { initialCardState } from './cardSlice'
-import { initialGameEndState } from './gameEndSlice'
-import { initialStatisticsState } from './statisticsSlice'
+import { initialGamePhaseState, combinedInitialState } from '../initialState'
 
 // Slice state interface
 export interface GamePhaseSliceState {
@@ -39,29 +26,11 @@ export interface GamePhaseSliceActions {
 // Combined slice type
 export type GamePhaseSlice = GamePhaseSliceState & GamePhaseSliceActions
 
-// Initial state for this slice
-export const initialGamePhaseState: GamePhaseSliceState = {
-  gamePhase: 'welcome'
-}
-
-// Combined initial state used by startNewGame and resetGame, composed from all slice initial states
-const combinedInitialState = {
-  ...initialGamePhaseState,
-  ...initialPlayerState,
-  ...initialPropertyState,
-  ...initialTreasuryState,
-  ...initialDiceState,
-  ...initialUiState,
-  ...initialLogState,
-  ...initialVoucherState,
-  ...initialConfessionState,
-  ...initialTradeState,
-  ...initialTribunalState,
-  ...initialSpecialDecreesState,
-  ...initialCardState,
-  ...initialGameEndState,
-  ...initialStatisticsState
-}
+// Re-export the shared initial state for this slice. The value itself is
+// defined in `../initialState` (see that file for why), not here, so that
+// `combinedInitialState` — also defined there — doesn't have to import a
+// value back from this file, which would create a module cycle.
+export { initialGamePhaseState }
 
 // Slice creator with full typing
 export const createGamePhaseSlice: StateCreator<

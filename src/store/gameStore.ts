@@ -3,29 +3,29 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { GameState } from '../types/game'
 import { calculateTotalWealth } from './helpers/wealthCalculation'
 import { initializePlayerStats } from './helpers/playerStats'
-import { createUiSlice, initialUiState } from './slices/uiSlice'
-import { createLogSlice, initialLogState } from './slices/logSlice'
-import { createStatisticsSlice, initialStatisticsState } from './slices/statisticsSlice'
-import { createDiceSlice, initialDiceState } from './slices/diceSlice'
-import { createTreasurySlice, initialTreasuryState } from './slices/treasurySlice'
-import { createPlayerSlice, initialPlayerState } from './slices/playerSlice'
-import { createPropertySlice, initialPropertyState } from './slices/propertySlice'
+import { createUiSlice } from './slices/uiSlice'
+import { createLogSlice } from './slices/logSlice'
+import { createStatisticsSlice } from './slices/statisticsSlice'
+import { createDiceSlice } from './slices/diceSlice'
+import { createTreasurySlice } from './slices/treasurySlice'
+import { createPlayerSlice } from './slices/playerSlice'
+import { createPropertySlice } from './slices/propertySlice'
 import { createMovementSlice } from './slices/movementSlice'
 import { createGulagSlice } from './slices/gulagSlice'
-import { createVoucherSlice, initialVoucherState } from './slices/voucherSlice'
-import { createConfessionSlice, initialConfessionState } from './slices/confessionSlice'
-import { createTradeSlice, initialTradeState } from './slices/tradeSlice'
+import { createVoucherSlice } from './slices/voucherSlice'
+import { createConfessionSlice } from './slices/confessionSlice'
+import { createTradeSlice } from './slices/tradeSlice'
 import { createDebtAndEliminationSlice } from './slices/debtAndEliminationSlice'
-import { createTribunalSlice, initialTribunalState } from './slices/tribunalSlice'
-import { createSpecialDecreesSlice, initialSpecialDecreesState } from './slices/specialDecreesSlice'
-import { createCardSlice, initialCardState } from './slices/cardSlice'
+import { createTribunalSlice } from './slices/tribunalSlice'
+import { createSpecialDecreesSlice } from './slices/specialDecreesSlice'
+import { createCardSlice } from './slices/cardSlice'
 import { createPieceAbilitiesSlice } from './slices/pieceAbilitiesSlice'
 import { createPropertyAbilitiesSlice } from './slices/propertyAbilitiesSlice'
-import { createGameEndSlice, initialGameEndState } from './slices/gameEndSlice'
-import { createGamePhaseSlice, initialGamePhaseState } from './slices/gamePhaseSlice'
+import { createGameEndSlice } from './slices/gameEndSlice'
+import { createGamePhaseSlice } from './slices/gamePhaseSlice'
+import { combinedInitialState } from './initialState'
 import type { GameStore, GameActions } from './types/storeTypes'
 
 // Re-export helper functions for testing
@@ -34,28 +34,10 @@ export { calculateTotalWealth, initializePlayerStats }
 // Re-export GameActions for backward compatibility
 export type { GameActions }
 
-const initialState: GameState = {
-  ...initialGamePhaseState,
-  ...initialPlayerState,
-  ...initialPropertyState,
-  ...initialTreasuryState,
-  ...initialDiceState,
-  ...initialUiState,
-  ...initialLogState,
-  ...initialVoucherState,
-  ...initialConfessionState,
-  ...initialTradeState,
-  ...initialTribunalState,
-  ...initialSpecialDecreesState,
-  ...initialCardState,
-  ...initialGameEndState,
-  ...initialStatisticsState
-}
-
 export const useGameStore = create<GameStore>()(
   persist(
     (set, get, api) => ({
-      ...initialState,
+      ...combinedInitialState,
       ...createUiSlice(set, get, api),
       ...createLogSlice(set, get, api),
       ...createStatisticsSlice(set, get, api),
