@@ -1,11 +1,12 @@
 // Copyright © 2025 William Lay
 // Licensed under the PolyForm Noncommercial License 1.0.0
 
+import type { StoreApi } from 'zustand'
 import type { DirectiveEffect } from '../../data/partyDirectiveCards'
 import type { GameStore } from '../types/storeTypes'
 import type { Player } from '../../types/game'
 import { calculateRailwayFee } from '../../utils/propertyUtils'
-import { RAILWAY_SPACE_IDS } from '../constants'
+import { RAILWAY_SPACE_IDS, BREAD_LOAF_WEALTH_CAP } from '../constants'
 
 /**
  * Handles the 'advanceToNearestRailway' custom directive: moves the player to
@@ -84,6 +85,26 @@ function handleTriggerAnonymousTribunal(playerId: string, get: () => GameStore):
 }
 
 /**
+ * Applies a Bread Loaf piece's wealth-cap rule to a proposed rubles value,
+ * mirroring updatePlayer's enforcement: any excess above the cap is donated
+ * to the State and logged. Returns the (possibly capped) rubles value that
+ * should actually be stored for `target`.
+ */
+function capBreadLoafRubles(target: Player, proposedRubles: number, get: () => GameStore): number {
+  if (target.piece === 'breadLoaf' && proposedRubles > BREAD_LOAF_WEALTH_CAP) {
+    const excess = proposedRubles - BREAD_LOAF_WEALTH_CAP
+    get().adjustTreasury(excess)
+    get().addLogEntry({
+      type: 'payment',
+      message: `${target.name}'s Bread Loaf forces donation of ₽${String(excess)} to the State (max ${String(BREAD_LOAF_WEALTH_CAP)}₽)`,
+      playerId: target.id
+    })
+    return BREAD_LOAF_WEALTH_CAP
+  }
+  return proposedRubles
+}
+
+/**
  * Applies the effect of a Party Directive card for the given player.
  *
  * Early-return cases (move, moveRelative, unowned railway, tribunal) handle
@@ -94,6 +115,7 @@ export function applyDirectiveEffectHandler(
   effect: DirectiveEffect,
   playerId: string,
   get: () => GameStore,
+  set: StoreApi<GameStore>['setState'],
 ): void {
   const state = get()
   const player = state.players.find(p => p.id === playerId)
@@ -167,9 +189,25 @@ export function applyDirectiveEffectHandler(
         state.players.forEach(p => {
           if (!p.isStalin && p.id !== playerId && !p.isEliminated) {
             const payment = Math.min(collectAmount, p.rubles)
-            get().updatePlayer(p.id, { rubles: p.rubles - payment })
-            const currentBalance = get().players.find(cp => cp.id === playerId)?.rubles ?? 0
-            get().updatePlayer(playerId, { rubles: currentBalance + payment })
+            // Commit the payer's and recipient's rubles changes in a single
+            // set() call instead of two sequential updatePlayer calls, to
+            // halve the render count for this payment.
+            set((current) => {
+              const payer = current.players.find(cp => cp.id === p.id)
+              const recipient = current.players.find(cp => cp.id === playerId)
+              if (payer == null || recipient == null) return {}
+
+              const payerRubles = capBreadLoafRubles(payer, payer.rubles - payment, get)
+              const recipientRubles = capBreadLoafRubles(recipient, recipient.rubles + payment, get)
+
+              return {
+                players: current.players.map(cp => {
+                  if (cp.id === payer.id) return { ...cp, rubles: payerRubles }
+                  if (cp.id === recipient.id) return { ...cp, rubles: recipientRubles }
+                  return cp
+                })
+              }
+            })
           }
         })
       }
@@ -182,8 +220,25 @@ export function applyDirectiveEffectHandler(
           if (!p.isStalin && p.id !== playerId && !p.isEliminated) {
             const currentBalance = get().players.find(cp => cp.id === playerId)?.rubles ?? 0
             const payment = Math.min(payAmount, currentBalance)
-            get().updatePlayer(playerId, { rubles: currentBalance - payment })
-            get().updatePlayer(p.id, { rubles: p.rubles + payment })
+            // Commit the payer's and recipient's rubles changes in a single
+            // set() call instead of two sequential updatePlayer calls, to
+            // halve the render count for this payment.
+            set((current) => {
+              const payer = current.players.find(cp => cp.id === playerId)
+              const recipient = current.players.find(cp => cp.id === p.id)
+              if (payer == null || recipient == null) return {}
+
+              const payerRubles = capBreadLoafRubles(payer, payer.rubles - payment, get)
+              const recipientRubles = capBreadLoafRubles(recipient, recipient.rubles + payment, get)
+
+              return {
+                players: current.players.map(cp => {
+                  if (cp.id === payer.id) return { ...cp, rubles: payerRubles }
+                  if (cp.id === recipient.id) return { ...cp, rubles: recipientRubles }
+                  return cp
+                })
+              }
+            })
           }
         })
       }

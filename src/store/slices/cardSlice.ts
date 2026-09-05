@@ -123,7 +123,7 @@ export const createCardSlice: StateCreator<
       message: `${player.name} drew: ${card.title} - ${card.description}`
     })
 
-    applyDirectiveEffectHandler(card.effect, playerId, get)
+    applyDirectiveEffectHandler(card.effect, playerId, get, set)
   },
 
   // Handle a player's answer to a Communist Test question.
