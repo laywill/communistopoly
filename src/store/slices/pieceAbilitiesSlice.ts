@@ -3,6 +3,7 @@
 
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
+import type { Player } from '../../types/game'
 import { getSpaceById } from '../../data/spaces'
 
 // This slice has no dedicated state properties - piece ability flags are stored
@@ -58,11 +59,24 @@ export const createPieceAbilitiesSlice: StateCreator<
     // Requisition ₽50 from target (or all their money if they have less)
     const requisitionAmount = Math.min(TANK_REQUISITION_AMOUNT, targetPlayer.rubles)
 
-    get().updatePlayer(targetPlayerId, { rubles: targetPlayer.rubles - requisitionAmount })
-    get().updatePlayer(tankPlayerId, {
+    // Accumulate both players' updates so the ability commits in a single
+    // set() call rather than one set() per updatePlayer call. A later patch
+    // for the same player id merges over an earlier one, mirroring what
+    // sequential updatePlayer calls would have produced.
+    const patches = new Map<string, Partial<Player>>()
+    const applyUpdate = (id: string, updates: Partial<Player>): void => {
+      patches.set(id, { ...patches.get(id), ...updates })
+    }
+
+    applyUpdate(targetPlayerId, { rubles: targetPlayer.rubles - requisitionAmount })
+    applyUpdate(tankPlayerId, {
       rubles: tankPlayer.rubles + requisitionAmount,
       tankRequisitionUsedThisLap: true
     })
+
+    set((current) => ({
+      players: current.players.map((p) => patches.has(p.id) ? { ...p, ...patches.get(p.id) } : p)
+    }))
 
     get().addLogEntry({
       type: 'payment',
@@ -147,21 +161,33 @@ export const createPieceAbilitiesSlice: StateCreator<
     if (leninPlayer.piece !== 'statueOfLenin') return
     if (leninPlayer.hasUsedLeninSpeech) return
 
+    // Accumulate every applauder's deduction plus the Lenin player's own
+    // update so the whole ability commits in a single set() call rather
+    // than one set() per updatePlayer call.
+    const patches = new Map<string, Partial<Player>>()
+    const applyUpdate = (id: string, updates: Partial<Player>): void => {
+      patches.set(id, { ...patches.get(id), ...updates })
+    }
+
     // Collect ₽100 from each applauder (or all their money if they have less)
     let totalCollected = 0
     applauders.forEach(applauderId => {
       const applauder = state.players.find(p => p.id === applauderId)
       if ((applauder != null) && !applauder.isEliminated) {
         const amount = Math.min(LENIN_SPEECH_COLLECTION_AMOUNT, applauder.rubles)
-        get().updatePlayer(applauderId, { rubles: applauder.rubles - amount })
+        applyUpdate(applauderId, { rubles: applauder.rubles - amount })
         totalCollected += amount
       }
     })
 
-    get().updatePlayer(leninPlayerId, {
+    applyUpdate(leninPlayerId, {
       rubles: leninPlayer.rubles + totalCollected,
       hasUsedLeninSpeech: true
     })
+
+    set((current) => ({
+      players: current.players.map((p) => patches.has(p.id) ? { ...p, ...patches.get(p.id) } : p)
+    }))
 
     get().addLogEntry({
       type: 'payment',
