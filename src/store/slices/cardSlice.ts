@@ -12,6 +12,8 @@ import {
 } from '../../data/communistTestQuestions'
 import type { TestQuestion, TestDifficulty } from '../../data/communistTestQuestions'
 import { applyDirectiveEffectHandler } from '../helpers/directiveEffectHandlers'
+import type { Player } from '../../types/game'
+import { BREAD_LOAF_WEALTH_CAP } from '../constants'
 
 // Slice state interface
 export interface CardSliceState {
@@ -147,15 +149,37 @@ export const createCardSlice: StateCreator<
 
     if (isCorrect) {
       // Correct answer
-      get().updatePlayer(currentPlayer.id, {
-        correctTestAnswers: currentPlayer.correctTestAnswers + 1,
-        consecutiveFailedTests: 0
-      })
-
       // Apply reward (doubled for Red Star penalty)
       const reward = currentPlayer.piece === 'redStar' ? question.reward * 2 : question.reward
+
+      const updates: Partial<Player> = {
+        correctTestAnswers: currentPlayer.correctTestAnswers + 1,
+        consecutiveFailedTests: 0
+      }
       if (reward > 0) {
-        get().updatePlayer(currentPlayer.id, { rubles: currentPlayer.rubles + reward })
+        updates.rubles = currentPlayer.rubles + reward
+      }
+
+      // Mirror updatePlayer's Bread Loaf wealth-cap enforcement before committing,
+      // so batching the stat update with the reward payment into a single set()
+      // doesn't change that behaviour.
+      if (currentPlayer.piece === 'breadLoaf' && updates.rubles !== undefined && updates.rubles > BREAD_LOAF_WEALTH_CAP) {
+        const excess = updates.rubles - BREAD_LOAF_WEALTH_CAP
+        updates.rubles = BREAD_LOAF_WEALTH_CAP
+
+        get().adjustTreasury(excess)
+        get().addLogEntry({
+          type: 'payment',
+          message: `${currentPlayer.name}'s Bread Loaf forces donation of ₽${String(excess)} to the State (max ${String(BREAD_LOAF_WEALTH_CAP)}₽)`,
+          playerId: currentPlayer.id
+        })
+      }
+
+      set((state) => ({
+        players: state.players.map((p) => p.id === currentPlayer.id ? { ...p, ...updates } : p)
+      }))
+
+      if (reward > 0) {
         get().adjustTreasury(-reward)
       }
 
@@ -176,21 +200,46 @@ export const createCardSlice: StateCreator<
       })
     } else {
       // Wrong answer
-      get().updatePlayer(currentPlayer.id, {
-        consecutiveFailedTests: currentPlayer.consecutiveFailedTests + 1
-      })
+      // 2 consecutive failures = rank loss. Note: this reads the stale
+      // `currentPlayer` snapshot captured at the start of the function (not the
+      // post-increment value), matching the pre-batching behaviour exactly.
+      const rankLoss = currentPlayer.consecutiveFailedTests >= 2
 
       // Apply penalty (doubled for Red Star)
       const penalty = currentPlayer.piece === 'redStar' ? question.penalty * 2 : question.penalty
+
+      const updates: Partial<Player> = {
+        consecutiveFailedTests: rankLoss ? 0 : currentPlayer.consecutiveFailedTests + 1
+      }
       if (penalty > 0) {
-        get().updatePlayer(currentPlayer.id, { rubles: currentPlayer.rubles - penalty })
+        updates.rubles = currentPlayer.rubles - penalty
+      }
+
+      // Mirror updatePlayer's Bread Loaf wealth-cap enforcement before committing,
+      // so batching the stat update with the penalty payment into a single set()
+      // doesn't change that behaviour.
+      if (currentPlayer.piece === 'breadLoaf' && updates.rubles !== undefined && updates.rubles > BREAD_LOAF_WEALTH_CAP) {
+        const excess = updates.rubles - BREAD_LOAF_WEALTH_CAP
+        updates.rubles = BREAD_LOAF_WEALTH_CAP
+
+        get().adjustTreasury(excess)
+        get().addLogEntry({
+          type: 'payment',
+          message: `${currentPlayer.name}'s Bread Loaf forces donation of ₽${String(excess)} to the State (max ${String(BREAD_LOAF_WEALTH_CAP)}₽)`,
+          playerId: currentPlayer.id
+        })
+      }
+
+      set((state) => ({
+        players: state.players.map((p) => p.id === currentPlayer.id ? { ...p, ...updates } : p)
+      }))
+
+      if (penalty > 0) {
         get().adjustTreasury(penalty)
       }
 
-      // 2 consecutive failures = rank loss
-      if (currentPlayer.consecutiveFailedTests >= 2) {
+      if (rankLoss) {
         get().demotePlayer(currentPlayer.id)
-        get().updatePlayer(currentPlayer.id, { consecutiveFailedTests: 0 })
       }
 
       get().addLogEntry({
