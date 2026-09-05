@@ -7,14 +7,8 @@ import type { EliminationReason } from '../../types/game'
 import { getEliminationMessage } from '../helpers/eliminationHelpers'
 import { calculateTotalWealth } from '../helpers/wealthCalculation'
 
-// Slice state interface
 // Note: Debt information is stored in player state (player.debt, player.debtCreatedAtRound)
 // This slice has no dedicated state properties
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface DebtAndEliminationSliceState {
-  // No dedicated state - debt data is stored in player objects
-}
-
 // Slice actions interface
 export interface DebtAndEliminationSliceActions {
   createDebt: (debtorId: string, creditorId: string, amount: number, reason: string) => void
@@ -23,13 +17,8 @@ export interface DebtAndEliminationSliceActions {
   checkElimination: (playerId: string) => boolean
 }
 
-// Combined slice type
-export type DebtAndEliminationSlice = DebtAndEliminationSliceState & DebtAndEliminationSliceActions
-
-// Initial state for this slice
-export const initialDebtAndEliminationState: DebtAndEliminationSliceState = {
-  // No state properties
-}
+// Combined slice type (actions only — no store-level state)
+export type DebtAndEliminationSlice = DebtAndEliminationSliceActions
 
 // Slice creator with full typing
 export const createDebtAndEliminationSlice: StateCreator<
@@ -38,8 +27,6 @@ export const createDebtAndEliminationSlice: StateCreator<
   [],
   DebtAndEliminationSlice
 > = (set, get) => ({
-  ...initialDebtAndEliminationState,
-
   createDebt: (debtorId, creditorId, amount, reason) => {
     const state = get()
     const debtor = state.players.find((p) => p.id === debtorId)
