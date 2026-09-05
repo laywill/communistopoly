@@ -3,7 +3,7 @@
 
 import { StateCreator } from 'zustand'
 import type { GameStore } from '../types/storeTypes'
-import type { Property } from '../../types/game'
+import type { Player, Property } from '../../types/game'
 import { BOARD_SPACES, getSpaceById } from '../../data/spaces'
 import { COLLECTIVE_FARM_SPACE_IDS, MORTGAGE_VALUE_RATIO, UNMORTGAGE_COST_RATIO } from '../constants'
 
@@ -175,20 +175,30 @@ export const createPropertySlice: StateCreator<
     // Update property custodian
     get().setPropertyCustodian(spaceId, newCustodianId)
 
+    // Accumulate the old and new custodians' `properties` array updates so
+    // both commit in a single set() call rather than one set() per
+    // updatePlayer call, mirroring the pattern established in
+    // tradeSlice.acceptTrade (#241) and pieceAbilitiesSlice (#243).
+    const patches = new Map<string, Partial<Player>>()
+
     // Remove from old owner's properties array
     if (oldCustodianId != null) {
       const oldOwner = state.players.find((p) => p.id === oldCustodianId)
       if (oldOwner != null) {
-        const updatedProperties = oldOwner.properties.filter((id) => id !== propertyId)
-        get().updatePlayer(oldCustodianId, { properties: updatedProperties })
+        patches.set(oldCustodianId, { properties: oldOwner.properties.filter((id) => id !== propertyId) })
       }
     }
 
     // Add to new owner's properties array
     const newOwner = state.players.find((p) => p.id === newCustodianId)
     if (newOwner != null) {
-      const updatedProperties = [...newOwner.properties, propertyId]
-      get().updatePlayer(newCustodianId, { properties: updatedProperties })
+      patches.set(newCustodianId, { properties: [...newOwner.properties, propertyId] })
+    }
+
+    if (patches.size > 0) {
+      set((current) => ({
+        players: current.players.map((p) => patches.has(p.id) ? { ...p, ...patches.get(p.id) } : p)
+      }))
     }
   },
 
