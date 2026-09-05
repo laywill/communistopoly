@@ -33,7 +33,6 @@ export interface GamePhaseSliceActions {
   startNewGame: () => void
   resetGame: () => void
   initializePlayers: (playerSetups: { name: string, piece: Player['piece'], isStalin: boolean }[]) => void
-  payQuota: (payerId: string, custodianId: string, amount: number) => void
   recoverStuckTurnPhase: () => void
 }
 
@@ -169,27 +168,6 @@ export const createGamePhaseSlice: StateCreator<
 
     // Initialise properties via propertySlice
     get().initializeProperties()
-  },
-
-  // Transfer rubles between two players and log the payment
-  payQuota: (payerId, custodianId, amount) => {
-    const state = get()
-    const payer = state.players.find((p) => p.id === payerId)
-    const custodian = state.players.find((p) => p.id === custodianId)
-    if (payer == null || custodian == null) return
-
-    // Transfer rubles - fetch fresh custodian balance after payer update
-    get().updatePlayer(payerId, { rubles: payer.rubles - amount })
-    const freshCustodian = get().players.find(p => p.id === custodianId)
-    if (freshCustodian != null) {
-      get().updatePlayer(custodianId, { rubles: freshCustodian.rubles + amount })
-    }
-
-    get().addLogEntry({
-      type: 'payment',
-      message: `${payer.name} paid ₽${String(amount)} quota to ${custodian.name}`,
-      playerId: payerId
-    })
   },
 
   // Recover from intermediate turn phases that become unrecoverable after a

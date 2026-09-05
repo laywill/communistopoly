@@ -21,6 +21,7 @@ export interface PropertySliceActions {
   mortgageProperty: (spaceId: number) => void
   unmortgageProperty: (spaceId: number, playerId: string) => void
   transferProperty: (propertyId: string, newCustodianId: string) => void
+  payQuota: (payerId: string, custodianId: string, amount: number) => void
 }
 
 // Combined slice type
@@ -189,5 +190,26 @@ export const createPropertySlice: StateCreator<
       const updatedProperties = [...newOwner.properties, propertyId]
       get().updatePlayer(newCustodianId, { properties: updatedProperties })
     }
+  },
+
+  // Transfer rubles between two players and log the payment
+  payQuota: (payerId, custodianId, amount) => {
+    const state = get()
+    const payer = state.players.find((p) => p.id === payerId)
+    const custodian = state.players.find((p) => p.id === custodianId)
+    if (payer == null || custodian == null) return
+
+    // Transfer rubles - fetch fresh custodian balance after payer update
+    get().updatePlayer(payerId, { rubles: payer.rubles - amount })
+    const freshCustodian = get().players.find(p => p.id === custodianId)
+    if (freshCustodian != null) {
+      get().updatePlayer(custodianId, { rubles: freshCustodian.rubles + amount })
+    }
+
+    get().addLogEntry({
+      type: 'payment',
+      message: `${payer.name} paid ₽${String(amount)} quota to ${custodian.name}`,
+      playerId: payerId
+    })
   }
 })
