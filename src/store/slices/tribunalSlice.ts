@@ -157,6 +157,10 @@ export const createTribunalSlice: StateCreator<
 
     const phaseOrder: TribunalPhase[] = ['accusation', 'defence', 'witnesses', 'judgement']
     const currentIndex = phaseOrder.indexOf(state.activeTribunal.phase)
+    // Guard both ends: an unrecognised phase (-1) must not wrap around to
+    // 'accusation', and the final phase ('judgement') must not advance past
+    // the end of phaseOrder into undefined. Either case is a no-op.
+    if (currentIndex < 0 || currentIndex >= phaseOrder.length - 1) return
     const nextPhase = phaseOrder[currentIndex + 1]
 
     set({
