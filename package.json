@@ -21,6 +21,9 @@
     "react-dom": "^19.2.4",
     "zustand": "^5.0.15"
   },
+  "overrides": {
+    "js-yaml": "^4.3.2"
+  },
   "devDependencies": {
     "@eslint/create-config": "^2.0.0",
     "@eslint/js": "^9.39.2",
