@@ -25,7 +25,7 @@
     "js-yaml": "^4.3.2"
   },
   "devDependencies": {
-    "@eslint/create-config": "^2.0.0",
+    "@eslint/create-config": "^3.0.0",
     "@eslint/js": "^9.39.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
