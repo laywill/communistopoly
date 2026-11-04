@@ -10,6 +10,8 @@ on: # yamllint disable-line rule:truthy
     branches:
       - main
       - master
+  # Lets the Dependabot Lockfile Repair workflow re-run CI after it pushes
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
