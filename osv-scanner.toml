@@ -1,0 +1,18 @@
+# osv-scanner configuration (picked up by MegaLinter's REPOSITORY_OSV_SCANNER)
+# https://google.github.io/osv-scanner/configuration/
+#
+# Every ignore MUST carry an `ignoreUntil` date and a reason, so that it is
+# revisited rather than forgotten. When an ignore expires the scan fails
+# again: check whether a fix is now reachable and either upgrade or renew.
+
+[[IgnoredVulns]]
+# minimatch: ReDoS via globparts amplification. Fixed only in minimatch
+# 11.0.1+, with no backport to 3.x or 10.x. Every consumer in our tree, even
+# at its latest release (eslint, @eslint/eslintrc, @eslint/config-array,
+# eslint-plugin-react, @typescript-eslint/typescript-estree), still pins
+# minimatch ^3 or ^10, and minimatch 11 is API-incompatible with 3.x, so an
+# override would break ESLint. Exposure is limited to dev-time lint tooling
+# matching trusted, repository-authored glob patterns.
+id = "GHSA-g3hv-75wg-m249"
+ignoreUntil = 2027-02-04
+reason = "No fix reachable: all upstream consumers pin minimatch <11; dev-only lint tooling with trusted globs"
