@@ -14,6 +14,8 @@ on: # yamllint disable-line rule:truthy - false positive
     branches:
       - main
       - master
+  # Lets the Dependabot Lockfile Repair workflow re-run CI after it pushes
+  workflow_dispatch:
 
 # Comment env block if you do not want to apply fixes
 env:

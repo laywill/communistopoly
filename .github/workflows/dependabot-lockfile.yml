@@ -1,0 +1,137 @@
+---
+# Repairs package-lock.json on Dependabot npm PRs and commits the fix back,
+# in the same spirit as MegaLinter committing back its linter fixes.
+#
+# Dependabot npm PRs regularly fail CI for one of two lockfile reasons, and
+# both have always been fixed by hand in the same way:
+#
+#   1. Out of sync: the lockfile no longer matches package.json, so `npm ci`
+#      fails. Fixed by `npm install --package-lock-only`, which is a no-op
+#      when the lockfile is already in sync.
+#   2. Vulnerable transitive dependencies: a new advisory makes MegaLinter's
+#      osv-scanner fail. Fixed by scanning the lockfile with osv-scanner
+#      (which honours osv-scanner.toml, exactly as MegaLinter does) and
+#      running `npm update` on only the packages it reports, within their
+#      existing semver ranges.
+#
+# `npm audit fix` is deliberately NOT used: it drags whole dependency chains
+# up a version even for advisories it cannot fix, which bloats every PR and
+# makes concurrent Dependabot PRs conflict with one another.
+#
+# Security: this job holds a write token on a Dependabot branch, so it never
+# executes package code. Every npm command uses --package-lock-only and
+# --ignore-scripts, so nothing is installed and no lifecycle script runs.
+#
+# A push made with GITHUB_TOKEN does not trigger other workflows, so after
+# pushing, this job dispatches the CI workflows against the branch. Their
+# runs attach to the new head commit and appear as checks on the PR.
+#
+# Once this job has pushed a commit, Dependabot no longer rebases the PR by
+# itself. To rebase, comment `@dependabot recreate` on the PR; this workflow
+# then repairs the recreated branch again.
+name: Dependabot Lockfile Repair
+
+on: # yamllint disable-line rule:truthy
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - package.json
+      - package-lock.json
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  repair:
+    name: Repair lockfile
+    # Only Dependabot PRs from this repository, never forks or humans
+    if: >-
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # push the repaired lockfile
+      actions: write # dispatch CI workflows on the repaired commit
+
+    env:
+      BRANCH: ${{ github.event.pull_request.head.ref }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+
+      - name: Sync lockfile with package.json
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      # Exits non-zero when it finds vulnerabilities, so failure is expected
+      # here; the next step distinguishes "found vulnerabilities" from "scan
+      # failed" by whether a results file was written.
+      - name: Scan lockfile for vulnerabilities
+        uses: google/osv-scanner-action/osv-scanner-action@b1d267aea5211fa648d9d442fa64b90dbdcbdd36 # v2.7.0
+        continue-on-error: true
+        with:
+          scan-args: |-
+            --lockfile=package-lock.json
+            --format=json
+            --output=osv-results.json
+
+      - name: Update vulnerable packages
+        run: |
+          if [ ! -f osv-results.json ]; then
+            echo "::error::osv-scanner did not produce a results file; the scan itself failed"
+            exit 1
+          fi
+          mapfile -t pkgs < <(
+            jq -r '[.results[]?.packages[]?.package.name] | unique | .[]' osv-results.json
+          )
+          rm -f osv-results.json
+          if [ "${#pkgs[@]}" -eq 0 ]; then
+            echo "No vulnerable packages found."
+            exit 0
+          fi
+          echo "Updating vulnerable packages: ${pkgs[*]}"
+          npm update "${pkgs[@]}" --package-lock-only --ignore-scripts --no-audit --no-fund
+          {
+            echo "### Vulnerable packages updated"
+            printf -- '- `%s`\n' "${pkgs[@]}"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Commit and push repaired lockfile
+        id: push
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo "Lockfile needs no repair."
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          git diff --stat -- package-lock.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add package-lock.json
+          git commit \
+            -m "Build(deps): Repair package-lock.json" \
+            -m "Automated by the Dependabot Lockfile Repair workflow: lockfile synced with package.json and vulnerable transitive dependencies updated."
+          git push origin "HEAD:${BRANCH}"
+          echo "changed=true" >> "${GITHUB_OUTPUT}"
+
+      - name: Re-run CI on the repaired commit
+        if: steps.push.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for workflow in build.yml eslint.yml vitest.yml mega-linter.yml; do
+            gh workflow run "${workflow}" --repo "${GITHUB_REPOSITORY}" --ref "${BRANCH}"
+          done
