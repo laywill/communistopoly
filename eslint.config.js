@@ -25,7 +25,11 @@ export default defineConfig([
     },
     settings: {
       react: {
-        version: 'detect'
+        // Pinned rather than 'detect': eslint-plugin-react 7.37.x's version
+        // detection calls context.getFilename(), which ESLint 10 removed.
+        // Restore 'detect' once the plugin ships ESLint 10 support, and drop
+        // the matching "eslint-plugin-react" entry in package.json overrides.
+        version: '19.3'
       }
     }
   },
